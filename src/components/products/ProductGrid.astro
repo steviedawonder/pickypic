@@ -1,0 +1,76 @@
+---
+import { products, productCategories } from '@data/products';
+import ProductCard from './ProductCard.astro';
+---
+
+<section class="py-20 lg:py-28 bg-white">
+  <div class="mx-auto max-w-7xl px-6 lg:px-8">
+    <!-- Category Filter -->
+    <div class="flex flex-wrap justify-center gap-3 mb-12 lg:mb-16 gs-fade-up" id="product-filter">
+      {productCategories.map((cat) => (
+        <button
+          class:list={[
+            'px-5 py-2.5 text-sm font-medium tracking-[0.05em] transition-all duration-300 cursor-pointer border',
+            cat.id === 'all'
+              ? 'bg-primary text-white border-primary active-filter'
+              : 'bg-white text-secondary border-border-light hover:border-primary hover:text-primary',
+          ]}
+          data-filter={cat.id}
+        >
+          {cat.label}
+        </button>
+      ))}
+    </div>
+
+    <!-- Product Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 gs-stagger" id="product-grid">
+      {products.map((product) => (
+        <ProductCard product={product} />
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  function initProductFilter() {
+    const filterContainer = document.getElementById('product-filter');
+    const grid = document.getElementById('product-grid');
+    if (!filterContainer || !grid) return;
+
+    const buttons = filterContainer.querySelectorAll('button');
+    const cards = grid.querySelectorAll<HTMLElement>('[data-category]');
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const filter = btn.getAttribute('data-filter');
+
+        // Update active button
+        buttons.forEach((b) => {
+          b.classList.remove('bg-primary', 'text-white', 'border-primary', 'active-filter');
+          b.classList.add('bg-white', 'text-secondary', 'border-border-light');
+        });
+        btn.classList.remove('bg-white', 'text-secondary', 'border-border-light');
+        btn.classList.add('bg-primary', 'text-white', 'border-primary', 'active-filter');
+
+        // Filter cards
+        cards.forEach((card) => {
+          if (filter === 'all' || card.dataset.category === filter) {
+            card.style.display = '';
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            requestAnimationFrame(() => {
+              card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+              card.style.opacity = '1';
+              card.style.transform = 'translateY(0)';
+            });
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initProductFilter);
+  document.addEventListener('astro:after-swap', initProductFilter);
+</script>

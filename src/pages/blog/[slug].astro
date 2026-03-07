@@ -1,0 +1,208 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { company } from '@data/company';
+
+// In production, fetch from Sanity:
+// import { sanityClient, blogQueries } from '../../sanity/client';
+// export async function getStaticPaths() {
+//   const posts = await sanityClient.fetch(`*[_type == "blogPost"]{ slug }`);
+//   return posts.map((post) => ({ params: { slug: post.slug.current } }));
+// }
+// const { slug } = Astro.params;
+// const post = await sanityClient.fetch(blogQueries.postBySlug, { slug });
+
+// Sample data for development
+export function getStaticPaths() {
+  return [
+    { params: { slug: 'photobooth-trends-2024' } },
+    { params: { slug: 'rental-guide-by-event-type' } },
+    { params: { slug: 'netflix-popup-case-study' } },
+    { params: { slug: 'installation-location-checklist' } },
+    { params: { slug: 'boost-event-satisfaction' } },
+    { params: { slug: 'air-picky-launch' } },
+  ];
+}
+
+const { slug } = Astro.params;
+
+const samplePostData: Record<string, any> = {
+  'photobooth-trends-2024': {
+    title: '2024 포토부스 트렌드: 브랜드 팝업에서 주목받는 5가지 포인트',
+    excerpt: '올해 브랜드 팝업스토어에서 가장 많이 선택된 포토부스 스타일과 트렌드를 분석합니다.',
+    publishedAt: '2024-12-15T09:00:00Z',
+    category: { title: '트렌드' },
+    author: { name: 'PICKYPIC', role: '에디터', bio: '피키픽 포토부스 공식 블로그' },
+    estimatedReadingTime: 5,
+    tags: ['포토부스', '트렌드', '브랜드팝업', '2024'],
+  },
+  'rental-guide-by-event-type': {
+    title: '포토부스 렌탈 가이드: 행사 유형별 추천 제품',
+    excerpt: '기업 행사, 웨딩, 파티, 브랜드 팝업 등 행사 유형에 따라 어떤 포토부스가 적합한지 전문가가 추천합니다.',
+    publishedAt: '2024-11-28T09:00:00Z',
+    category: { title: '가이드' },
+    author: { name: 'PICKYPIC', role: '에디터', bio: '피키픽 포토부스 공식 블로그' },
+    estimatedReadingTime: 7,
+    tags: ['렌탈', '가이드', '행사유형'],
+  },
+  'netflix-popup-case-study': {
+    title: '넷플릭스 팝업스토어 포토부스 사례',
+    excerpt: '넷플릭스 코리아와 함께한 팝업스토어 포토부스 설치 사례를 공유합니다.',
+    publishedAt: '2024-11-10T09:00:00Z',
+    category: { title: '사례' },
+    author: { name: 'PICKYPIC', role: '에디터', bio: '피키픽 포토부스 공식 블로그' },
+    estimatedReadingTime: 4,
+    tags: ['넷플릭스', '팝업스토어', '사례'],
+  },
+  'installation-location-checklist': {
+    title: '포토부스 설치 장소 선정 시 꼭 확인해야 할 체크리스트',
+    excerpt: '전원 공급, 공간 크기, 조명 환경 등 포토부스 설치 전 반드시 확인해야 할 사항들을 정리했습니다.',
+    publishedAt: '2024-10-25T09:00:00Z',
+    category: { title: '가이드' },
+    author: { name: 'PICKYPIC', role: '에디터', bio: '피키픽 포토부스 공식 블로그' },
+    estimatedReadingTime: 6,
+    tags: ['설치', '체크리스트', '가이드'],
+  },
+  'boost-event-satisfaction': {
+    title: '포토부스로 행사 만족도를 높이는 3가지 비결',
+    excerpt: '참석자들의 만족도를 크게 높여주는 포토부스 운영 노하우를 공개합니다.',
+    publishedAt: '2024-10-05T09:00:00Z',
+    category: { title: '팁' },
+    author: { name: 'PICKYPIC', role: '에디터', bio: '피키픽 포토부스 공식 블로그' },
+    estimatedReadingTime: 3,
+    tags: ['운영', '팁', '만족도'],
+  },
+  'air-picky-launch': {
+    title: '피키픽 신제품 에어피키(Air Picky) 출시 안내',
+    excerpt: '에어 구조의 프라이빗한 부스형 포토부스 에어피키가 새롭게 출시되었습니다.',
+    publishedAt: '2024-09-20T09:00:00Z',
+    category: { title: '소식' },
+    author: { name: 'PICKYPIC', role: '에디터', bio: '피키픽 포토부스 공식 블로그' },
+    estimatedReadingTime: 3,
+    tags: ['에어피키', '신제품', '출시'],
+  },
+};
+
+const post = samplePostData[slug!] || samplePostData['photobooth-trends-2024'];
+const formattedDate = post.publishedAt
+  ? new Date(post.publishedAt).toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })
+  : '';
+
+const seoTitle = `${post.title} | 피키픽 포토부스 블로그`;
+const seoDescription = post.excerpt || '';
+---
+
+<BaseLayout title={seoTitle} description={seoDescription}>
+  <article class="pt-36 pb-20 lg:pt-44 lg:pb-28">
+    <div class="mx-auto max-w-3xl px-6 lg:px-8">
+      <!-- Header -->
+      <header class="mb-12 gs-fade-up">
+        {post.category && (
+          <a
+            href="/blog"
+            class="inline-block mb-4 px-3 py-1 bg-bg-light text-xs font-semibold tracking-[0.05em] text-secondary hover:bg-border-light transition-colors"
+          >
+            {post.category.title}
+          </a>
+        )}
+        <h1 class="text-[clamp(1.8rem,4vw,3rem)] font-bold tracking-tight text-primary leading-[1.2] mb-6">
+          {post.title}
+        </h1>
+        <div class="flex items-center gap-4 text-sm text-secondary">
+          <span class="font-medium text-primary">{post.author?.name}</span>
+          <span class="text-border-default">·</span>
+          <time datetime={post.publishedAt}>{formattedDate}</time>
+          {post.estimatedReadingTime && (
+            <>
+              <span class="text-border-default">·</span>
+              <span>{post.estimatedReadingTime}분 읽기</span>
+            </>
+          )}
+        </div>
+      </header>
+
+      <!-- Featured Image Placeholder -->
+      <div class="aspect-[16/9] bg-bg-light mb-12 flex items-center justify-center text-secondary/20 gs-fade-in">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" />
+        </svg>
+      </div>
+
+      <!-- Body (Portable Text will render here in production) -->
+      <div class="prose prose-lg max-w-none gs-fade-up">
+        <p class="text-secondary leading-relaxed text-lg mb-6">
+          {post.excerpt}
+        </p>
+        <p class="text-secondary leading-relaxed">
+          이 콘텐츠는 Sanity CMS에서 Portable Text로 작성됩니다.
+          관리자 페이지에서 블로그 포스트를 작성하면 이 영역에 본문이 렌더링됩니다.
+        </p>
+      </div>
+
+      <!-- Tags -->
+      {post.tags && post.tags.length > 0 && (
+        <div class="mt-12 pt-8 border-t border-border-light gs-fade-up">
+          <div class="flex flex-wrap gap-2">
+            {post.tags.map((tag: string) => (
+              <span class="px-3 py-1.5 bg-bg-light text-xs text-secondary hover:bg-border-light transition-colors cursor-default">
+                #{tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <!-- Author Bio -->
+      <div class="mt-10 p-6 bg-bg-light gs-fade-up">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 bg-primary text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+            {post.author?.name?.charAt(0) || 'P'}
+          </div>
+          <div>
+            <p class="font-bold text-primary">{post.author?.name}</p>
+            {post.author?.role && <p class="text-xs text-secondary mt-0.5">{post.author.role}</p>}
+            {post.author?.bio && <p class="text-sm text-secondary mt-2 leading-relaxed">{post.author.bio}</p>}
+          </div>
+        </div>
+      </div>
+
+      <!-- Back to Blog -->
+      <div class="mt-12 text-center">
+        <a
+          href="/blog"
+          class="inline-flex items-center gap-2 px-6 py-3 border border-border-light text-sm font-medium text-primary hover:border-primary transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+          </svg>
+          블로그 목록으로
+        </a>
+      </div>
+    </div>
+  </article>
+
+  <!-- JSON-LD: BlogPosting -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": post.title,
+    "description": post.excerpt,
+    "datePublished": post.publishedAt,
+    "author": {
+      "@type": "Person",
+      "name": post.author?.name,
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": company.brand,
+      "url": "https://picky-pic.com",
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `https://picky-pic.com/blog/${slug}`,
+    },
+  })} />
+</BaseLayout>

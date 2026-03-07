@@ -1,0 +1,27 @@
+{
+  "name": "picky-pic",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.0",
+    "@portabletext/types": "^4.0.2",
+    "@sanity/client": "^7.16.0",
+    "@sanity/image-url": "^2.0.3",
+    "@sanity/vision": "^5.13.0",
+    "@tailwindcss/vite": "^4.2.1",
+    "astro": "^5.18.0",
+    "gsap": "^3.14.2",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-is": "^19.2.4",
+    "sanity": "^5.13.0",
+    "styled-components": "^6.3.11",
+    "tailwindcss": "^4.2.1"
+  }
+}

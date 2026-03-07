@@ -1,0 +1,44 @@
+---
+interface BreadcrumbItem {
+  name: string;
+  href: string;
+}
+
+interface Props {
+  items: BreadcrumbItem[];
+}
+
+const { items } = Astro.props;
+const site = Astro.site?.toString() || 'https://picky-pic.com';
+
+const breadcrumbList = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": items.map((item, index) => ({
+    "@type": "ListItem",
+    "position": index + 1,
+    "name": item.name,
+    "item": `${site}${item.href}`.replace(/\/$/, ''),
+  })),
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(breadcrumbList)} />
+
+<!-- Visual Breadcrumb -->
+<nav aria-label="Breadcrumb" class="mx-auto max-w-7xl px-6 lg:px-8 pt-28 pb-2">
+  <ol class="flex items-center gap-2 text-xs text-secondary">
+    {items.map((item, i) => (
+      <>
+        {i > 0 && <span class="text-border-default">/</span>}
+        {i < items.length - 1 ? (
+          <li>
+            <a href={item.href} class="hover:text-primary transition-colors">{item.name}</a>
+          </li>
+        ) : (
+          <li class="text-primary font-medium">{item.name}</li>
+        )}
+      </>
+    ))}
+  </ol>
+</nav>

@@ -1,0 +1,17 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import TextHero from '@components/common/TextHero.astro';
+import PortfolioGrid from '@components/portfolio/PortfolioGrid.astro';
+---
+
+<BaseLayout
+  title="포트폴리오 | 피키픽 포토부스 PICKYPIC"
+  description="넷플릭스, 현대자동차, 기아, 뉴발란스 등 유수 브랜드와 함께한 피키픽 포토부스의 포트폴리오를 확인하세요."
+>
+  <TextHero
+    subtitle="Portfolio"
+    title="포트폴리오"
+    description="다양한 브랜드 및 이벤트와 함께한 피키픽의 포토부스 사례를 확인하세요."
+  />
+  <PortfolioGrid />
+</BaseLayout>

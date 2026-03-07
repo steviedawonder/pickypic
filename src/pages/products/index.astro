@@ -1,0 +1,17 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import TextHero from '@components/common/TextHero.astro';
+import ProductGrid from '@components/products/ProductGrid.astro';
+---
+
+<BaseLayout
+  title="제품소개 | 피키픽 포토부스 PICKYPIC"
+  description="피키픽 포토부스의 9종 이상 포토부스 라인업을 소개합니다. 테이블형, 스탠드형, 부스형 등 행사에 맞는 최적의 포토부스를 선택하세요."
+>
+  <TextHero
+    subtitle="Products"
+    title="제품소개"
+    description="테이블형부터 대형 부스형까지, 행사 규모와 컨셉에 맞는 포토부스를 선택하세요."
+  />
+  <ProductGrid />
+</BaseLayout>

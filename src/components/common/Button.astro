@@ -1,0 +1,57 @@
+---
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'secondary' | 'outline' | 'outline-white';
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+  external?: boolean;
+}
+
+const {
+  href,
+  variant = 'primary',
+  size = 'md',
+  class: className = '',
+  external = false,
+} = Astro.props;
+
+const variantClasses: Record<string, string> = {
+  primary: 'bg-primary text-white hover:bg-black font-semibold',
+  secondary: 'bg-bg-light text-primary hover:bg-border-light border border-border-light',
+  outline: 'border border-primary text-primary hover:bg-primary hover:text-white',
+  'outline-white': 'border border-white/40 text-white/80 hover:border-white hover:text-white',
+};
+
+const sizeClasses: Record<string, string> = {
+  sm: 'px-5 py-2 text-xs',
+  md: 'px-7 py-3 text-sm',
+  lg: 'px-9 py-4 text-base',
+};
+---
+
+{href ? (
+  <a
+    href={href}
+    class:list={[
+      'inline-block font-medium tracking-[0.08em] transition-all duration-300',
+      variantClasses[variant],
+      sizeClasses[size],
+      className,
+    ]}
+    target={external ? '_blank' : undefined}
+    rel={external ? 'noopener noreferrer' : undefined}
+  >
+    <slot />
+  </a>
+) : (
+  <button
+    class:list={[
+      'inline-block font-medium tracking-[0.08em] transition-all duration-300 cursor-pointer',
+      variantClasses[variant],
+      sizeClasses[size],
+      className,
+    ]}
+  >
+    <slot />
+  </button>
+)}

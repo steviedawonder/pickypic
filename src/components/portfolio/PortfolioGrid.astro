@@ -1,0 +1,91 @@
+---
+import { portfolioItems, portfolioCategories } from '@data/portfolio';
+---
+
+<section class="py-20 lg:py-28 bg-white">
+  <div class="mx-auto max-w-7xl px-6 lg:px-8">
+    <!-- Category Filter -->
+    <div class="flex flex-wrap justify-center gap-2 mb-12 lg:mb-16 gs-fade-up" id="portfolio-filter">
+      {portfolioCategories.map((cat) => (
+        <button
+          class:list={[
+            'px-4 py-2 text-xs font-medium tracking-[0.05em] transition-all duration-300 cursor-pointer border',
+            cat === '전체'
+              ? 'bg-primary text-white border-primary'
+              : 'bg-white text-secondary border-border-light hover:border-primary hover:text-primary',
+          ]}
+          data-filter={cat}
+        >
+          {cat}
+        </button>
+      ))}
+    </div>
+
+    <!-- Portfolio Grid -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-4" id="portfolio-grid">
+      {portfolioItems.map((item) => (
+        <div
+          class="group relative aspect-square bg-bg-light overflow-hidden cursor-pointer"
+          data-category={item.category}
+        >
+          <!-- Placeholder -->
+          <div class="absolute inset-0 flex items-center justify-center text-secondary/20">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" />
+            </svg>
+          </div>
+
+          <!-- Hover Overlay -->
+          <div class="absolute inset-0 bg-primary/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center text-white p-4">
+            <p class="text-sm font-bold tracking-wide mb-1">{item.client}</p>
+            <p class="text-[10px] tracking-[0.1em] text-white/70 uppercase">{item.category}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  function initPortfolioFilter() {
+    const filterContainer = document.getElementById('portfolio-filter');
+    const grid = document.getElementById('portfolio-grid');
+    if (!filterContainer || !grid) return;
+
+    const buttons = filterContainer.querySelectorAll('button');
+    const items = grid.querySelectorAll<HTMLElement>('[data-category]');
+
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const filter = btn.getAttribute('data-filter');
+
+        // Update active button
+        buttons.forEach((b) => {
+          b.classList.remove('bg-primary', 'text-white', 'border-primary');
+          b.classList.add('bg-white', 'text-secondary', 'border-border-light');
+        });
+        btn.classList.remove('bg-white', 'text-secondary', 'border-border-light');
+        btn.classList.add('bg-primary', 'text-white', 'border-primary');
+
+        // Filter items
+        items.forEach((item) => {
+          if (filter === '전체' || item.dataset.category === filter) {
+            item.style.display = '';
+            item.style.opacity = '0';
+            item.style.transform = 'scale(0.95)';
+            requestAnimationFrame(() => {
+              item.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+              item.style.opacity = '1';
+              item.style.transform = 'scale(1)';
+            });
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initPortfolioFilter);
+  document.addEventListener('astro:after-swap', initPortfolioFilter);
+</script>

@@ -1,0 +1,19 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import TextHero from '@components/common/TextHero.astro';
+import CompanyInfo from '@components/about/CompanyInfo.astro';
+import CompanyHistory from '@components/about/CompanyHistory.astro';
+---
+
+<BaseLayout
+  title="회사소개 | 피키픽 포토부스 PICKYPIC"
+  description="피키픽 포토부스는 브랜드 팝업스토어, 기업 행사, 웨딩, 파티 등 다양한 이벤트에 맞춤형 포토부스 렌탈 서비스를 제공합니다."
+>
+  <TextHero
+    subtitle="Company"
+    title="회사소개"
+    description="특별한 순간을 더 특별하게 만드는 피키픽 포토부스를 소개합니다."
+  />
+  <CompanyInfo />
+  <CompanyHistory />
+</BaseLayout>

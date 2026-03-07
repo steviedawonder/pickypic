@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://picky-pic.com/sitemap-index.xml

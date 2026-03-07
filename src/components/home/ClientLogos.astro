@@ -1,0 +1,45 @@
+---
+
+const clients = [
+  'NETFLIX', 'HYUNDAI', 'KIA', 'NEW BALANCE', 'rom&nd',
+  'ZOOLUNGZOOLUNG', 'URBANPLAY', 'CORNCENT', 'DAEWOONG', 'ILSO',
+  'MINIPOPZ', 'PANACOTA STUDIO',
+];
+---
+
+<section class="bg-bg-light py-20 lg:py-24 overflow-hidden">
+  <div class="mx-auto max-w-7xl px-6 lg:px-8">
+    <div class="text-center gs-fade-up">
+      <span class="text-[11px] font-semibold tracking-[0.5em] text-secondary uppercase">Partners</span>
+      <h2 class="mt-4 text-xl font-bold text-primary lg:text-2xl">
+        함께한 브랜드
+      </h2>
+    </div>
+
+    <!-- Logo Scroll -->
+    <div class="mt-12 relative overflow-hidden">
+      <div class="flex animate-scroll gap-12 whitespace-nowrap">
+        {[...clients, ...clients].map((client) => (
+          <span class="inline-block text-lg font-semibold text-secondary/30 tracking-[0.05em] select-none shrink-0">
+            {client}
+          </span>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  @keyframes scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .animate-scroll {
+    animation: scroll 30s linear infinite;
+  }
+
+  .animate-scroll:hover {
+    animation-play-state: paused;
+  }
+</style>

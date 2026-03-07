@@ -1,0 +1,84 @@
+---
+const milestones = [
+  {
+    year: '2024',
+    items: [
+      '넷플릭스, 현대자동차, 기아 등 대형 브랜드 협업',
+      '포토부스 라인업 9종 이상 확대',
+      '아웃도어피키, 에어피키 신제품 출시',
+    ],
+  },
+  {
+    year: '2023',
+    items: [
+      '누적 이벤트 1,000건 돌파',
+      '뉴발란스, 로몽드 등 브랜드 팝업 협업',
+      '모던 레트로 피키 라인 론칭',
+    ],
+  },
+  {
+    year: '2022',
+    items: [
+      '주식회사 피키글로벌 법인 설립',
+      '스탠드형 포토부스 라인업 확대',
+      '기업 행사 전문 서비스 시작',
+    ],
+  },
+  {
+    year: '2021',
+    items: [
+      '피키픽 포토부스 브랜드 런칭',
+      '테이블형 포토부스 최초 개발',
+      '렌탈 서비스 시작',
+    ],
+  },
+];
+---
+
+<section class="py-20 lg:py-28 bg-bg-light">
+  <div class="mx-auto max-w-7xl px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto text-center mb-16 gs-fade-up">
+      <p class="mb-4 text-[11px] font-semibold tracking-[0.5em] text-secondary uppercase">History</p>
+      <h2 class="text-[clamp(1.5rem,2.5vw,2.25rem)] font-bold tracking-tight text-primary">
+        피키픽의 여정
+      </h2>
+    </div>
+
+    <div class="relative max-w-3xl mx-auto">
+      <!-- Timeline line -->
+      <div class="absolute left-6 lg:left-1/2 top-0 bottom-0 w-px bg-border-default lg:-translate-x-px"></div>
+
+      <div class="space-y-12 gs-stagger">
+        {milestones.map((milestone, i) => (
+          <div class:list={[
+            'relative pl-16 lg:pl-0 lg:flex lg:items-start lg:gap-12',
+            i % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse',
+          ]}>
+            <!-- Dot -->
+            <div class="absolute left-4 lg:left-1/2 top-1 w-5 h-5 bg-white border-2 border-primary rounded-full lg:-translate-x-1/2 z-10"></div>
+
+            <!-- Year -->
+            <div class:list={[
+              'lg:w-1/2',
+              i % 2 === 0 ? 'lg:text-right lg:pr-12' : 'lg:text-left lg:pl-12',
+            ]}>
+              <span class="text-3xl lg:text-4xl font-bold text-primary tracking-tight">{milestone.year}</span>
+            </div>
+
+            <!-- Content -->
+            <div class:list={[
+              'mt-3 lg:mt-0 lg:w-1/2',
+              i % 2 === 0 ? 'lg:pl-12' : 'lg:pr-12 lg:text-right',
+            ]}>
+              <ul class="space-y-2">
+                {milestone.items.map((item) => (
+                  <li class="text-secondary leading-relaxed">{item}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

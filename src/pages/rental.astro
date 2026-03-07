@@ -1,0 +1,237 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import TextHero from '@components/common/TextHero.astro';
+import { products } from '@data/products';
+import { company } from '@data/company';
+---
+
+<BaseLayout
+  title="렌탈문의 | 피키픽 포토부스 PICKYPIC"
+  description="피키픽 포토부스 렌탈 문의. 브랜드 팝업, 기업 행사, 웨딩, 파티 등 맞춤형 포토부스 대여 서비스를 신청하세요."
+>
+  <TextHero
+    subtitle="Rental"
+    title="렌탈문의"
+    description="아래 양식을 작성해주시면 담당자가 빠르게 연락드리겠습니다."
+  />
+
+  <section class="py-20 lg:py-28 bg-white">
+    <div class="mx-auto max-w-3xl px-6 lg:px-8">
+      <form id="rental-form" class="space-y-8 gs-fade-up">
+        <!-- Event Info -->
+        <fieldset>
+          <legend class="text-lg font-bold text-primary mb-6 tracking-tight">행사 정보</legend>
+          <div class="space-y-5">
+            <div>
+              <label for="event-name" class="block text-sm font-medium text-primary mb-2">행사명 <span class="text-red-500">*</span></label>
+              <input
+                type="text"
+                id="event-name"
+                name="eventName"
+                required
+                class="w-full px-4 py-3 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors"
+                placeholder="행사명을 입력해주세요"
+              />
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label for="event-date" class="block text-sm font-medium text-primary mb-2">행사 날짜 <span class="text-red-500">*</span></label>
+                <input
+                  type="date"
+                  id="event-date"
+                  name="eventDate"
+                  required
+                  class="w-full px-4 py-3 border border-border-light text-sm text-primary focus:outline-none focus:border-primary transition-colors"
+                />
+              </div>
+              <div>
+                <label for="event-duration" class="block text-sm font-medium text-primary mb-2">행사 기간</label>
+                <input
+                  type="text"
+                  id="event-duration"
+                  name="eventDuration"
+                  class="w-full px-4 py-3 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors"
+                  placeholder="예: 3일"
+                />
+              </div>
+            </div>
+            <div>
+              <label for="event-location" class="block text-sm font-medium text-primary mb-2">설치 장소 <span class="text-red-500">*</span></label>
+              <input
+                type="text"
+                id="event-location"
+                name="eventLocation"
+                required
+                class="w-full px-4 py-3 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors"
+                placeholder="설치 장소 주소를 입력해주세요"
+              />
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="h-px bg-border-light"></div>
+
+        <!-- Contact Info -->
+        <fieldset>
+          <legend class="text-lg font-bold text-primary mb-6 tracking-tight">담당자 정보</legend>
+          <div class="space-y-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label for="contact-name" class="block text-sm font-medium text-primary mb-2">담당자명 <span class="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  id="contact-name"
+                  name="contactName"
+                  required
+                  class="w-full px-4 py-3 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors"
+                  placeholder="담당자명"
+                />
+              </div>
+              <div>
+                <label for="contact-company" class="block text-sm font-medium text-primary mb-2">소속/회사</label>
+                <input
+                  type="text"
+                  id="contact-company"
+                  name="contactCompany"
+                  class="w-full px-4 py-3 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors"
+                  placeholder="소속 회사명"
+                />
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label for="contact-phone" class="block text-sm font-medium text-primary mb-2">연락처 <span class="text-red-500">*</span></label>
+                <input
+                  type="tel"
+                  id="contact-phone"
+                  name="contactPhone"
+                  required
+                  class="w-full px-4 py-3 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors"
+                  placeholder="010-0000-0000"
+                />
+              </div>
+              <div>
+                <label for="contact-email" class="block text-sm font-medium text-primary mb-2">이메일</label>
+                <input
+                  type="email"
+                  id="contact-email"
+                  name="contactEmail"
+                  class="w-full px-4 py-3 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors"
+                  placeholder="email@example.com"
+                />
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="h-px bg-border-light"></div>
+
+        <!-- Product Selection -->
+        <fieldset>
+          <legend class="text-lg font-bold text-primary mb-6 tracking-tight">제품 선택</legend>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {products.map((product) => (
+              <label class="flex items-center gap-3 p-3 border border-border-light hover:border-primary/30 transition-colors cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="products"
+                  value={product.id}
+                  class="w-4 h-4 accent-primary"
+                />
+                <div>
+                  <p class="text-sm font-medium text-primary">{product.name}</p>
+                  <p class="text-[10px] text-secondary">{product.categoryLabel}</p>
+                </div>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <div class="h-px bg-border-light"></div>
+
+        <!-- Additional Options -->
+        <fieldset>
+          <legend class="text-lg font-bold text-primary mb-6 tracking-tight">추가 옵션</legend>
+          <div class="space-y-5">
+            <div>
+              <label class="block text-sm font-medium text-primary mb-2">래핑 디자인</label>
+              <div class="flex flex-wrap gap-3">
+                {['기본 디자인', '커스텀 래핑', '미정'].map((option) => (
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" name="wrapping" value={option} class="w-4 h-4 accent-primary" />
+                    <span class="text-sm text-primary">{option}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-primary mb-2">촬영 유형</label>
+              <div class="flex flex-wrap gap-3">
+                {['즉석 인화', '디지털 공유', '인화 + 디지털', '미정'].map((option) => (
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" name="shootingType" value={option} class="w-4 h-4 accent-primary" />
+                    <span class="text-sm text-primary">{option}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label for="message" class="block text-sm font-medium text-primary mb-2">추가 요청사항</label>
+              <textarea
+                id="message"
+                name="message"
+                rows="4"
+                class="w-full px-4 py-3 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors resize-none"
+                placeholder="추가 요청사항이 있으시면 자유롭게 작성해주세요."
+              ></textarea>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="h-px bg-border-light"></div>
+
+        <!-- Privacy Agreement -->
+        <div>
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input type="checkbox" id="privacy-agree" name="privacyAgree" required class="w-4 h-4 accent-primary mt-0.5" />
+            <span class="text-sm text-secondary leading-relaxed">
+              <span class="font-medium text-primary">[필수]</span> 개인정보 수집 및 이용에 동의합니다.
+              수집된 정보는 렌탈 상담 목적으로만 사용되며, 상담 완료 후 즉시 파기됩니다.
+            </span>
+          </label>
+        </div>
+
+        <!-- Submit -->
+        <div class="text-center pt-4">
+          <button
+            type="submit"
+            class="inline-block px-12 py-4 bg-primary text-white text-base font-semibold tracking-[0.08em] hover:bg-black transition-colors duration-300 cursor-pointer"
+          >
+            문의하기
+          </button>
+          <p class="mt-4 text-xs text-secondary">
+            또는 카카오톡으로 문의:
+            <a href={company.kakaoUrl} target="_blank" rel="noopener noreferrer" class="font-medium text-primary hover:underline">{company.kakaoChannel}</a>
+          </p>
+        </div>
+      </form>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  function initRentalForm() {
+    const form = document.getElementById('rental-form') as HTMLFormElement | null;
+    if (!form) return;
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      // In production, this would send to an API endpoint
+      alert('문의가 접수되었습니다. 담당자가 빠르게 연락드리겠습니다.');
+      form.reset();
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initRentalForm);
+  document.addEventListener('astro:after-swap', initRentalForm);
+</script>
