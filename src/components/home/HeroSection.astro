@@ -1,49 +1,306 @@
 ---
-import Button from '@components/common/Button.astro';
+const desktopSlides = [
+  '/images/hero/main-1.jpg',
+  '/images/hero/main-2.jpg',
+  '/images/hero/main-3.jpg',
+];
+
+const mobileSlides = [
+  '/images/hero/main-mo1.jpg',
+  '/images/hero/main-mo2.jpg',
+  '/images/hero/main-mo3.jpg',
+];
 ---
 
-<section class="relative flex h-screen min-h-[700px] items-end overflow-hidden">
-  <!-- Background Image -->
-  <div class="absolute inset-0">
-    <div class="h-full w-full bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-      <!-- Placeholder: Replace with actual hero image -->
-      <div class="absolute inset-0 flex items-center justify-center">
-        <span class="text-[200px] font-bold text-white/[0.03] tracking-[0.3em] select-none">PICKYPIC</span>
+<section class="hero-section" style="background-color: #f7f7f5;">
+  <!-- Desktop Version -->
+  <div class="hero-desktop">
+    <div class="hero-carousel" id="desktop-carousel">
+      <div class="carousel-track" id="desktop-track">
+        {desktopSlides.map((src, i) => (
+          <div class="carousel-slide" data-index={i}>
+            <img src={src} alt={`피키픽 포토부스 ${i + 1}`} loading={i === 0 ? 'eager' : 'lazy'} />
+          </div>
+        ))}
       </div>
-    </div>
-    <!-- Overlays -->
-    <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent"></div>
-    <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
-  </div>
 
-  <!-- Content -->
-  <div class="hero-content relative z-10 w-full px-6 pb-20 md:px-16 lg:px-24">
-    <p class="text-[10px] font-medium tracking-[0.4em] text-white/50 uppercase">
-      Premium Photo Booth Rental
-    </p>
-    <h1 class="mt-4 text-[clamp(2.5rem,7vw,6.5rem)] font-bold leading-[0.9] tracking-tight text-white">
-      특별한 순간을<br />담는 포토부스
-    </h1>
-    <div class="mt-7 h-[2px] w-14 bg-white/60"></div>
-    <p class="mt-7 max-w-md text-sm leading-relaxed text-white/65 lg:text-base">
-      브랜드 팝업, 기업 행사, 파티까지.<br />
-      피키픽 포토부스로 잊지 못할 경험을 만들어보세요.
-    </p>
+      <!-- Overlay Content -->
+      <div class="hero-overlay-desktop">
+        <img src="/images/common/main-title.png" alt="PICKYPIC" class="hero-logo-desktop" />
+        <div class="hero-buttons">
+          <a href="/products" class="hero-btn">제품소개</a>
+          <a href="/rental" class="hero-btn">렌탈문의</a>
+          <a href="https://smartstore.naver.com/pickypicphoto" target="_blank" rel="noopener noreferrer" class="hero-btn">구매문의</a>
+        </div>
+      </div>
 
-    <!-- CTA Buttons -->
-    <div class="mt-10 flex flex-wrap gap-4">
-      <Button href="/products" variant="outline-white" size="lg">
-        제품소개
-      </Button>
-      <Button href="/rental" variant="outline-white" size="lg">
-        렌탈문의
-      </Button>
+      <!-- Navigation Arrows -->
+      <button class="carousel-arrow carousel-arrow-left" id="desktop-prev" aria-label="이전 슬라이드">
+        <img src="/images/common/left.png" alt="이전" />
+      </button>
+      <button class="carousel-arrow carousel-arrow-right" id="desktop-next" aria-label="다음 슬라이드">
+        <img src="/images/common/right.png" alt="다음" />
+      </button>
     </div>
   </div>
 
-  <!-- Scroll Indicator -->
-  <div class="absolute bottom-8 right-8 hidden lg:flex flex-col items-center gap-2 text-white/30">
-    <span class="text-[10px] tracking-[0.3em] uppercase rotate-90 origin-center translate-x-4 mb-8">Scroll</span>
-    <div class="h-12 w-[1px] bg-white/20 animate-pulse"></div>
+  <!-- Mobile Version -->
+  <div class="hero-mobile">
+    <div class="hero-carousel" id="mobile-carousel">
+      <div class="carousel-track" id="mobile-track">
+        {mobileSlides.map((src, i) => (
+          <div class="carousel-slide" data-index={i}>
+            <img src={src} alt={`피키픽 포토부스 모바일 ${i + 1}`} loading={i === 0 ? 'eager' : 'lazy'} />
+          </div>
+        ))}
+      </div>
+
+      <!-- Overlay Content -->
+      <div class="hero-overlay-mobile">
+        <img src="/images/common/main-title-mo.png" alt="PICKYPIC" class="hero-logo-mobile" />
+        <div class="hero-buttons hero-buttons-mobile">
+          <a href="/products" class="hero-btn hero-btn-mobile">제품소개</a>
+          <a href="/rental" class="hero-btn hero-btn-mobile">렌탈문의</a>
+          <a href="https://smartstore.naver.com/pickypicphoto" target="_blank" rel="noopener noreferrer" class="hero-btn hero-btn-mobile">구매문의</a>
+        </div>
+      </div>
+
+      <!-- Navigation Arrows -->
+      <button class="carousel-arrow carousel-arrow-left" id="mobile-prev" aria-label="이전 슬라이드">
+        <img src="/images/common/left.png" alt="이전" />
+      </button>
+      <button class="carousel-arrow carousel-arrow-right" id="mobile-next" aria-label="다음 슬라이드">
+        <img src="/images/common/right.png" alt="다음" />
+      </button>
+    </div>
   </div>
 </section>
+
+<style>
+  .hero-section {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  /* Desktop / Mobile visibility */
+  .hero-desktop {
+    display: block;
+  }
+  .hero-mobile {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    .hero-desktop {
+      display: none;
+    }
+    .hero-mobile {
+      display: block;
+    }
+  }
+
+  /* Carousel */
+  .hero-carousel {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .hero-desktop .hero-carousel {
+    aspect-ratio: 100 / 55;
+  }
+
+  .hero-mobile .hero-carousel {
+    aspect-ratio: 1 / 1;
+  }
+
+  .carousel-track {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    width: 300%;
+    transition: transform 0.6s ease-in-out;
+  }
+
+  .carousel-slide {
+    width: calc(100% / 3);
+    height: 100%;
+    flex-shrink: 0;
+  }
+
+  .carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Desktop Overlay */
+  .hero-overlay-desktop {
+    position: absolute;
+    top: 50%;
+    left: 25%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    text-align: center;
+  }
+
+  .hero-logo-desktop {
+    max-width: 600px;
+    width: 100%;
+    margin: 50px auto;
+    display: block;
+  }
+
+  /* Mobile Overlay */
+  .hero-overlay-mobile {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    text-align: center;
+  }
+
+  .hero-logo-mobile {
+    width: 300px;
+    display: block;
+    margin: 0 auto 20px;
+  }
+
+  /* Buttons */
+  .hero-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .hero-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50px;
+    padding: 18px 60px;
+    font-size: 18px;
+    font-weight: 700;
+    background: #ffffff;
+    color: #000000;
+    border: 1px solid #A2A2A2;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .hero-btn:hover {
+    background: #000000;
+    color: #ffffff;
+  }
+
+  /* Mobile Buttons */
+  .hero-buttons-mobile {
+    gap: 8px;
+  }
+
+  .hero-btn-mobile {
+    width: 93px;
+    height: 38px;
+    padding: 0;
+    font-size: 14px;
+  }
+
+  /* Navigation Arrows */
+  .carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+  }
+
+  .carousel-arrow:hover {
+    opacity: 1;
+  }
+
+  .carousel-arrow img {
+    width: 40px;
+    height: 40px;
+  }
+
+  @media (max-width: 768px) {
+    .carousel-arrow img {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .carousel-arrow-left {
+    left: 20px;
+  }
+
+  .carousel-arrow-right {
+    right: 20px;
+  }
+</style>
+
+<script>
+  function initCarousel(trackId: string, prevId: string, nextId: string, slideCount: number) {
+    const track = document.getElementById(trackId);
+    const prevBtn = document.getElementById(prevId);
+    const nextBtn = document.getElementById(nextId);
+
+    if (!track || !prevBtn || !nextBtn) return;
+
+    let current = 0;
+    let autoplayTimer: ReturnType<typeof setInterval>;
+
+    function goTo(index: number) {
+      current = ((index % slideCount) + slideCount) % slideCount;
+      track.style.transform = `translateX(-${current * (100 / slideCount)}%)`;
+    }
+
+    function next() {
+      goTo(current + 1);
+    }
+
+    function prev() {
+      goTo(current - 1);
+    }
+
+    function startAutoplay() {
+      autoplayTimer = setInterval(next, 4000);
+    }
+
+    function resetAutoplay() {
+      clearInterval(autoplayTimer);
+      startAutoplay();
+    }
+
+    nextBtn.addEventListener('click', () => {
+      next();
+      resetAutoplay();
+    });
+
+    prevBtn.addEventListener('click', () => {
+      prev();
+      resetAutoplay();
+    });
+
+    startAutoplay();
+  }
+
+  function initAllCarousels() {
+    initCarousel('desktop-track', 'desktop-prev', 'desktop-next', 3);
+    initCarousel('mobile-track', 'mobile-prev', 'mobile-next', 3);
+  }
+
+  document.addEventListener('DOMContentLoaded', initAllCarousels);
+  document.addEventListener('astro:after-swap', initAllCarousels);
+</script>

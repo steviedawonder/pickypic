@@ -1,17 +1,313 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
-import TextHero from '@components/common/TextHero.astro';
-import ProductGrid from '@components/products/ProductGrid.astro';
+import { products, productCategories } from '@data/products';
 ---
 
 <BaseLayout
-  title="제품소개 | 피키픽 포토부스 PICKYPIC"
-  description="피키픽 포토부스의 9종 이상 포토부스 라인업을 소개합니다. 테이블형, 스탠드형, 부스형 등 행사에 맞는 최적의 포토부스를 선택하세요."
+  title="제품소개 페이지 | 피키픽 | 포토부스 대여 및 기업 행사 렌탈 전문"
+  description="피키픽 포토부스의 9종 이상 포토부스 라인업을 소개합니다. 모던피키, 클래식피키, 어반피키, 미니피키, 레트로피키, 아웃도어피키, 에어피키 등 행사에 맞는 최적의 포토부스를 선택하세요."
 >
-  <TextHero
-    subtitle="Products"
-    title="제품소개"
-    description="테이블형부터 대형 부스형까지, 행사 규모와 컨셉에 맞는 포토부스를 선택하세요."
-  />
-  <ProductGrid />
+  <!-- Hero: PRODUCT TYPE -->
+  <section class="pt-32 pb-8 lg:pt-40 lg:pb-12 bg-white">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <h1 class="text-center text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight text-primary uppercase gs-fade-up">
+        PRODUCT TYPE
+      </h1>
+    </div>
+  </section>
+
+  <!-- Category Filter Pills -->
+  <section class="pb-8 lg:pb-12 bg-white" aria-label="제품 카테고리 필터">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <nav class="overflow-x-auto scrollbar-hide" aria-label="제품 카테고리">
+        <div class="flex gap-3 justify-start lg:justify-center min-w-max pb-2" id="category-pills">
+          {productCategories.map((cat, i) => (
+            <button
+              type="button"
+              class:list={[
+                'product-pill flex flex-col items-center px-5 py-3 rounded-xl border-2 transition-all duration-300 cursor-pointer whitespace-nowrap min-w-[120px]',
+                i === 0
+                  ? 'bg-primary text-white border-primary active-pill'
+                  : 'bg-white text-primary border-border hover:border-primary',
+              ]}
+              data-category={cat.id}
+              data-index={i}
+              aria-pressed={i === 0 ? 'true' : 'false'}
+            >
+              <span class="text-sm font-semibold leading-tight">{cat.labelKo}</span>
+              <span class="text-[11px] mt-0.5 opacity-70 leading-tight">{cat.labelEn}</span>
+            </button>
+          ))}
+        </div>
+      </nav>
+    </div>
+  </section>
+
+  <!-- Product Carousel -->
+  <section class="py-8 lg:py-16 bg-white" aria-label="제품 상세정보">
+    <div class="mx-auto max-w-[1400px] px-6 lg:px-8 relative">
+      <!-- Navigation Arrows -->
+      <button
+        type="button"
+        id="prev-btn"
+        class="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-12 h-12 lg:w-14 lg:h-14 flex items-center justify-center bg-white border border-border rounded-full shadow-lg hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 cursor-pointer"
+        aria-label="이전 제품"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        id="next-btn"
+        class="absolute right-0 top-1/2 -translate-y-1/2 z-20 w-12 h-12 lg:w-14 lg:h-14 flex items-center justify-center bg-white border border-border rounded-full shadow-lg hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 cursor-pointer"
+        aria-label="다음 제품"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+        </svg>
+      </button>
+
+      <!-- Carousel Container -->
+      <div class="overflow-hidden mx-8 lg:mx-16" id="carousel-viewport">
+        <div class="flex transition-transform duration-500 ease-in-out" id="carousel-track">
+          {products.map((product) => (
+            <article
+              class="w-full flex-shrink-0 product-slide"
+              data-product-id={product.id}
+              data-product-index={product.index}
+              itemscope
+              itemtype="https://schema.org/Product"
+            >
+              <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6 items-start">
+                <!-- Left: Product Info -->
+                <div class="lg:col-span-3 flex flex-col justify-start pt-4">
+                  <span class="text-xs font-bold tracking-[0.2em] text-secondary uppercase mb-2">{product.type}</span>
+                  <h2 class="text-2xl lg:text-3xl font-black text-primary tracking-tight leading-tight" itemprop="name">
+                    {product.name} | {product.nameKo}
+                  </h2>
+                </div>
+
+                <!-- Center: Spec Table -->
+                <div class="lg:col-span-5">
+                  <h3 class="text-sm font-bold tracking-[0.1em] text-primary uppercase mb-4 text-center">
+                    Photo booth specification
+                  </h3>
+                  <table class="w-full text-sm border-collapse" itemprop="additionalProperty">
+                    <tbody>
+                      {product.specs.map((spec) => (
+                        <tr class="border-b border-border-light">
+                          <th class="text-left py-2.5 pr-4 font-semibold text-primary text-xs whitespace-nowrap align-top w-[140px]">
+                            {spec.label}
+                          </th>
+                          <td class="py-2.5 text-secondary text-xs leading-relaxed">
+                            {spec.value}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+
+                  {/* Wood Color Swatches */}
+                  {product.woodColors && (
+                    <div class="mt-6">
+                      <h4 class="text-xs font-bold tracking-[0.1em] text-primary uppercase mb-3">Wood Color</h4>
+                      <div class="flex gap-3">
+                        {product.woodColors.map((color) => (
+                          <div class="flex flex-col items-center gap-1.5">
+                            <div
+                              class="w-8 h-8 rounded-full border border-border-light shadow-sm"
+                              style={`background-color: ${color.hex};`}
+                              title={color.name}
+                            ></div>
+                            <span class="text-[10px] text-secondary">{color.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <!-- Right: Product Photo -->
+                <div class="lg:col-span-4 flex items-center justify-center">
+                  <div class="relative w-full max-w-[380px] aspect-[3/4] flex items-center justify-center">
+                    <img
+                      src={product.image}
+                      alt={`${product.name} ${product.nameKo} 포토부스 제품 이미지`}
+                      class="max-w-full max-h-full object-contain drop-shadow-lg"
+                      loading="lazy"
+                      itemprop="image"
+                    />
+                  </div>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+
+      <!-- Carousel Dots -->
+      <div class="flex justify-center gap-2 mt-8" id="carousel-dots" aria-label="제품 선택">
+        {products.map((_, i) => (
+          <button
+            type="button"
+            class:list={[
+              'carousel-dot w-2.5 h-2.5 rounded-full transition-all duration-300 cursor-pointer',
+              i === 0 ? 'bg-primary scale-125' : 'bg-border-light hover:bg-secondary',
+            ]}
+            data-dot-index={i}
+            aria-label={`제품 ${i + 1}`}
+          ></button>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Download Section -->
+  <section class="py-16 lg:py-24 bg-bg-light" aria-label="제품 소개서 다운로드">
+    <div class="mx-auto max-w-3xl px-6 lg:px-8 text-center gs-fade-up">
+      <h2 class="text-2xl lg:text-3xl font-black text-primary tracking-tight mb-4">제품 소개서 다운로드</h2>
+      <p class="text-secondary text-sm lg:text-base mb-8 leading-relaxed">
+        피키픽 포토부스의 상세 제품 소개서를 PDF로 다운로드하세요.<br />
+        각 모델별 상세 스펙과 활용 사례를 확인할 수 있습니다.
+      </p>
+      <a
+        href="/files/pickypic-product-intro.pdf"
+        download
+        class="inline-flex items-center gap-3 px-8 py-4 bg-primary text-white font-semibold text-sm tracking-[0.05em] hover:bg-accent-hover transition-colors duration-300"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+        </svg>
+        제품 소개서 PDF 다운로드
+      </a>
+    </div>
+  </section>
+
+  <!-- Structured Data: Products -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "PICKYPIC 포토부스 제품 라인업",
+    "description": "피키픽 포토부스의 9종 포토부스 제품 소개",
+    "numberOfItems": products.length,
+    "itemListElement": products.map((p, i) => ({
+      "@type": "ListItem",
+      "position": i + 1,
+      "item": {
+        "@type": "Product",
+        "name": `${p.name} | ${p.nameKo}`,
+        "image": p.image,
+        "category": p.type,
+      }
+    }))
+  })} />
 </BaseLayout>
+
+<style>
+  /* Hide scrollbar for category pills */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+</style>
+
+<script>
+  function initProductCarousel() {
+    const track = document.getElementById('carousel-track') as HTMLElement;
+    const pills = document.querySelectorAll<HTMLButtonElement>('.product-pill');
+    const dots = document.querySelectorAll<HTMLButtonElement>('.carousel-dot');
+    const prevBtn = document.getElementById('prev-btn') as HTMLButtonElement;
+    const nextBtn = document.getElementById('next-btn') as HTMLButtonElement;
+
+    if (!track || !prevBtn || !nextBtn) return;
+
+    const totalSlides = track.children.length;
+    let currentIndex = 0;
+
+    function goToSlide(index: number) {
+      if (index < 0) index = totalSlides - 1;
+      if (index >= totalSlides) index = 0;
+      currentIndex = index;
+
+      track.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+      // Update pills
+      pills.forEach((pill, i) => {
+        if (i === currentIndex) {
+          pill.classList.add('bg-primary', 'text-white', 'border-primary', 'active-pill');
+          pill.classList.remove('bg-white', 'text-primary', 'border-border');
+          pill.setAttribute('aria-pressed', 'true');
+        } else {
+          pill.classList.remove('bg-primary', 'text-white', 'border-primary', 'active-pill');
+          pill.classList.add('bg-white', 'text-primary', 'border-border');
+          pill.setAttribute('aria-pressed', 'false');
+        }
+      });
+
+      // Update dots
+      dots.forEach((dot, i) => {
+        if (i === currentIndex) {
+          dot.classList.add('bg-primary', 'scale-125');
+          dot.classList.remove('bg-border-light');
+        } else {
+          dot.classList.remove('bg-primary', 'scale-125');
+          dot.classList.add('bg-border-light');
+        }
+      });
+
+      // Scroll active pill into view
+      const activePill = pills[currentIndex];
+      if (activePill) {
+        activePill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }
+
+    prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
+    nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
+
+    pills.forEach((pill) => {
+      pill.addEventListener('click', () => {
+        const index = parseInt(pill.dataset.index || '0', 10);
+        goToSlide(index);
+      });
+    });
+
+    dots.forEach((dot) => {
+      dot.addEventListener('click', () => {
+        const index = parseInt(dot.dataset.dotIndex || '0', 10);
+        goToSlide(index);
+      });
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') goToSlide(currentIndex - 1);
+      if (e.key === 'ArrowRight') goToSlide(currentIndex + 1);
+    });
+
+    // Touch/swipe support
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const viewport = document.getElementById('carousel-viewport');
+    if (viewport) {
+      viewport.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+      viewport.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        const diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) {
+          if (diff > 0) goToSlide(currentIndex + 1);
+          else goToSlide(currentIndex - 1);
+        }
+      }, { passive: true });
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', initProductCarousel);
+  document.addEventListener('astro:after-swap', initProductCarousel);
+</script>

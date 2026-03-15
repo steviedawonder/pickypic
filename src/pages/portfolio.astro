@@ -1,17 +1,321 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
-import TextHero from '@components/common/TextHero.astro';
-import PortfolioGrid from '@components/portfolio/PortfolioGrid.astro';
+import { portfolioItems, portfolioCategories } from '@data/portfolio';
 ---
 
 <BaseLayout
-  title="포트폴리오 | 피키픽 포토부스 PICKYPIC"
-  description="넷플릭스, 현대자동차, 기아, 뉴발란스 등 유수 브랜드와 함께한 피키픽 포토부스의 포트폴리오를 확인하세요."
+  title="포트폴리오 페이지 | 피키픽 | 포토부스 대여 및 기업 행사 렌탈 전문"
+  description="넷플릭스, 현대자동차, 기아, 뉴발란스 등 유수 브랜드와 함께한 피키픽 포토부스의 포트폴리오를 확인하세요. 포토부스 렌탈 및 대여 전문."
 >
-  <TextHero
-    subtitle="Portfolio"
-    title="포트폴리오"
-    description="다양한 브랜드 및 이벤트와 함께한 피키픽의 포토부스 사례를 확인하세요."
-  />
-  <PortfolioGrid />
+  <!-- Hero: PORTFOLIO -->
+  <section class="pt-32 pb-8 lg:pt-40 lg:pb-12 bg-white">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <h1 class="text-center text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight text-primary uppercase gs-fade-up">
+        PORTFOLIO
+      </h1>
+    </div>
+  </section>
+
+  <!-- Category Filter Pills -->
+  <section class="pb-4 lg:pb-6 bg-white" aria-label="포트폴리오 카테고리 필터">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <nav class="overflow-x-auto scrollbar-hide" aria-label="포트폴리오 카테고리">
+        <div class="flex gap-3 justify-start lg:justify-center min-w-max pb-2" id="category-pills">
+          {portfolioCategories.map((cat, i) => (
+            <button
+              type="button"
+              class:list={[
+                'portfolio-pill flex flex-col items-center px-5 py-3 rounded-xl border-2 transition-all duration-300 cursor-pointer whitespace-nowrap min-w-[120px]',
+                i === 0
+                  ? 'bg-primary text-white border-primary'
+                  : 'bg-white text-primary border-border hover:border-primary',
+              ]}
+              data-category={cat.id}
+              aria-pressed={i === 0 ? 'true' : 'false'}
+            >
+              <span class="text-sm font-semibold leading-tight">{cat.label}</span>
+              {'labelEn' in cat && cat.labelEn && (
+                <span class="text-[11px] mt-0.5 opacity-70 leading-tight">{cat.labelEn}</span>
+              )}
+            </button>
+          ))}
+        </div>
+      </nav>
+    </div>
+  </section>
+
+  <!-- Search Bar -->
+  <section class="pb-8 lg:pb-12 bg-white" aria-label="포트폴리오 검색">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <div class="max-w-md mx-auto relative">
+        <input
+          type="search"
+          id="portfolio-search"
+          placeholder="Search"
+          class="w-full pl-10 pr-4 py-3 border-2 border-border rounded-xl text-sm text-primary placeholder-secondary focus:outline-none focus:border-primary transition-colors duration-300"
+          aria-label="포트폴리오 검색"
+        />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-secondary pointer-events-none"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- Portfolio Gallery -->
+  <section class="pb-16 lg:pb-24 bg-white" aria-label="포트폴리오 갤러리">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8" id="portfolio-grid">
+        {portfolioItems.map((item) => (
+          <article
+            class="portfolio-item gs-fade-up"
+            data-title={item.title.toLowerCase()}
+            data-id={item.id}
+            itemscope
+            itemtype="https://schema.org/CreativeWork"
+          >
+            <div class="overflow-hidden rounded-lg">
+              <img
+                src={item.image}
+                alt={`${item.title} | 포토부스 렌탈`}
+                class="w-full aspect-[5/6] object-cover transition-transform duration-500 hover:scale-105"
+                loading="lazy"
+                itemprop="image"
+              />
+            </div>
+            <h2 class="mt-3 text-sm lg:text-base font-semibold text-primary leading-snug" itemprop="name">
+              {item.title} | 포토부스 렌탈
+            </h2>
+          </article>
+        ))}
+      </div>
+
+      <!-- No Results Message -->
+      <div id="no-results" class="hidden py-20 text-center">
+        <p class="text-secondary text-lg">검색 결과가 없습니다.</p>
+      </div>
+
+      <!-- Pagination -->
+      <nav class="mt-12 lg:mt-16 flex justify-center items-center gap-2" id="pagination" aria-label="페이지 네비게이션">
+      </nav>
+    </div>
+  </section>
+
+  <!-- Structured Data: Portfolio -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "PICKYPIC 포트폴리오",
+    "description": "피키픽 포토부스의 브랜드 협업 포트폴리오",
+    "mainEntity": {
+      "@type": "ItemList",
+      "numberOfItems": portfolioItems.length,
+      "itemListElement": portfolioItems.slice(0, 15).map((item, i) => ({
+        "@type": "ListItem",
+        "position": i + 1,
+        "item": {
+          "@type": "CreativeWork",
+          "name": item.title,
+          "image": item.image,
+        }
+      }))
+    }
+  })} />
 </BaseLayout>
+
+<style>
+  /* Hide scrollbar for category pills */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .portfolio-item.hidden-item {
+    display: none;
+  }
+
+  /* Pagination button styles */
+  .page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    padding: 0 0.5rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--color-primary, #1d1d1f);
+  }
+  .page-btn:hover {
+    background-color: #f5f5f7;
+  }
+  .page-btn.active {
+    background-color: var(--color-primary, #1d1d1f);
+    color: #fff;
+    border-color: var(--color-primary, #1d1d1f);
+  }
+  .page-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+  .page-btn.arrow-btn {
+    font-size: 1rem;
+  }
+</style>
+
+<script>
+  function initPortfolio() {
+    const ITEMS_PER_PAGE = 15;
+    const allItems = Array.from(document.querySelectorAll<HTMLElement>('.portfolio-item'));
+    const pills = document.querySelectorAll<HTMLButtonElement>('.portfolio-pill');
+    const searchInput = document.getElementById('portfolio-search') as HTMLInputElement;
+    const paginationNav = document.getElementById('pagination') as HTMLElement;
+    const noResults = document.getElementById('no-results') as HTMLElement;
+
+    if (!allItems.length || !paginationNav) return;
+
+    let currentCategory = 'all';
+    let searchQuery = '';
+    let currentPage = 1;
+
+    function getFilteredItems(): HTMLElement[] {
+      return allItems.filter((item) => {
+        const title = item.dataset.title || '';
+        const matchesSearch = !searchQuery || title.includes(searchQuery.toLowerCase());
+        // Category filtering: for now all items match 'all', since data doesn't have category field
+        const matchesCategory = currentCategory === 'all' || true;
+        return matchesSearch && matchesCategory;
+      });
+    }
+
+    function renderPagination(totalItems: number) {
+      const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+      if (totalPages <= 1) {
+        paginationNav.innerHTML = '';
+        return;
+      }
+
+      let html = '';
+
+      // Previous arrow
+      html += `<button type="button" class="page-btn arrow-btn" data-page="prev" ${currentPage === 1 ? 'disabled' : ''} aria-label="이전 페이지">&lsaquo;</button>`;
+
+      for (let i = 1; i <= totalPages; i++) {
+        html += `<button type="button" class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}" aria-label="페이지 ${i}" ${i === currentPage ? 'aria-current="page"' : ''}>${i}</button>`;
+      }
+
+      // Next arrow
+      html += `<button type="button" class="page-btn arrow-btn" data-page="next" ${currentPage === totalPages ? 'disabled' : ''} aria-label="다음 페이지">&rsaquo;</button>`;
+
+      paginationNav.innerHTML = html;
+
+      // Attach pagination click events
+      paginationNav.querySelectorAll<HTMLButtonElement>('.page-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const page = btn.dataset.page;
+          if (!page) return;
+          const totalPgs = Math.ceil(totalItems / ITEMS_PER_PAGE);
+          if (page === 'prev' && currentPage > 1) {
+            currentPage--;
+          } else if (page === 'next' && currentPage < totalPgs) {
+            currentPage++;
+          } else if (page !== 'prev' && page !== 'next') {
+            currentPage = parseInt(page, 10);
+          }
+          updateDisplay();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      });
+    }
+
+    function updateDisplay() {
+      const filtered = getFilteredItems();
+      const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+
+      // Clamp current page
+      if (currentPage > totalPages) currentPage = totalPages || 1;
+
+      const startIdx = (currentPage - 1) * ITEMS_PER_PAGE;
+      const endIdx = startIdx + ITEMS_PER_PAGE;
+
+      // Hide all items first
+      allItems.forEach((item) => {
+        item.classList.add('hidden-item');
+      });
+
+      // Show only filtered items for the current page
+      filtered.forEach((item, i) => {
+        if (i >= startIdx && i < endIdx) {
+          item.classList.remove('hidden-item');
+        }
+      });
+
+      // Show/hide no results message
+      if (filtered.length === 0) {
+        noResults.classList.remove('hidden');
+      } else {
+        noResults.classList.add('hidden');
+      }
+
+      renderPagination(filtered.length);
+    }
+
+    // Category pill click
+    pills.forEach((pill) => {
+      pill.addEventListener('click', () => {
+        currentCategory = pill.dataset.category || 'all';
+        currentPage = 1;
+
+        // Update pill styles
+        pills.forEach((p) => {
+          if (p === pill) {
+            p.classList.add('bg-primary', 'text-white', 'border-primary');
+            p.classList.remove('bg-white', 'text-primary', 'border-border');
+            p.setAttribute('aria-pressed', 'true');
+          } else {
+            p.classList.remove('bg-primary', 'text-white', 'border-primary');
+            p.classList.add('bg-white', 'text-primary', 'border-border');
+            p.setAttribute('aria-pressed', 'false');
+          }
+        });
+
+        // Scroll active pill into view
+        pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+
+        updateDisplay();
+      });
+    });
+
+    // Search input
+    let searchTimeout: ReturnType<typeof setTimeout>;
+    searchInput?.addEventListener('input', () => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        searchQuery = searchInput.value.trim();
+        currentPage = 1;
+        updateDisplay();
+      }, 300);
+    });
+
+    // Initial render
+    updateDisplay();
+  }
+
+  document.addEventListener('DOMContentLoaded', initPortfolio);
+  document.addEventListener('astro:after-swap', initPortfolio);
+</script>

@@ -1,19 +1,175 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
-import TextHero from '@components/common/TextHero.astro';
-import CompanyInfo from '@components/about/CompanyInfo.astro';
-import CompanyHistory from '@components/about/CompanyHistory.astro';
 ---
 
 <BaseLayout
-  title="회사소개 | 피키픽 포토부스 PICKYPIC"
-  description="피키픽 포토부스는 브랜드 팝업스토어, 기업 행사, 웨딩, 파티 등 다양한 이벤트에 맞춤형 포토부스 렌탈 서비스를 제공합니다."
+  title="회사소개 페이지 | 피키픽 | 포토부스 대여 및 기업 행사 렌탈 전문"
+  description="피키픽 포토부스는 브랜드 팝업스토어, 기업 행사, 웨딩, 파티 등 다양한 이벤트에 맞춤형 포토부스 렌탈 서비스를 제공합니다. PICKYPIC PHOTOBOOTH 회사소개."
 >
-  <TextHero
-    subtitle="Company"
-    title="회사소개"
-    description="특별한 순간을 더 특별하게 만드는 피키픽 포토부스를 소개합니다."
-  />
-  <CompanyInfo />
-  <CompanyHistory />
+  <!-- Hero Carousel -->
+  <section class="about-hero" aria-label="회사소개 히어로 이미지">
+    <!-- Desktop -->
+    <div class="about-hero-desktop">
+      <img
+        src="/images/company/company-hero.jpg"
+        alt="피키픽 포토부스 회사소개"
+        loading="eager"
+        width="1920"
+        height="1056"
+      />
+    </div>
+    <!-- Mobile -->
+    <div class="about-hero-mobile">
+      <img
+        src="/images/company/company-hero-mo.jpg"
+        alt="피키픽 포토부스 회사소개"
+        loading="eager"
+        width="750"
+        height="750"
+      />
+    </div>
+  </section>
+
+  <!-- Company Introduction -->
+  <article class="about-content">
+    <section class="about-intro gs-fade-up">
+      <h1 class="about-heading">PICKYPIC PHOTOBOOTH<sup>&reg;</sup></h1>
+      <p class="about-description">
+        It is not enough that we build products that function, that are understandable and usable,
+        we also need to build products that bring joy and excitement, pleasure and fun, and, yes,
+        beauty to idiosyncratic question, the answer he gives will necessarily be unique as well.
+      </p>
+      <nav class="about-buttons" aria-label="회사 관련 링크">
+        <a href="#" class="about-btn" download>회사소개</a>
+        <a href="/products" class="about-btn">제품소개</a>
+        <a href="mailto:pickypic.marketing@gmail.com" class="about-btn">협업제안</a>
+      </nav>
+    </section>
+  </article>
 </BaseLayout>
+
+<style>
+  /* Hero */
+  .about-hero {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .about-hero-desktop {
+    display: block;
+  }
+
+  .about-hero-mobile {
+    display: none;
+  }
+
+  .about-hero img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+  }
+
+  @media (max-width: 768px) {
+    .about-hero-desktop {
+      display: none;
+    }
+    .about-hero-mobile {
+      display: block;
+    }
+  }
+
+  /* Content */
+  .about-content {
+    display: flex;
+    justify-content: center;
+    padding: 100px 24px 120px;
+  }
+
+  .about-intro {
+    max-width: 720px;
+    text-align: center;
+  }
+
+  .about-heading {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 32px;
+    color: #1d1d1f;
+  }
+
+  .about-heading sup {
+    font-size: 16px;
+    vertical-align: super;
+  }
+
+  .about-description {
+    font-size: 15px;
+    line-height: 1.9;
+    color: #6e6e73;
+    margin-bottom: 48px;
+    word-break: keep-all;
+  }
+
+  /* Buttons */
+  .about-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .about-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50px;
+    padding: 18px 60px;
+    font-size: 18px;
+    font-weight: 700;
+    background: #ffffff;
+    color: #000000;
+    border: 1px solid #a2a2a2;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .about-btn:hover {
+    background: #000000;
+    color: #ffffff;
+  }
+
+  @media (max-width: 768px) {
+    .about-content {
+      padding: 60px 20px 80px;
+    }
+
+    .about-heading {
+      font-size: 22px;
+      letter-spacing: 1px;
+      margin-bottom: 24px;
+    }
+
+    .about-heading sup {
+      font-size: 12px;
+    }
+
+    .about-description {
+      font-size: 14px;
+      margin-bottom: 36px;
+    }
+
+    .about-buttons {
+      gap: 8px;
+    }
+
+    .about-btn {
+      padding: 12px 32px;
+      font-size: 14px;
+    }
+  }
+</style>
