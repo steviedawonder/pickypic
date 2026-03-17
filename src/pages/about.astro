@@ -47,6 +47,13 @@ import BaseLayout from '@layouts/BaseLayout.astro';
   .about-hero {
     width: 100%;
     overflow: hidden;
+    padding-top: 90px;
+  }
+
+  @media (max-width: 768px) {
+    .about-hero {
+      padding-top: 95px;
+    }
   }
 
   .about-hero-desktop {
@@ -122,11 +129,12 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 
     .about-buttons {
       gap: 8px;
+      flex-wrap: nowrap;
     }
 
     .about-btn {
-      padding: 12px 32px;
-      font-size: 14px;
+      padding: 10px 24px;
+      font-size: 13px;
     }
   }
 </style>
