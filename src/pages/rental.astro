@@ -34,12 +34,12 @@ const rentalProducts = [
         <!-- Carousel Track -->
         <div id="rental-carousel" class="flex gap-5 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8" style="scrollbar-width: none; -ms-overflow-style: none;">
           {rentalProducts.map((product, i) => (
-            <article class="flex-shrink-0 w-[240px] sm:w-[260px] lg:w-[280px] snap-start">
-              <div class="aspect-[3/4] overflow-hidden bg-bg-light mb-3">
+            <article class="flex-shrink-0 w-[280px] sm:w-[300px] lg:w-[320px] snap-start">
+              <div class="overflow-hidden bg-bg-light mb-3 rounded-sm">
                 <img
                   src={product.image}
                   alt={`${product.labelKo} - ${product.labelEn}`}
-                  class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                  class="w-full h-auto transition-transform duration-500 hover:scale-105"
                   loading={i < 4 ? 'eager' : 'lazy'}
                   width="280"
                   height="373"
@@ -415,7 +415,7 @@ const rentalProducts = [
       if (target) clearError(target);
     });
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       // Clear all previous errors
@@ -491,9 +491,68 @@ const rentalProducts = [
         return;
       }
 
-      // Success
-      alert('문의가 접수되었습니다. 담당자가 빠르게 연락드리겠습니다.');
-      form.reset();
+      // Collect form data for EmailJS
+      const checkedBooths = Array.from(form.querySelectorAll<HTMLInputElement>('input[name="boothType"]:checked'))
+        .map(cb => {
+          const label = cb.closest('label')?.querySelector('span')?.textContent?.trim() || cb.value;
+          return label;
+        })
+        .join(', ');
+
+      const wrapping = form.querySelector<HTMLInputElement>('input[name="wrapping"]:checked')?.value || '';
+      const shootingType = form.querySelector<HTMLInputElement>('input[name="shootingType"]:checked')?.value || '';
+
+      const eventName = (form.querySelector<HTMLInputElement>('#event-name')?.value || '').trim();
+      const companyName = (form.querySelector<HTMLInputElement>('#company-name')?.value || '').trim();
+      const contactName = (form.querySelector<HTMLInputElement>('#contact-name')?.value || '').trim();
+      const contactPhone = (form.querySelector<HTMLInputElement>('#contact-phone')?.value || '').trim();
+      const contactEmail = (form.querySelector<HTMLInputElement>('#contact-email')?.value || '').trim();
+      const installLocation = (form.querySelector<HTMLInputElement>('#install-location')?.value || '').trim();
+      const eventSchedule = (form.querySelector<HTMLInputElement>('#event-schedule')?.value || '').trim();
+      const removalSchedule = (form.querySelector<HTMLInputElement>('#removal-schedule')?.value || '').trim();
+      const additionalMessage = (form.querySelector<HTMLTextAreaElement>('#additional-message')?.value || '').trim();
+
+      const templateParams = {
+        event_name: eventName,
+        company_name: companyName,
+        contact_name: contactName,
+        contact_phone: contactPhone,
+        contact_email: contactEmail,
+        install_location: installLocation,
+        event_schedule: eventSchedule,
+        removal_schedule: removalSchedule,
+        booth_type: checkedBooths,
+        wrapping: wrapping,
+        shooting_type: shootingType,
+        additional_message: additionalMessage || '없음',
+      };
+
+      // Disable submit button
+      const submitBtn = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = '전송 중...';
+      }
+
+      try {
+        const emailjs = await import('@emailjs/browser');
+        await emailjs.default.send(
+          import.meta.env.PUBLIC_EMAILJS_SERVICE_ID,
+          import.meta.env.PUBLIC_EMAILJS_TEMPLATE_ID,
+          templateParams,
+          import.meta.env.PUBLIC_EMAILJS_PUBLIC_KEY
+        );
+        alert('문의가 접수되었습니다. 담당자가 빠르게 연락드리겠습니다.');
+        form.reset();
+      } catch (error) {
+        console.error('EmailJS Error:', error);
+        alert('전송에 실패했습니다. 잠시 후 다시 시도해주세요.\n또는 pickypic.photobooth@gmail.com으로 직접 문의해주세요.');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = '문의하기';
+        }
+      }
     });
   }
 

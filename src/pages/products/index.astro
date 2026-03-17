@@ -20,22 +20,22 @@ import { products, productCategories } from '@data/products';
   <section class="pb-8 lg:pb-12 bg-white" aria-label="제품 카테고리 필터">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
       <nav class="overflow-x-auto scrollbar-hide" aria-label="제품 카테고리">
-        <div class="flex gap-3 justify-start lg:justify-center min-w-max pb-2" id="category-pills">
+        <div class="flex gap-3.5 justify-start lg:justify-center min-w-max pb-2" id="category-pills">
           {productCategories.map((cat, i) => (
             <button
               type="button"
               class:list={[
-                'product-pill flex flex-col items-center px-5 py-3 rounded-xl border-2 transition-all duration-300 cursor-pointer whitespace-nowrap min-w-[120px]',
+                'product-pill flex flex-col items-center justify-center h-[50px] px-3 rounded-full transition-all duration-300 cursor-pointer whitespace-nowrap min-w-[125px] bg-white text-black',
                 i === 0
-                  ? 'bg-primary text-white border-primary active-pill'
-                  : 'bg-white text-primary border-border hover:border-primary',
+                  ? 'active-pill'
+                  : '',
               ]}
               data-category={cat.id}
               data-index={i}
               aria-pressed={i === 0 ? 'true' : 'false'}
             >
-              <span class="text-sm font-semibold leading-tight">{cat.labelKo}</span>
-              <span class="text-[11px] mt-0.5 opacity-70 leading-tight">{cat.labelEn}</span>
+              <span class="text-xs font-normal leading-tight">{cat.labelKo}</span>
+              <span class="text-xs font-normal mt-0.5 opacity-70 leading-tight">{cat.labelEn}</span>
             </button>
           ))}
         </div>
@@ -83,7 +83,7 @@ import { products, productCategories } from '@data/products';
                 <!-- Left: Product Info -->
                 <div class="lg:col-span-3 flex flex-col justify-start pt-4">
                   <span class="text-xs font-bold tracking-[0.2em] text-secondary uppercase mb-2">{product.type}</span>
-                  <h2 class="text-2xl lg:text-3xl font-black text-primary tracking-tight leading-tight" itemprop="name">
+                  <h2 class="text-lg lg:text-xl font-bold text-primary tracking-tight leading-tight" itemprop="name">
                     {product.name} | {product.nameKo}
                   </h2>
                 </div>
@@ -213,6 +213,17 @@ import { products, productCategories } from '@data/products';
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* Product pill border styles */
+  .product-pill {
+    border: 1px solid #bbb;
+  }
+  .product-pill.active-pill {
+    border-color: #333;
+  }
+  .product-pill:hover {
+    border-color: #333;
+  }
 </style>
 
 <script>
@@ -238,12 +249,10 @@ import { products, productCategories } from '@data/products';
       // Update pills
       pills.forEach((pill, i) => {
         if (i === currentIndex) {
-          pill.classList.add('bg-primary', 'text-white', 'border-primary', 'active-pill');
-          pill.classList.remove('bg-white', 'text-primary', 'border-border');
+          pill.classList.add('active-pill');
           pill.setAttribute('aria-pressed', 'true');
         } else {
-          pill.classList.remove('bg-primary', 'text-white', 'border-primary', 'active-pill');
-          pill.classList.add('bg-white', 'text-primary', 'border-border');
+          pill.classList.remove('active-pill');
           pill.setAttribute('aria-pressed', 'false');
         }
       });

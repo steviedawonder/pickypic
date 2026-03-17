@@ -26,7 +26,10 @@ const mobileSlides = [
 
       <!-- Overlay Content -->
       <div class="hero-overlay-desktop">
-        <img src="/images/common/main-title.png" alt="PICKYPIC" class="hero-logo-desktop" />
+        <div class="hero-title-desktop">
+          <h1 class="hero-heading-desktop">PICKYPIC PHOTOBOOTH<span class="hero-reg-desktop">®</span></h1>
+          <p class="hero-sub-desktop">PICK YOUR MOMENT!</p>
+        </div>
         <div class="hero-buttons">
           <a href="/products" class="hero-btn">제품소개</a>
           <a href="/rental" class="hero-btn">렌탈문의</a>
@@ -57,7 +60,10 @@ const mobileSlides = [
 
       <!-- Overlay Content -->
       <div class="hero-overlay-mobile">
-        <img src="/images/common/main-title-mo.png" alt="PICKYPIC" class="hero-logo-mobile" />
+        <div class="hero-title-mobile">
+          <h1 class="hero-heading-mobile">PICKYPIC PHOTOBOOTH<span class="hero-reg-mobile">®</span></h1>
+          <p class="hero-sub-mobile">PICK YOUR MOMENT!</p>
+        </div>
         <div class="hero-buttons hero-buttons-mobile">
           <a href="/products" class="hero-btn hero-btn-mobile">제품소개</a>
           <a href="/rental" class="hero-btn hero-btn-mobile">렌탈문의</a>
@@ -146,11 +152,35 @@ const mobileSlides = [
     text-align: center;
   }
 
-  .hero-logo-desktop {
-    max-width: 600px;
-    width: 100%;
+  .hero-title-desktop {
     margin: 50px auto;
-    display: block;
+    text-align: left;
+  }
+
+  .hero-heading-desktop {
+    font-family: 'Bebas Neue', sans-serif;
+    font-weight: 400;
+    font-size: 72px;
+    letter-spacing: 0.005em;
+    color: #1d1d1f;
+    line-height: 1;
+    margin: 0;
+  }
+
+  .hero-reg-desktop {
+    font-size: 22px;
+    position: relative;
+    top: -1.4em;
+    margin-left: 2px;
+  }
+
+  .hero-sub-desktop {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    color: #1d1d1f;
+    margin: 8px 0 0;
   }
 
   /* Mobile Overlay */
@@ -163,10 +193,36 @@ const mobileSlides = [
     text-align: center;
   }
 
-  .hero-logo-mobile {
-    width: 300px;
-    display: block;
+  .hero-title-mobile {
     margin: 0 auto 20px;
+    text-align: center;
+  }
+
+  .hero-heading-mobile {
+    font-family: 'Bebas Neue', sans-serif;
+    font-weight: 400;
+    font-size: 36px;
+    letter-spacing: 0.005em;
+    color: #1d1d1f;
+    line-height: 1;
+    margin: 0;
+  }
+
+  .hero-reg-mobile {
+    font-size: 12px;
+    position: relative;
+    top: -1.4em;
+    margin-left: 1px;
+  }
+
+  .hero-sub-mobile {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    color: #1d1d1f;
+    margin: 4px 0 0;
+    text-align: left;
   }
 
   /* Buttons */

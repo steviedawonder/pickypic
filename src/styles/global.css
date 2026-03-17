@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+/* Bebas Neue Font */
+@font-face {
+  font-family: 'Bebas Neue';
+  src: url('/fonts/BebasNeue-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Tailwind v4 Theme */
 @theme {
   --font-sans: 'Noto Sans KR', 'Montserrat', sans-serif;

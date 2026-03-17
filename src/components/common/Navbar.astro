@@ -6,16 +6,12 @@ const currentPath = Astro.url.pathname;
 
 <header
   id="navbar"
-  class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200"
+  class="fixed top-0 left-0 right-0 z-50 bg-white"
 >
-  <nav class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
+  <nav class="mx-auto flex max-w-[1440px] items-center justify-between px-[25px] pt-4 pb-4 lg:px-0 lg:pt-10 lg:pb-5">
     <!-- Logo -->
     <a href="/" class="flex items-center">
-      <img
-        src="/images/common/logo-top.png"
-        alt="PICKYPIC PHOTOBOOTH"
-        class="h-8"
-      />
+      <span class="logo-text text-[26px] lg:text-[44px] leading-none">PICKYPIC PHOTOBOOTH<span class="text-[10px] lg:text-[14px] relative -top-[1.4em] ml-0.5">®</span></span>
     </a>
 
     <!-- Desktop Menu -->
@@ -65,11 +61,7 @@ const currentPath = Astro.url.pathname;
     <!-- Close Button -->
     <div class="flex items-center justify-between px-6 py-4">
       <a href="/">
-        <img
-          src="/images/common/logo-top.png"
-          alt="PICKYPIC PHOTOBOOTH"
-          class="h-8"
-        />
+        <span class="logo-text text-[20px] leading-none">PICKYPIC PHOTOBOOTH<span class="text-[10px] relative -top-[0.85em] ml-0.5">®</span></span>
       </a>
       <button id="mobile-menu-close" class="p-2" aria-label="메뉴 닫기">
         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -106,6 +98,15 @@ const currentPath = Astro.url.pathname;
     </div>
   </div>
 </div>
+
+<style>
+  .logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.005em;
+    color: #1d1d1f;
+  }
+</style>
 
 <script>
   const menuBtn = document.getElementById('mobile-menu-btn');

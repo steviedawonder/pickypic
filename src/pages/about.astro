@@ -30,15 +30,9 @@ import BaseLayout from '@layouts/BaseLayout.astro';
     </div>
   </section>
 
-  <!-- Company Introduction -->
+  <!-- Company Buttons -->
   <article class="about-content">
     <section class="about-intro gs-fade-up">
-      <h1 class="about-heading">PICKYPIC PHOTOBOOTH<sup>&reg;</sup></h1>
-      <p class="about-description">
-        It is not enough that we build products that function, that are understandable and usable,
-        we also need to build products that bring joy and excitement, pleasure and fun, and, yes,
-        beauty to idiosyncratic question, the answer he gives will necessarily be unique as well.
-      </p>
       <nav class="about-buttons" aria-label="회사 관련 링크">
         <a href="#" class="about-btn" download>회사소개</a>
         <a href="/products" class="about-btn">제품소개</a>
@@ -91,28 +85,6 @@ import BaseLayout from '@layouts/BaseLayout.astro';
     text-align: center;
   }
 
-  .about-heading {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 32px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    margin-bottom: 32px;
-    color: #1d1d1f;
-  }
-
-  .about-heading sup {
-    font-size: 16px;
-    vertical-align: super;
-  }
-
-  .about-description {
-    font-size: 15px;
-    line-height: 1.9;
-    color: #6e6e73;
-    margin-bottom: 48px;
-    word-break: keep-all;
-  }
-
   /* Buttons */
   .about-buttons {
     display: flex;
@@ -146,21 +118,6 @@ import BaseLayout from '@layouts/BaseLayout.astro';
   @media (max-width: 768px) {
     .about-content {
       padding: 60px 20px 80px;
-    }
-
-    .about-heading {
-      font-size: 22px;
-      letter-spacing: 1px;
-      margin-bottom: 24px;
-    }
-
-    .about-heading sup {
-      font-size: 12px;
-    }
-
-    .about-description {
-      font-size: 14px;
-      margin-bottom: 36px;
     }
 
     .about-buttons {
