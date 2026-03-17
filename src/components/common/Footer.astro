@@ -13,10 +13,10 @@ import { company } from '@data/company';
           class="h-8 mb-6"
         />
         <div class="space-y-1 text-sm text-white/60 leading-relaxed">
-          <p>상호 : {company.name}</p>
-          <p>사업자등록번호 : {company.businessNumber}</p>
-          <p>주소 : {company.address}</p>
-          <p>전화번호 : {company.phone}</p>
+          <p><span data-i18n="footer.company_label">상호</span> : {company.name}</p>
+          <p><span data-i18n="footer.business_number">사업자등록번호</span> : {company.businessNumber}</p>
+          <p><span data-i18n="footer.address_label">주소</span> : {company.address}</p>
+          <p><span data-i18n="footer.phone_label">전화번호</span> : {company.phone}</p>
         </div>
         <p class="mt-6 text-xs text-white/30">
           &copy; 2025 Picky Global Ltd. All rights reserved.
@@ -27,7 +27,7 @@ import { company } from '@data/company';
       <div>
         <h3 class="text-sm font-semibold tracking-wide mb-4">Follow us</h3>
         <div class="space-y-2 text-sm text-white/60 leading-relaxed">
-          <p>카카오톡 채널 {company.kakaoChannel}</p>
+          <p><span data-i18n="footer.kakao">카카오톡 채널</span> {company.kakaoChannel}</p>
           <div>
             <p>Instagram  {company.instagram.official}</p>
             <p class="pl-[5.5rem]">{company.instagram.global}</p>
@@ -42,7 +42,7 @@ import { company } from '@data/company';
         <div class="space-y-2 text-sm text-white/60 leading-relaxed">
           <p>TEL {company.phone}</p>
           <p>E-MAIL {company.email}</p>
-          <p>협업제안 {company.partnerEmail}</p>
+          <p><span data-i18n="footer.partnership">협업제안</span> {company.partnerEmail}</p>
         </div>
       </div>
     </div>

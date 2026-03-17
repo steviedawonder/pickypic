@@ -1,0 +1,43 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="SHOP | PICKYPIC PHOTOBOOTH"
+  description="Shop PICKYPIC photobooth products online."
+>
+  <section class="pt-20 lg:pt-24 bg-white shop-section">
+    <div class="iframe-wrapper">
+      <iframe
+        id="shop-iframe"
+        src="https://picky-pic.com/shop/list.php?ca_id=10"
+        class="shop-iframe"
+        title="PICKYPIC Shop"
+        loading="lazy"
+        allow="payment"
+      ></iframe>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .shop-section {
+    height: calc(100vh - 80px);
+    min-height: 600px;
+    display: flex;
+    flex-direction: column;
+  }
+  .iframe-wrapper {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+  .shop-iframe {
+    width: 100%;
+    border: 0;
+    position: absolute;
+    top: -140px;
+    left: 0;
+    height: calc(100% + 140px);
+  }
+</style>

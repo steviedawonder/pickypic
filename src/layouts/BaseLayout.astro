@@ -85,6 +85,14 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     })} />
 
     <title>{title}</title>
+    <script is:inline>
+      (function() {
+        var lang = localStorage.getItem('pickypic-lang');
+        if (lang && lang !== 'ko') {
+          document.documentElement.style.visibility = 'hidden';
+        }
+      })();
+    </script>
   </head>
   <body class="bg-white text-primary antialiased">
     <!-- Google Tag Manager (noscript) -->
@@ -99,6 +107,11 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     </main>
     <Footer />
     <FloatingContactButton />
+
+    <!-- i18n Language Switching -->
+    <script>
+      import '../i18n/i18n';
+    </script>
 
     <!-- GSAP ScrollTrigger -->
     <script>

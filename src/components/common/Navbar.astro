@@ -2,6 +2,15 @@
 import { navItems } from '@data/navigation';
 
 const currentPath = Astro.url.pathname;
+
+const navI18nKeys = [
+  'nav.about',
+  'nav.products',
+  'nav.rental',
+  'nav.portfolio',
+  'nav.support',
+  'nav.ai',
+];
 ---
 
 <header
@@ -14,37 +23,67 @@ const currentPath = Astro.url.pathname;
       <span class="logo-text text-[26px] lg:text-[44px] leading-none">PICKYPIC PHOTOBOOTH<span class="text-[10px] lg:text-[14px] relative -top-[1.4em] ml-0.5">®</span></span>
     </a>
 
-    <!-- Desktop Menu -->
-    <ul class="hidden items-center gap-8 lg:flex">
-      {navItems.map((item) => (
-        <li>
+    <!-- Desktop Menu + Language Selector -->
+    <div class="hidden items-center gap-8 lg:flex">
+      <ul class="flex items-center gap-8">
+        {navItems.map((item, i) => (
+          <li>
+            <a
+              href={item.href}
+              class:list={[
+                'relative text-sm font-medium tracking-wide transition-colors duration-300 hover:text-black pb-1',
+                currentPath === item.href || currentPath.startsWith(item.href + '/')
+                  ? 'text-black after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-black'
+                  : 'text-gray-600',
+              ]}
+              target={item.external ? '_blank' : undefined}
+              rel={item.external ? 'noopener noreferrer' : undefined}
+              data-i18n={navI18nKeys[i]}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+        <!-- SHOP: EN + overseas IP only -->
+        <li class="shop-nav-item hidden">
           <a
-            href={item.href}
-            class:list={[
-              'relative text-sm font-medium tracking-wide transition-colors duration-300 hover:text-black pb-1',
-              currentPath === item.href || currentPath.startsWith(item.href + '/')
-                ? 'text-black after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-black'
-                : 'text-gray-600',
-            ]}
-            target={item.external ? '_blank' : undefined}
-            rel={item.external ? 'noopener noreferrer' : undefined}
+            href="/shop"
+            class="relative text-sm font-medium tracking-wide transition-colors duration-300 hover:text-black pb-1 text-gray-600"
           >
-            {item.label}
+            SHOP
           </a>
         </li>
-      ))}
-    </ul>
+      </ul>
 
-    <!-- Mobile Hamburger -->
-    <button
-      id="mobile-menu-btn"
-      class="flex flex-col gap-1.5 lg:hidden"
-      aria-label="메뉴 열기"
-    >
-      <span class="hamburger-line block h-[2px] w-6 bg-gray-800 transition-all duration-300"></span>
-      <span class="hamburger-line block h-[2px] w-6 bg-gray-800 transition-all duration-300"></span>
-      <span class="hamburger-line block h-[2px] w-4 ml-auto bg-gray-800 transition-all duration-300"></span>
-    </button>
+      <!-- Language Selector -->
+      <div class="flex items-center gap-1 text-xs ml-4 border-l border-gray-200 pl-4">
+        <button type="button" class="lang-btn text-black font-bold cursor-pointer hover:text-black transition-colors" data-lang="ko">KO</button>
+        <span class="text-gray-300">|</span>
+        <button type="button" class="lang-btn text-gray-400 font-normal cursor-pointer hover:text-black transition-colors" data-lang="jp">JP</button>
+        <span class="text-gray-300">|</span>
+        <button type="button" class="lang-btn text-gray-400 font-normal cursor-pointer hover:text-black transition-colors" data-lang="en">EN</button>
+      </div>
+    </div>
+
+    <!-- Mobile: Language Selector + Hamburger -->
+    <div class="flex items-center gap-4 lg:hidden">
+      <div class="flex items-center gap-1 text-[10px]">
+        <button type="button" class="lang-btn text-black font-bold cursor-pointer" data-lang="ko">KO</button>
+        <span class="text-gray-300">|</span>
+        <button type="button" class="lang-btn text-gray-400 font-normal cursor-pointer" data-lang="jp">JP</button>
+        <span class="text-gray-300">|</span>
+        <button type="button" class="lang-btn text-gray-400 font-normal cursor-pointer" data-lang="en">EN</button>
+      </div>
+      <button
+        id="mobile-menu-btn"
+        class="flex flex-col gap-1.5"
+        aria-label="메뉴 열기"
+      >
+        <span class="hamburger-line block h-[2px] w-6 bg-gray-800 transition-all duration-300"></span>
+        <span class="hamburger-line block h-[2px] w-6 bg-gray-800 transition-all duration-300"></span>
+        <span class="hamburger-line block h-[2px] w-4 ml-auto bg-gray-800 transition-all duration-300"></span>
+      </button>
+    </div>
   </nav>
 </header>
 
@@ -73,7 +112,7 @@ const currentPath = Astro.url.pathname;
     <!-- Menu Items -->
     <nav class="px-6 pt-8">
       <ul class="space-y-1">
-        {navItems.map((item) => (
+        {navItems.map((item, i) => (
           <li>
             <a
               href={item.href}
@@ -83,17 +122,27 @@ const currentPath = Astro.url.pathname;
                   ? 'text-black'
                   : 'text-gray-600',
               ]}
+              data-i18n={navI18nKeys[i]}
             >
               {item.label}
             </a>
           </li>
         ))}
+        <!-- SHOP: EN + overseas IP only -->
+        <li class="shop-nav-item hidden">
+          <a
+            href="/shop"
+            class="mobile-nav-link block py-4 text-lg font-medium tracking-wide transition-colors duration-200 border-b border-gray-100 text-gray-600"
+          >
+            SHOP
+          </a>
+        </li>
       </ul>
     </nav>
 
     <!-- Contact Info -->
     <div class="absolute bottom-0 left-0 right-0 px-6 py-8 border-t border-gray-100">
-      <p class="text-xs text-gray-400">문의전화</p>
+      <p class="text-xs text-gray-400" data-i18n="nav.contact_phone">문의전화</p>
       <a href="tel:02-338-9181" class="text-sm font-semibold text-black">02-338-9181</a>
     </div>
   </div>

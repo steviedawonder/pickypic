@@ -16,7 +16,12 @@ const products = [
   { image: '/images/support/support-9.png', name: 'AIR PICKY', category: '부스형' },
 ];
 
-const categories = ['전체', '부스형', '스탠드형', '테이블형'];
+const categories = [
+  { label: '전체', i18nKey: 'support.cat_all' },
+  { label: '부스형', i18nKey: 'support.cat_booth' },
+  { label: '스탠드형', i18nKey: 'support.cat_stand' },
+  { label: '테이블형', i18nKey: 'support.cat_table' },
+];
 ---
 
 <BaseLayout title={title} description={description}>
@@ -25,7 +30,7 @@ const categories = ['전체', '부스형', '스탠드형', '테이블형'];
 
       <!-- Header row: title + search bar -->
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-10 gs-fade-up">
-        <h1 class="text-[clamp(2rem,4vw,3.5rem)] font-bold tracking-tight text-primary leading-tight">
+        <h1 class="text-[clamp(2rem,4vw,3.5rem)] font-bold tracking-tight text-primary leading-tight" data-i18n="support.title">
           고객지원
         </h1>
         <div class="relative w-full sm:w-72">
@@ -45,7 +50,7 @@ const categories = ['전체', '부스형', '스탠드형', '테이블형'];
       </div>
 
       <!-- Subtitle -->
-      <p class="text-base sm:text-lg text-secondary mb-8 gs-fade-up">
+      <p class="text-base sm:text-lg text-secondary mb-8 gs-fade-up" data-i18n="support.subtitle">
         피키픽 포토부스 가이드파일 다운로드
       </p>
 
@@ -58,15 +63,16 @@ const categories = ['전체', '부스형', '스탠드형', '테이블형'];
                 type="button"
                 role="tab"
                 aria-selected={i === 0 ? 'true' : 'false'}
-                data-category={cat}
+                data-category={cat.label}
                 class:list={[
                   'category-tab px-5 py-2 text-sm font-medium rounded-md transition-colors',
                   i === 0
                     ? 'bg-primary text-white'
                     : 'bg-bg-light text-secondary hover:bg-border-light',
                 ]}
+                data-i18n={cat.i18nKey}
               >
-                {cat}
+                {cat.label}
               </button>
             </li>
           ))}
@@ -101,7 +107,7 @@ const categories = ['전체', '부스형', '스탠드형', '테이블형'];
 
       <!-- Empty state -->
       <div id="empty-state" class="hidden py-20 text-center text-secondary">
-        <p class="text-lg">검색 결과가 없습니다.</p>
+        <p class="text-lg" data-i18n="support.no_results">검색 결과가 없습니다.</p>
       </div>
 
     </div>
