@@ -19,23 +19,26 @@ const rentalProducts = [
   description="피키픽 포토부스 렌탈 문의. 테이블형, 스탠드형, 부스형 다양한 포토부스를 브랜드 팝업, 기업 행사, 웨딩, 파티 등에 맞춤 대여하세요. 영업 시간 기준 1시간 이내 답변."
 >
   <!-- RENTAL Hero Heading -->
-  <section class="relative bg-white pt-36 pb-12 lg:pt-44 lg:pb-16 overflow-hidden">
-    <div class="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 text-center gs-fade-up">
-      <h1 class="text-[clamp(3.5rem,10vw,8rem)] font-bold tracking-[0.04em] text-primary leading-none" style="font-family: 'Montserrat', sans-serif;">
-        RENTAL
-      </h1>
+  <section class="relative bg-white pt-28 pb-6 lg:pt-44 lg:pb-16 overflow-hidden">
+    <div class="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 gs-fade-up">
+      <div class="flex items-center justify-between">
+        <h1 class="text-2xl lg:text-[clamp(3.5rem,10vw,8rem)] font-bold tracking-[0.04em] text-primary leading-none" style="font-family: 'Montserrat', sans-serif;">
+          RENTAL
+        </h1>
+        <a href="/products" class="text-sm border border-gray-400 rounded-full px-5 py-2 text-primary hover:bg-primary hover:text-white transition-colors lg:hidden" data-i18n="rental.btn_products">제품소개</a>
+      </div>
     </div>
   </section>
 
   <!-- Product Carousel -->
-  <section class="pb-16 lg:pb-24 bg-white overflow-hidden" aria-label="렌탈 제품 갤러리">
+  <section class="pb-8 lg:pb-24 bg-white overflow-hidden" aria-label="렌탈 제품 갤러리">
     <div class="relative mx-auto max-w-7xl px-6 lg:px-8 gs-fade-up">
       <div class="relative">
         <!-- Carousel Track -->
-        <div id="rental-carousel" class="flex gap-5 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8" style="scrollbar-width: none; -ms-overflow-style: none;">
+        <div id="rental-carousel" class="flex gap-4 lg:gap-5 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8" style="scrollbar-width: none; -ms-overflow-style: none;">
           {rentalProducts.map((product, i) => (
-            <article class="flex-shrink-0 w-[280px] sm:w-[300px] lg:w-[320px] snap-start">
-              <div class="overflow-hidden bg-bg-light mb-3 rounded-sm">
+            <article class="flex-shrink-0 w-[calc(50%-8px)] sm:w-[300px] lg:w-[320px] snap-start">
+              <div class="overflow-hidden bg-bg-light mb-2 rounded-sm">
                 <img
                   src={product.image}
                   alt={`${product.labelKo} - ${product.labelEn}`}
@@ -45,9 +48,16 @@ const rentalProducts = [
                   height="373"
                 />
               </div>
-              <p class="text-xs text-primary font-medium leading-snug">{product.labelKo}</p>
-              <p class="text-[11px] text-secondary leading-snug mt-0.5">{product.labelEn}</p>
+              <p class="text-[11px] lg:text-xs text-primary font-medium leading-snug">{product.labelKo}</p>
+              <p class="text-[10px] lg:text-[11px] text-secondary leading-snug mt-0.5">{product.labelEn}</p>
             </article>
+          ))}
+        </div>
+
+        <!-- Pagination Dots (mobile) -->
+        <div class="flex justify-center gap-1.5 mt-2 lg:hidden" id="rental-dots">
+          {rentalProducts.map((_, i) => (
+            <span class:list={['rental-dot w-2 h-2 rounded-full', i === 0 ? 'bg-primary' : 'bg-gray-300']} data-index={i}></span>
           ))}
         </div>
 

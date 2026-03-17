@@ -8,24 +8,24 @@ import { products, productCategories } from '@data/products';
   description="피키픽 포토부스의 9종 이상 포토부스 라인업을 소개합니다. 모던피키, 클래식피키, 어반피키, 미니피키, 레트로피키, 아웃도어피키, 에어피키 등 행사에 맞는 최적의 포토부스를 선택하세요."
 >
   <!-- Hero: PRODUCT TYPE -->
-  <section class="pt-32 pb-8 lg:pt-40 lg:pb-12 bg-white">
+  <section class="pt-28 pb-4 lg:pt-40 lg:pb-12 bg-white">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <h1 class="text-center text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight text-primary uppercase gs-fade-up">
+      <h1 class="text-center text-2xl sm:text-4xl md:text-7xl lg:text-8xl font-black tracking-tight text-primary uppercase gs-fade-up">
         PRODUCT TYPE
       </h1>
     </div>
   </section>
 
   <!-- Category Filter Pills -->
-  <section class="pb-8 lg:pb-12 bg-white" aria-label="제품 카테고리 필터">
+  <section class="pb-4 lg:pb-12 bg-white" aria-label="제품 카테고리 필터">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
       <nav class="overflow-x-auto scrollbar-hide" aria-label="제품 카테고리">
-        <div class="flex gap-3.5 justify-start lg:justify-center min-w-max pb-2" id="category-pills">
+        <div class="flex gap-2.5 lg:gap-3.5 justify-start lg:justify-center min-w-max pb-2" id="category-pills">
           {productCategories.map((cat, i) => (
             <button
               type="button"
               class:list={[
-                'product-pill flex flex-col items-center justify-center h-[50px] px-3 rounded-full transition-all duration-300 cursor-pointer whitespace-nowrap min-w-[125px] bg-white text-black',
+                'product-pill flex flex-col items-center justify-center h-[42px] lg:h-[50px] px-2.5 lg:px-3 rounded-full transition-all duration-300 cursor-pointer whitespace-nowrap min-w-[100px] lg:min-w-[125px] bg-white text-black',
                 i === 0
                   ? 'active-pill'
                   : '',
@@ -34,8 +34,8 @@ import { products, productCategories } from '@data/products';
               data-index={i}
               aria-pressed={i === 0 ? 'true' : 'false'}
             >
-              <span class="text-xs font-normal leading-tight">{cat.labelKo}</span>
-              <span class="text-xs font-normal mt-0.5 opacity-70 leading-tight">{cat.labelEn}</span>
+              <span class="text-[11px] lg:text-xs font-normal leading-tight">{cat.labelKo}</span>
+              <span class="text-[10px] lg:text-xs font-normal mt-0.5 opacity-70 leading-tight">{cat.labelEn}</span>
             </button>
           ))}
         </div>
