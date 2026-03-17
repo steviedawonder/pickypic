@@ -57,6 +57,10 @@ const navI18nKeys = [
 
       <!-- Language Selector -->
       <div class="flex items-center gap-1 text-xs ml-4 border-l border-gray-200 pl-4">
+        <svg class="w-4 h-4 text-gray-500 mr-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+        </svg>
         <button type="button" class="lang-btn text-black font-bold cursor-pointer hover:text-black transition-colors" data-lang="ko">KO</button>
         <span class="text-gray-300">|</span>
         <button type="button" class="lang-btn text-gray-400 font-normal cursor-pointer hover:text-black transition-colors" data-lang="jp">JP</button>
@@ -66,8 +70,12 @@ const navI18nKeys = [
     </div>
 
     <!-- Mobile: Language Selector + Hamburger -->
-    <div class="flex items-center gap-4 lg:hidden">
-      <div class="flex items-center gap-1 text-[10px]">
+    <div class="flex items-center gap-3 lg:hidden">
+      <div class="flex items-center gap-1 text-[11px]">
+        <svg class="w-3.5 h-3.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+        </svg>
         <button type="button" class="lang-btn text-black font-bold cursor-pointer" data-lang="ko">KO</button>
         <span class="text-gray-300">|</span>
         <button type="button" class="lang-btn text-gray-400 font-normal cursor-pointer" data-lang="jp">JP</button>
@@ -85,6 +93,32 @@ const navI18nKeys = [
       </button>
     </div>
   </nav>
+
+  <!-- Mobile Horizontal Nav -->
+  <div class="mobile-nav-bar lg:hidden">
+    <div class="flex gap-6 px-4 py-2.5 overflow-x-auto scrollbar-hide whitespace-nowrap">
+      {navItems.map((item, i) => (
+        <a
+          href={item.href}
+          class:list={[
+            'text-[13px] font-medium tracking-wide transition-colors duration-300 shrink-0',
+            currentPath === item.href || currentPath.startsWith(item.href + '/')
+              ? 'text-black'
+              : 'text-gray-500',
+          ]}
+          data-i18n={navI18nKeys[i]}
+        >
+          {item.label}
+        </a>
+      ))}
+      <a
+        href="/shop"
+        class="shop-nav-item hidden text-[13px] font-medium tracking-wide transition-colors duration-300 shrink-0 text-gray-500"
+      >
+        SHOP
+      </a>
+    </div>
+  </div>
 </header>
 
 <!-- Mobile Menu Overlay -->
@@ -154,6 +188,17 @@ const navI18nKeys = [
     font-weight: 400;
     letter-spacing: 0.005em;
     color: #1d1d1f;
+  }
+  .mobile-nav-bar {
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 </style>
 

@@ -86,6 +86,19 @@ const mobileSlides = [
   .hero-section {
     width: 100%;
     overflow: hidden;
+    padding-top: 60px;
+  }
+
+  @media (min-width: 769px) {
+    .hero-section {
+      padding-top: 90px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero-section {
+      padding-top: 95px;
+    }
   }
 
   /* Desktop / Mobile visibility */
@@ -117,7 +130,7 @@ const mobileSlides = [
   }
 
   .hero-mobile .hero-carousel {
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 3 / 4;
   }
 
   .carousel-track {
@@ -186,22 +199,23 @@ const mobileSlides = [
   /* Mobile Overlay */
   .hero-overlay-mobile {
     position: absolute;
-    top: 20%;
+    top: 5%;
     left: 50%;
     transform: translateX(-50%);
     z-index: 10;
     text-align: center;
+    width: 90%;
   }
 
   .hero-title-mobile {
-    margin: 0 auto 20px;
-    text-align: center;
+    margin: 0 auto 16px;
+    text-align: left;
   }
 
   .hero-heading-mobile {
     font-family: 'Bebas Neue', sans-serif;
     font-weight: 400;
-    font-size: 36px;
+    font-size: 44px;
     letter-spacing: 0.005em;
     color: #1d1d1f;
     line-height: 1;
@@ -209,7 +223,7 @@ const mobileSlides = [
   }
 
   .hero-reg-mobile {
-    font-size: 12px;
+    font-size: 14px;
     position: relative;
     top: -1.4em;
     margin-left: 1px;
@@ -218,11 +232,10 @@ const mobileSlides = [
   .hero-sub-mobile {
     font-family: Arial, Helvetica, sans-serif;
     font-weight: 700;
-    font-size: 13px;
+    font-size: 15px;
     letter-spacing: 0.08em;
     color: #1d1d1f;
-    margin: 4px 0 0;
-    text-align: left;
+    margin: 8px 0 0;
   }
 
   /* Buttons */
@@ -257,14 +270,14 @@ const mobileSlides = [
 
   /* Mobile Buttons */
   .hero-buttons-mobile {
-    gap: 8px;
+    gap: 10px;
+    flex-wrap: nowrap;
   }
 
   .hero-btn-mobile {
-    width: 93px;
-    height: 38px;
-    padding: 0;
+    padding: 10px 24px;
     font-size: 14px;
+    border-radius: 50px;
   }
 
   /* Navigation Arrows */
