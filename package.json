@@ -9,6 +9,7 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/react": "^5.0.0",
     "@astrojs/sitemap": "^3.7.0",
     "@emailjs/browser": "^4.4.1",
     "@portabletext/types": "^4.0.2",

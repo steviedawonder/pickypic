@@ -80,6 +80,10 @@ export const blogPost = defineType({
             { title: '작은 소제목', value: 'h3' },
             { title: '인용문', value: 'blockquote' },
           ],
+          lists: [
+            { title: '글머리 기호', value: 'bullet' },
+            { title: '번호 목록', value: 'number' },
+          ],
           marks: {
             decorators: [
               { title: '굵게', value: 'strong' },

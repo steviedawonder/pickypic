@@ -1,0 +1,49 @@
+---
+interface FAQItem {
+  question: string;
+  answer: string;
+}
+
+interface Props {
+  items: FAQItem[];
+  title?: string;
+}
+
+const { items, title = '자주 묻는 질문' } = Astro.props;
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": items.map((item) => ({
+    "@type": "Question",
+    "name": item.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": item.answer,
+    },
+  })),
+};
+---
+
+<!-- FAQ JSON-LD -->
+<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+
+<!-- Visual FAQ Section -->
+<section class="mx-auto max-w-4xl px-6 lg:px-8 py-16" aria-labelledby="faq-heading">
+  <h2 id="faq-heading" class="text-2xl font-bold text-primary mb-8 text-center" data-i18n="faq.title">{title}</h2>
+  <div class="space-y-3">
+    {items.map((item) => (
+      <details class="group border border-border-default rounded-lg overflow-hidden">
+        <summary class="flex items-center justify-between cursor-pointer px-6 py-4 bg-bg-muted hover:bg-bg-subtle transition-colors">
+          <span class="font-medium text-primary text-left pr-4">{item.question}</span>
+          <svg class="w-5 h-5 text-secondary shrink-0 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </summary>
+        <div class="px-6 py-4 text-secondary leading-relaxed">
+          <p>{item.answer}</p>
+        </div>
+      </details>
+    ))}
+  </div>
+</section>

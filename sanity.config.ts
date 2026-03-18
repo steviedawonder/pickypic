@@ -5,8 +5,8 @@ import { schemaTypes } from './src/sanity/schemas';
 import { seoStructure } from './src/sanity/structure';
 
 export default defineConfig({
-  name: 'pickypic-blog',
-  title: 'PICKYPIC 블로그 관리',
+  name: 'pickypic-admin',
+  title: 'PICKYPIC 관리자',
   projectId: '7b9lcco4',
   dataset: 'production',
   plugins: [

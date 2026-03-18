@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import TextHero from '@components/common/TextHero.astro';
 import BlogCard from '@components/blog/BlogCard.astro';
 
@@ -95,6 +96,22 @@ const categories = sampleCategories;
   title="블로그 | 피키픽 포토부스 PICKYPIC"
   description="포토부스 트렌드, 렌탈 가이드, 브랜드 팝업 사례 등 유용한 정보를 제공합니다."
 >
+  <!-- Blog CollectionPage Schema -->
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "피키픽 블로그",
+    "description": "포토부스 트렌드, 렌탈 가이드, 브랜드 팝업 사례 등 유용한 정보를 제공합니다.",
+    "url": "https://picky-pic.com/blog",
+    "publisher": { "@type": "Organization", "@id": "https://picky-pic.com/#organization" },
+    "inLanguage": "ko"
+  })} />
+
+  <BreadcrumbSchema items={[
+    { name: '홈', href: '/' },
+    { name: '블로그', href: '/blog' },
+  ]} />
+
   <TextHero
     subtitle="Blog"
     title="블로그"

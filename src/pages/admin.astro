@@ -1,0 +1,23 @@
+---
+import AdminApp from '@components/admin/AdminApp';
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>PICKYPIC 관리자</title>
+    <style>
+      html, body { margin: 0; padding: 0; height: 100%; width: 100%; }
+      * { box-sizing: border-box; }
+      #admin-root { width: 100%; min-height: 100vh; }
+    </style>
+  </head>
+  <body>
+    <div id="admin-root">
+      <AdminApp client:only="react" />
+    </div>
+  </body>
+</html>

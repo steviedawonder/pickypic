@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import { products, productCategories } from '@data/products';
 ---
 
@@ -7,6 +8,11 @@ import { products, productCategories } from '@data/products';
   title="제품소개 페이지 | 피키픽 | 포토부스 대여 및 기업 행사 렌탈 전문"
   description="피키픽 포토부스의 9종 이상 포토부스 라인업을 소개합니다. 모던피키, 클래식피키, 어반피키, 미니피키, 레트로피키, 아웃도어피키, 에어피키 등 행사에 맞는 최적의 포토부스를 선택하세요."
 >
+  <BreadcrumbSchema items={[
+    { name: '홈', href: '/' },
+    { name: '제품소개', href: '/products' },
+  ]} />
+
   <!-- Hero: PRODUCT TYPE -->
   <section class="pt-28 pb-4 lg:pt-40 lg:pb-12 bg-white">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
@@ -226,7 +232,7 @@ import { products, productCategories } from '@data/products';
     "@context": "https://schema.org",
     "@type": "ItemList",
     "name": "PICKYPIC 포토부스 제품 라인업",
-    "description": "피키픽 포토부스의 9종 포토부스 제품 소개",
+    "description": "피키픽 포토부스의 9종 포토부스 제품 소개. 스탠드형, 테이블형, 부스형 포토부스를 확인하세요.",
     "numberOfItems": products.length,
     "itemListElement": products.map((p, i) => ({
       "@type": "ListItem",
@@ -234,8 +240,14 @@ import { products, productCategories } from '@data/products';
       "item": {
         "@type": "Product",
         "name": `${p.name} | ${p.nameKo}`,
-        "image": p.image,
+        "image": `https://picky-pic.com${p.image}`,
+        "description": `${p.nameKo} - ${p.type} 포토부스. 브랜드 팝업, 기업 행사, 파티 등에 적합한 PICKYPIC의 프리미엄 포토부스.`,
         "category": p.type,
+        "brand": {
+          "@type": "Brand",
+          "name": "PICKYPIC"
+        },
+        "url": "https://picky-pic.com/products"
       }
     }))
   })} />

@@ -114,3 +114,41 @@ export const blogQueries = {
     "postCount": count(*[_type == "blogPost" && references(^._id)])
   }`,
 };
+
+// Portfolio Queries
+export const portfolioQueries = {
+  allItems: `*[_type == "portfolio" && isVisible == true] | order(order desc) {
+    _id,
+    title,
+    image {
+      asset-> {
+        _id,
+        url
+      }
+    },
+    category,
+    client
+  }`,
+
+  byCategory: `*[_type == "portfolio" && isVisible == true && category == $category] | order(order desc) {
+    _id,
+    title,
+    image {
+      asset-> {
+        _id,
+        url
+      }
+    },
+    category,
+    client
+  }`,
+};
+
+// FAQ Queries
+export const faqQueries = {
+  byPage: `*[_type == "faqItem" && page == $page] | order(order asc) {
+    _id,
+    question,
+    answer
+  }`,
+};

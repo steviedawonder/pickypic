@@ -18,4 +18,18 @@ export const company = {
   },
   naverStore: 'https://smartstore.naver.com/pickypicphoto',
   gtmId: 'GTM-KDRFNN4H',
+  // SEO & GEO 확장 정보
+  foundingDate: '2020',
+  url: 'https://picky-pic.com',
+  logo: 'https://picky-pic.com/images/common/logo-top.png',
+  geo: { lat: 37.5447, lng: 127.0561 },
+  sameAs: [
+    'https://www.instagram.com/pickypic.official/',
+    'https://www.instagram.com/picky.global/',
+    'https://www.instagram.com/pickypic.sg/',
+    'https://pf.kakao.com/_pickypic',
+    'https://smartstore.naver.com/pickypicphoto',
+  ],
+  description: '피키픽은 2020년 설립된 대한민국 서울 성수동 소재 프리미엄 포토부스 렌탈 전문 기업입니다. 스탠드형, 테이블형, 부스형 등 9종 이상의 포토부스 라인업을 보유하고 있으며, 넷플릭스, 현대자동차, 기아, 뉴발란스, 스타벅스 등 1,000건 이상의 브랜드 팝업 및 기업 행사에 포토부스를 제공하고 있습니다.',
+  descriptionEn: 'PICKYPIC is a premium photo booth rental company founded in 2020, based in Seongsu-dong, Seoul, South Korea. With a lineup of 9+ photo booth models including stand, table, and booth types, PICKYPIC has provided photo booths for over 1,000 brand pop-ups and corporate events with clients like Netflix, Hyundai, Kia, New Balance, and Starbucks.',
 } as const;

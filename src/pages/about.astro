@@ -1,11 +1,30 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 ---
 
 <BaseLayout
   title="회사소개 페이지 | 피키픽 | 포토부스 대여 및 기업 행사 렌탈 전문"
   description="피키픽 포토부스는 브랜드 팝업스토어, 기업 행사, 웨딩, 파티 등 다양한 이벤트에 맞춤형 포토부스 렌탈 서비스를 제공합니다. PICKYPIC PHOTOBOOTH 회사소개."
 >
+  <!-- About Page Schema -->
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    "name": "피키픽 회사소개",
+    "description": "피키픽 포토부스는 2020년 설립된 프리미엄 포토부스 렌탈 전문 기업입니다.",
+    "url": "https://picky-pic.com/about",
+    "mainEntity": {
+      "@type": "LocalBusiness",
+      "@id": "https://picky-pic.com/#organization"
+    }
+  })} />
+
+  <BreadcrumbSchema items={[
+    { name: '홈', href: '/' },
+    { name: '회사소개', href: '/about' },
+  ]} />
+
   <!-- Hero Carousel -->
   <section class="about-hero" aria-label="회사소개 히어로 이미지">
     <!-- Desktop -->

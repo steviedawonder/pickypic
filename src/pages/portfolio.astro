@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import { portfolioItems, portfolioCategories } from '@data/portfolio';
 ---
 
@@ -7,6 +8,11 @@ import { portfolioItems, portfolioCategories } from '@data/portfolio';
   title="포트폴리오 페이지 | 피키픽 | 포토부스 대여 및 기업 행사 렌탈 전문"
   description="넷플릭스, 현대자동차, 기아, 뉴발란스 등 유수 브랜드와 함께한 피키픽 포토부스의 포트폴리오를 확인하세요. 포토부스 렌탈 및 대여 전문."
 >
+  <BreadcrumbSchema items={[
+    { name: '홈', href: '/' },
+    { name: '포트폴리오', href: '/portfolio' },
+  ]} />
+
   <!-- Hero: PORTFOLIO -->
   <section class="pt-28 pb-4 lg:pt-40 lg:pb-12 bg-white">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">

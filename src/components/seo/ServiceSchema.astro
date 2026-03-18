@@ -1,0 +1,68 @@
+---
+import { company } from '@data/company';
+
+interface Props {
+  serviceName?: string;
+  serviceType?: string;
+  description?: string;
+}
+
+const {
+  serviceName = '포토부스 렌탈 서비스',
+  serviceType = 'Photo Booth Rental',
+  description = company.description,
+} = Astro.props;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": serviceName,
+  "serviceType": serviceType,
+  "description": description,
+  "provider": {
+    "@type": "LocalBusiness",
+    "@id": "https://picky-pic.com/#organization",
+    "name": company.brand,
+    "url": company.url,
+  },
+  "areaServed": [
+    { "@type": "Country", "name": "KR" },
+    { "@type": "Country", "name": "SG" },
+  ],
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "포토부스 렌탈 카탈로그",
+    "itemListElement": [
+      {
+        "@type": "OfferCatalog",
+        "name": "스탠드형 포토부스",
+        "itemListElement": [
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Modern Picky 렌탈" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Classic Picky 렌탈" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Urban Picky 렌탈" } },
+        ],
+      },
+      {
+        "@type": "OfferCatalog",
+        "name": "테이블형 포토부스",
+        "itemListElement": [
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Modern Mini Picky 렌탈" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Urban Mini Picky 렌탈" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Modern Retro Picky 렌탈" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Urban Retro Picky 렌탈" } },
+        ],
+      },
+      {
+        "@type": "OfferCatalog",
+        "name": "부스형 포토부스",
+        "itemListElement": [
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Outdoor Picky 렌탈" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Air Picky 렌탈" } },
+        ],
+      },
+    ],
+  },
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(serviceSchema)} />

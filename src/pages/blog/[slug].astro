@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import { company } from '@data/company';
 
 // In production, fetch from Sanity:
@@ -95,8 +96,19 @@ const seoTitle = `${post.title} | 피키픽 포토부스 블로그`;
 const seoDescription = post.excerpt || '';
 ---
 
-<BaseLayout title={seoTitle} description={seoDescription}>
-  <article class="pt-36 pb-20 lg:pt-44 lg:pb-28">
+<BaseLayout title={seoTitle} description={seoDescription} ogType="article" articleMeta={{
+  publishedTime: post.publishedAt,
+  author: post.author?.name,
+  section: post.category?.title,
+  tags: post.tags,
+}}>
+  <BreadcrumbSchema items={[
+    { name: '홈', href: '/' },
+    { name: '블로그', href: '/blog' },
+    { name: post.title, href: `/blog/${slug}` },
+  ]} />
+
+  <article class="pb-20 lg:pt-4 lg:pb-28">
     <div class="mx-auto max-w-3xl px-6 lg:px-8">
       <!-- Header -->
       <header class="mb-12 gs-fade-up">
@@ -191,18 +203,23 @@ const seoDescription = post.excerpt || '';
     "headline": post.title,
     "description": post.excerpt,
     "datePublished": post.publishedAt,
+    "dateModified": post.publishedAt,
+    "inLanguage": "ko",
     "author": {
       "@type": "Person",
       "name": post.author?.name,
     },
     "publisher": {
       "@type": "Organization",
+      "@id": "https://picky-pic.com/#organization",
       "name": company.brand,
-      "url": "https://picky-pic.com",
+      "logo": company.logo,
     },
     "mainEntityOfPage": {
       "@type": "WebPage",
       "@id": `https://picky-pic.com/blog/${slug}`,
     },
+    ...(post.tags && { "keywords": post.tags.join(', ') }),
+    ...(post.category && { "articleSection": post.category.title }),
   })} />
 </BaseLayout>

@@ -9,6 +9,7 @@ export const translations: Record<Lang, Record<string, string>> = {
     'nav.portfolio': '포트폴리오',
     'nav.support': '고객지원',
     'nav.ai': 'A.I 퍼스널컬러',
+    'nav.blog': '블로그',
     'nav.contact_phone': '문의전화',
 
     // Hero
@@ -130,6 +131,7 @@ export const translations: Record<Lang, Record<string, string>> = {
     'nav.portfolio': 'Portfolio',
     'nav.support': 'Support',
     'nav.ai': 'A.I Personal Color',
+    'nav.blog': 'Blog',
     'nav.contact_phone': 'Contact',
 
     // Hero
@@ -251,6 +253,7 @@ export const translations: Record<Lang, Record<string, string>> = {
     'nav.portfolio': 'ポートフォリオ',
     'nav.support': 'サポート',
     'nav.ai': 'A.I パーソナルカラー',
+    'nav.blog': 'ブログ',
     'nav.contact_phone': 'お問合せ電話',
 
     // Hero

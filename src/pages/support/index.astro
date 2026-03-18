@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import { supportGuides } from '@data/support';
 
 const title = '고객지원 페이지 | 피키픽 | 포토부스 대여 및 기업 행사 렌탈 전문';
@@ -21,7 +22,12 @@ const categories = [
 ---
 
 <BaseLayout title={title} description={description}>
-  <section class="pt-32 pb-20 lg:pt-40 lg:pb-28 bg-white">
+  <BreadcrumbSchema items={[
+    { name: '홈', href: '/' },
+    { name: '고객지원', href: '/support' },
+  ]} />
+
+  <section class="pt-4 pb-20 lg:pt-4 lg:pb-28 bg-white">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
 
       <!-- Title -->

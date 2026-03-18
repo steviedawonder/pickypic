@@ -5,16 +5,30 @@ import Footer from '@components/common/Footer.astro';
 import FloatingContactButton from '@components/common/FloatingContactButton.astro';
 import { company } from '@data/company';
 
+interface ArticleMeta {
+  publishedTime?: string;
+  modifiedTime?: string;
+  author?: string;
+  section?: string;
+  tags?: string[];
+}
+
 interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+  articleMeta?: ArticleMeta;
 }
 
 const {
   title = `${company.brandKo} | PICKYPIC`,
   description = '피키픽 포토부스 - 포토부스 렌탈/대여 전문. 브랜드 팝업, 기업 행사, 웨딩 등 다양한 이벤트에 맞춤형 포토부스를 제공합니다.',
   ogImage = '/images/common/og-image.jpg',
+  ogType = 'website',
+  noindex = false,
+  articleMeta,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -27,6 +41,18 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
+    {noindex ? (
+      <meta name="robots" content="noindex, nofollow" />
+    ) : (
+      <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    )}
+    <meta name="theme-color" content="#ffffff" />
+
+    <!-- Hreflang -->
+    <link rel="alternate" hreflang="ko" href={canonicalURL} />
+    <link rel="alternate" hreflang="en" href={canonicalURL} />
+    <link rel="alternate" hreflang="ja" href={canonicalURL} />
+    <link rel="alternate" hreflang="x-default" href={canonicalURL} />
 
     <!-- Google Tag Manager -->
     <script is:inline>
@@ -38,19 +64,27 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     </script>
 
     <!-- Open Graph -->
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={new URL(ogImage, Astro.site)} />
     <meta property="og:locale" content="ko_KR" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <meta property="og:locale:alternate" content="ja_JP" />
     <meta property="og:site_name" content="PICKYPIC" />
+    {articleMeta?.publishedTime && <meta property="article:published_time" content={articleMeta.publishedTime} />}
+    {articleMeta?.modifiedTime && <meta property="article:modified_time" content={articleMeta.modifiedTime} />}
+    {articleMeta?.author && <meta property="article:author" content={articleMeta.author} />}
+    {articleMeta?.section && <meta property="article:section" content={articleMeta.section} />}
+    {articleMeta?.tags?.map(tag => <meta property="article:tag" content={tag} />)}
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={new URL(ogImage, Astro.site)} />
+    <meta name="twitter:site" content="@pickypic_official" />
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -65,27 +99,64 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=block"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
 
-    <!-- Structured Data: Organization -->
+    <!-- Structured Data: LocalBusiness -->
     <script type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
-      "@type": "Organization",
+      "@type": "LocalBusiness",
+      "@id": "https://picky-pic.com/#organization",
       "name": company.brand,
       "legalName": company.name,
-      "url": "https://picky-pic.com",
+      "alternateName": company.brandKo,
+      "url": company.url,
+      "logo": company.logo,
+      "image": company.logo,
+      "description": company.description,
       "telephone": company.phone,
       "email": company.email,
+      "foundingDate": company.foundingDate,
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "성수이로18길 31, 602호",
         "addressLocality": "성동구",
-        "addressRegion": "서울시",
+        "addressRegion": "서울특별시",
+        "postalCode": "04790",
         "addressCountry": "KR"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": company.geo.lat,
+        "longitude": company.geo.lng
+      },
+      "sameAs": company.sameAs,
+      "knowsLanguage": ["ko", "en", "ja"],
+      "areaServed": [
+        { "@type": "Country", "name": "KR" },
+        { "@type": "Country", "name": "SG" }
+      ],
+      "serviceType": "포토부스 렌탈"
+    })} />
+
+    <!-- Structured Data: WebSite -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "PICKYPIC PHOTOBOOTH",
+      "alternateName": "피키픽 포토부스",
+      "url": company.url,
+      "inLanguage": ["ko", "en", "ja"],
+      "publisher": {
+        "@type": "Organization",
+        "@id": "https://picky-pic.com/#organization",
+        "name": company.brand
       }
     })} />
+
+    <!-- Page-specific structured data slot -->
+    <slot name="head" />
 
     <title>{title}</title>
     <script is:inline>
@@ -125,7 +196,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   <body class="bg-white text-primary antialiased">
     <!-- Google Tag Manager (noscript) -->
     <noscript>
-      <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+      <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KDRFNN4H"
         height="0" width="0" style="display:none;visibility:hidden"></iframe>
     </noscript>
 

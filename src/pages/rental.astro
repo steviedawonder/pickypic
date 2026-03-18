@@ -1,5 +1,35 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import ServiceSchema from '@components/seo/ServiceSchema.astro';
+import FAQSchema from '@components/seo/FAQSchema.astro';
+
+const rentalFAQ = [
+  {
+    question: '포토부스 렌탈 비용은 얼마인가요?',
+    answer: '포토부스 렌탈 비용은 포토부스 모델, 행사 기간, 설치 장소, 래핑 여부 등에 따라 달라집니다. 정확한 견적은 렌탈문의 양식을 통해 문의해 주시면 영업 시간 기준 1시간 이내에 안내해 드립니다.',
+  },
+  {
+    question: '최소 대여 기간은 얼마인가요?',
+    answer: '최소 대여 기간은 1일(당일)부터 가능합니다. 장기 렌탈(1주일 이상)의 경우 별도 할인이 적용될 수 있으니 상담 시 문의해 주세요.',
+  },
+  {
+    question: '설치와 철거는 누가 하나요?',
+    answer: '피키픽 전담 스태프가 설치부터 운영, 철거까지 전 과정을 책임지고 관리합니다. 행사 당일 현장에서 운영 지원도 함께 제공됩니다.',
+  },
+  {
+    question: '래핑 커스텀이 가능한가요?',
+    answer: '네, 브랜드 아이덴티티에 맞춘 전체 래핑, 레터링 래핑 등 다양한 커스텀 래핑이 가능합니다. 디자인 시안을 제공해 주시면 맞춤 제작해 드립니다.',
+  },
+  {
+    question: '해외 행사도 가능한가요?',
+    answer: '네, 피키픽은 싱가포르 등 해외 행사도 진행하고 있습니다. 해외 배송 및 현지 설치 지원이 가능하며, 상세한 사항은 별도 상담을 통해 안내해 드립니다.',
+  },
+  {
+    question: '어떤 포토부스를 선택해야 할지 모르겠어요.',
+    answer: '행사 규모와 유형에 따라 추천 제품이 다릅니다. 소규모 파티나 매장 상시 설치에는 테이블형(미니피키), 브랜드 팝업이나 기업 행사에는 스탠드형(모던/클래식/어반피키), 야외 행사에는 부스형(아웃도어/에어피키)을 추천합니다. 문의 시 최적의 제품을 안내해 드립니다.',
+  },
+];
 
 const rentalProducts = [
   { image: '/images/rental/rental-1.jpg', labelKo: '테이블 타입 _ 모던 레트로피키 (영수증 사진)', labelEn: 'Table _ Modern Retro Picky' },
@@ -18,6 +48,11 @@ const rentalProducts = [
   title="렌탈문의 페이지 | 피키픽 | 포토부스 대여 및 기업 행사 렌탈 전문"
   description="피키픽 포토부스 렌탈 문의. 테이블형, 스탠드형, 부스형 다양한 포토부스를 브랜드 팝업, 기업 행사, 웨딩, 파티 등에 맞춤 대여하세요. 영업 시간 기준 1시간 이내 답변."
 >
+  <BreadcrumbSchema items={[
+    { name: '홈', href: '/' },
+    { name: '렌탈문의', href: '/rental' },
+  ]} />
+  <ServiceSchema />
   <!-- RENTAL Hero Heading -->
   <section class="relative bg-white pt-28 pb-6 lg:pt-44 lg:pb-16 overflow-hidden">
     <div class="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 gs-fade-up">
@@ -376,6 +411,9 @@ const rentalProducts = [
       </form>
     </div>
   </section>
+
+  <!-- Rental FAQ Section -->
+  <FAQSchema items={rentalFAQ} title="렌탈 자주 묻는 질문" />
 </BaseLayout>
 
 <style>
