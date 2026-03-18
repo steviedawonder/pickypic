@@ -1,0 +1,314 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+---
+
+<BaseLayout
+  title="협업제안 페이지 | 피키픽 | 포토부스 대여 및 기업 행사 렌탈 전문"
+  description="피키픽 포토부스 협업 제안. 브랜드별 맞춤 커스터마이징 비즈니스 및 마케팅 협업이 가능합니다."
+>
+  <BreadcrumbSchema items={[
+    { name: '홈', href: '/' },
+    { name: '협업제안', href: '/collaboration' },
+  ]} />
+
+  <!-- Hero -->
+  <section class="relative bg-white pt-14 pb-6 lg:pt-20 lg:pb-10">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <span class="logo-text text-[18px] lg:text-[22px] leading-none text-primary">PICKYPIC PHOTOBOOTH<span class="text-[8px] lg:text-[10px] relative -top-[1.2em] ml-0.5">®</span></span>
+      <h1 class="text-2xl lg:text-[clamp(2rem,4vw,3rem)] font-bold tracking-tight text-primary leading-tight mt-2">
+        포토부스 협업 제안
+      </h1>
+      <p class="text-sm text-secondary mt-3 leading-relaxed">
+        피키픽 포토부스는 브랜드별 맞춤<br />
+        커스터마이징 비즈니스 및 마케팅 협업이 가능합니다.
+      </p>
+      <a href="/products" class="inline-flex items-center justify-center mt-4 px-8 py-3 border border-gray-400 rounded-full text-sm font-semibold text-primary hover:bg-primary hover:text-white hover:border-primary transition-colors">
+        제품소개
+      </a>
+    </div>
+  </section>
+
+  <!-- Collaboration Form -->
+  <section class="pb-20 lg:pb-28 bg-white">
+    <div class="mx-auto max-w-3xl px-6 lg:px-8">
+      <!-- Form Header -->
+      <div class="mb-8 lg:mb-12">
+        <h2 class="text-2xl lg:text-3xl font-bold text-primary tracking-tight">협업 문의</h2>
+        <p class="text-sm text-secondary mt-3 leading-relaxed">
+          희망하시는 협업 내용을 아래 양식에 맞춰작성 부탁드립니다!<br />
+          해당 부서에서 순차적으로 답변드릴 예정입니다. (영업 시간 기준 1시간 이내)
+        </p>
+      </div>
+
+      <form id="collaboration-form" novalidate>
+        <!-- 협업 형태 -->
+        <div class="mb-8">
+          <h3 class="text-base font-bold text-primary mb-3">협업 형태 <span class="text-red-500">*</span></h3>
+          <div class="space-y-2">
+            {['기기협찬', '팝업 공동진행', '해외 팝업 또는 수출'].map((label) => (
+              <label class="flex items-center gap-3 cursor-pointer">
+                <input type="radio" name="collaborationType" value={label} class="w-4 h-4 accent-primary" />
+                <span class="text-sm text-primary">{label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <!-- 포토부스 타입 -->
+        <div class="mb-8">
+          <h3 class="text-base font-bold text-primary mb-3">포토부스 타입 <span class="text-red-500">*</span></h3>
+
+          <p class="text-sm font-semibold text-primary mb-2">1. 테이블형</p>
+          <div class="space-y-2 mb-4 ml-2">
+            {[
+              '어반 미니 (W350 x L350 x H400)',
+              '모던 미니 (W350 x L350 x H400)',
+              '레트로 피키 (W350 x L350 x H400)',
+            ].map((label) => (
+              <label class="flex items-center gap-3 cursor-pointer">
+                <input type="checkbox" name="boothType" value={label} class="w-4 h-4 accent-primary" />
+                <span class="text-sm text-primary">{label}</span>
+              </label>
+            ))}
+          </div>
+
+          <p class="text-sm font-semibold text-primary mb-2">2. 스탠드형</p>
+          <div class="space-y-2 mb-4 ml-2">
+            {[
+              '모던 피키 (W450 x L450 x H1,750)',
+              '클래식 피키 (W450 x L450 x H1,750)',
+              '어반 피키 (W500 x L500 x H1,440)',
+            ].map((label) => (
+              <label class="flex items-center gap-3 cursor-pointer">
+                <input type="checkbox" name="boothType" value={label} class="w-4 h-4 accent-primary" />
+                <span class="text-sm text-primary">{label}</span>
+              </label>
+            ))}
+          </div>
+
+          <p class="text-sm font-semibold text-primary mb-2">3. 부스형</p>
+          <div class="space-y-2 ml-2">
+            {[
+              '에어 피키 (부스: W930 x L930 x H2,350 / 키오스크 : W500 x L600 x H1,200)',
+              '아웃도어 피키 (W1,400 x L1,000 x H2,050)',
+            ].map((label) => (
+              <label class="flex items-center gap-3 cursor-pointer">
+                <input type="checkbox" name="boothType" value={label} class="w-4 h-4 accent-primary" />
+                <span class="text-sm text-primary">{label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <!-- 텍스트 입력 필드들 -->
+        <div class="space-y-6 mb-8">
+          <div>
+            <label class="block text-sm font-bold text-primary mb-1">행사명 <span class="text-red-500">*</span></label>
+            <input type="text" id="event-name" placeholder="EX) 000 팝업스토어, 00사 행사 등" class="w-full border-b border-gray-300 py-2 text-sm outline-none focus:border-primary transition-colors" required />
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-primary mb-1">개인 or 사업자명 <span class="text-red-500">*</span></label>
+            <input type="text" id="company-name" placeholder="문의 주시는 업체의 사업자명(회사명)을 적어주세요." class="w-full border-b border-gray-300 py-2 text-sm outline-none focus:border-primary transition-colors" required />
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-primary mb-1">담당자 성함 <span class="text-red-500">*</span></label>
+            <input type="text" id="contact-name" class="w-full border-b border-gray-300 py-2 text-sm outline-none focus:border-primary transition-colors" required />
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-primary mb-1">담당자 연락처 <span class="text-red-500">*</span></label>
+            <input type="tel" id="contact-phone" class="w-full border-b border-gray-300 py-2 text-sm outline-none focus:border-primary transition-colors" required />
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-primary mb-1">담당자 이메일 주소 <span class="text-red-500">*</span></label>
+            <input type="email" id="contact-email" class="w-full border-b border-gray-300 py-2 text-sm outline-none focus:border-primary transition-colors" required />
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-primary mb-1">설치 장소 (*미정 시 대략적인 장소 작성 부탁드립니다.) <span class="text-red-500">*</span></label>
+            <input type="text" id="install-location" placeholder="EX) 더현대서울 00층 등" class="w-full border-b border-gray-300 py-2 text-sm outline-none focus:border-primary transition-colors" required />
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-primary mb-1">행사 일정 (*미정 시 대략적인 일정 작성 부탁드립니다.) <span class="text-red-500">*</span></label>
+            <input type="text" id="event-schedule" placeholder="EX) 2025년 1월 1일 ~ 7일 (7일 간)" class="w-full border-b border-gray-300 py-2 text-sm outline-none focus:border-primary transition-colors" required />
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-primary mb-1">철거 일정 (*미정 시 대략적인 일정 작성 부탁드립니다.) <span class="text-red-500">*</span></label>
+            <input type="text" id="removal-schedule" placeholder="EX) 2025년 1월 1일 ~ 7일 (7일 간)" class="w-full border-b border-gray-300 py-2 text-sm outline-none focus:border-primary transition-colors" required />
+          </div>
+        </div>
+
+        <!-- 래핑 진행 여부 -->
+        <div class="mb-8">
+          <h3 class="text-sm font-bold text-primary mb-3">래핑 진행 여부 <span class="text-red-500">*</span></h3>
+          <div class="space-y-2">
+            {['래핑 안함', '레터링 래핑', '전체 래핑'].map((label) => (
+              <label class="flex items-center gap-3 cursor-pointer">
+                <input type="radio" name="wrapping" value={label} class="w-4 h-4 accent-primary" />
+                <span class="text-sm text-primary">{label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <!-- 유료/무료 촬영 -->
+        <div class="mb-8">
+          <h3 class="text-sm font-bold text-primary mb-3">유료 촬영 / 무료 촬영 여부 <span class="text-red-500">*</span></h3>
+          <div class="space-y-2">
+            {['유료 촬영', '무료 촬영', '쿠폰 촬영', '미정'].map((label) => (
+              <label class="flex items-center gap-3 cursor-pointer">
+                <input type="radio" name="shootingType" value={label} class="w-4 h-4 accent-primary" />
+                <span class="text-sm text-primary">{label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <!-- 기타 문의 -->
+        <div class="mb-8">
+          <label class="block text-sm font-bold text-primary mb-2">기타 문의 사항</label>
+          <textarea id="additional-message" rows="3" placeholder="문의나 요청사항을 자유롭게 작성해주세요." class="w-full border-b border-gray-300 py-2 text-sm outline-none focus:border-primary transition-colors resize-none"></textarea>
+        </div>
+
+        <!-- 개인정보 동의 -->
+        <div class="mb-8 border border-gray-200 rounded-lg p-4">
+          <h3 class="text-sm font-bold text-primary mb-2">개인정보 수집 및 이용 동의 <span class="text-red-500">*</span></h3>
+          <p class="text-xs text-secondary leading-relaxed mb-3">
+            수집 항목: 성함, 연락처, 이메일, 소속/회사명<br />
+            수집 목적: 협업 문의 상담 및 답변<br />
+            보유 기간: 문의 접수 후 상담 완료 시까지 (최대 1년)<br />
+            동의를 거부하실 수 있으나, 거부 시 협업 문의가 제한됩니다.
+          </p>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="privacy-check" class="w-4 h-4 accent-primary" />
+            <span class="text-sm text-primary font-medium">개인정보 수집 및 이용에 동의합니다.</span>
+          </label>
+        </div>
+
+        <!-- Submit -->
+        <div class="text-center">
+          <button type="submit" class="w-full py-4 bg-primary text-white font-bold text-sm tracking-wide hover:bg-accent-hover transition-colors">
+            협업 문의하기
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.005em;
+  }
+</style>
+
+<script>
+  function initCollaborationPage() {
+    const form = document.getElementById('collaboration-form') as HTMLFormElement;
+    if (!form) return;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Clear previous errors
+      form.querySelectorAll('.form-error').forEach(el => el.remove());
+
+      let isValid = true;
+      let firstInvalid: HTMLElement | null = null;
+
+      // Validate collaboration type
+      const collabType = form.querySelector<HTMLInputElement>('input[name="collaborationType"]:checked');
+      if (!collabType) {
+        isValid = false;
+        const section = form.querySelector('input[name="collaborationType"]')?.closest('.mb-8');
+        if (section && !firstInvalid) firstInvalid = section as HTMLElement;
+      }
+
+      // Validate booth type
+      const boothChecked = form.querySelectorAll<HTMLInputElement>('input[name="boothType"]:checked');
+      if (boothChecked.length === 0) {
+        isValid = false;
+        const section = form.querySelector('input[name="boothType"]')?.closest('.mb-8');
+        if (section && !firstInvalid) firstInvalid = section as HTMLElement;
+      }
+
+      // Validate required text fields
+      const requiredFields = ['event-name', 'company-name', 'contact-name', 'contact-phone', 'contact-email', 'install-location', 'event-schedule', 'removal-schedule'];
+      for (const fieldId of requiredFields) {
+        const input = form.querySelector<HTMLInputElement>(`#${fieldId}`);
+        if (input && !input.value.trim()) {
+          isValid = false;
+          input.style.borderColor = '#ef4444';
+          if (!firstInvalid) firstInvalid = input;
+        } else if (input) {
+          input.style.borderColor = '';
+        }
+      }
+
+      // Validate privacy
+      const privacyCheck = form.querySelector<HTMLInputElement>('#privacy-check');
+      if (!privacyCheck?.checked) {
+        isValid = false;
+        if (!firstInvalid) firstInvalid = privacyCheck as HTMLElement;
+      }
+
+      if (!isValid) {
+        firstInvalid?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        alert('필수 항목을 모두 입력해주세요.');
+        return;
+      }
+
+      // Collect data
+      const checkedBooths = Array.from(form.querySelectorAll<HTMLInputElement>('input[name="boothType"]:checked'))
+        .map(cb => cb.value).join(', ');
+      const wrapping = form.querySelector<HTMLInputElement>('input[name="wrapping"]:checked')?.value || '';
+      const shootingType = form.querySelector<HTMLInputElement>('input[name="shootingType"]:checked')?.value || '';
+
+      const templateParams = {
+        event_name: (form.querySelector<HTMLInputElement>('#event-name')?.value || '').trim(),
+        company_name: (form.querySelector<HTMLInputElement>('#company-name')?.value || '').trim(),
+        contact_name: (form.querySelector<HTMLInputElement>('#contact-name')?.value || '').trim(),
+        contact_phone: (form.querySelector<HTMLInputElement>('#contact-phone')?.value || '').trim(),
+        contact_email: (form.querySelector<HTMLInputElement>('#contact-email')?.value || '').trim(),
+        install_location: (form.querySelector<HTMLInputElement>('#install-location')?.value || '').trim(),
+        event_schedule: (form.querySelector<HTMLInputElement>('#event-schedule')?.value || '').trim(),
+        removal_schedule: (form.querySelector<HTMLInputElement>('#removal-schedule')?.value || '').trim(),
+        booth_type: checkedBooths,
+        wrapping: wrapping,
+        shooting_type: shootingType,
+        additional_message: (form.querySelector<HTMLTextAreaElement>('#additional-message')?.value || '').trim() || '없음',
+        collaboration_type: collabType?.value || '',
+      };
+
+      const submitBtn = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = '전송 중...';
+      }
+
+      try {
+        const emailjs = await import('@emailjs/browser');
+        await emailjs.default.send(
+          import.meta.env.PUBLIC_EMAILJS_SERVICE_ID,
+          import.meta.env.PUBLIC_EMAILJS_TEMPLATE_ID,
+          templateParams,
+          import.meta.env.PUBLIC_EMAILJS_PUBLIC_KEY
+        );
+        alert('협업 문의가 접수되었습니다. 담당자가 빠르게 연락드리겠습니다.');
+        form.reset();
+      } catch (error) {
+        console.error('EmailJS Error:', error);
+        alert('전송에 실패했습니다. 잠시 후 다시 시도해주세요.\n또는 pickypic.marketing@gmail.com으로 직접 문의해주세요.');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = '협업 문의하기';
+        }
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initCollaborationPage);
+  document.addEventListener('astro:after-swap', initCollaborationPage);
+</script>
