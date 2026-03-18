@@ -13,6 +13,8 @@ export interface Product {
   categoryKo: string;
   categoryLabel: string;
   image: string;
+  imageLeft: string;
+  imageRight: string;
   specs: ProductSpec[];
   woodColors?: { name: string; hex: string }[];
 }
@@ -40,6 +42,8 @@ export const products: Product[] = [
     categoryKo: '모던피키',
     categoryLabel: '스탠드형',
     image: '/images/products/product-1.png',
+    imageLeft: '/images/products/modern-picky-line.png',
+    imageRight: '/images/products/modern-picky-photo.png',
     specs: [
       { label: 'Camera', value: 'DSLR' },
       { label: 'Display', value: '13inches Monitor' },
@@ -71,6 +75,8 @@ export const products: Product[] = [
     categoryKo: '클래식피키',
     categoryLabel: '스탠드형',
     image: '/images/products/product-2.png',
+    imageLeft: '/images/products/classic-picky-line.png',
+    imageRight: '/images/products/classic-picky-photo.png',
     specs: [
       { label: 'Camera', value: 'DSLR' },
       { label: 'Display', value: '13inches Monitor' },
@@ -102,6 +108,8 @@ export const products: Product[] = [
     categoryKo: '어반피키',
     categoryLabel: '스탠드형',
     image: '/images/products/product-3.png',
+    imageLeft: '/images/products/urban-picky-line.png',
+    imageRight: '/images/products/urban-picky-photo.png',
     specs: [
       { label: 'Camera', value: 'DSLR' },
       { label: 'Display', value: '13inches Monitor' },
@@ -133,6 +141,8 @@ export const products: Product[] = [
     categoryKo: '모던_미니피키',
     categoryLabel: '테이블형',
     image: '/images/products/product-4.png',
+    imageLeft: '/images/products/modern-mini-picky-line.png',
+    imageRight: '/images/products/modern-mini-picky-photo.png',
     specs: [
       { label: 'Camera', value: 'DSLR' },
       { label: 'Display', value: '10.1inches Monitor' },
@@ -164,6 +174,8 @@ export const products: Product[] = [
     categoryKo: '어반_미니피키',
     categoryLabel: '테이블형',
     image: '/images/products/product-5.png',
+    imageLeft: '/images/products/urban-mini-picky-line.png',
+    imageRight: '/images/products/urban-mini-picky-photo.png',
     specs: [
       { label: 'Camera', value: 'DSLR' },
       { label: 'Display', value: '10.1inches Monitor' },
@@ -195,6 +207,8 @@ export const products: Product[] = [
     categoryKo: '모던_레트로피키',
     categoryLabel: '테이블형',
     image: '/images/products/product-6.png',
+    imageLeft: '/images/products/modern-retro-picky-line.png',
+    imageRight: '/images/products/modern-retro-picky-photo.png',
     specs: [
       { label: 'Camera', value: 'DSLR' },
       { label: 'Display', value: '7inches Monitor' },
@@ -226,6 +240,8 @@ export const products: Product[] = [
     categoryKo: '어반_레트로피키',
     categoryLabel: '테이블형',
     image: '/images/products/product-7.png',
+    imageLeft: '/images/products/urban-retro-picky-line.png',
+    imageRight: '/images/products/urban-retro-picky-photo.png',
     specs: [
       { label: 'Camera', value: 'DSLR' },
       { label: 'Display', value: '7inches Monitor' },
@@ -257,6 +273,8 @@ export const products: Product[] = [
     categoryKo: '아웃도어피키',
     categoryLabel: '부스형',
     image: '/images/products/product-8.png',
+    imageLeft: '/images/products/outdoor-picky-line.png',
+    imageRight: '/images/products/outdoor-picky-photo.png',
     specs: [
       { label: 'Camera', value: 'DSLR' },
       { label: 'Display', value: '13inches Monitor' },
@@ -282,6 +300,8 @@ export const products: Product[] = [
     categoryKo: '에어피키',
     categoryLabel: '부스형',
     image: '/images/products/product-9.png',
+    imageLeft: '/images/products/air-picky-line.png',
+    imageRight: '/images/products/air-picky-photo.png',
     specs: [
       { label: 'Camera', value: 'DSLR' },
       { label: 'Display', value: '13inches Monitor' },
