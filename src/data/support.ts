@@ -61,7 +61,7 @@ export const supportGuides: SupportGuide[] = [
       {
         category: '화면UI & 화면버튼',
         files: [
-          { name: '피키픽_UI 디자인 가이드파일_유료_KR2026.ai', size: '3.5M', path: '/images/support/modern-picky/피키픽_UI 디자인 가이드파일_유료_KR2026.ai' , thumbnail: '/images/support/templates/modern-picky/template-20.png' },
+          { name: 'pickypic_ui_guide_KR2026.ai', size: '3.5M', path: '/images/support/modern-picky/pickypic_ui_guide_KR2026.ai' , thumbnail: '/images/support/templates/modern-picky/template-20.png' },
         ],
       },
     ],
@@ -99,7 +99,7 @@ export const supportGuides: SupportGuide[] = [
       {
         category: '화면UI & 화면버튼',
         files: [
-          { name: '피키픽_UI 디자인 가이드파일_유료_KR2026.ai', size: '3.5M', path: '/images/support/classic-picky/피키픽_UI 디자인 가이드파일_유료_KR2026.ai' , thumbnail: '/images/support/templates/classic-picky/template-13.png' },
+          { name: 'pickypic_ui_guide_KR2026.ai', size: '3.5M', path: '/images/support/classic-picky/pickypic_ui_guide_KR2026.ai' , thumbnail: '/images/support/templates/classic-picky/template-13.png' },
         ],
       },
     ],
@@ -144,7 +144,7 @@ export const supportGuides: SupportGuide[] = [
       {
         category: '화면UI & 화면버튼',
         files: [
-          { name: '피키픽_UI 디자인 가이드파일_유료_KR2026.ai', size: '3.5M', path: '/images/support/urban-picky/피키픽_UI 디자인 가이드파일_유료_KR2026.ai' , thumbnail: '/images/support/templates/urban-picky/template-20.png' },
+          { name: 'pickypic_ui_guide_KR2026.ai', size: '3.5M', path: '/images/support/urban-picky/pickypic_ui_guide_KR2026.ai' , thumbnail: '/images/support/templates/urban-picky/template-20.png' },
         ],
       },
     ],
@@ -171,7 +171,7 @@ export const supportGuides: SupportGuide[] = [
       {
         category: '화면UI & 화면버튼',
         files: [
-          { name: '피키픽_UI 디자인 가이드파일_유료_KR2026.ai', size: '3.5M', path: '/images/support/modern-mini-picky/피키픽_UI 디자인 가이드파일_유료_KR2026.ai' , thumbnail: '/images/support/templates/modern-mini-picky/template-07.png' },
+          { name: 'pickypic_ui_guide_KR2026.ai', size: '3.5M', path: '/images/support/modern-mini-picky/pickypic_ui_guide_KR2026.ai' , thumbnail: '/images/support/templates/modern-mini-picky/template-07.png' },
         ],
       },
     ],
@@ -198,7 +198,7 @@ export const supportGuides: SupportGuide[] = [
       {
         category: '화면UI & 화면버튼',
         files: [
-          { name: '피키픽_UI 디자인 가이드파일_유료_KR2026.ai', size: '3.5M', path: '/images/support/urban-mini-picky/피키픽_UI 디자인 가이드파일_유료_KR2026.ai' , thumbnail: '/images/support/templates/urban-mini-picky/template-07.png' },
+          { name: 'pickypic_ui_guide_KR2026.ai', size: '3.5M', path: '/images/support/urban-mini-picky/pickypic_ui_guide_KR2026.ai' , thumbnail: '/images/support/templates/urban-mini-picky/template-07.png' },
         ],
       },
     ],
@@ -321,7 +321,7 @@ export const supportGuides: SupportGuide[] = [
       {
         category: '화면UI & 화면버튼',
         files: [
-          { name: '피키픽_UI 디자인 가이드파일_유료_KR2026.ai', size: '3.5M', path: '/images/support/outdoor-picky/피키픽_UI 디자인 가이드파일_유료_KR2026.ai' , thumbnail: '/images/support/templates/outdoor-picky/template-32.png' },
+          { name: 'pickypic_ui_guide_KR2026.ai', size: '3.5M', path: '/images/support/outdoor-picky/pickypic_ui_guide_KR2026.ai' , thumbnail: '/images/support/templates/outdoor-picky/template-32.png' },
         ],
       },
     ],
@@ -366,7 +366,7 @@ export const supportGuides: SupportGuide[] = [
       {
         category: '화면UI & 화면버튼',
         files: [
-          { name: '피키픽_UI 디자인 가이드파일_유료_KR2026.ai', size: '3.5M', path: '/images/support/air-picky/피키픽_UI 디자인 가이드파일_유료_KR2026.ai' , thumbnail: '/images/support/templates/air-picky/template-20.png' },
+          { name: 'pickypic_ui_guide_KR2026.ai', size: '3.5M', path: '/images/support/air-picky/pickypic_ui_guide_KR2026.ai' , thumbnail: '/images/support/templates/air-picky/template-20.png' },
         ],
       },
     ],
