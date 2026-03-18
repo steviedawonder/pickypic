@@ -41,7 +41,7 @@ const { guide } = Astro.props;
       <div class="flex justify-center mb-10 lg:mb-14">
         <div class="border border-border-light rounded-lg p-8 lg:p-12 inline-block">
           <img
-            src={guide.image}
+            src={`/images/support/detail-${guide.slug}.png`}
             alt={`${guide.name} 가이드`}
             class="max-h-48 lg:max-h-72 w-auto object-contain"
           />
