@@ -72,7 +72,7 @@ const { guide } = Astro.props;
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 lg:gap-5">
             {group.files.map((file, i) => (
               <a
-                href={file.path}
+                href={encodeURI(file.path)}
                 download
                 class="group block bg-bg-light rounded-lg overflow-hidden hover:shadow-md transition-all duration-300 cursor-pointer"
               >
