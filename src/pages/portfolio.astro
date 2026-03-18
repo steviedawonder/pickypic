@@ -79,6 +79,7 @@ import { portfolioItems, portfolioCategories } from '@data/portfolio';
           <article
             class="portfolio-item gs-fade-up"
             data-title={item.title.toLowerCase()}
+            data-category={item.category}
             data-id={item.id}
             itemscope
             itemtype="https://schema.org/CreativeWork"
@@ -198,9 +199,9 @@ import { portfolioItems, portfolioCategories } from '@data/portfolio';
     function getFilteredItems(): HTMLElement[] {
       return allItems.filter((item) => {
         const title = item.dataset.title || '';
+        const category = item.dataset.category || '';
         const matchesSearch = !searchQuery || title.includes(searchQuery.toLowerCase());
-        // Category filtering: for now all items match 'all', since data doesn't have category field
-        const matchesCategory = currentCategory === 'all' || true;
+        const matchesCategory = currentCategory === 'all' || category === currentCategory;
         return matchesSearch && matchesCategory;
       });
     }

@@ -84,7 +84,10 @@ import BaseLayout from '@layouts/BaseLayout.astro';
   .about-content {
     display: flex;
     justify-content: center;
-    padding: 100px 24px 120px;
+    position: relative;
+    margin-top: -180px;
+    padding: 0 24px 80px;
+    z-index: 1;
   }
 
   .about-intro {
@@ -124,7 +127,8 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 
   @media (max-width: 768px) {
     .about-content {
-      padding: 60px 20px 80px;
+      margin-top: 0;
+      padding: 30px 20px 60px;
     }
 
     .about-buttons {

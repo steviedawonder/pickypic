@@ -58,11 +58,14 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <!-- Canonical -->
     <link rel="canonical" href={canonicalURL} />
 
+    <!-- Font Preload: Bebas Neue (local) -->
+    <link rel="preload" href="/fonts/BebasNeue-Regular.ttf" as="font" type="font/ttf" crossorigin />
+
     <!-- Google Fonts: Noto Sans KR & Montserrat -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=block"
       rel="stylesheet"
     />
 
@@ -92,6 +95,31 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
           document.documentElement.style.visibility = 'hidden';
         }
       })();
+    </script>
+    <!-- Hide page until fonts are loaded to prevent FOUT -->
+    <style>
+      .fonts-loading { opacity: 0; }
+      .fonts-loaded { opacity: 1; transition: opacity 0.1s ease-in; }
+    </style>
+    <script is:inline>
+      document.documentElement.classList.add('fonts-loading');
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(function() {
+          document.documentElement.classList.remove('fonts-loading');
+          document.documentElement.classList.add('fonts-loaded');
+        });
+      } else {
+        // Fallback for browsers without Font Loading API
+        window.addEventListener('load', function() {
+          document.documentElement.classList.remove('fonts-loading');
+          document.documentElement.classList.add('fonts-loaded');
+        });
+      }
+      // Safety timeout: show page after 2s even if fonts fail
+      setTimeout(function() {
+        document.documentElement.classList.remove('fonts-loading');
+        document.documentElement.classList.add('fonts-loaded');
+      }, 2000);
     </script>
   </head>
   <body class="bg-white text-primary antialiased">

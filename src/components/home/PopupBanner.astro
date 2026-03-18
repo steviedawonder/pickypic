@@ -1,0 +1,72 @@
+---
+/**
+ * PopupBanner - Homepage popup that shows on first visit
+ * Matches the original picky-pic.com popup behavior:
+ * - Shows on homepage load
+ * - "24시간 동안 다시 열람하지 않습니다" button to dismiss for 24h
+ * - "닫기" button to close
+ */
+---
+
+<div id="popup-overlay" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40" style="display:none;">
+  <div class="popup-container relative w-[90vw] max-w-[500px] shadow-2xl">
+    <!-- Popup Image (links to rental page) -->
+    <a href="/rental">
+      <img
+        src="/images/common/popup-retro-picky.png"
+        alt="MODERN RETRO PICKY - NEW 레트로 피키 출시"
+        class="w-full block"
+      />
+    </a>
+    <!-- Footer -->
+    <div class="flex items-center justify-between bg-[#333] px-4 py-3 text-sm text-white">
+      <button id="popup-dismiss-24h" class="flex items-center gap-1 hover:underline cursor-pointer">
+        <span class="text-yellow-400 font-bold">24</span>시간 동안 다시 열람하지 않습니다.
+      </button>
+      <button id="popup-close" class="flex items-center gap-1 hover:underline cursor-pointer">
+        닫기 <span class="text-lg leading-none">&times;</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function() {
+    var STORAGE_KEY = 'pickypic-popup-dismissed';
+    var overlay = document.getElementById('popup-overlay');
+    if (!overlay) return;
+
+    // Check if popup was dismissed within 24 hours
+    var dismissed = localStorage.getItem(STORAGE_KEY);
+    if (dismissed) {
+      var dismissedTime = parseInt(dismissed, 10);
+      if (Date.now() - dismissedTime < 24 * 60 * 60 * 1000) {
+        return; // Still within 24h, don't show
+      }
+    }
+
+    // Show popup
+    overlay.style.display = 'flex';
+
+    // Close popup
+    function closePopup() {
+      overlay.style.display = 'none';
+    }
+
+    // Dismiss for 24 hours
+    document.getElementById('popup-dismiss-24h').addEventListener('click', function() {
+      localStorage.setItem(STORAGE_KEY, Date.now().toString());
+      closePopup();
+    });
+
+    // Simple close
+    document.getElementById('popup-close').addEventListener('click', closePopup);
+
+    // Close on overlay click (outside popup)
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) {
+        closePopup();
+      }
+    });
+  })();
+</script>
