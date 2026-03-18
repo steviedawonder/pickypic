@@ -88,19 +88,14 @@ const categories = [
             data-category={product.category}
             data-name={product.name}
           >
-            <div class="flex-1 flex items-center justify-center p-4 lg:p-10">
+            <div class="flex items-center justify-center p-3 lg:p-6">
               <img
                 src={product.image}
                 alt={`${product.name} 가이드`}
-                class="max-h-36 lg:max-h-72 w-auto object-contain"
+                class="w-full h-auto object-contain"
                 loading="lazy"
                 decoding="async"
               />
-            </div>
-            <div class="px-3 pb-3 lg:px-6 lg:pb-6 pt-1 lg:pt-2 text-center">
-              <h2 class="text-[11px] lg:text-base font-bold tracking-wide text-primary uppercase">
-                {product.name}
-              </h2>
             </div>
           </a>
         ))}
