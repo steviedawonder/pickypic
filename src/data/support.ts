@@ -32,20 +32,20 @@ export const supportGuides: SupportGuide[] = [
       {
         category: '2X6 (in) Frames',
         files: [
-          { name: '4cut 2sheet cut 4x3.psd', size: '295.6K', path: '/files/support/modern-picky/4cut_2sheet_cut_4x3.psd' , thumbnail: '/images/support/templates/modern-picky/template-1.png' },
-          { name: '3cut 2sheet cut 1x1.psd', size: '277.3K', path: '/files/support/modern-picky/3cut_2sheet_cut_1x1.psd' , thumbnail: '/images/support/templates/modern-picky/template-2.png' },
-          { name: '3cut 2sheet cut 4x3.psd', size: '253.6K', path: '/files/support/modern-picky/3cut_2sheet_cut_4x3.psd' , thumbnail: '/images/support/templates/modern-picky/template-3.png' },
-          { name: '3cut 2sheet middle4x3_cut.psd', size: '234.2K', path: '/files/support/modern-picky/3cut_2sheet_middle4x3_cut.psd' , thumbnail: '/images/support/templates/modern-picky/template-4.png' },
+          { name: '4cut 2sheet cut 4x3.psd', size: '295.6K', path: '/files/support/modern-picky/4cut_2sheet_cut_4x3.psd' , thumbnail: '/images/support/templates/modern-picky/template-01.png' },
+          { name: '3cut 2sheet cut 1x1.psd', size: '277.3K', path: '/files/support/modern-picky/3cut_2sheet_cut_1x1.psd' , thumbnail: '/images/support/templates/modern-picky/template-02.png' },
+          { name: '3cut 2sheet cut 4x3.psd', size: '253.6K', path: '/files/support/modern-picky/3cut_2sheet_cut_4x3.psd' , thumbnail: '/images/support/templates/modern-picky/template-03.png' },
+          { name: '3cut 2sheet middle4x3_cut.psd', size: '234.2K', path: '/files/support/modern-picky/3cut_2sheet_middle4x3_cut.psd' , thumbnail: '/images/support/templates/modern-picky/template-04.png' },
         ],
       },
       {
         category: '4X6 (in) Frames',
         files: [
-          { name: '1cut 1sheet4x3_2.psd', size: '467.9K', path: '/files/support/modern-picky/1cut_1sheet4x3_2.psd' , thumbnail: '/images/support/templates/modern-picky/template-5.png' },
-          { name: '1cut 1sheet 4x3.psd', size: '385.9K', path: '/files/support/modern-picky/1cut_1sheet_4x3.psd' , thumbnail: '/images/support/templates/modern-picky/template-6.png' },
-          { name: '1x1 4cut middle.psd', size: '424.2K', path: '/files/support/modern-picky/1x1_4cut_middle.psd' , thumbnail: '/images/support/templates/modern-picky/template-7.png' },
-          { name: '1x1-4cut-under-noncutting.psd', size: '425.1K', path: '/files/support/modern-picky/1x1-4cut-under-noncutting.psd' , thumbnail: '/images/support/templates/modern-picky/template-8.png' },
-          { name: '1x1-4cut-up-noncutting.psd', size: '425.5K', path: '/files/support/modern-picky/1x1-4cut-up-noncutting.psd' , thumbnail: '/images/support/templates/modern-picky/template-9.png' },
+          { name: '1cut 1sheet4x3_2.psd', size: '467.9K', path: '/files/support/modern-picky/1cut_1sheet4x3_2.psd' , thumbnail: '/images/support/templates/modern-picky/template-05.png' },
+          { name: '1cut 1sheet 4x3.psd', size: '385.9K', path: '/files/support/modern-picky/1cut_1sheet_4x3.psd' , thumbnail: '/images/support/templates/modern-picky/template-06.png' },
+          { name: '1x1 4cut middle.psd', size: '424.2K', path: '/files/support/modern-picky/1x1_4cut_middle.psd' , thumbnail: '/images/support/templates/modern-picky/template-07.png' },
+          { name: '1x1-4cut-under-noncutting.psd', size: '425.1K', path: '/files/support/modern-picky/1x1-4cut-under-noncutting.psd' , thumbnail: '/images/support/templates/modern-picky/template-08.png' },
+          { name: '1x1-4cut-up-noncutting.psd', size: '425.5K', path: '/files/support/modern-picky/1x1-4cut-up-noncutting.psd' , thumbnail: '/images/support/templates/modern-picky/template-09.png' },
           { name: '1x1-8cut-left-noncutting.psd', size: '498.6K', path: '/files/support/modern-picky/1x1-8cut-left-noncutting.psd' , thumbnail: '/images/support/templates/modern-picky/template-10.png' },
           { name: '1x1-8cut-right-noncutting.psd', size: '512.8K', path: '/files/support/modern-picky/1x1-8cut-right-noncutting.psd' , thumbnail: '/images/support/templates/modern-picky/template-11.png' },
           { name: '1x1-8cut-up-noncutting.psd', size: '592.1K', path: '/files/support/modern-picky/1x1-8cut-up-noncutting.psd' , thumbnail: '/images/support/templates/modern-picky/template-12.png' },
@@ -77,20 +77,20 @@ export const supportGuides: SupportGuide[] = [
       {
         category: 'Newspaper A5 Size',
         files: [
-          { name: 'A5_PICKY_Classic_1cut 1sheet3.5x5.psd', size: '1.6M', path: '/files/support/classic-picky/A5_Classic_1cut_1sheet3.5x5.psd' , thumbnail: '/images/support/templates/classic-picky/template-1.png' },
-          { name: 'A5_PICKY_Classic_1cut 1sheet 5x3.5.psd', size: '2.2M', path: '/files/support/classic-picky/A5_Classic_1cut_1sheet_5x3.5.psd' , thumbnail: '/images/support/templates/classic-picky/template-2.png' },
-          { name: 'A5_PICKY_Classic_2cut 1sheet3.5x5.psd', size: '2.2M', path: '/files/support/classic-picky/A5_Classic_2cut_1sheet3.5x5.psd' , thumbnail: '/images/support/templates/classic-picky/template-3.png' },
-          { name: 'A5_PICKY_Classic_2cut 1sheet5x3.5.psd', size: '2.1M', path: '/files/support/classic-picky/A5_Classic_2cut_1sheet5x3.5.psd' , thumbnail: '/images/support/templates/classic-picky/template-4.png' },
-          { name: 'A5_PICKY_Classic_3cut 1sheet3.5x5.psd', size: '3.2M', path: '/files/support/classic-picky/A5_Classic_3cut_1sheet3.5x5.psd' , thumbnail: '/images/support/templates/classic-picky/template-5.png' },
-          { name: 'A5_PICKY_Classic_3cut 1sheet5x3.5.psd', size: '2.5M', path: '/files/support/classic-picky/A5_Classic_3cut_1sheet5x3.5.psd' , thumbnail: '/images/support/templates/classic-picky/template-6.png' },
+          { name: 'A5_PICKY_Classic_1cut 1sheet3.5x5.psd', size: '1.6M', path: '/files/support/classic-picky/A5_Classic_1cut_1sheet3.5x5.psd' , thumbnail: '/images/support/templates/classic-picky/template-01.png' },
+          { name: 'A5_PICKY_Classic_1cut 1sheet 5x3.5.psd', size: '2.2M', path: '/files/support/classic-picky/A5_Classic_1cut_1sheet_5x3.5.psd' , thumbnail: '/images/support/templates/classic-picky/template-02.png' },
+          { name: 'A5_PICKY_Classic_2cut 1sheet3.5x5.psd', size: '2.2M', path: '/files/support/classic-picky/A5_Classic_2cut_1sheet3.5x5.psd' , thumbnail: '/images/support/templates/classic-picky/template-03.png' },
+          { name: 'A5_PICKY_Classic_2cut 1sheet5x3.5.psd', size: '2.1M', path: '/files/support/classic-picky/A5_Classic_2cut_1sheet5x3.5.psd' , thumbnail: '/images/support/templates/classic-picky/template-04.png' },
+          { name: 'A5_PICKY_Classic_3cut 1sheet3.5x5.psd', size: '3.2M', path: '/files/support/classic-picky/A5_Classic_3cut_1sheet3.5x5.psd' , thumbnail: '/images/support/templates/classic-picky/template-05.png' },
+          { name: 'A5_PICKY_Classic_3cut 1sheet5x3.5.psd', size: '2.5M', path: '/files/support/classic-picky/A5_Classic_3cut_1sheet5x3.5.psd' , thumbnail: '/images/support/templates/classic-picky/template-06.png' },
         ],
       },
       {
         category: 'Newspaper A4 Size',
         files: [
-          { name: 'A4_PICKY_Classic_1cut 1sheet3.5x5.psd', size: '3.0M', path: '/files/support/classic-picky/A4_Classic_1cut_1sheet3.5x5.psd' , thumbnail: '/images/support/templates/classic-picky/template-7.png' },
-          { name: 'A4_PICKY_Classic_1cut 1sheet 5x3.5.psd', size: '4.2M', path: '/files/support/classic-picky/A4_Classic_1cut_1sheet_5x3.5.psd' , thumbnail: '/images/support/templates/classic-picky/template-8.png' },
-          { name: 'A4_PICKY_Classic_2cut 1sheet3.5x5.psd', size: '4.1M', path: '/files/support/classic-picky/A4_Classic_2cut_1sheet3.5x5.psd' , thumbnail: '/images/support/templates/classic-picky/template-9.png' },
+          { name: 'A4_PICKY_Classic_1cut 1sheet3.5x5.psd', size: '3.0M', path: '/files/support/classic-picky/A4_Classic_1cut_1sheet3.5x5.psd' , thumbnail: '/images/support/templates/classic-picky/template-07.png' },
+          { name: 'A4_PICKY_Classic_1cut 1sheet 5x3.5.psd', size: '4.2M', path: '/files/support/classic-picky/A4_Classic_1cut_1sheet_5x3.5.psd' , thumbnail: '/images/support/templates/classic-picky/template-08.png' },
+          { name: 'A4_PICKY_Classic_2cut 1sheet3.5x5.psd', size: '4.1M', path: '/files/support/classic-picky/A4_Classic_2cut_1sheet3.5x5.psd' , thumbnail: '/images/support/templates/classic-picky/template-09.png' },
           { name: 'A4_PICKY_Classic_2cut 1sheet5x3.5.psd', size: '3.9M', path: '/files/support/classic-picky/A4_Classic_2cut_1sheet5x3.5.psd' , thumbnail: '/images/support/templates/classic-picky/template-10.png' },
           { name: 'A4_PICKY_Classic_3cut 1sheet3.5x5.psd', size: '6.1M', path: '/files/support/classic-picky/A4_Classic_3cut_1sheet3.5x5.psd' , thumbnail: '/images/support/templates/classic-picky/template-11.png' },
           { name: 'A4_PICKY_Classic_3cut 1sheet5x3.5.psd', size: '4.8M', path: '/files/support/classic-picky/A4_Classic_3cut_1sheet5x3.5.psd' , thumbnail: '/images/support/templates/classic-picky/template-12.png' },
@@ -115,20 +115,20 @@ export const supportGuides: SupportGuide[] = [
       {
         category: '2X6 (in) Frames',
         files: [
-          { name: '4cut 2sheet cut 4x3.psd', size: '295.6K', path: '/files/support/urban-picky/4cut_2sheet_cut_4x3.psd' , thumbnail: '/images/support/templates/urban-picky/template-1.png' },
-          { name: '3cut 2sheet cut 1x1.psd', size: '277.3K', path: '/files/support/urban-picky/3cut_2sheet_cut_1x1.psd' , thumbnail: '/images/support/templates/urban-picky/template-2.png' },
-          { name: '3cut 2sheet cut 4x3.psd', size: '253.6K', path: '/files/support/urban-picky/3cut_2sheet_cut_4x3.psd' , thumbnail: '/images/support/templates/urban-picky/template-3.png' },
-          { name: '3cut 2sheet middle4x3_cut.psd', size: '234.2K', path: '/files/support/urban-picky/3cut_2sheet_middle4x3_cut.psd' , thumbnail: '/images/support/templates/urban-picky/template-4.png' },
+          { name: '4cut 2sheet cut 4x3.psd', size: '295.6K', path: '/files/support/urban-picky/4cut_2sheet_cut_4x3.psd' , thumbnail: '/images/support/templates/urban-picky/template-01.png' },
+          { name: '3cut 2sheet cut 1x1.psd', size: '277.3K', path: '/files/support/urban-picky/3cut_2sheet_cut_1x1.psd' , thumbnail: '/images/support/templates/urban-picky/template-02.png' },
+          { name: '3cut 2sheet cut 4x3.psd', size: '253.6K', path: '/files/support/urban-picky/3cut_2sheet_cut_4x3.psd' , thumbnail: '/images/support/templates/urban-picky/template-03.png' },
+          { name: '3cut 2sheet middle4x3_cut.psd', size: '234.2K', path: '/files/support/urban-picky/3cut_2sheet_middle4x3_cut.psd' , thumbnail: '/images/support/templates/urban-picky/template-04.png' },
         ],
       },
       {
         category: '4X6 (in) Frames',
         files: [
-          { name: '1cut 1sheet4x3_2.psd', size: '467.9K', path: '/files/support/urban-picky/1cut_1sheet4x3_2.psd' , thumbnail: '/images/support/templates/urban-picky/template-5.png' },
-          { name: '1cut 1sheet 4x3.psd', size: '385.9K', path: '/files/support/urban-picky/1cut_1sheet_4x3.psd' , thumbnail: '/images/support/templates/urban-picky/template-6.png' },
-          { name: '1x1 4cut middle.psd', size: '424.2K', path: '/files/support/urban-picky/1x1_4cut_middle.psd' , thumbnail: '/images/support/templates/urban-picky/template-7.png' },
-          { name: '1x1-4cut-under-noncutting.psd', size: '425.1K', path: '/files/support/urban-picky/1x1-4cut-under-noncutting.psd' , thumbnail: '/images/support/templates/urban-picky/template-8.png' },
-          { name: '1x1-4cut-up-noncutting.psd', size: '425.5K', path: '/files/support/urban-picky/1x1-4cut-up-noncutting.psd' , thumbnail: '/images/support/templates/urban-picky/template-9.png' },
+          { name: '1cut 1sheet4x3_2.psd', size: '467.9K', path: '/files/support/urban-picky/1cut_1sheet4x3_2.psd' , thumbnail: '/images/support/templates/urban-picky/template-05.png' },
+          { name: '1cut 1sheet 4x3.psd', size: '385.9K', path: '/files/support/urban-picky/1cut_1sheet_4x3.psd' , thumbnail: '/images/support/templates/urban-picky/template-06.png' },
+          { name: '1x1 4cut middle.psd', size: '424.2K', path: '/files/support/urban-picky/1x1_4cut_middle.psd' , thumbnail: '/images/support/templates/urban-picky/template-07.png' },
+          { name: '1x1-4cut-under-noncutting.psd', size: '425.1K', path: '/files/support/urban-picky/1x1-4cut-under-noncutting.psd' , thumbnail: '/images/support/templates/urban-picky/template-08.png' },
+          { name: '1x1-4cut-up-noncutting.psd', size: '425.5K', path: '/files/support/urban-picky/1x1-4cut-up-noncutting.psd' , thumbnail: '/images/support/templates/urban-picky/template-09.png' },
           { name: '1x1-8cut-left-noncutting.psd', size: '498.6K', path: '/files/support/urban-picky/1x1-8cut-left-noncutting.psd' , thumbnail: '/images/support/templates/urban-picky/template-10.png' },
           { name: '1x1-8cut-right-noncutting.psd', size: '512.8K', path: '/files/support/urban-picky/1x1-8cut-right-noncutting.psd' , thumbnail: '/images/support/templates/urban-picky/template-11.png' },
           { name: '1x1-8cut-up-noncutting.psd', size: '592.1K', path: '/files/support/urban-picky/1x1-8cut-up-noncutting.psd' , thumbnail: '/images/support/templates/urban-picky/template-12.png' },
@@ -160,18 +160,18 @@ export const supportGuides: SupportGuide[] = [
       {
         category: '2X4 (in) Frames',
         files: [
-          { name: 'mini_1X1 6cut 3sheet_QR_.psd', size: '399.2K', path: '/files/support/modern-mini-picky/mini_1X1_6cut_3sheet_QR.psd' , thumbnail: '/images/support/templates/modern-mini-picky/template-1.png' },
-          { name: 'mini_6cut 3sheet_top_QR.psd', size: '61.3K', path: '/files/support/modern-mini-picky/mini_6cut_3sheet_top_QR.psd' , thumbnail: '/images/support/templates/modern-mini-picky/template-2.png' },
-          { name: 'mini_6cut 3sheet_bottom_QR.psd', size: '349.9K', path: '/files/support/modern-mini-picky/mini_6cut_3sheet_bottom_QR.psd' , thumbnail: '/images/support/templates/modern-mini-picky/template-3.png' },
-          { name: 'mini_3cut 3sheet_QR.psd', size: '355.2K', path: '/files/support/modern-mini-picky/mini_3cut_3sheet_QR.psd' , thumbnail: '/images/support/templates/modern-mini-picky/template-4.png' },
-          { name: 'mini_6cut 3sheet_middle_QR.psd', size: '349.6K', path: '/files/support/modern-mini-picky/mini_6cut_3sheet_middle_QR.psd' , thumbnail: '/images/support/templates/modern-mini-picky/template-5.png' },
-          { name: 'mini_6cut 3sheet_QR.psd', size: '413.8K', path: '/files/support/modern-mini-picky/mini_6cut_3sheet_QR.psd' , thumbnail: '/images/support/templates/modern-mini-picky/template-6.png' },
+          { name: 'mini_1X1 6cut 3sheet_QR_.psd', size: '399.2K', path: '/files/support/modern-mini-picky/mini_1X1_6cut_3sheet_QR.psd' , thumbnail: '/images/support/templates/modern-mini-picky/template-01.png' },
+          { name: 'mini_6cut 3sheet_top_QR.psd', size: '61.3K', path: '/files/support/modern-mini-picky/mini_6cut_3sheet_top_QR.psd' , thumbnail: '/images/support/templates/modern-mini-picky/template-02.png' },
+          { name: 'mini_6cut 3sheet_bottom_QR.psd', size: '349.9K', path: '/files/support/modern-mini-picky/mini_6cut_3sheet_bottom_QR.psd' , thumbnail: '/images/support/templates/modern-mini-picky/template-03.png' },
+          { name: 'mini_3cut 3sheet_QR.psd', size: '355.2K', path: '/files/support/modern-mini-picky/mini_3cut_3sheet_QR.psd' , thumbnail: '/images/support/templates/modern-mini-picky/template-04.png' },
+          { name: 'mini_6cut 3sheet_middle_QR.psd', size: '349.6K', path: '/files/support/modern-mini-picky/mini_6cut_3sheet_middle_QR.psd' , thumbnail: '/images/support/templates/modern-mini-picky/template-05.png' },
+          { name: 'mini_6cut 3sheet_QR.psd', size: '413.8K', path: '/files/support/modern-mini-picky/mini_6cut_3sheet_QR.psd' , thumbnail: '/images/support/templates/modern-mini-picky/template-06.png' },
         ],
       },
       {
         category: '화면UI & 화면버튼',
         files: [
-          { name: '피키픽_UI 디자인 가이드파일_유료_KR2026.ai', size: '3.5M', path: '/files/support/modern-mini-picky/pickypic_ui_guide_2026.ai' , thumbnail: '/images/support/templates/modern-mini-picky/template-7.png' },
+          { name: '피키픽_UI 디자인 가이드파일_유료_KR2026.ai', size: '3.5M', path: '/files/support/modern-mini-picky/pickypic_ui_guide_2026.ai' , thumbnail: '/images/support/templates/modern-mini-picky/template-07.png' },
         ],
       },
     ],
@@ -187,18 +187,18 @@ export const supportGuides: SupportGuide[] = [
       {
         category: '2X4 (in) Frames',
         files: [
-          { name: 'mini_1X1 6cut 3sheet_QR_.psd', size: '399.2K', path: '/files/support/urban-mini-picky/mini_1X1_6cut_3sheet_QR.psd' , thumbnail: '/images/support/templates/urban-mini-picky/template-1.png' },
-          { name: 'mini_6cut 3sheet_top_QR.psd', size: '61.3K', path: '/files/support/urban-mini-picky/mini_6cut_3sheet_top_QR.psd' , thumbnail: '/images/support/templates/urban-mini-picky/template-2.png' },
-          { name: 'mini_6cut 3sheet_bottom_QR.psd', size: '349.9K', path: '/files/support/urban-mini-picky/mini_6cut_3sheet_bottom_QR.psd' , thumbnail: '/images/support/templates/urban-mini-picky/template-3.png' },
-          { name: 'mini_6cut 3sheet_middle_QR.psd', size: '349.6K', path: '/files/support/urban-mini-picky/mini_6cut_3sheet_middle_QR.psd' , thumbnail: '/images/support/templates/urban-mini-picky/template-4.png' },
-          { name: 'mini_3cut 3sheet_QR.psd', size: '355.2K', path: '/files/support/urban-mini-picky/mini_3cut_3sheet_QR.psd' , thumbnail: '/images/support/templates/urban-mini-picky/template-5.png' },
-          { name: 'mini_6cut 3sheet_QR.psd', size: '413.8K', path: '/files/support/urban-mini-picky/mini_6cut_3sheet_QR.psd' , thumbnail: '/images/support/templates/urban-mini-picky/template-6.png' },
+          { name: 'mini_1X1 6cut 3sheet_QR_.psd', size: '399.2K', path: '/files/support/urban-mini-picky/mini_1X1_6cut_3sheet_QR.psd' , thumbnail: '/images/support/templates/urban-mini-picky/template-01.png' },
+          { name: 'mini_6cut 3sheet_top_QR.psd', size: '61.3K', path: '/files/support/urban-mini-picky/mini_6cut_3sheet_top_QR.psd' , thumbnail: '/images/support/templates/urban-mini-picky/template-02.png' },
+          { name: 'mini_6cut 3sheet_bottom_QR.psd', size: '349.9K', path: '/files/support/urban-mini-picky/mini_6cut_3sheet_bottom_QR.psd' , thumbnail: '/images/support/templates/urban-mini-picky/template-03.png' },
+          { name: 'mini_6cut 3sheet_middle_QR.psd', size: '349.6K', path: '/files/support/urban-mini-picky/mini_6cut_3sheet_middle_QR.psd' , thumbnail: '/images/support/templates/urban-mini-picky/template-04.png' },
+          { name: 'mini_3cut 3sheet_QR.psd', size: '355.2K', path: '/files/support/urban-mini-picky/mini_3cut_3sheet_QR.psd' , thumbnail: '/images/support/templates/urban-mini-picky/template-05.png' },
+          { name: 'mini_6cut 3sheet_QR.psd', size: '413.8K', path: '/files/support/urban-mini-picky/mini_6cut_3sheet_QR.psd' , thumbnail: '/images/support/templates/urban-mini-picky/template-06.png' },
         ],
       },
       {
         category: '화면UI & 화면버튼',
         files: [
-          { name: '피키픽_UI 디자인 가이드파일_유료_KR2026.ai', size: '3.5M', path: '/files/support/urban-mini-picky/pickypic_ui_guide_2026.ai' , thumbnail: '/images/support/templates/urban-mini-picky/template-7.png' },
+          { name: '피키픽_UI 디자인 가이드파일_유료_KR2026.ai', size: '3.5M', path: '/files/support/urban-mini-picky/pickypic_ui_guide_2026.ai' , thumbnail: '/images/support/templates/urban-mini-picky/template-07.png' },
         ],
       },
     ],
@@ -214,19 +214,19 @@ export const supportGuides: SupportGuide[] = [
       {
         category: '감열지 (Thermal Paper)',
         files: [
-          { name: 'retro picky_print template_KR.psd', size: '9.9M', path: '/files/support/modern-retro-picky/retro_picky_print_template_KR.psd' , thumbnail: '/images/support/templates/modern-retro-picky/template-1.png' },
+          { name: 'retro picky_print template_KR.psd', size: '9.9M', path: '/files/support/modern-retro-picky/retro_picky_print_template_KR.psd' , thumbnail: '/images/support/templates/modern-retro-picky/template-01.png' },
         ],
       },
       {
         category: '스티커용지 (Sticker Paper)',
         files: [
-          { name: 'retro picky_print template_KR.psd', size: '9.9M', path: '/files/support/modern-retro-picky/retro_picky_sticker_template_KR.psd' , thumbnail: '/images/support/templates/modern-retro-picky/template-2.png' },
+          { name: 'retro picky_print template_KR.psd', size: '9.9M', path: '/files/support/modern-retro-picky/retro_picky_sticker_template_KR.psd' , thumbnail: '/images/support/templates/modern-retro-picky/template-02.png' },
         ],
       },
       {
         category: '화면UI & 화면버튼',
         files: [
-          { name: 'retro picky_background template_KR.psd', size: '6.7M', path: '/files/support/modern-retro-picky/retro_picky_background_template_KR.psd' , thumbnail: '/images/support/templates/modern-retro-picky/template-3.png' },
+          { name: 'retro picky_background template_KR.psd', size: '6.7M', path: '/files/support/modern-retro-picky/retro_picky_background_template_KR.psd' , thumbnail: '/images/support/templates/modern-retro-picky/template-03.png' },
         ],
       },
     ],
@@ -242,19 +242,19 @@ export const supportGuides: SupportGuide[] = [
       {
         category: '감열지 (Thermal Paper)',
         files: [
-          { name: 'retro picky_print template_KR.psd', size: '9.9M', path: '/files/support/urban-retro-picky/retro_picky_print_template_KR.psd' , thumbnail: '/images/support/templates/urban-retro-picky/template-1.png' },
+          { name: 'retro picky_print template_KR.psd', size: '9.9M', path: '/files/support/urban-retro-picky/retro_picky_print_template_KR.psd' , thumbnail: '/images/support/templates/urban-retro-picky/template-01.png' },
         ],
       },
       {
         category: '스티커용지 (Sticker Paper)',
         files: [
-          { name: 'retro picky_print template_KR.psd', size: '9.9M', path: '/files/support/urban-retro-picky/retro_picky_sticker_template_KR.psd' , thumbnail: '/images/support/templates/urban-retro-picky/template-2.png' },
+          { name: 'retro picky_print template_KR.psd', size: '9.9M', path: '/files/support/urban-retro-picky/retro_picky_sticker_template_KR.psd' , thumbnail: '/images/support/templates/urban-retro-picky/template-02.png' },
         ],
       },
       {
         category: '화면UI & 화면버튼',
         files: [
-          { name: 'retro picky_background template_KR.psd', size: '6.7M', path: '/files/support/urban-retro-picky/retro_picky_background_template_KR.psd' , thumbnail: '/images/support/templates/urban-retro-picky/template-3.png' },
+          { name: 'retro picky_background template_KR.psd', size: '6.7M', path: '/files/support/urban-retro-picky/retro_picky_background_template_KR.psd' , thumbnail: '/images/support/templates/urban-retro-picky/template-03.png' },
         ],
       },
     ],
@@ -270,20 +270,20 @@ export const supportGuides: SupportGuide[] = [
       {
         category: '2X6 (in) Frames',
         files: [
-          { name: '4cut 2sheet cut 4x3.psd', size: '295.6K', path: '/files/support/outdoor-picky/4cut_2sheet_cut_4x3.psd' , thumbnail: '/images/support/templates/outdoor-picky/template-1.png' },
-          { name: '3cut 2sheet cut 1x1.psd', size: '277.3K', path: '/files/support/outdoor-picky/3cut_2sheet_cut_1x1.psd' , thumbnail: '/images/support/templates/outdoor-picky/template-2.png' },
-          { name: '3cut 2sheet cut 4x3.psd', size: '253.6K', path: '/files/support/outdoor-picky/3cut_2sheet_cut_4x3.psd' , thumbnail: '/images/support/templates/outdoor-picky/template-3.png' },
-          { name: '3cut 2sheet middle4x3_cut.psd', size: '234.2K', path: '/files/support/outdoor-picky/3cut_2sheet_middle4x3_cut.psd' , thumbnail: '/images/support/templates/outdoor-picky/template-4.png' },
+          { name: '4cut 2sheet cut 4x3.psd', size: '295.6K', path: '/files/support/outdoor-picky/4cut_2sheet_cut_4x3.psd' , thumbnail: '/images/support/templates/outdoor-picky/template-01.png' },
+          { name: '3cut 2sheet cut 1x1.psd', size: '277.3K', path: '/files/support/outdoor-picky/3cut_2sheet_cut_1x1.psd' , thumbnail: '/images/support/templates/outdoor-picky/template-02.png' },
+          { name: '3cut 2sheet cut 4x3.psd', size: '253.6K', path: '/files/support/outdoor-picky/3cut_2sheet_cut_4x3.psd' , thumbnail: '/images/support/templates/outdoor-picky/template-03.png' },
+          { name: '3cut 2sheet middle4x3_cut.psd', size: '234.2K', path: '/files/support/outdoor-picky/3cut_2sheet_middle4x3_cut.psd' , thumbnail: '/images/support/templates/outdoor-picky/template-04.png' },
         ],
       },
       {
         category: '4X6 (in) Frames',
         files: [
-          { name: '1cut 1sheet4x3_2.psd', size: '467.9K', path: '/files/support/outdoor-picky/1cut_1sheet4x3_2.psd' , thumbnail: '/images/support/templates/outdoor-picky/template-5.png' },
-          { name: '1cut 1sheet 4x3.psd', size: '385.9K', path: '/files/support/outdoor-picky/1cut_1sheet_4x3.psd' , thumbnail: '/images/support/templates/outdoor-picky/template-6.png' },
-          { name: '1x1 4cut middle.psd', size: '424.2K', path: '/files/support/outdoor-picky/1x1_4cut_middle.psd' , thumbnail: '/images/support/templates/outdoor-picky/template-7.png' },
-          { name: '1x1-4cut-under-noncutting.psd', size: '425.1K', path: '/files/support/outdoor-picky/1x1-4cut-under-noncutting.psd' , thumbnail: '/images/support/templates/outdoor-picky/template-8.png' },
-          { name: '1x1-4cut-up-noncutting.psd', size: '425.5K', path: '/files/support/outdoor-picky/1x1-4cut-up-noncutting.psd' , thumbnail: '/images/support/templates/outdoor-picky/template-9.png' },
+          { name: '1cut 1sheet4x3_2.psd', size: '467.9K', path: '/files/support/outdoor-picky/1cut_1sheet4x3_2.psd' , thumbnail: '/images/support/templates/outdoor-picky/template-05.png' },
+          { name: '1cut 1sheet 4x3.psd', size: '385.9K', path: '/files/support/outdoor-picky/1cut_1sheet_4x3.psd' , thumbnail: '/images/support/templates/outdoor-picky/template-06.png' },
+          { name: '1x1 4cut middle.psd', size: '424.2K', path: '/files/support/outdoor-picky/1x1_4cut_middle.psd' , thumbnail: '/images/support/templates/outdoor-picky/template-07.png' },
+          { name: '1x1-4cut-under-noncutting.psd', size: '425.1K', path: '/files/support/outdoor-picky/1x1-4cut-under-noncutting.psd' , thumbnail: '/images/support/templates/outdoor-picky/template-08.png' },
+          { name: '1x1-4cut-up-noncutting.psd', size: '425.5K', path: '/files/support/outdoor-picky/1x1-4cut-up-noncutting.psd' , thumbnail: '/images/support/templates/outdoor-picky/template-09.png' },
           { name: '1x1-8cut-left-noncutting.psd', size: '498.6K', path: '/files/support/outdoor-picky/1x1-8cut-left-noncutting.psd' , thumbnail: '/images/support/templates/outdoor-picky/template-10.png' },
           { name: '1x1-8cut-right-noncutting.psd', size: '512.8K', path: '/files/support/outdoor-picky/1x1-8cut-right-noncutting.psd' , thumbnail: '/images/support/templates/outdoor-picky/template-11.png' },
           { name: '1x1-8cut-up-noncutting.psd', size: '592.1K', path: '/files/support/outdoor-picky/1x1-8cut-up-noncutting.psd' , thumbnail: '/images/support/templates/outdoor-picky/template-12.png' },
@@ -337,20 +337,20 @@ export const supportGuides: SupportGuide[] = [
       {
         category: '2X6 (in) Frames',
         files: [
-          { name: '3cut 2sheet cut 1x1.psd', size: '277.3K', path: '/files/support/air-picky/3cut_2sheet_cut_1x1.psd' , thumbnail: '/images/support/templates/air-picky/template-1.png' },
-          { name: '4cut 2sheet cut 4x3.psd', size: '295.6K', path: '/files/support/air-picky/4cut_2sheet_cut_4x3.psd' , thumbnail: '/images/support/templates/air-picky/template-2.png' },
-          { name: '3cut 2sheet cut 4x3.psd', size: '253.6K', path: '/files/support/air-picky/3cut_2sheet_cut_4x3.psd' , thumbnail: '/images/support/templates/air-picky/template-3.png' },
-          { name: '3cut 2sheet middle4x3_cut.psd', size: '234.2K', path: '/files/support/air-picky/3cut_2sheet_middle4x3_cut.psd' , thumbnail: '/images/support/templates/air-picky/template-4.png' },
+          { name: '3cut 2sheet cut 1x1.psd', size: '277.3K', path: '/files/support/air-picky/3cut_2sheet_cut_1x1.psd' , thumbnail: '/images/support/templates/air-picky/template-01.png' },
+          { name: '4cut 2sheet cut 4x3.psd', size: '295.6K', path: '/files/support/air-picky/4cut_2sheet_cut_4x3.psd' , thumbnail: '/images/support/templates/air-picky/template-02.png' },
+          { name: '3cut 2sheet cut 4x3.psd', size: '253.6K', path: '/files/support/air-picky/3cut_2sheet_cut_4x3.psd' , thumbnail: '/images/support/templates/air-picky/template-03.png' },
+          { name: '3cut 2sheet middle4x3_cut.psd', size: '234.2K', path: '/files/support/air-picky/3cut_2sheet_middle4x3_cut.psd' , thumbnail: '/images/support/templates/air-picky/template-04.png' },
         ],
       },
       {
         category: '4X6 (in) Frames',
         files: [
-          { name: '1cut 1sheet4x3_2.psd', size: '467.9K', path: '/files/support/air-picky/1cut_1sheet4x3_2.psd' , thumbnail: '/images/support/templates/air-picky/template-5.png' },
-          { name: '1cut 1sheet 4x3.psd', size: '385.9K', path: '/files/support/air-picky/1cut_1sheet_4x3.psd' , thumbnail: '/images/support/templates/air-picky/template-6.png' },
-          { name: '1x1 4cut middle.psd', size: '424.2K', path: '/files/support/air-picky/1x1_4cut_middle.psd' , thumbnail: '/images/support/templates/air-picky/template-7.png' },
-          { name: '1x1-4cut-under-noncutting.psd', size: '425.1K', path: '/files/support/air-picky/1x1-4cut-under-noncutting.psd' , thumbnail: '/images/support/templates/air-picky/template-8.png' },
-          { name: '1x1-4cut-up-noncutting.psd', size: '425.5K', path: '/files/support/air-picky/1x1-4cut-up-noncutting.psd' , thumbnail: '/images/support/templates/air-picky/template-9.png' },
+          { name: '1cut 1sheet4x3_2.psd', size: '467.9K', path: '/files/support/air-picky/1cut_1sheet4x3_2.psd' , thumbnail: '/images/support/templates/air-picky/template-05.png' },
+          { name: '1cut 1sheet 4x3.psd', size: '385.9K', path: '/files/support/air-picky/1cut_1sheet_4x3.psd' , thumbnail: '/images/support/templates/air-picky/template-06.png' },
+          { name: '1x1 4cut middle.psd', size: '424.2K', path: '/files/support/air-picky/1x1_4cut_middle.psd' , thumbnail: '/images/support/templates/air-picky/template-07.png' },
+          { name: '1x1-4cut-under-noncutting.psd', size: '425.1K', path: '/files/support/air-picky/1x1-4cut-under-noncutting.psd' , thumbnail: '/images/support/templates/air-picky/template-08.png' },
+          { name: '1x1-4cut-up-noncutting.psd', size: '425.5K', path: '/files/support/air-picky/1x1-4cut-up-noncutting.psd' , thumbnail: '/images/support/templates/air-picky/template-09.png' },
           { name: '1x1-8cut-left-noncutting.psd', size: '498.6K', path: '/files/support/air-picky/1x1-8cut-left-noncutting.psd' , thumbnail: '/images/support/templates/air-picky/template-10.png' },
           { name: '1x1-8cut-right-noncutting.psd', size: '512.8K', path: '/files/support/air-picky/1x1-8cut-right-noncutting.psd' , thumbnail: '/images/support/templates/air-picky/template-11.png' },
           { name: '1x1-8cut-up-noncutting.psd', size: '592.1K', path: '/files/support/air-picky/1x1-8cut-up-noncutting.psd' , thumbnail: '/images/support/templates/air-picky/template-12.png' },
