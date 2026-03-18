@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
 import { supportGuides } from '@data/support';
+import { products } from '@data/products';
 import type { GetStaticPaths } from 'astro';
 
 export const getStaticPaths: GetStaticPaths = () => {
@@ -11,6 +12,8 @@ export const getStaticPaths: GetStaticPaths = () => {
 };
 
 const { guide } = Astro.props;
+const product = products.find(p => p.id === guide.slug);
+const productImage = product?.imageRight || guide.image;
 ---
 
 <BaseLayout
@@ -40,7 +43,7 @@ const { guide } = Astro.props;
       <!-- Product Image -->
       <div class="flex justify-center mb-10 lg:mb-14">
         <img
-          src={guide.image}
+          src={productImage}
           alt={`${guide.name} 가이드`}
           class="max-h-48 lg:max-h-64 w-auto object-contain"
         />
