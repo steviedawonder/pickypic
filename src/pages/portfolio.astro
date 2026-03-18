@@ -265,6 +265,9 @@ import { portfolioItems, portfolioCategories } from '@data/portfolio';
       filtered.forEach((item, i) => {
         if (i >= startIdx && i < endIdx) {
           item.classList.remove('hidden-item');
+          // Reset GSAP animation opacity for filtered items
+          item.style.opacity = '1';
+          item.style.transform = 'translateY(0)';
         }
       });
 
