@@ -47,18 +47,17 @@ const { guide } = Astro.props;
       </div>
 
       <!-- Notice -->
-      <div class="bg-bg-light border border-border-light rounded-lg p-4 lg:p-6 mb-10 lg:mb-14">
-        <div class="flex items-start gap-3">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-          </svg>
-          <div>
-            <p class="text-sm font-semibold text-primary mb-1">{guide.notice}</p>
-            <p class="text-xs text-secondary leading-relaxed">
-              가이드파일 내 디자인 가능 영역을 꼭 확인해주세요.<br />
-              디자인 범위를 벗어나는 경우 인쇄 품질에 영향을 줄 수 있습니다.
-            </p>
-          </div>
+      <div class="mb-10 lg:mb-14">
+        <h2 class="text-lg lg:text-2xl font-bold text-primary tracking-tight mb-6 text-center">
+          주의사항 : {guide.notice}
+        </h2>
+        <div class="flex justify-center">
+          <img
+            src={`/images/support/templates/${guide.slug}/notice.jpg`}
+            alt={`${guide.name} ${guide.notice}`}
+            class="max-w-full rounded-lg"
+            loading="lazy"
+          />
         </div>
       </div>
 
