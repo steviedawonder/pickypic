@@ -2,31 +2,6 @@
 import BaseLayout from '@layouts/BaseLayout.astro';
 import HeroSection from '@components/home/HeroSection.astro';
 import PopupBanner from '@components/home/PopupBanner.astro';
-import FAQSchema from '@components/seo/FAQSchema.astro';
-import { company } from '@data/company';
-
-const homeFAQ = [
-  {
-    question: '포토부스 렌탈이란 무엇인가요?',
-    answer: '포토부스 렌탈은 브랜드 팝업스토어, 기업 행사, 웨딩, 파티 등 다양한 이벤트에 전문 포토부스 장비와 운영 인력을 대여하는 서비스입니다. 피키픽은 설치부터 운영, 철수까지 전 과정을 전담 스태프가 관리합니다.',
-  },
-  {
-    question: '피키픽 포토부스는 어떤 행사에 적합한가요?',
-    answer: '피키픽 포토부스는 브랜드 팝업스토어, 기업 컨퍼런스, 제품 론칭 행사, 웨딩, 생일파티, 졸업식 등 모든 유형의 이벤트에 적합합니다. 넷플릭스, 현대자동차, 기아, 뉴발란스, 스타벅스 등 1,000건 이상의 행사를 성공적으로 진행했습니다.',
-  },
-  {
-    question: '전국 어디든 포토부스 출장 설치가 가능한가요?',
-    answer: '네, 피키픽은 서울 및 수도권은 물론 전국 어디든 출장 설치가 가능합니다. 해외 행사(싱가포르 등)도 진행하고 있으며, 설치 장소에 맞춘 맞춤형 세팅을 제공합니다.',
-  },
-  {
-    question: '포토부스 종류는 몇 가지인가요?',
-    answer: '피키픽은 스탠드형(모던피키, 클래식피키, 어반피키), 테이블형(모던미니피키, 어반미니피키, 모던레트로피키, 어반레트로피키), 부스형(아웃도어피키, 에어피키) 총 9종 이상의 포토부스 라인업을 보유하고 있습니다.',
-  },
-  {
-    question: '렌탈 문의 후 얼마나 빨리 답변을 받을 수 있나요?',
-    answer: '피키픽은 영업 시간 기준 1시간 이내에 답변을 드리고 있습니다. 렌탈문의 페이지에서 양식을 작성하시거나, 카카오톡 채널(@피키픽 포토부스)로 문의하시면 빠르게 상담받으실 수 있습니다.',
-  },
-];
 ---
 
 <BaseLayout
@@ -34,37 +9,5 @@ const homeFAQ = [
   description="피키픽 포토부스 - 브랜드 팝업, 기업 행사, 파티 등 다양한 이벤트에 맞춤형 포토부스 렌탈 서비스를 제공합니다. 테이블형, 스탠드형, 부스형 9종 이상의 포토부스 라인업."
 >
   <HeroSection />
-
-  <!-- GEO: AI 인용용 회사 소개 섹션 -->
-  <section class="bg-bg-muted py-16 lg:py-20" aria-labelledby="about-pickypic">
-    <div class="mx-auto max-w-4xl px-6 lg:px-8 text-center">
-      <h2 id="about-pickypic" class="text-xl lg:text-2xl font-bold text-primary mb-6">피키픽 포토부스 소개</h2>
-      <p class="text-secondary leading-relaxed text-sm lg:text-base mb-8">
-        {company.description}
-      </p>
-      <dl class="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
-        <div>
-          <dt class="text-xs text-secondary mb-1">설립</dt>
-          <dd class="text-lg font-bold text-primary">{company.foundingDate}년</dd>
-        </div>
-        <div>
-          <dt class="text-xs text-secondary mb-1">포토부스 모델</dt>
-          <dd class="text-lg font-bold text-primary">9종+</dd>
-        </div>
-        <div>
-          <dt class="text-xs text-secondary mb-1">누적 행사</dt>
-          <dd class="text-lg font-bold text-primary">1,000건+</dd>
-        </div>
-        <div>
-          <dt class="text-xs text-secondary mb-1">소재지</dt>
-          <dd class="text-lg font-bold text-primary">서울 성수동</dd>
-        </div>
-      </dl>
-    </div>
-  </section>
-
-  <!-- FAQ Section -->
-  <FAQSchema items={homeFAQ} />
-
   <PopupBanner />
 </BaseLayout>
