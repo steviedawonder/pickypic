@@ -362,5 +362,23 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       document.addEventListener('DOMContentLoaded', initAnimations);
       document.addEventListener('astro:after-swap', initAnimations);
     </script>
+
+    <!-- 채널톡 위젯 강제 제거 (GTM에서 로드됨) -->
+    <script is:inline>
+      (function removeChannelTalk() {
+        var selectors = ['#ch-plugin', '#channel-io-plugin', '[id^="ch-plugin"]', '.ch-desk-messenger', '[class*="channel"]'];
+        function remove() {
+          selectors.forEach(function(sel) {
+            document.querySelectorAll(sel).forEach(function(el) { el.remove(); });
+          });
+          // Also remove channel talk script
+          if (window.ChannelIO) { try { window.ChannelIO('shutdown'); } catch(e) {} }
+        }
+        remove();
+        setInterval(remove, 1000);
+        var observer = new MutationObserver(remove);
+        observer.observe(document.body, { childList: true, subtree: true });
+      })();
+    </script>
   </body>
 </html>

@@ -1,4 +1,6 @@
 ---
+export const prerender = false;
+
 import BaseLayout from '@layouts/BaseLayout.astro';
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import { company } from '@data/company';
@@ -8,20 +10,9 @@ import { toHTML } from '@portabletext/to-html';
 const sanityClient = createClient({
   projectId: '7b9lcco4',
   dataset: 'production',
-  useCdn: true,
+  useCdn: false,
   apiVersion: '2024-01-01',
 });
-
-export async function getStaticPaths() {
-  const client = createClient({
-    projectId: '7b9lcco4',
-    dataset: 'production',
-    useCdn: true,
-    apiVersion: '2024-01-01',
-  });
-  const posts = await client.fetch(`*[_type == "blogPost" && publishedAt != null]{ "slug": slug.current }`);
-  return posts.map((post: any) => ({ params: { slug: post.slug } }));
-}
 
 const { slug } = Astro.params;
 

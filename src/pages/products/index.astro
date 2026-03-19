@@ -11,9 +11,14 @@ const sanityClient = createClient({
   apiVersion: '2024-01-01',
 });
 
-const downloadFiles = await sanityClient.fetch(`*[_type == "downloadFile" && isActive == true && category == "product"] {
-  displayName, linkedProducts, "fileUrl": file.asset->url
-}`);
+let downloadFiles: any[] = [];
+try {
+  downloadFiles = await sanityClient.fetch(`*[_type == "downloadFile" && isActive == true && category == "product"] {
+    displayName, linkedProducts, "fileUrl": file.asset->url
+  }`);
+} catch (e) {
+  // Sanity 접속 실패 시 빈 배열
+}
 
 // 제품 슬러그 순서 (캐러셀 순서와 동일)
 const productSlugs = [

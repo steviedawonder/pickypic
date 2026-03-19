@@ -1,4 +1,6 @@
 ---
+export const prerender = false;
+
 import BaseLayout from '@layouts/BaseLayout.astro';
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import TextHero from '@components/common/TextHero.astro';
@@ -12,18 +14,23 @@ const sanityClient = createClient({
   apiVersion: '2024-01-01',
 });
 
-const posts = await sanityClient.fetch(`*[_type == "blogPost" && publishedAt != null] | order(publishedAt desc) {
-  _id, title, slug, excerpt, publishedAt,
-  mainImage { asset-> { _id, url } },
-  category-> { title, slug },
-  author-> { name },
-  "estimatedReadingTime": round(length(pt::text(body)) / 500)
-}`);
-
-const rawCategories = await sanityClient.fetch(`*[_type == "blogCategory"] {
-  title, slug,
-  "postCount": count(*[_type == "blogPost" && publishedAt != null && references(^._id)])
-}`);
+let posts: any[] = [];
+let rawCategories: any[] = [];
+try {
+  posts = await sanityClient.fetch(`*[_type == "blogPost" && publishedAt != null] | order(publishedAt desc) {
+    _id, title, slug, excerpt, publishedAt,
+    mainImage { asset-> { _id, url } },
+    category-> { title, slug },
+    author-> { name },
+    "estimatedReadingTime": round(length(pt::text(body)) / 500)
+  }`);
+  rawCategories = await sanityClient.fetch(`*[_type == "blogCategory"] {
+    title, slug,
+    "postCount": count(*[_type == "blogPost" && publishedAt != null && references(^._id)])
+  }`);
+} catch (e) {
+  // Sanity 접속 실패 시 빈 목록 표시
+}
 
 const totalCount = posts.length;
 const categories = [

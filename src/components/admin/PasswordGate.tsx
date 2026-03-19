@@ -1,6 +1,6 @@
 import { useState, useEffect, type ReactNode } from 'react';
 
-const ADMIN_PASSWORD = 'pickypic2020';
+const ADMIN_PASSWORD = import.meta.env.PUBLIC_ADMIN_PASSWORD || 'pickypic2020';
 const STORAGE_KEY = 'pickypic-admin-auth';
 
 interface PasswordGateProps {

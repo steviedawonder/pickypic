@@ -1,19 +1,60 @@
-import { createClient } from '@sanity/client';
+// Admin client - all Sanity mutations go through /api/sanity server-side proxy.
+// The Sanity API token is never exposed to the browser.
 
-// Sanity API 토큰 (sanity.io/manage > API > Tokens에서 Editor 권한으로 생성)
-const SANITY_TOKEN = 'skrKYET4T3eI3gjxAn1QSq7D7Xr1QUrItYlZJ4raBKET6BE2LeMJlYbvgusk36LnlL0hQH0kJZ2HDYTPffdDSuecTjc9eCzlhuLL2MKFlUaV406LPblIcWDn7Gms3sb4OHoZWDdpKx91USwYOmqexS2VPgjQOOkLm3VKmGozcKAs35JqaIY2';
+const ADMIN_PASSWORD = import.meta.env.PUBLIC_ADMIN_PASSWORD || 'pickypic2020';
 
-export const adminClient = createClient({
-  projectId: '7b9lcco4',
-  dataset: 'production',
-  apiVersion: '2024-01-01',
-  useCdn: false,
-  token: SANITY_TOKEN,
-});
+function getAuthHeaders(): Record<string, string> {
+  return { 'x-admin-auth': ADMIN_PASSWORD };
+}
+
+async function sanityAction(body: Record<string, unknown>) {
+  const res = await fetch('/api/sanity', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: res.statusText }));
+    throw new Error(err.error || `API error ${res.status}`);
+  }
+  return res.json();
+}
+
+async function sanityFetch(query: string, params?: Record<string, unknown>) {
+  return sanityAction({ action: 'fetch', query, params });
+}
+
+async function sanityCreate(data: Record<string, unknown>) {
+  return sanityAction({ action: 'create', data });
+}
+
+async function sanityUpdate(id: string, data: Record<string, unknown>) {
+  return sanityAction({ action: 'update', id, data });
+}
+
+async function sanityDelete(id: string) {
+  return sanityAction({ action: 'delete', id });
+}
+
+async function sanityUpload(action: 'uploadImage' | 'uploadFile', file: File) {
+  const formData = new FormData();
+  formData.append('action', action);
+  formData.append('file', file);
+  const res = await fetch('/api/sanity', {
+    method: 'POST',
+    headers: { ...getAuthHeaders() },
+    body: formData,
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: res.statusText }));
+    throw new Error(err.error || `Upload error ${res.status}`);
+  }
+  return res.json();
+}
 
 // ── Blog ──
 export async function fetchBlogPosts() {
-  return adminClient.fetch(`*[_type == "blogPost"] | order(publishedAt desc) {
+  return sanityFetch(`*[_type == "blogPost"] | order(publishedAt desc) {
     _id, title, slug, excerpt, publishedAt,
     category-> { title },
     tags,
@@ -23,7 +64,7 @@ export async function fetchBlogPosts() {
 }
 
 export async function fetchBlogPost(id: string) {
-  return adminClient.fetch(`*[_type == "blogPost" && _id == $id][0] {
+  return sanityFetch(`*[_type == "blogPost" && _id == $id][0] {
     _id, title, slug, excerpt, body, publishedAt,
     category-> { _id, title },
     tags, focusKeyword, seoTitle, seoDescription,
@@ -32,70 +73,70 @@ export async function fetchBlogPost(id: string) {
 }
 
 export async function fetchCategories() {
-  return adminClient.fetch(`*[_type == "blogCategory"] | order(title asc) {
+  return sanityFetch(`*[_type == "blogCategory"] | order(title asc) {
     _id, title, slug,
     "postCount": count(*[_type == "blogPost" && references(^._id)])
   }`);
 }
 
 export async function createBlogPost(data: any) {
-  return adminClient.create({ _type: 'blogPost', ...data });
+  return sanityCreate({ _type: 'blogPost', ...data });
 }
 
 export async function updateBlogPost(id: string, data: any) {
-  return adminClient.patch(id).set(data).commit();
+  return sanityUpdate(id, data);
 }
 
 export async function deleteBlogPost(id: string) {
-  return adminClient.delete(id);
+  return sanityDelete(id);
 }
 
 // ── Portfolio ──
 export async function fetchPortfolioItems() {
-  return adminClient.fetch(`*[_type == "portfolio"] | order(order desc) {
+  return sanityFetch(`*[_type == "portfolio"] | order(order desc) {
     _id, title, category, client, order, isVisible,
     image { asset-> { _id, url } }
   }`);
 }
 
 export async function createPortfolioItem(data: any) {
-  return adminClient.create({ _type: 'portfolio', ...data });
+  return sanityCreate({ _type: 'portfolio', ...data });
 }
 
 export async function updatePortfolioItem(id: string, data: any) {
-  return adminClient.patch(id).set(data).commit();
+  return sanityUpdate(id, data);
 }
 
 export async function deletePortfolioItem(id: string) {
-  return adminClient.delete(id);
+  return sanityDelete(id);
 }
 
 export async function uploadImage(file: File) {
-  return adminClient.assets.upload('image', file);
+  return sanityUpload('uploadImage', file);
 }
 
 // ── FAQ ──
 export async function fetchFAQItems() {
-  return adminClient.fetch(`*[_type == "faqItem"] | order(page asc, order asc) {
+  return sanityFetch(`*[_type == "faqItem"] | order(page asc, order asc) {
     _id, question, answer, page, order
   }`);
 }
 
 export async function createFAQItem(data: any) {
-  return adminClient.create({ _type: 'faqItem', ...data });
+  return sanityCreate({ _type: 'faqItem', ...data });
 }
 
 export async function updateFAQItem(id: string, data: any) {
-  return adminClient.patch(id).set(data).commit();
+  return sanityUpdate(id, data);
 }
 
 export async function deleteFAQItem(id: string) {
-  return adminClient.delete(id);
+  return sanityDelete(id);
 }
 
 // ── Collaboration ──
 export async function fetchCollaborationRequests() {
-  return adminClient.fetch(`*[_type == "collaborationRequest"] | order(submittedAt desc) {
+  return sanityFetch(`*[_type == "collaborationRequest"] | order(submittedAt desc) {
     _id, collaborationType, eventName, companyName, contactName, contactPhone, contactEmail,
     installLocation, eventSchedule, removalSchedule, boothType, wrapping, shootingType,
     additionalMessage, status, submittedAt, memo
@@ -103,40 +144,40 @@ export async function fetchCollaborationRequests() {
 }
 
 export async function createCollaborationRequest(data: any) {
-  return adminClient.create({ _type: 'collaborationRequest', ...data });
+  return sanityCreate({ _type: 'collaborationRequest', ...data });
 }
 
 export async function updateCollaborationRequest(id: string, data: any) {
-  return adminClient.patch(id).set(data).commit();
+  return sanityUpdate(id, data);
 }
 
 export async function deleteCollaborationRequest(id: string) {
-  return adminClient.delete(id);
+  return sanityDelete(id);
 }
 
 // ── Popup Banner ──
 export async function fetchPopupBanners() {
-  return adminClient.fetch(`*[_type == "popupBanner"] {
+  return sanityFetch(`*[_type == "popupBanner"] {
     _id, isActive, linkUrl, altText,
     image { asset-> { _id, url } }
   }`);
 }
 
 export async function createPopupBanner(data: any) {
-  return adminClient.create({ _type: 'popupBanner', ...data });
+  return sanityCreate({ _type: 'popupBanner', ...data });
 }
 
 export async function updatePopupBanner(id: string, data: any) {
-  return adminClient.patch(id).set(data).commit();
+  return sanityUpdate(id, data);
 }
 
 export async function deletePopupBanner(id: string) {
-  return adminClient.delete(id);
+  return sanityDelete(id);
 }
 
 // ── Download Files ──
 export async function fetchDownloadFiles() {
-  return adminClient.fetch(`*[_type == "downloadFile"] | order(order asc) {
+  return sanityFetch(`*[_type == "downloadFile"] | order(order asc) {
     _id, displayName, category, isActive, order, linkedProducts,
     "fileUrl": file.asset->url,
     "fileName": file.asset->originalFilename,
@@ -145,30 +186,30 @@ export async function fetchDownloadFiles() {
 }
 
 export async function createDownloadFile(data: any) {
-  return adminClient.create({ _type: 'downloadFile', ...data });
+  return sanityCreate({ _type: 'downloadFile', ...data });
 }
 
 export async function updateDownloadFile(id: string, data: any) {
-  return adminClient.patch(id).set(data).commit();
+  return sanityUpdate(id, data);
 }
 
 export async function deleteDownloadFile(id: string) {
-  return adminClient.delete(id);
+  return sanityDelete(id);
 }
 
 export async function uploadFile(file: File) {
-  return adminClient.assets.upload('file', file, { filename: file.name });
+  return sanityUpload('uploadFile', file);
 }
 
 // ── Dashboard Stats ──
 export async function fetchDashboardStats() {
   const [totalPosts, published, drafts, categories, portfolioCount, faqCount] = await Promise.all([
-    adminClient.fetch(`count(*[_type == "blogPost"])`),
-    adminClient.fetch(`count(*[_type == "blogPost" && publishedAt != null])`),
-    adminClient.fetch(`count(*[_type == "blogPost" && publishedAt == null])`),
-    adminClient.fetch(`*[_type == "blogCategory"] { title, "count": count(*[_type == "blogPost" && references(^._id)]) }`),
-    adminClient.fetch(`count(*[_type == "portfolio"])`),
-    adminClient.fetch(`count(*[_type == "faqItem"])`),
+    sanityFetch(`count(*[_type == "blogPost"])`),
+    sanityFetch(`count(*[_type == "blogPost" && publishedAt != null])`),
+    sanityFetch(`count(*[_type == "blogPost" && publishedAt == null])`),
+    sanityFetch(`*[_type == "blogCategory"] { title, "count": count(*[_type == "blogPost" && references(^._id)]) }`),
+    sanityFetch(`count(*[_type == "portfolio"])`),
+    sanityFetch(`count(*[_type == "faqItem"])`),
   ]);
   return { totalPosts, published, drafts, categories, portfolioCount, faqCount };
 }

@@ -16,13 +16,18 @@ const client = createClient({
 const builder = imageUrlBuilder(client);
 
 // 활성화된 팝업 배너만 가져오기
-const banners = await client.fetch(`*[_type == "popupBanner" && isActive == true] {
-  _id, isActive, linkUrl, altText,
-  image { asset-> { _id, url } }
-}`);
-
-const banner = banners.length > 0 ? banners[0] : null;
-const imageUrl = banner?.image?.asset?.url || '';
+let banner: any = null;
+let imageUrl = '';
+try {
+  const banners = await client.fetch(`*[_type == "popupBanner" && isActive == true] {
+    _id, isActive, linkUrl, altText,
+    image { asset-> { _id, url } }
+  }`);
+  banner = banners.length > 0 ? banners[0] : null;
+  imageUrl = banner?.image?.asset?.url || '';
+} catch (e) {
+  // Sanity 접속 실패 시 팝업 표시 안 함
+}
 ---
 
 {banner && (
