@@ -48,6 +48,21 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     )}
     <meta name="theme-color" content="#ffffff" />
 
+    <!-- Google Search Console -->
+    <meta name="google-site-verification" content="XALCn56VEHtBbtrm49DnZH2WdT3ccOizTGKTkTHsIns" />
+
+    <!-- Naver Search Advisor -->
+    <meta name="naver-site-verification" content="062e44a0df871ea7efc1955b667ed80346b8d5ef" />
+
+    <!-- Google Analytics 4 -->
+    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-YG5KHLQHJ9"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-YG5KHLQHJ9');
+    </script>
+
     <!-- Hreflang -->
     <link rel="alternate" hreflang="ko" href={canonicalURL} />
     <link rel="alternate" hreflang="en" href={canonicalURL} />
