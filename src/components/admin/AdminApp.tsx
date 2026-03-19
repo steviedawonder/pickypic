@@ -365,12 +365,11 @@ function RichTextEditor({ value, onChange }: { value: string; onChange: (html: s
     ],
     [
       { label: '\uD83D\uDD17', action: handleLink, title: '링크 삽입' },
-      { label: '\uD83D\uDDBC', action: () => fileInputRef.current?.click(), title: '이미지 삽입' },
     ],
     [
-      { label: '\u2190', action: () => exec('justifyLeft'), title: '왼쪽 정렬' },
-      { label: '\u2194', action: () => exec('justifyCenter'), title: '가운데 정렬' },
-      { label: '\u2192', action: () => exec('justifyRight'), title: '오른쪽 정렬' },
+      { label: 'align-left', action: () => exec('justifyLeft'), title: '왼쪽 정렬' },
+      { label: 'align-center', action: () => exec('justifyCenter'), title: '가운데 정렬' },
+      { label: 'align-right', action: () => exec('justifyRight'), title: '오른쪽 정렬' },
     ],
   ];
 
@@ -399,7 +398,13 @@ function RichTextEditor({ value, onChange }: { value: string; onChange: (html: s
                 onMouseEnter={e => (e.currentTarget.style.background = '#e8e8e8')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'none')}
               >
-                {btn.label}
+                {btn.label === 'align-left' ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="18" y2="18"/></svg>
+                ) : btn.label === 'align-center' ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="6" y1="12" x2="18" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+                ) : btn.label === 'align-right' ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="6" y1="18" x2="21" y2="18"/></svg>
+                ) : btn.label}
               </button>
             ))}
             {gi < toolbarGroups.length - 1 && (
@@ -407,6 +412,18 @@ function RichTextEditor({ value, onChange }: { value: string; onChange: (html: s
             )}
           </div>
         ))}
+        {/* Image upload button */}
+        <div style={{ width: 1, height: 20, background: colors.border, margin: '0 4px' }} />
+        <button
+          type="button"
+          title="이미지 삽입"
+          onMouseDown={e => { e.preventDefault(); fileInputRef.current?.click(); }}
+          style={toolbarBtnStyle}
+          onMouseEnter={e => (e.currentTarget.style.background = '#e8e8e8')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </button>
       </div>
 
       {/* Editor Area */}
