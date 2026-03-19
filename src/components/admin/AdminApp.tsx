@@ -55,48 +55,402 @@ const navItems = [
   { id: 'settings', icon: '⚙️', label: '사이트 설정' },
 ];
 
-// ── SEO/GEO Score Calculator ──
-function calculateScores(data: { title: string; excerpt: string; body: string; focusKeyword: string; seoTitle: string; tags: string[]; category: string }) {
-  const { title, excerpt, body, focusKeyword, seoTitle, tags, category } = data;
-  const bodyLen = body.replace(/\s/g, '').length;
-  const kwCount = focusKeyword ? (body.match(new RegExp(focusKeyword, 'gi')) || []).length : 0;
-  const kwDensity = bodyLen > 0 && focusKeyword ? (kwCount * focusKeyword.length / bodyLen * 100) : 0;
-  const h2Count = (body.match(/^## /gm) || []).length;
-  const hasLinks = /\[.*?\]\(.*?\)/.test(body) || /https?:\/\//.test(body);
-  const definitiveCount = (body.match(/입니다|합니다|됩니다|있습니다/g) || []).length;
+// ── SEO/GEO Score Calculator (Rank Math style) ──
+type ScoreCheck = { label: string; ok: boolean; detail: string };
+type ScoreCategory = { name: string; checks: ScoreCheck[]; passCount: number; failCount: number };
 
-  const seoChecks = [
-    { label: '제목에 키워드 포함', ok: !!focusKeyword && title.includes(focusKeyword), fix: '제목에 포커스 키워드를 넣어주세요.' },
-    { label: '요약에 키워드 포함', ok: !!focusKeyword && excerpt.includes(focusKeyword), fix: '요약에 포커스 키워드를 넣어주세요.' },
-    { label: '본문 600자 이상', ok: bodyLen >= 600, fix: `현재 ${bodyLen}자. 600자 이상 작성하세요.` },
-    { label: '본문에 키워드 포함', ok: kwCount > 0, fix: '본문에 키워드를 자연스럽게 넣어주세요.' },
-    { label: '키워드 밀도 0.5~3%', ok: kwDensity >= 0.5 && kwDensity <= 3, fix: `현재 ${kwDensity.toFixed(1)}%. 0.5~3%가 적절합니다.` },
-    { label: '제목 10~60자', ok: title.length >= 10 && title.length <= 60, fix: `현재 ${title.length}자. 10~60자가 적절합니다.` },
-    { label: '제목에 숫자 포함', ok: /\d/.test(title), fix: '숫자가 있는 제목은 클릭률이 높습니다.' },
-    { label: 'SEO 제목 설정', ok: seoTitle.length >= 20, fix: 'SEO 설정에서 검색용 제목을 입력하세요.' },
-    { label: '소제목(##) 2개 이상', ok: h2Count >= 2, fix: '## 소제목으로 글을 나누세요.' },
-    { label: '요약 50~200자', ok: excerpt.length >= 50 && excerpt.length <= 200, fix: `현재 ${excerpt.length}자. 50~200자가 적절합니다.` },
-    { label: '본문에 링크 포함', ok: hasLinks, fix: '관련 페이지 링크를 넣어주세요.' },
-    { label: '태그 2개 이상', ok: tags.length >= 2, fix: '태그를 2개 이상 추가해주세요.' },
-    { label: '카테고리 설정', ok: !!category, fix: '카테고리를 선택해주세요.' },
+function calculateScores(data: { title: string; excerpt: string; body: string; focusKeyword: string; seoTitle: string; seoDesc: string; tags: string[]; category: string; slug: string }) {
+  const { title, excerpt, body, focusKeyword, seoTitle, seoDesc, tags, category, slug } = data;
+
+  // Strip HTML tags for plain text analysis
+  const plainBody = body.replace(/<[^>]*>/g, '');
+  const bodyLen = plainBody.replace(/\s/g, '').length;
+  const wordCount = plainBody.trim().split(/\s+/).filter(Boolean).length;
+  const kwLower = focusKeyword?.toLowerCase() || '';
+  const titleLower = title.toLowerCase();
+  const excerptLower = excerpt.toLowerCase();
+  const bodyLower = plainBody.toLowerCase();
+  const seoTitleLower = (seoTitle || '').toLowerCase();
+  const seoDescLower = (seoDesc || '').toLowerCase();
+  const slugLower = (slug || '').toLowerCase();
+
+  const kwCount = kwLower ? (bodyLower.split(kwLower).length - 1) : 0;
+  const kwDensity = bodyLen > 0 && kwLower ? (kwCount * kwLower.length / bodyLen * 100) : 0;
+  const h2Matches = body.match(/<h2[^>]*>/gi) || plainBody.match(/^## /gm) || [];
+  const h2Count = h2Matches.length;
+  const h3Matches = body.match(/<h3[^>]*>/gi) || plainBody.match(/^### /gm) || [];
+  const h3Count = h3Matches.length;
+  const linkCount = (body.match(/<a\s/gi) || []).length + (plainBody.match(/https?:\/\//g) || []).length;
+  const hasLinks = linkCount > 0;
+  const imgCount = (body.match(/<img\s/gi) || []).length;
+  const definitiveCount = (plainBody.match(/입니다|합니다|됩니다|있습니다/g) || []).length;
+  const questionCount = (plainBody.match(/\?/g) || []).length;
+  const sentenceCount = (plainBody.match(/[.!?。]\s*/g) || []).length || 1;
+  const avgSentenceLen = bodyLen / sentenceCount;
+  const paragraphs = plainBody.split(/\n\s*\n/).filter(p => p.trim().length > 0);
+  const shortParagraphs = paragraphs.filter(p => p.replace(/\s/g, '').length <= 300).length;
+  const kwInFirst100 = kwLower ? bodyLower.slice(0, 150).includes(kwLower) : false;
+  const titleHasNumber = /\d/.test(title);
+  const titleHasPower = /비법|방법|가이드|꿀팁|노하우|비교|추천|완벽|필수|핵심|최고|TOP|best|tip/i.test(title);
+  const usedKwBefore = false; // placeholder, can't check cross-post in frontend
+  const hasDoFollowLinks = hasLinks; // treat all links as dofollow for simplicity
+
+  // ─── SEO 기본 ───
+  const seoBasic: ScoreCheck[] = [
+    {
+      label: 'SEO 제목에 포커스 키워드 사용',
+      ok: !!kwLower && (seoTitleLower || titleLower).includes(kwLower),
+      detail: kwLower
+        ? (seoTitleLower || titleLower).includes(kwLower)
+          ? `좋아요! SEO 제목에 포커스 키워드를 사용하고 있습니다.`
+          : `SEO 제목에 "${focusKeyword}" 키워드를 포함시켜 주세요. 검색 결과에서 클릭률이 높아집니다.`
+        : `포커스 키워드를 먼저 설정해 주세요.`
+    },
+    {
+      label: 'SEO 메타 설명에 포커스 키워드 사용',
+      ok: !!kwLower && (seoDescLower || excerptLower).includes(kwLower),
+      detail: kwLower
+        ? (seoDescLower || excerptLower).includes(kwLower)
+          ? `좋아요! 메타 설명에서 사용되는 포커스 키워드가 포함되어 있습니다.`
+          : `SEO 메타 설명(요약)에 "${focusKeyword}" 키워드를 넣어 주세요. 검색 결과 미리보기에 표시됩니다.`
+        : `포커스 키워드를 먼저 설정해 주세요.`
+    },
+    {
+      label: 'URL에 포커스 키워드 사용',
+      ok: !!kwLower && slugLower.includes(kwLower.replace(/\s+/g, '-')),
+      detail: kwLower
+        ? slugLower.includes(kwLower.replace(/\s+/g, '-'))
+          ? `좋아요! URL에 포커스 키워드가 포함되어 있습니다.`
+          : `URL 슬러그에 "${focusKeyword}" 키워드를 포함시켜 주세요. URL은 50자 이내가 이상적입니다.`
+        : `포커스 키워드를 먼저 설정해 주세요.`
+    },
+    {
+      label: '콘텐츠 시작 부분에 포커스 키워드 사용',
+      ok: kwInFirst100,
+      detail: kwInFirst100
+        ? `좋아요! 콘텐츠 시작 부분(처음 150자 이내)에 포커스 키워드가 있습니다.`
+        : `게시물 콘텐츠의 첫 부분(150자 이내)에 "${focusKeyword || '키워드'}"를 넣어 주세요. 검색 엔진이 주제를 빠르게 파악합니다.`
+    },
+    {
+      label: '게시물 콘텐츠에 포커스 키워드 포함',
+      ok: kwCount > 0,
+      detail: kwCount > 0
+        ? `좋아요! 게시물 콘텐츠에 포커스 키워드가 있습니다.`
+        : `본문에 "${focusKeyword || '키워드'}"를 자연스럽게 포함시켜 주세요.`
+    },
+    {
+      label: '콘텐츠 길이 600자 이상',
+      ok: bodyLen >= 600,
+      detail: bodyLen >= 600
+        ? `본문 길이가 ${bodyLen.toLocaleString()}자입니다. 잘했어요!`
+        : `현재 ${bodyLen.toLocaleString()}자입니다. 최소 600자 이상 작성해 주세요. SEO에 유리한 콘텐츠 길이는 1,500자 이상입니다.`
+    },
   ];
 
-  const geoChecks = [
-    { label: '명확한 팩트 서술 3문장+', ok: definitiveCount >= 3, fix: '"~입니다" 형식의 단정적 문장을 3개 이상 작성하세요.' },
-    { label: 'Q&A 형식 포함', ok: /\?/.test(body) && body.includes('##'), fix: '소제목을 질문 형식으로 작성하세요.' },
-    { label: '전문 용어/브랜드명 5개+', ok: (body.match(/[A-Z][a-z]+/g) || []).length >= 5, fix: '브랜드명, 제품명 등 고유명사를 사용하세요.' },
-    { label: '콘텐츠 1,500자+', ok: bodyLen >= 1500, fix: `현재 ${bodyLen}자. 1,500자 이상이면 AI 검색에 유리합니다.` },
-    { label: '소제목 3개+ (깊이 있는 글)', ok: h2Count >= 3, fix: '## 소제목 3개 이상으로 주제를 깊이 다루세요.' },
-    { label: '요약문 80자+', ok: excerpt.length >= 80, fix: `현재 ${excerpt.length}자. 80자 이상의 상세 요약을 작성하세요.` },
-    { label: '출처/링크 포함', ok: hasLinks, fix: '통계나 수치의 출처 링크를 넣어주세요.' },
-    { label: '권위적 어조', ok: definitiveCount >= 5, fix: '"~일 수 있습니다" 대신 "~입니다"로 확신 있게 작성하세요.' },
+  // ─── SEO 추가 ───
+  const seoExtra: ScoreCheck[] = [
+    {
+      label: '부제목에 포커스 키워드 포함',
+      ok: !!kwLower && (body.match(/<h[2-4][^>]*>.*?<\/h[2-4]>/gi) || []).some(h => h.toLowerCase().includes(kwLower)),
+      detail: (() => {
+        const headings = (body.match(/<h[2-4][^>]*>.*?<\/h[2-4]>/gi) || []);
+        const hasKwInHeading = headings.some(h => h.toLowerCase().includes(kwLower));
+        return hasKwInHeading
+          ? `좋아요! 부제목에 포커스 키워드가 있습니다.`
+          : `H2, H3 등 부제목 중 하나에 "${focusKeyword || '키워드'}"를 포함시켜 주세요.`;
+      })()
+    },
+    {
+      label: '이미지 대체 속성에 포커스 키워드 사용',
+      ok: !!kwLower && (body.match(/alt="[^"]*"/gi) || []).some(a => a.toLowerCase().includes(kwLower)),
+      detail: (() => {
+        const alts = body.match(/alt="[^"]*"/gi) || [];
+        const hasKwInAlt = alts.some(a => a.toLowerCase().includes(kwLower));
+        return hasKwInAlt
+          ? `좋아요! 이미지 대체 속성에 포커스 키워드가 있습니다.`
+          : `이미지의 alt 속성에 "${focusKeyword || '키워드'}"를 넣어 주세요. 이미지 검색 노출에 도움이 됩니다.`;
+      })()
+    },
+    {
+      label: `키워드 밀도 적정 범위 (0.5~3%)`,
+      ok: kwDensity >= 0.5 && kwDensity <= 3,
+      detail: kwLower
+        ? kwDensity >= 0.5 && kwDensity <= 3
+          ? `키워드 밀도가 ${kwDensity.toFixed(1)}%이고 포커스 키워드 조합이 ${kwCount}번 나타납니다.`
+          : kwDensity < 0.5
+            ? `키워드 밀도가 ${kwDensity.toFixed(1)}%로 낮습니다. 본문에 "${focusKeyword}"를 더 사용해 주세요. (권장: 0.5~3%)`
+            : `키워드 밀도가 ${kwDensity.toFixed(1)}%로 높습니다. 키워드 과다 사용은 오히려 불이익이 될 수 있습니다. (권장: 0.5~3%)`
+        : `포커스 키워드를 먼저 설정해 주세요.`
+    },
+    {
+      label: 'URL 길이 적정 (50자 이내)',
+      ok: (slug || title).length <= 50,
+      detail: (slug || title).length <= 50
+        ? `URL은 ${(slug || title).length}자 길이입니다. Kudos!`
+        : `URL이 ${(slug || title).length}자입니다. 50자 이내로 줄여 주세요. 짧은 URL이 검색 결과에서 더 잘 보입니다.`
+    },
+    {
+      label: '외부 리소스에 링크',
+      ok: hasDoFollowLinks,
+      detail: hasDoFollowLinks
+        ? `좋아요! 외부 리소스에 링크하고 있습니다. 콘텐츠에 DoFollow가 포함된 외부 링크가 하나 이상 있습니다.`
+        : `관련 외부 사이트(통계, 출처 등)에 링크를 넣어 주세요. 신뢰도가 높아집니다.`
+    },
+    {
+      label: '웹사이트의 다른 리소스에 내부 링크',
+      ok: linkCount >= 2,
+      detail: linkCount >= 2
+        ? `웹사이트의 다른 리소스에 연결하고 있습니다.`
+        : `사이트 내 다른 글이나 페이지로 연결되는 내부 링크를 추가해 주세요. SEO에 매우 중요합니다.`
+    },
+    {
+      label: '태그 2개 이상 설정',
+      ok: tags.length >= 2,
+      detail: tags.length >= 2
+        ? `${tags.length}개의 태그가 설정되어 있습니다.`
+        : `현재 ${tags.length}개 태그가 있습니다. 2개 이상의 관련 태그를 추가하면 분류와 검색에 도움이 됩니다.`
+    },
+    {
+      label: '카테고리 설정',
+      ok: !!category,
+      detail: category
+        ? `카테고리가 설정되어 있습니다.`
+        : `카테고리를 선택해 주세요. 콘텐츠 분류가 명확해지면 사용자와 검색 엔진 모두에게 좋습니다.`
+    },
   ];
 
-  const seoScore = Math.round(seoChecks.filter(c => c.ok).length / seoChecks.length * 100);
-  const geoScore = Math.round(geoChecks.filter(c => c.ok).length / geoChecks.length * 100);
+  // ─── 제목 가독성 ───
+  const titleReadability: ScoreCheck[] = [
+    {
+      label: 'SEO 제목 앞쪽에 포커스 키워드 배치',
+      ok: !!kwLower && (seoTitleLower || titleLower).indexOf(kwLower) <= Math.floor((seoTitle || title).length * 0.4),
+      detail: (() => {
+        const t = seoTitleLower || titleLower;
+        const idx = kwLower ? t.indexOf(kwLower) : -1;
+        return idx >= 0 && idx <= Math.floor((seoTitle || title).length * 0.4)
+          ? `좋아요! SEO 제목의 앞쪽에서 사용되는 포커스 키워드가 포함되어 있습니다.`
+          : `SEO 제목의 앞부분(전체 길이의 40% 이내)에 포커스 키워드를 배치해 주세요. 검색 결과에서 눈에 더 잘 띕니다.`;
+      })()
+    },
+    {
+      label: 'SEO 제목에 숫자를 사용',
+      ok: titleHasNumber,
+      detail: titleHasNumber
+        ? `SEO 제목에 숫자를 사용하고 있습니다. 클릭률이 높아집니다!`
+        : `제목에 숫자를 포함하면 클릭률(CTR)이 36% 증가합니다. 예: "5가지 방법", "2025 가이드"`
+    },
+    {
+      label: 'SEO 제목 길이 적정 (10~60자)',
+      ok: title.length >= 10 && title.length <= 60,
+      detail: title.length >= 10 && title.length <= 60
+        ? `제목이 ${title.length}자입니다. 적절한 길이입니다!`
+        : title.length < 10
+          ? `현재 ${title.length}자입니다. 제목이 너무 짧습니다. 10자 이상으로 작성해 주세요.`
+          : `현재 ${title.length}자입니다. 60자를 초과하면 검색 결과에서 잘릴 수 있습니다.`
+    },
+    {
+      label: '파워 키워드 사용 (클릭 유도)',
+      ok: titleHasPower,
+      detail: titleHasPower
+        ? `좋아요! 제목에 파워 키워드(가이드, 방법, 추천 등)가 포함되어 있습니다.`
+        : `제목에 "가이드", "방법", "추천", "비교", "꿀팁" 등의 파워 키워드를 넣으면 클릭률이 높아집니다.`
+    },
+  ];
+
+  // ─── 콘텐츠 가독성 ───
+  const contentReadability: ScoreCheck[] = [
+    {
+      label: '소제목(H2/H3)으로 텍스트 분할',
+      ok: h2Count + h3Count >= 2,
+      detail: h2Count + h3Count >= 2
+        ? `소제목을 사용하여 텍스트를 분해하는 것 같습니다. ${h2Count}개의 H2와 ${h3Count}개의 H3가 있습니다.`
+        : `H2, H3 소제목으로 글을 나눠 주세요. 현재 소제목이 ${h2Count + h3Count}개입니다. 긴 글은 독자가 읽기 어렵습니다.`
+    },
+    {
+      label: '짧은 문단 사용 (300자 이하)',
+      ok: paragraphs.length === 0 || shortParagraphs >= paragraphs.length * 0.7,
+      detail: paragraphs.length === 0
+        ? `본문을 작성해 주세요.`
+        : shortParagraphs >= paragraphs.length * 0.7
+          ? `좋아요! 짧은 문단을 사용하고 있습니다. 전체 ${paragraphs.length}개 문단 중 ${shortParagraphs}개가 300자 이하입니다.`
+          : `문단이 너무 깁니다. 전체 ${paragraphs.length}개 문단 중 ${paragraphs.length - shortParagraphs}개가 300자를 초과합니다. 짧은 문단이 읽기 쉽습니다.`
+    },
+    {
+      label: '콘텐츠에 이미지 및/또는 비디오 포함',
+      ok: imgCount >= 1,
+      detail: imgCount >= 1
+        ? `콘텐츠에 이미지가 ${imgCount}개 포함되어 있습니다. 시각적 콘텐츠는 독자 참여도를 높입니다.`
+        : `이미지나 비디오를 추가해 주세요. 시각적 콘텐츠가 있는 글은 체류 시간이 2배 이상 늘어납니다.`
+    },
+    {
+      label: '메타 설명 길이 적정 (50~160자)',
+      ok: (seoDesc || excerpt).length >= 50 && (seoDesc || excerpt).length <= 160,
+      detail: (() => {
+        const len = (seoDesc || excerpt).length;
+        return len >= 50 && len <= 160
+          ? `메타 설명이 ${len}자입니다. 적절합니다!`
+          : len < 50
+            ? `현재 ${len}자입니다. 50자 이상 작성해야 검색 결과에서 충분한 정보를 제공합니다.`
+            : `현재 ${len}자입니다. 160자를 넘으면 검색 결과에서 잘립니다. 핵심만 간결하게 작성해 주세요.`;
+      })()
+    },
+  ];
+
+  // ─── GEO (AI 검색 최적화) 기본 ───
+  const geoBasic: ScoreCheck[] = [
+    {
+      label: '명확한 팩트 서술 (3문장 이상)',
+      ok: definitiveCount >= 3,
+      detail: definitiveCount >= 3
+        ? `단정적 서술("~입니다", "~합니다")이 ${definitiveCount}개 있습니다. AI가 인용하기 좋은 형식입니다.`
+        : `현재 단정적 서술이 ${definitiveCount}개입니다. "~입니다" 형식의 명확한 문장을 3개 이상 사용하면 AI 검색에서 인용될 확률이 높아집니다.`
+    },
+    {
+      label: '질문-답변(Q&A) 형식 포함',
+      ok: questionCount >= 1 && h2Count >= 1,
+      detail: questionCount >= 1 && h2Count >= 1
+        ? `질문 형식이 ${questionCount}개 포함되어 있고 소제목도 있습니다. AI 검색이 Q&A 형식을 선호합니다.`
+        : `소제목을 질문 형식("웨딩 포토부스란?", "비용은 얼마인가요?")으로 작성하면 AI 검색 결과에 직접 인용됩니다.`
+    },
+    {
+      label: '전문 용어/브랜드명 사용 (5개 이상)',
+      ok: (plainBody.match(/[A-Z][a-zA-Z]{2,}/g) || []).length >= 5,
+      detail: (() => {
+        const terms = (plainBody.match(/[A-Z][a-zA-Z]{2,}/g) || []);
+        return terms.length >= 5
+          ? `전문 용어/브랜드명이 ${terms.length}개 감지되었습니다. AI가 전문성을 인식합니다.`
+          : `현재 ${terms.length}개입니다. 브랜드명, 제품명, 전문 용어를 5개 이상 사용하면 AI가 콘텐츠의 전문성을 더 높이 평가합니다.`;
+      })()
+    },
+    {
+      label: '콘텐츠 1,500자 이상 (AI 검색 유리)',
+      ok: bodyLen >= 1500,
+      detail: bodyLen >= 1500
+        ? `본문이 ${bodyLen.toLocaleString()}자입니다. AI 검색에 충분한 길이입니다.`
+        : `현재 ${bodyLen.toLocaleString()}자입니다. 1,500자 이상의 콘텐츠가 AI 검색(Perplexity, SGE 등)에서 인용될 가능성이 3배 높습니다.`
+    },
+  ];
+
+  // ─── GEO 추가 ───
+  const geoExtra: ScoreCheck[] = [
+    {
+      label: '소제목 3개 이상 (깊이 있는 콘텐츠)',
+      ok: h2Count >= 3,
+      detail: h2Count >= 3
+        ? `H2 소제목이 ${h2Count}개 있습니다. 주제를 깊이 있게 다루고 있어 AI가 구조화된 정보로 인식합니다.`
+        : `현재 H2 소제목이 ${h2Count}개입니다. 3개 이상의 소제목으로 주제를 세분화하면 AI가 각 섹션을 독립적으로 인용할 수 있습니다.`
+    },
+    {
+      label: '요약문 80자 이상 (AI 스니펫용)',
+      ok: (seoDesc || excerpt).length >= 80,
+      detail: (() => {
+        const len = (seoDesc || excerpt).length;
+        return len >= 80
+          ? `요약문이 ${len}자입니다. AI가 스니펫으로 활용하기 좋은 길이입니다.`
+          : `현재 ${len}자입니다. 80자 이상의 상세한 요약을 작성하면 AI 검색 결과의 스니펫으로 직접 사용됩니다.`;
+      })()
+    },
+    {
+      label: '출처/참고 링크 포함',
+      ok: hasLinks,
+      detail: hasLinks
+        ? `외부 링크가 포함되어 있습니다. 통계나 수치의 출처가 있으면 AI가 콘텐츠 신뢰도를 높게 평가합니다.`
+        : `통계, 수치, 주장의 출처 링크를 넣어 주세요. AI는 출처가 있는 콘텐츠를 더 자주 인용합니다.`
+    },
+    {
+      label: '권위적 어조 (확신 있는 서술)',
+      ok: definitiveCount >= 5,
+      detail: definitiveCount >= 5
+        ? `확신 있는 서술이 ${definitiveCount}개 있습니다. 권위 있는 어조가 AI 인용에 유리합니다.`
+        : `현재 ${definitiveCount}개입니다. "~일 수 있습니다" 대신 "~입니다"로 확신 있게 작성하세요. AI는 단정적 표현을 더 자주 인용합니다.`
+    },
+    {
+      label: '리스트/목록 형식 포함',
+      ok: /<[ou]l>/i.test(body) || /^[-*]\s/m.test(plainBody),
+      detail: /<[ou]l>/i.test(body) || /^[-*]\s/m.test(plainBody)
+        ? `목록 형식이 포함되어 있습니다. AI가 구조화된 목록을 직접 인용하기 좋습니다.`
+        : `글머리 기호(UL) 또는 번호 목록(OL)을 사용해 주세요. AI 검색이 목록 형식의 답변을 선호합니다.`
+    },
+    {
+      label: '숫자/통계 데이터 포함',
+      ok: (plainBody.match(/\d+[%만원억천개건명]/g) || []).length >= 2,
+      detail: (() => {
+        const stats = (plainBody.match(/\d+[%만원억천개건명]/g) || []);
+        return stats.length >= 2
+          ? `수치/통계 데이터가 ${stats.length}개 포함되어 있습니다. 구체적 수치는 AI 인용 확률을 크게 높입니다.`
+          : `구체적인 숫자와 통계("30% 절감", "50만원부터" 등)를 2개 이상 포함해 주세요. AI는 수치가 포함된 문장을 우선 인용합니다.`;
+      })()
+    },
+  ];
+
+  const allSeoChecks = [...seoBasic, ...seoExtra, ...titleReadability, ...contentReadability];
+  const allGeoChecks = [...geoBasic, ...geoExtra];
+
+  const seoScore = Math.round(allSeoChecks.filter(c => c.ok).length / allSeoChecks.length * 100);
+  const geoScore = Math.round(allGeoChecks.filter(c => c.ok).length / allGeoChecks.length * 100);
   const totalScore = Math.round(seoScore * 0.6 + geoScore * 0.4);
 
-  return { seoChecks, geoChecks, seoScore, geoScore, totalScore };
+  const seoCategories: ScoreCategory[] = [
+    { name: '기본 SEO', checks: seoBasic, passCount: seoBasic.filter(c => c.ok).length, failCount: seoBasic.filter(c => !c.ok).length },
+    { name: '추가', checks: seoExtra, passCount: seoExtra.filter(c => c.ok).length, failCount: seoExtra.filter(c => !c.ok).length },
+    { name: '제목 가독성', checks: titleReadability, passCount: titleReadability.filter(c => c.ok).length, failCount: titleReadability.filter(c => !c.ok).length },
+    { name: '콘텐츠 가독성', checks: contentReadability, passCount: contentReadability.filter(c => c.ok).length, failCount: contentReadability.filter(c => !c.ok).length },
+  ];
+
+  const geoCategories: ScoreCategory[] = [
+    { name: 'AI 검색 기본', checks: geoBasic, passCount: geoBasic.filter(c => c.ok).length, failCount: geoBasic.filter(c => !c.ok).length },
+    { name: 'AI 검색 심화', checks: geoExtra, passCount: geoExtra.filter(c => c.ok).length, failCount: geoExtra.filter(c => !c.ok).length },
+  ];
+
+  return { seoCategories, geoCategories, seoScore, geoScore, totalScore, allSeoChecks, allGeoChecks };
+}
+
+// ── Collapsible Score Category Component ──
+function ScoreCategoryPanel({ category, defaultOpen = false }: { category: ScoreCategory; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
+  const allPass = category.failCount === 0;
+  return (
+    <div style={{ borderBottom: `1px solid ${colors.border}` }}>
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '10px 0', border: 'none', background: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700,
+          color: colors.text, textAlign: 'left',
+        }}
+      >
+        <span>{category.name}</span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          {category.failCount > 0 && (
+            <span style={{ fontSize: 11, fontWeight: 600, color: '#fff', background: colors.red, borderRadius: 10, padding: '1px 8px' }}>
+              ✕ {category.failCount} 오류
+            </span>
+          )}
+          {allPass && (
+            <span style={{ fontSize: 11, fontWeight: 600, color: '#fff', background: colors.green, borderRadius: 10, padding: '1px 8px' }}>
+              ✓ 모두 정상
+            </span>
+          )}
+          <span style={{ fontSize: 16, color: colors.textLight, transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}>▾</span>
+        </span>
+      </button>
+      {open && (
+        <div style={{ paddingBottom: 10 }}>
+          {category.checks.map((check, i) => (
+            <div key={i} style={{ display: 'flex', gap: 8, padding: '6px 0', fontSize: 12, lineHeight: 1.6, alignItems: 'flex-start' }}>
+              <span style={{ flexShrink: 0, marginTop: 2 }}>
+                {check.ok
+                  ? <span style={{ color: colors.green, fontSize: 14 }}>✓</span>
+                  : <span style={{ color: colors.red, fontSize: 14 }}>✕</span>
+                }
+              </span>
+              <span style={{ color: check.ok ? '#444' : '#333' }}>{check.detail}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 // ── Score Circle ──
@@ -289,6 +643,186 @@ function RichTextEditor({ value, onChange }: { value: string; onChange: (html: s
   const editorRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const isInternalChange = useRef(false);
+  const resizeState = useRef<{ img: HTMLImageElement; startX: number; startY: number; startW: number; startH: number; handle: string } | null>(null);
+
+  // Image resize overlay state
+  const [selectedImg, setSelectedImg] = useState<HTMLImageElement | null>(null);
+  const [imgRect, setImgRect] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
+
+  // Click outside to deselect image
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (selectedImg && !(e.target as HTMLElement)?.closest?.('.img-resize-overlay') && e.target !== selectedImg) {
+        setSelectedImg(null);
+        setImgRect(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [selectedImg]);
+
+  // Select media on click and add click overlays to iframes
+  useEffect(() => {
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    const selectMedia = (media: HTMLElement) => {
+      const tag = media.tagName.toLowerCase();
+      setSelectedImg(media as any);
+      const editorRect = editor.getBoundingClientRect();
+      const target = (tag === 'iframe' || tag === 'video') ? media.parentElement! : media;
+      const r = target.getBoundingClientRect();
+      setImgRect({ top: r.top - editorRect.top, left: r.left - editorRect.left, width: r.width, height: r.height });
+    };
+
+    // Add transparent click overlays to all iframes/videos in editor
+    const addOverlays = () => {
+      editor.querySelectorAll('div[contenteditable="false"]').forEach(wrapper => {
+        if (wrapper.querySelector('.media-click-overlay')) return;
+        const media = wrapper.querySelector('iframe') || wrapper.querySelector('video');
+        if (!media) return;
+        const overlay = document.createElement('div');
+        overlay.className = 'media-click-overlay';
+        overlay.style.cssText = 'position:absolute;inset:0;cursor:pointer;z-index:1;';
+        (wrapper as HTMLElement).style.position = 'relative';
+        overlay.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); selectMedia(media as HTMLElement); });
+        wrapper.appendChild(overlay);
+      });
+    };
+
+    const handleImgClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'IMG') {
+        e.preventDefault();
+        selectMedia(target);
+      }
+    };
+
+    addOverlays();
+    editor.addEventListener('click', handleImgClick);
+    // Re-add overlays when content changes
+    const observer = new MutationObserver(addOverlays);
+    observer.observe(editor, { childList: true, subtree: true });
+
+    return () => {
+      editor.removeEventListener('click', handleImgClick);
+      observer.disconnect();
+    };
+  }, []);
+
+  // Get the resizable target element (for iframes/videos, resize the parent wrapper)
+  const getResizeTarget = (): HTMLElement | null => {
+    if (!selectedImg) return null;
+    const tag = selectedImg.tagName.toLowerCase();
+    if (tag === 'iframe' || tag === 'video') {
+      return selectedImg.parentElement as HTMLElement;
+    }
+    return selectedImg;
+  };
+
+  // Handle resize drag
+  const startResize = (handle: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const target = getResizeTarget();
+    if (!target) return;
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const startW = target.offsetWidth;
+    const startH = target.offsetHeight;
+    const aspectRatio = startW / startH;
+    const isMedia = selectedImg!.tagName.toLowerCase() === 'iframe' || selectedImg!.tagName.toLowerCase() === 'video';
+
+    const onMouseMove = (ev: MouseEvent) => {
+      let newW = startW;
+      let newH = startH;
+      const dx = ev.clientX - startX;
+      const dy = ev.clientY - startY;
+
+      if (handle.includes('right')) newW = Math.max(100, startW + dx);
+      if (handle.includes('left')) newW = Math.max(100, startW - dx);
+      if (handle.includes('bottom')) newH = Math.max(60, startH + dy);
+      if (handle.includes('top')) newH = Math.max(60, startH - dy);
+
+      // Corner handles maintain aspect ratio
+      if (handle.length > 6) {
+        newH = newW / aspectRatio;
+      }
+
+      target.style.width = `${newW}px`;
+      target.style.maxWidth = '100%';
+      if (isMedia) {
+        // Also resize the inner iframe/video
+        selectedImg!.style.width = '100%';
+        selectedImg!.style.height = `${newH}px`;
+        target.style.height = 'auto';
+      } else {
+        target.style.height = `${newH}px`;
+      }
+
+      const editor = editorRef.current;
+      if (editor) {
+        const editorRect = editor.getBoundingClientRect();
+        const r = target.getBoundingClientRect();
+        setImgRect({ top: r.top - editorRect.top, left: r.left - editorRect.left, width: r.width, height: r.height });
+      }
+    };
+    const onMouseUp = () => {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+      syncContent();
+    };
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  };
+
+  // Image alignment
+  const alignImage = (align: 'left' | 'center' | 'right') => {
+    if (!selectedImg) return;
+    selectedImg.style.display = align === 'center' ? 'block' : 'inline-block';
+    selectedImg.style.margin = align === 'center' ? '8px auto' : '8px 0';
+    selectedImg.style.float = align === 'center' ? 'none' : align;
+    syncContent();
+    // Update rect
+    const editor = editorRef.current;
+    if (editor) {
+      setTimeout(() => {
+        const editorRect = editor.getBoundingClientRect();
+        const r = selectedImg.getBoundingClientRect();
+        setImgRect({ top: r.top - editorRect.top, left: r.left - editorRect.left, width: r.width, height: r.height });
+      }, 50);
+    }
+  };
+
+  // Delete selected media (image/video/iframe)
+  const deleteSelectedMedia = () => {
+    if (!selectedImg) return;
+    const tag = selectedImg.tagName.toLowerCase();
+    const target = (tag === 'iframe' || tag === 'video') ? selectedImg.parentElement : selectedImg;
+    if (target) {
+      target.remove();
+      setSelectedImg(null);
+      setImgRect(null);
+      syncContent();
+    }
+  };
+
+  // Keyboard handler for deleting selected media
+  useEffect(() => {
+    if (!selectedImg) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        e.preventDefault();
+        deleteSelectedMedia();
+      }
+      if (e.key === 'Escape') {
+        setSelectedImg(null);
+        setImgRect(null);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [selectedImg]);
 
   // Sync external value into editor only when it changes externally
   useEffect(() => {
@@ -325,6 +859,23 @@ function RichTextEditor({ value, onChange }: { value: string; onChange: (html: s
     if (url) exec('createLink', url);
   };
 
+  // Insert menu state
+  const [showInsertMenu, setShowInsertMenu] = useState(false);
+  const insertMenuRef = useRef<HTMLDivElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
+  const fileUploadRef = useRef<HTMLInputElement>(null);
+
+  // Close insert menu on outside click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (insertMenuRef.current && !insertMenuRef.current.contains(e.target as Node)) {
+        setShowInsertMenu(false);
+      }
+    };
+    if (showInsertMenu) document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showInsertMenu]);
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -340,17 +891,218 @@ function RichTextEditor({ value, onChange }: { value: string; onChange: (html: s
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+  // YouTube modal state
+  const [showYoutubeModal, setShowYoutubeModal] = useState(false);
+  const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [youtubeError, setYoutubeError] = useState('');
+  const [youtubePreviewId, setYoutubePreviewId] = useState('');
+
+  const handleVideoInsert = () => {
+    setYoutubeUrl('');
+    setYoutubeError('');
+    setYoutubePreviewId('');
+    setShowYoutubeModal(true);
+    setShowInsertMenu(false);
+  };
+
+  const extractYoutubeId = (url: string): string => {
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
+    ];
+    for (const p of patterns) {
+      const m = url.match(p);
+      if (m) return m[1];
+    }
+    return '';
+  };
+
+  const handleYoutubeUrlChange = (url: string) => {
+    setYoutubeUrl(url);
+    setYoutubeError('');
+    const id = extractYoutubeId(url);
+    setYoutubePreviewId(id);
+  };
+
+  const confirmYoutubeInsert = () => {
+    if (!youtubePreviewId) {
+      setYoutubeError('유효한 유튜브 링크를 입력해 주세요.');
+      return;
+    }
+    editorRef.current?.focus();
+    const embedHtml = `<div style="position:relative;max-width:560px;margin:12px 0;" contenteditable="false"><iframe width="560" height="315" src="https://www.youtube.com/embed/${youtubePreviewId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%;height:315px;border-radius:8px;"></iframe></div>`;
+    document.execCommand('insertHTML', false, embedHtml);
+    syncContent();
+    setShowYoutubeModal(false);
+  };
+
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const asset = await uploadImage(file);
+      editorRef.current?.focus();
+      document.execCommand('insertHTML', false, `<div style="max-width:560px;margin:12px 0;" contenteditable="false"><video controls style="width:100%;border-radius:8px;" src="${asset.url}"></video></div>`);
+      syncContent();
+    } catch (err: any) {
+      alert('동영상 업로드 실패: ' + err.message);
+    }
+    if (videoInputRef.current) videoInputRef.current.value = '';
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const asset = await uploadFile(file);
+      editorRef.current?.focus();
+      const sizeStr = file.size < 1024 * 1024 ? `${(file.size / 1024).toFixed(0)}KB` : `${(file.size / 1024 / 1024).toFixed(1)}MB`;
+      document.execCommand('insertHTML', false, `<div contenteditable="false" style="display:inline-flex;align-items:center;gap:8px;padding:10px 16px;background:#f8f9fa;border:1px solid #e0e0e0;border-radius:8px;margin:8px 0;font-size:13px;"><span style="font-size:18px;">📎</span><a href="${asset.url}" target="_blank" rel="noopener" style="color:#3b82f6;text-decoration:none;font-weight:600;">${file.name}</a><span style="color:#999;font-size:11px;">(${sizeStr})</span></div>`);
+      syncContent();
+    } catch (err: any) {
+      alert('파일 업로드 실패: ' + err.message);
+    }
+    if (fileUploadRef.current) fileUploadRef.current.value = '';
+  };
+
+  // (iframe/video click handling is now in the combined selectMedia handler above)
+
+  // Font size dropdown
+  const fontSizes = [11, 13, 15, 16, 19, 24, 28, 30, 34, 38];
+  const [showFontSize, setShowFontSize] = useState(false);
+  const [currentFontSize, setCurrentFontSize] = useState(15);
+  const fontSizeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (fontSizeRef.current && !fontSizeRef.current.contains(e.target as Node)) setShowFontSize(false);
+    };
+    if (showFontSize) document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showFontSize]);
+
+  // Detect current font size at cursor
+  useEffect(() => {
+    const editor = editorRef.current;
+    if (!editor) return;
+    const detectSize = () => {
+      const sel = window.getSelection();
+      if (!sel || sel.rangeCount === 0) return;
+      const node = sel.anchorNode;
+      if (!node || !editor.contains(node)) return;
+      const el = node.nodeType === Node.TEXT_NODE ? node.parentElement : node as HTMLElement;
+      if (el) {
+        const computed = window.getComputedStyle(el).fontSize;
+        const px = parseInt(computed);
+        if (px && px !== currentFontSize) setCurrentFontSize(px);
+      }
+    };
+    document.addEventListener('selectionchange', detectSize);
+    return () => document.removeEventListener('selectionchange', detectSize);
+  }, [currentFontSize]);
+
+  // Helper: insert a styled span and place cursor inside it
+  const insertStyledSpan = (styles: Partial<CSSStyleDeclaration>) => {
+    editorRef.current?.focus();
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return;
+    if (sel.isCollapsed) {
+      const span = document.createElement('span');
+      Object.assign(span.style, styles);
+      span.textContent = '\u200B';
+      const range = sel.getRangeAt(0);
+      range.insertNode(span);
+      // Place cursor inside the span, after the zero-width space
+      const newRange = document.createRange();
+      newRange.setStart(span.firstChild!, 1);
+      newRange.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(newRange);
+    } else {
+      const range = sel.getRangeAt(0);
+      const contents = range.extractContents();
+      const span = document.createElement('span');
+      Object.assign(span.style, styles);
+      span.appendChild(contents);
+      range.insertNode(span);
+      sel.collapseToEnd();
+    }
+    syncContent();
+  };
+
+  const applyFontSize = (size: number) => {
+    // Preserve current font family when changing size
+    const currentFont = fontFamilies.find(f => f.label === currentFontFamily);
+    const styles: Partial<CSSStyleDeclaration> = { fontSize: `${size}px` };
+    if (currentFont) styles.fontFamily = currentFont.value;
+    insertStyledSpan(styles);
+    setCurrentFontSize(size);
+    setShowFontSize(false);
+  };
+
+  // Font family dropdown (웹폰트 기반 - 모든 OS에서 동작)
+  const fontFamilies = [
+    { label: '프리텐다드', value: 'Pretendard, sans-serif' },
+    { label: '나눔고딕', value: '"Nanum Gothic", sans-serif' },
+    { label: '나눔명조', value: '"Nanum Myeongjo", serif' },
+    { label: '나눔스퀘어', value: '"NanumSquare", sans-serif' },
+    { label: '고딕 A1', value: '"Gothic A1", sans-serif' },
+    { label: '노토 산스', value: '"Noto Sans KR", sans-serif' },
+    { label: '노토 세리프', value: '"Noto Serif KR", serif' },
+    { label: 'Arial', value: 'Arial, Helvetica, sans-serif' },
+    { label: 'Georgia', value: 'Georgia, serif' },
+    { label: 'Courier', value: '"Courier New", monospace' },
+  ];
+  const [showFontFamily, setShowFontFamily] = useState(false);
+  const [currentFontFamily, setCurrentFontFamily] = useState('프리텐다드');
+  const fontFamilyRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (fontFamilyRef.current && !fontFamilyRef.current.contains(e.target as Node)) setShowFontFamily(false);
+    };
+    if (showFontFamily) document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showFontFamily]);
+
+  const applyFontFamily = (font: { label: string; value: string }) => {
+    // Preserve current font size when changing font family
+    insertStyledSpan({ fontFamily: font.value, fontSize: `${currentFontSize}px` });
+    setCurrentFontFamily(font.label);
+    setShowFontFamily(false);
+  };
+
+  // Text color picker - 7 columns (gray, red, orange, yellow, green, blue, purple) x 7 rows (light→dark)
+  const textColors = [
+    // Col:  Gray      Red       Orange    Yellow    Green     Blue      Purple
+    /*1*/  '#ffffff', '#ffcccc', '#ffe0cc', '#ffffcc', '#ccffcc', '#cce0ff', '#e0ccff',
+    /*2*/  '#dddddd', '#ff9999', '#ffbb77', '#ffff99', '#99ff99', '#99ccff', '#cc99ff',
+    /*3*/  '#bbbbbb', '#ff6666', '#ff9933', '#ffff66', '#66cc66', '#6699ff', '#9966ff',
+    /*4*/  '#888888', '#ff0000', '#ff6600', '#ffcc00', '#00cc00', '#0066ff', '#6633cc',
+    /*5*/  '#555555', '#cc0000', '#cc5500', '#cc9900', '#009900', '#0044cc', '#4400aa',
+    /*6*/  '#333333', '#880000', '#883300', '#886600', '#006600', '#003388', '#330077',
+    /*7*/  '#000000', '#440000', '#441a00', '#443300', '#003300', '#001a44', '#1a0033',
+  ];
+  const [showTextColor, setShowTextColor] = useState(false);
+  const [currentTextColor, setCurrentTextColor] = useState('#1a1a1a');
+  const textColorRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (textColorRef.current && !textColorRef.current.contains(e.target as Node)) setShowTextColor(false);
+    };
+    if (showTextColor) document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showTextColor]);
+
+  const applyTextColor = (color: string) => {
+    editorRef.current?.focus();
+    document.execCommand('foreColor', false, color);
+    setCurrentTextColor(color);
+    setShowTextColor(false);
+    syncContent();
+  };
+
   const toolbarGroups: { label: string; action: () => void; title: string }[][] = [
-    [
-      { label: 'B', action: () => exec('bold'), title: '굵게' },
-      { label: 'I', action: () => exec('italic'), title: '기울임' },
-      { label: 'U', action: () => exec('underline'), title: '밑줄' },
-    ],
-    [
-      { label: 'H2', action: () => handleHeading('h2'), title: '제목 2' },
-      { label: 'H3', action: () => handleHeading('h3'), title: '제목 3' },
-      { label: 'H4', action: () => handleHeading('h4'), title: '제목 4' },
-    ],
     [
       { label: '\u2022 UL', action: () => exec('insertUnorderedList'), title: '글머리 기호' },
       { label: '1. OL', action: () => exec('insertOrderedList'), title: '번호 매기기' },
@@ -381,20 +1133,144 @@ function RichTextEditor({ value, onChange }: { value: string; onChange: (html: s
         border: `1px solid ${colors.border}`, borderBottom: 'none',
         borderRadius: '8px 8px 0 0', background: '#fafafa', alignItems: 'center',
       }}>
-        {toolbarGroups.map((group, gi) => (
+        {/* 1. B I U S */}
+        {[
+          { label: 'B', action: () => exec('bold'), title: '굵게', fw: 800, fs: 'normal' as const, td: 'none' },
+          { label: 'I', action: () => exec('italic'), title: '기울임', fw: 600, fs: 'italic' as const, td: 'none' },
+          { label: 'U', action: () => exec('underline'), title: '밑줄', fw: 600, fs: 'normal' as const, td: 'underline' },
+          { label: 'S', action: () => exec('strikeThrough'), title: '취소선', fw: 600, fs: 'normal' as const, td: 'line-through' },
+        ].map((btn, i) => (
+          <button key={i} type="button" title={btn.title}
+            onMouseDown={e => { e.preventDefault(); btn.action(); }}
+            style={{ ...toolbarBtnStyle, fontWeight: btn.fw, fontStyle: btn.fs, textDecoration: btn.td }}
+            onMouseEnter={e => (e.currentTarget.style.background = '#e8e8e8')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+          >{btn.label}</button>
+        ))}
+        {/* 2. Text color picker */}
+        <div ref={textColorRef} style={{ position: 'relative' }}>
+          <button type="button" title="글자색"
+            onMouseDown={e => { e.preventDefault(); setShowTextColor(!showTextColor); }}
+            style={{ ...toolbarBtnStyle, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 0, padding: '4px 8px' }}
+            onMouseEnter={e => (e.currentTarget.style.background = '#e8e8e8')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+          >
+            <span style={{ fontSize: 14, fontWeight: 800, lineHeight: 1 }}>A</span>
+            <div style={{ width: 14, height: 3, borderRadius: 1, background: currentTextColor, marginTop: 1 }} />
+          </button>
+          {showTextColor && (
+            <div style={{
+              position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)', marginTop: 4,
+              background: '#fff', border: `1px solid ${colors.border}`, borderRadius: 8,
+              boxShadow: '0 4px 16px rgba(0,0,0,0.12)', zIndex: 100, padding: 10,
+            }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 4 }}>
+                {textColors.map(c => (
+                  <button key={c}
+                    onMouseDown={e => { e.preventDefault(); applyTextColor(c); }}
+                    style={{
+                      width: 24, height: 24, borderRadius: 3,
+                      border: c === currentTextColor ? '2px solid #333' : (c === '#ffffff' || c === '#eeeeee' || c === '#dddddd' ? '1px solid #ccc' : '1px solid transparent'),
+                      background: c, cursor: 'pointer', transition: 'transform 0.1s',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.2)')}
+                    onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+        <div style={{ width: 1, height: 20, background: colors.border, margin: '0 4px' }} />
+        {/* 3. Font size dropdown */}
+        <div ref={fontSizeRef} style={{ position: 'relative', marginRight: 2 }}>
+          <button type="button" title="글자 크기"
+            onMouseDown={e => { e.preventDefault(); setShowFontSize(!showFontSize); }}
+            style={{
+              ...toolbarBtnStyle, display: 'flex', alignItems: 'center', gap: 3,
+              padding: '5px 8px', minWidth: 48, justifyContent: 'center',
+              border: `1px solid ${colors.border}`, borderRadius: 4, background: '#fff',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = '#f0f0f0')}
+            onMouseLeave={e => (e.currentTarget.style.background = '#fff')}
+          >
+            <span style={{ fontSize: 12, fontWeight: 600 }}>{currentFontSize}</span>
+            <span style={{ fontSize: 8, color: colors.textLight }}>▾</span>
+          </button>
+          {showFontSize && (
+            <div style={{
+              position: 'absolute', top: '100%', left: 0, marginTop: 4, background: '#fff',
+              border: `1px solid ${colors.border}`, borderRadius: 8, boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+              zIndex: 100, minWidth: 70, maxHeight: 280, overflowY: 'auto', padding: '4px 0',
+            }}>
+              {fontSizes.map(size => (
+                <button key={size}
+                  onMouseDown={e => { e.preventDefault(); applyFontSize(size); }}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    width: '100%', padding: '7px 14px', border: 'none', background: 'none',
+                    cursor: 'pointer', fontSize: 13, fontWeight: size === currentFontSize ? 700 : 400,
+                    color: size === currentFontSize ? colors.green : colors.text, transition: 'background 0.1s',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = '#f5f5f5')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                >
+                  <span>{size}</span>
+                  {size === currentFontSize && <span style={{ fontSize: 14 }}>✓</span>}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        {/* 4. Font family dropdown */}
+        <div ref={fontFamilyRef} style={{ position: 'relative', marginRight: 2 }}>
+          <button type="button" title="글꼴"
+            onMouseDown={e => { e.preventDefault(); setShowFontFamily(!showFontFamily); }}
+            style={{
+              ...toolbarBtnStyle, display: 'flex', alignItems: 'center', gap: 3,
+              padding: '5px 8px', minWidth: 80, justifyContent: 'center',
+              border: `1px solid ${colors.border}`, borderRadius: 4, background: '#fff',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = '#f0f0f0')}
+            onMouseLeave={e => (e.currentTarget.style.background = '#fff')}
+          >
+            <span style={{ fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 65 }}>{currentFontFamily}</span>
+            <span style={{ fontSize: 8, color: colors.textLight }}>▾</span>
+          </button>
+          {showFontFamily && (
+            <div style={{
+              position: 'absolute', top: '100%', left: 0, marginTop: 4, background: '#fff',
+              border: `1px solid ${colors.border}`, borderRadius: 8, boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+              zIndex: 100, minWidth: 160, maxHeight: 320, overflowY: 'auto', padding: '4px 0',
+            }}>
+              {fontFamilies.map(font => (
+                <button key={font.label}
+                  onMouseDown={e => { e.preventDefault(); applyFontFamily(font); }}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    width: '100%', padding: '8px 14px', border: 'none', background: 'none',
+                    cursor: 'pointer', fontSize: 13, fontFamily: font.value,
+                    fontWeight: font.label === currentFontFamily ? 700 : 400,
+                    color: font.label === currentFontFamily ? colors.green : colors.text, transition: 'background 0.1s',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = '#f5f5f5')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                >
+                  <span>{font.label}</span>
+                  {font.label === currentFontFamily && <span style={{ fontSize: 14 }}>✓</span>}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        <div style={{ width: 1, height: 20, background: colors.border, margin: '0 4px' }} />
+        {/* 5. Remaining toolbar groups (UL, OL, quote, code, link, align) */}
+        {toolbarGroups.map((group, gi, arr) => (
           <div key={gi} style={{ display: 'flex', gap: 1, alignItems: 'center' }}>
             {group.map((btn, bi) => (
-              <button
-                key={bi}
-                type="button"
-                title={btn.title}
+              <button key={bi} type="button" title={btn.title}
                 onMouseDown={e => { e.preventDefault(); btn.action(); }}
-                style={{
-                  ...toolbarBtnStyle,
-                  fontWeight: ['B'].includes(btn.label) ? 800 : 600,
-                  fontStyle: btn.label === 'I' ? 'italic' : 'normal',
-                  textDecoration: btn.label === 'U' ? 'underline' : 'none',
-                }}
+                style={toolbarBtnStyle}
                 onMouseEnter={e => (e.currentTarget.style.background = '#e8e8e8')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'none')}
               >
@@ -407,49 +1283,212 @@ function RichTextEditor({ value, onChange }: { value: string; onChange: (html: s
                 ) : btn.label}
               </button>
             ))}
-            {gi < toolbarGroups.length - 1 && (
+            {gi < arr.length - 1 && (
               <div style={{ width: 1, height: 20, background: colors.border, margin: '0 4px' }} />
             )}
           </div>
         ))}
-        {/* Image upload button */}
+        {/* Insert (+) menu button */}
         <div style={{ width: 1, height: 20, background: colors.border, margin: '0 4px' }} />
-        <button
-          type="button"
-          title="이미지 삽입"
-          onMouseDown={e => { e.preventDefault(); fileInputRef.current?.click(); }}
-          style={toolbarBtnStyle}
-          onMouseEnter={e => (e.currentTarget.style.background = '#e8e8e8')}
-          onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        </button>
+        <div ref={insertMenuRef} style={{ position: 'relative' }}>
+          <button
+            type="button"
+            title="미디어 삽입"
+            onMouseDown={e => { e.preventDefault(); setShowInsertMenu(!showInsertMenu); }}
+            style={{ ...toolbarBtnStyle, fontSize: 18, fontWeight: 800, lineHeight: 1, padding: '4px 10px' }}
+            onMouseEnter={e => (e.currentTarget.style.background = '#e8e8e8')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+          >
+            +
+          </button>
+          {showInsertMenu && (
+            <div style={{
+              position: 'absolute', top: '100%', left: 0, marginTop: 4, background: '#fff',
+              border: `1px solid ${colors.border}`, borderRadius: 8, boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+              zIndex: 100, minWidth: 180, overflow: 'hidden',
+            }}>
+              {[
+                {
+                  icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>,
+                  label: '이미지', desc: '이미지 파일 업로드',
+                  action: () => { fileInputRef.current?.click(); setShowInsertMenu(false); },
+                },
+                {
+                  icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>,
+                  label: '유튜브 동영상', desc: '유튜브 링크로 삽입',
+                  action: handleVideoInsert,
+                },
+                {
+                  icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="2"/><polygon points="10 8 16 12 10 16 10 8"/></svg>,
+                  label: '동영상 파일', desc: '동영상 파일 업로드',
+                  action: () => { videoInputRef.current?.click(); setShowInsertMenu(false); },
+                },
+                {
+                  icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>,
+                  label: '파일 첨부', desc: 'PDF, 문서 등 첨부',
+                  action: () => { fileUploadRef.current?.click(); setShowInsertMenu(false); },
+                },
+              ].map((item, i) => (
+                <button key={i} onMouseDown={e => { e.preventDefault(); item.action(); }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 14px', border: 'none', background: 'none', cursor: 'pointer', textAlign: 'left', fontSize: 13, transition: 'background 0.1s' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = '#f5f5f5')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                >
+                  <span style={{ color: colors.textLight, flexShrink: 0 }}>{item.icon}</span>
+                  <div>
+                    <div style={{ fontWeight: 600, color: colors.text }}>{item.label}</div>
+                    <div style={{ fontSize: 11, color: colors.textLight, marginTop: 1 }}>{item.desc}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
+      {/* Google Fonts for editor */}
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&family=Nanum+Myeongjo:wght@400;700&family=Gothic+A1:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Noto+Serif+KR:wght@400;700&display=swap" />
+      {/* Editor media hover styles */}
+      <style>{`
+        [contenteditable] img { cursor: pointer; transition: outline 0.15s; border-radius: 4px; }
+        [contenteditable] img:hover { outline: 2px solid #3b82f6; outline-offset: 2px; }
+        [contenteditable] div[contenteditable="false"] { cursor: pointer; transition: outline 0.15s; border-radius: 4px; }
+        [contenteditable] div[contenteditable="false"]:hover { outline: 2px solid #3b82f6; outline-offset: 2px; }
+      `}</style>
       {/* Editor Area */}
-      <div
-        ref={editorRef}
-        contentEditable
-        suppressContentEditableWarning
-        onInput={syncContent}
-        onBlur={syncContent}
-        style={{
-          minHeight: 400, padding: '16px 18px', fontSize: 15, lineHeight: 1.8,
-          border: `1px solid ${colors.border}`, borderRadius: '0 0 8px 8px',
-          outline: 'none', background: '#fff', fontFamily: 'inherit',
-          overflowY: 'auto',
-        }}
-        data-placeholder="본문을 작성하세요..."
-      />
+      <div style={{ position: 'relative' }}>
+        <div
+          ref={editorRef}
+          contentEditable
+          suppressContentEditableWarning
+          onInput={syncContent}
+          onBlur={syncContent}
+          style={{
+            minHeight: 400, padding: '16px 18px', fontSize: 15, lineHeight: 1.8,
+            border: `1px solid ${colors.border}`, borderRadius: '0 0 8px 8px',
+            outline: 'none', background: '#fff', fontFamily: 'inherit',
+            overflowY: 'auto',
+          }}
+          data-placeholder="본문을 작성하세요..."
+        />
 
-      {/* Hidden file input for image upload */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        style={{ display: 'none' }}
-        onChange={handleImageUpload}
-      />
+        {/* Image resize overlay */}
+        {selectedImg && imgRect && (
+          <div className="img-resize-overlay" style={{ position: 'absolute', top: imgRect.top, left: imgRect.left, width: imgRect.width, height: imgRect.height, pointerEvents: 'none', zIndex: 10 }}>
+            {/* Border */}
+            <div style={{ position: 'absolute', inset: 0, border: '2px solid #3b82f6', borderRadius: 2, pointerEvents: 'none' }} />
+            {/* Alignment toolbar */}
+            <div style={{ position: 'absolute', top: -36, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 2, background: '#1a1a1a', borderRadius: 6, padding: '4px 6px', pointerEvents: 'auto', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
+              {(['left', 'center', 'right'] as const).map(a => (
+                <button key={a} onMouseDown={e => { e.preventDefault(); e.stopPropagation(); alignImage(a); }} style={{ width: 28, height: 24, border: 'none', background: 'none', cursor: 'pointer', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 12 }}
+                  onMouseEnter={e => (e.currentTarget.style.background = '#444')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'none')}>
+                  {a === 'left' ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="14" y2="12"/><line x1="3" y1="18" x2="18" y2="18"/></svg>
+                  : a === 'center' ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="6" y1="12" x2="18" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+                  : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="6" y1="18" x2="21" y2="18"/></svg>}
+                </button>
+              ))}
+              <div style={{ width: 1, height: 16, background: '#555', margin: '0 2px' }} />
+              <button onMouseDown={e => { e.preventDefault(); e.stopPropagation(); deleteSelectedMedia(); }}
+                style={{ width: 28, height: 24, border: 'none', background: 'none', cursor: 'pointer', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ff6666', fontSize: 12 }}
+                onMouseEnter={e => (e.currentTarget.style.background = '#442222')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                title="삭제"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+            </div>
+            {/* Size display */}
+            <div style={{ position: 'absolute', bottom: -24, left: '50%', transform: 'translateX(-50%)', background: '#1a1a1a', color: '#fff', fontSize: 10, padding: '2px 8px', borderRadius: 4, whiteSpace: 'nowrap', pointerEvents: 'none' }}>
+              {Math.round(imgRect.width)} × {Math.round(imgRect.height)}
+            </div>
+            {/* Resize handles */}
+            {['top-left', 'top-right', 'bottom-left', 'bottom-right'].map(h => (
+              <div key={h} onMouseDown={startResize(h)} style={{
+                position: 'absolute', width: 10, height: 10, background: '#3b82f6', border: '2px solid #fff', borderRadius: 2, pointerEvents: 'auto', cursor: h.includes('left') ? (h.includes('top') ? 'nw-resize' : 'sw-resize') : (h.includes('top') ? 'ne-resize' : 'se-resize'),
+                ...(h.includes('top') ? { top: -5 } : { bottom: -5 }),
+                ...(h.includes('left') ? { left: -5 } : { right: -5 }),
+              }} />
+            ))}
+            {/* Edge handles */}
+            {['right', 'bottom', 'left', 'top'].map(h => (
+              <div key={h} onMouseDown={startResize(h)} style={{
+                position: 'absolute', pointerEvents: 'auto', background: '#3b82f6', borderRadius: 1,
+                ...(h === 'right' ? { right: -3, top: '50%', transform: 'translateY(-50%)', width: 4, height: 24, cursor: 'ew-resize' } :
+                  h === 'left' ? { left: -3, top: '50%', transform: 'translateY(-50%)', width: 4, height: 24, cursor: 'ew-resize' } :
+                  h === 'bottom' ? { bottom: -3, left: '50%', transform: 'translateX(-50%)', width: 24, height: 4, cursor: 'ns-resize' } :
+                  { top: -3, left: '50%', transform: 'translateX(-50%)', width: 24, height: 4, cursor: 'ns-resize' }),
+              }} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Hidden file inputs */}
+      <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImageUpload} />
+      <input ref={videoInputRef} type="file" accept="video/*" style={{ display: 'none' }} onChange={handleVideoUpload} />
+      <input ref={fileUploadRef} type="file" style={{ display: 'none' }} onChange={handleFileUpload} />
+
+      {/* YouTube embed modal */}
+      {showYoutubeModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          onMouseDown={e => { if (e.target === e.currentTarget) setShowYoutubeModal(false); }}>
+          <div style={{ background: '#fff', borderRadius: 16, padding: '28px 32px', width: 480, maxWidth: '90vw', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+              <div style={{ width: 36, height: 36, borderRadius: 8, background: '#ff0000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><polygon points="10 8 16 12 10 16 10 8"/></svg>
+              </div>
+              <div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: colors.text }}>유튜브 동영상 삽입</div>
+                <div style={{ fontSize: 12, color: colors.textLight }}>유튜브 링크를 붙여넣으면 미리보기가 표시됩니다</div>
+              </div>
+            </div>
+
+            <input
+              autoFocus
+              type="text"
+              placeholder="https://www.youtube.com/watch?v=..."
+              value={youtubeUrl}
+              onChange={e => handleYoutubeUrlChange(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && confirmYoutubeInsert()}
+              style={{
+                width: '100%', padding: '12px 16px', fontSize: 14, border: `2px solid ${youtubeError ? colors.red : youtubePreviewId ? colors.green : colors.border}`,
+                borderRadius: 10, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit',
+                transition: 'border-color 0.2s',
+              }}
+            />
+            {youtubeError && <div style={{ fontSize: 12, color: colors.red, marginTop: 6 }}>{youtubeError}</div>}
+
+            {youtubePreviewId && (
+              <div style={{ marginTop: 16, borderRadius: 10, overflow: 'hidden', background: '#000', aspectRatio: '16/9' }}>
+                <iframe
+                  width="100%" height="100%"
+                  src={`https://www.youtube.com/embed/${youtubePreviewId}`}
+                  frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  style={{ display: 'block' }}
+                />
+              </div>
+            )}
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 20 }}>
+              <button
+                onClick={() => setShowYoutubeModal(false)}
+                style={{ ...s.btn, ...s.btnOutline, padding: '10px 24px', fontSize: 13, borderRadius: 8 }}
+              >취소</button>
+              <button
+                onClick={confirmYoutubeInsert}
+                disabled={!youtubePreviewId}
+                style={{
+                  ...s.btn, padding: '10px 24px', fontSize: 13, borderRadius: 8, fontWeight: 700,
+                  background: youtubePreviewId ? colors.text : '#ccc', color: '#fff', border: 'none',
+                  cursor: youtubePreviewId ? 'pointer' : 'not-allowed',
+                }}
+              >삽입</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -785,7 +1824,8 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
   const scores = calculateScores({
     title: form.title, excerpt: form.excerpt, body: form.body,
     focusKeyword: form.focusKeyword, seoTitle: form.seoTitle,
-    tags: form.tags, category: form.categoryId,
+    seoDesc: form.seoDescription, tags: form.tags, category: form.categoryId,
+    slug: form.title ? form.title.toLowerCase().replace(/[^a-z0-9가-힣\s]/g, '').replace(/\s+/g, '-') : '',
   });
 
   const [mainImageUploading, setMainImageUploading] = useState(false);
@@ -822,7 +1862,7 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
             value={form.title}
             onChange={e => updateField('title', e.target.value)}
             placeholder="제목을 입력하세요"
-            style={{ width: '100%', fontSize: 28, fontWeight: 800, border: 'none', outline: 'none', padding: '8px 0', marginBottom: 8, color: colors.text, fontFamily: 'inherit', background: 'transparent' }}
+            style={{ width: '100%', fontSize: 24, fontWeight: 800, border: `1px solid ${colors.border}`, borderRadius: 8, outline: 'none', padding: '14px 16px', marginBottom: 10, color: colors.text, fontFamily: 'inherit', background: '#fff', boxSizing: 'border-box' }}
           />
 
           {/* Slug */}
@@ -842,23 +1882,34 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
         {/* ── Right: Sidebar Panels ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
 
-          {/* SEO Score Panel */}
+          {/* SEO/GEO Score Panel */}
           <div style={s.card}>
-            <h3 style={{ fontSize: 13, fontWeight: 700, marginBottom: 12 }}>SEO 점수</h3>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginBottom: 12 }}>
+            {/* Score header with circles */}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginBottom: 16, paddingBottom: 16, borderBottom: `1px solid ${colors.border}` }}>
               <ScoreCircle score={scores.seoScore} label="SEO" size={48} />
-              <ScoreCircle score={scores.totalScore} label="종합" size={60} />
+              <ScoreCircle score={scores.totalScore} label="종합" size={64} />
               <ScoreCircle score={scores.geoScore} label="GEO" size={48} />
             </div>
-            {scores.seoChecks.filter(c => !c.ok).slice(0, 3).map((c, i) => (
-              <div key={i} style={{ display: 'flex', gap: 6, padding: '4px 0', fontSize: 11 }}>
-                <span>🔴</span>
-                <span style={{ color: '#555' }}>{c.label}</span>
+
+            {/* SEO Categories */}
+            <div style={{ marginBottom: 8 }}>
+              <div style={{ fontSize: 12, fontWeight: 800, color: colors.text, marginBottom: 4, letterSpacing: '0.02em' }}>
+                SEO 분석 <span style={{ fontWeight: 400, color: colors.textLight }}>({scores.seoScore}/100)</span>
               </div>
-            ))}
-            {scores.seoChecks.filter(c => !c.ok).length > 3 && (
-              <div style={{ fontSize: 11, color: colors.textLight, marginTop: 4 }}>+{scores.seoChecks.filter(c => !c.ok).length - 3}개 항목 개선 필요</div>
-            )}
+              {scores.seoCategories.map((cat, i) => (
+                <ScoreCategoryPanel key={i} category={cat} defaultOpen={cat.failCount > 0 && i === 0} />
+              ))}
+            </div>
+
+            {/* GEO Categories */}
+            <div style={{ marginTop: 16, paddingTop: 12, borderTop: `2px solid ${colors.border}` }}>
+              <div style={{ fontSize: 12, fontWeight: 800, color: colors.text, marginBottom: 4, letterSpacing: '0.02em' }}>
+                GEO 분석 (AI 검색 최적화) <span style={{ fontWeight: 400, color: colors.textLight }}>({scores.geoScore}/100)</span>
+              </div>
+              {scores.geoCategories.map((cat, i) => (
+                <ScoreCategoryPanel key={i} category={cat} defaultOpen={cat.failCount > 0 && i === 0} />
+              ))}
+            </div>
           </div>
 
           {/* Publish Panel */}
