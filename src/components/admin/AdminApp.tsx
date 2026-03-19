@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import PasswordGate from './PasswordGate';
 import {
   fetchDashboardStats, fetchBlogPosts, fetchBlogPost, fetchCategories,
@@ -277,6 +277,418 @@ function BlogList({ onNavigate }: { onNavigate: (page: string, id?: string) => v
 }
 
 // ══════════════════════════════════════
+// ── Rich Text Editor Component ──
+// ══════════════════════════════════════
+const toolbarBtnStyle: React.CSSProperties = {
+  padding: '6px 10px', fontSize: 13, fontWeight: 600, border: 'none',
+  background: 'none', cursor: 'pointer', color: colors.text, borderRadius: 4,
+  minWidth: 32, textAlign: 'center', transition: 'background 0.15s',
+};
+
+function RichTextEditor({ value, onChange }: { value: string; onChange: (html: string) => void }) {
+  const editorRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const isInternalChange = useRef(false);
+
+  // Sync external value into editor only when it changes externally
+  useEffect(() => {
+    if (isInternalChange.current) {
+      isInternalChange.current = false;
+      return;
+    }
+    if (editorRef.current && editorRef.current.innerHTML !== value) {
+      editorRef.current.innerHTML = value;
+    }
+  }, [value]);
+
+  const exec = (command: string, val?: string) => {
+    editorRef.current?.focus();
+    document.execCommand(command, false, val);
+    syncContent();
+  };
+
+  const syncContent = () => {
+    if (editorRef.current) {
+      isInternalChange.current = true;
+      onChange(editorRef.current.innerHTML);
+    }
+  };
+
+  const handleHeading = (tag: string) => {
+    editorRef.current?.focus();
+    document.execCommand('formatBlock', false, tag);
+    syncContent();
+  };
+
+  const handleLink = () => {
+    const url = prompt('링크 URL을 입력하세요:', 'https://');
+    if (url) exec('createLink', url);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const asset = await uploadImage(file);
+      const imgUrl = asset.url;
+      editorRef.current?.focus();
+      document.execCommand('insertHTML', false, `<img src="${imgUrl}" alt="${file.name}" style="max-width:100%;height:auto;margin:8px 0;" />`);
+      syncContent();
+    } catch (err: any) {
+      alert('이미지 업로드 실패: ' + err.message);
+    }
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const toolbarGroups: { label: string; action: () => void; title: string }[][] = [
+    [
+      { label: 'B', action: () => exec('bold'), title: '굵게' },
+      { label: 'I', action: () => exec('italic'), title: '기울임' },
+      { label: 'U', action: () => exec('underline'), title: '밑줄' },
+    ],
+    [
+      { label: 'H2', action: () => handleHeading('h2'), title: '제목 2' },
+      { label: 'H3', action: () => handleHeading('h3'), title: '제목 3' },
+      { label: 'H4', action: () => handleHeading('h4'), title: '제목 4' },
+    ],
+    [
+      { label: '\u2022 UL', action: () => exec('insertUnorderedList'), title: '글머리 기호' },
+      { label: '1. OL', action: () => exec('insertOrderedList'), title: '번호 매기기' },
+    ],
+    [
+      { label: '\u201C\u201D', action: () => handleHeading('blockquote'), title: '인용문' },
+      { label: '<>', action: () => {
+        editorRef.current?.focus();
+        document.execCommand('insertHTML', false, '<pre style="background:#f4f4f4;padding:12px;border-radius:6px;font-family:monospace;overflow-x:auto;"><code>\n</code></pre>');
+        syncContent();
+      }, title: '코드 블록' },
+    ],
+    [
+      { label: '\uD83D\uDD17', action: handleLink, title: '링크 삽입' },
+      { label: '\uD83D\uDDBC', action: () => fileInputRef.current?.click(), title: '이미지 삽입' },
+    ],
+    [
+      { label: '\u2190', action: () => exec('justifyLeft'), title: '왼쪽 정렬' },
+      { label: '\u2194', action: () => exec('justifyCenter'), title: '가운데 정렬' },
+      { label: '\u2192', action: () => exec('justifyRight'), title: '오른쪽 정렬' },
+    ],
+  ];
+
+  return (
+    <div>
+      {/* Toolbar */}
+      <div style={{
+        display: 'flex', flexWrap: 'wrap', gap: 2, padding: '6px 8px',
+        border: `1px solid ${colors.border}`, borderBottom: 'none',
+        borderRadius: '8px 8px 0 0', background: '#fafafa', alignItems: 'center',
+      }}>
+        {toolbarGroups.map((group, gi) => (
+          <div key={gi} style={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+            {group.map((btn, bi) => (
+              <button
+                key={bi}
+                type="button"
+                title={btn.title}
+                onMouseDown={e => { e.preventDefault(); btn.action(); }}
+                style={{
+                  ...toolbarBtnStyle,
+                  fontWeight: ['B'].includes(btn.label) ? 800 : 600,
+                  fontStyle: btn.label === 'I' ? 'italic' : 'normal',
+                  textDecoration: btn.label === 'U' ? 'underline' : 'none',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = '#e8e8e8')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+              >
+                {btn.label}
+              </button>
+            ))}
+            {gi < toolbarGroups.length - 1 && (
+              <div style={{ width: 1, height: 20, background: colors.border, margin: '0 4px' }} />
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Editor Area */}
+      <div
+        ref={editorRef}
+        contentEditable
+        suppressContentEditableWarning
+        onInput={syncContent}
+        onBlur={syncContent}
+        style={{
+          minHeight: 400, padding: '16px 18px', fontSize: 15, lineHeight: 1.8,
+          border: `1px solid ${colors.border}`, borderRadius: '0 0 8px 8px',
+          outline: 'none', background: '#fff', fontFamily: 'inherit',
+          overflowY: 'auto',
+        }}
+        data-placeholder="본문을 작성하세요..."
+      />
+
+      {/* Hidden file input for image upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        style={{ display: 'none' }}
+        onChange={handleImageUpload}
+      />
+    </div>
+  );
+}
+
+// ── HTML to Portable Text converter ──
+function htmlToPortableText(html: string): any[] {
+  if (!html || !html.trim()) return [];
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  const blocks: any[] = [];
+  let blockKeyCounter = 0;
+
+  const genKey = () => {
+    blockKeyCounter++;
+    return `block_${blockKeyCounter}_${Date.now().toString(36)}`;
+  };
+
+  const extractMarks = (node: Node): string[] => {
+    const marks: string[] = [];
+    let el = node.parentElement;
+    while (el && el !== doc.body) {
+      const tag = el.tagName.toLowerCase();
+      if (tag === 'strong' || tag === 'b') marks.push('strong');
+      if (tag === 'em' || tag === 'i') marks.push('em');
+      if (tag === 'u') marks.push('underline');
+      if (tag === 'code') marks.push('code');
+      el = el.parentElement;
+    }
+    return [...new Set(marks)];
+  };
+
+  const processInlineChildren = (parent: Element): any[] => {
+    const spans: any[] = [];
+    const walk = (node: Node) => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const text = node.textContent || '';
+        if (text) {
+          spans.push({ _type: 'span', _key: genKey(), text, marks: extractMarks(node) });
+        }
+      } else if (node.nodeType === Node.ELEMENT_NODE) {
+        const el = node as Element;
+        const tag = el.tagName.toLowerCase();
+        if (tag === 'img') {
+          const src = el.getAttribute('src') || '';
+          if (src) {
+            // Images become their own block (handled separately), push placeholder
+            spans.push({ _type: 'span', _key: genKey(), text: '', marks: [] });
+          }
+        } else if (tag === 'a') {
+          const href = el.getAttribute('href') || '';
+          const linkKey = genKey();
+          const childSpans: any[] = [];
+          el.childNodes.forEach(child => {
+            if (child.nodeType === Node.TEXT_NODE) {
+              childSpans.push({
+                _type: 'span', _key: genKey(),
+                text: child.textContent || '',
+                marks: [...extractMarks(child), linkKey],
+              });
+            }
+          });
+          if (childSpans.length === 0) {
+            childSpans.push({ _type: 'span', _key: genKey(), text: el.textContent || href, marks: [linkKey] });
+          }
+          spans.push({ _markDef: { _type: 'link', _key: linkKey, href }, children: childSpans });
+        } else if (tag === 'br') {
+          spans.push({ _type: 'span', _key: genKey(), text: '\n', marks: [] });
+        } else {
+          el.childNodes.forEach(child => walk(child));
+        }
+      }
+    };
+    parent.childNodes.forEach(child => walk(child));
+    return spans;
+  };
+
+  const processElement = (el: Element) => {
+    const tag = el.tagName.toLowerCase();
+
+    // Images become image blocks
+    if (tag === 'img') {
+      const src = el.getAttribute('src') || '';
+      if (src) {
+        blocks.push({
+          _type: 'image',
+          _key: genKey(),
+          asset: { _type: 'reference', _ref: src },
+          url: src,
+        });
+      }
+      return;
+    }
+
+    // Headings
+    if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(tag)) {
+      const inlines = processInlineChildren(el);
+      const markDefs: any[] = [];
+      const children: any[] = [];
+      inlines.forEach(item => {
+        if (item._markDef) {
+          markDefs.push(item._markDef);
+          children.push(...item.children);
+        } else {
+          children.push(item);
+        }
+      });
+      blocks.push({
+        _type: 'block', _key: genKey(), style: tag, markDefs,
+        children: children.length > 0 ? children : [{ _type: 'span', _key: genKey(), text: '', marks: [] }],
+      });
+      return;
+    }
+
+    // Lists (ul / ol)
+    if (tag === 'ul' || tag === 'ol') {
+      const listItem = tag === 'ul' ? 'bullet' : 'number';
+      el.querySelectorAll(':scope > li').forEach(li => {
+        const inlines = processInlineChildren(li);
+        const markDefs: any[] = [];
+        const children: any[] = [];
+        inlines.forEach(item => {
+          if (item._markDef) {
+            markDefs.push(item._markDef);
+            children.push(...item.children);
+          } else {
+            children.push(item);
+          }
+        });
+        blocks.push({
+          _type: 'block', _key: genKey(), style: 'normal', listItem, level: 1, markDefs,
+          children: children.length > 0 ? children : [{ _type: 'span', _key: genKey(), text: li.textContent || '', marks: [] }],
+        });
+      });
+      return;
+    }
+
+    // Blockquote
+    if (tag === 'blockquote') {
+      const inlines = processInlineChildren(el);
+      const markDefs: any[] = [];
+      const children: any[] = [];
+      inlines.forEach(item => {
+        if (item._markDef) {
+          markDefs.push(item._markDef);
+          children.push(...item.children);
+        } else {
+          children.push(item);
+        }
+      });
+      blocks.push({
+        _type: 'block', _key: genKey(), style: 'blockquote', markDefs,
+        children: children.length > 0 ? children : [{ _type: 'span', _key: genKey(), text: el.textContent || '', marks: [] }],
+      });
+      return;
+    }
+
+    // Code block (pre)
+    if (tag === 'pre') {
+      blocks.push({
+        _type: 'block', _key: genKey(), style: 'normal', markDefs: [],
+        children: [{ _type: 'span', _key: genKey(), text: el.textContent || '', marks: ['code'] }],
+      });
+      return;
+    }
+
+    // Regular paragraphs / divs / other block elements
+    if (['p', 'div', 'section', 'article'].includes(tag) || tag === 'span') {
+      // Check if this contains only an image
+      const imgs = el.querySelectorAll('img');
+      imgs.forEach(img => {
+        const src = img.getAttribute('src') || '';
+        if (src) {
+          blocks.push({ _type: 'image', _key: genKey(), asset: { _type: 'reference', _ref: src }, url: src });
+        }
+      });
+
+      const inlines = processInlineChildren(el);
+      const markDefs: any[] = [];
+      const children: any[] = [];
+      inlines.forEach(item => {
+        if (item._markDef) {
+          markDefs.push(item._markDef);
+          children.push(...item.children);
+        } else if (item.text !== '' || children.length === 0) {
+          children.push(item);
+        }
+      });
+
+      // Only add text block if there is actual text content
+      const hasText = children.some(c => c.text && c.text.trim());
+      if (hasText) {
+        blocks.push({
+          _type: 'block', _key: genKey(), style: 'normal', markDefs,
+          children: children.length > 0 ? children : [{ _type: 'span', _key: genKey(), text: '', marks: [] }],
+        });
+      }
+      return;
+    }
+  };
+
+  // Process top-level nodes
+  doc.body.childNodes.forEach(node => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = (node.textContent || '').trim();
+      if (text) {
+        blocks.push({
+          _type: 'block', _key: genKey(), style: 'normal', markDefs: [],
+          children: [{ _type: 'span', _key: genKey(), text, marks: [] }],
+        });
+      }
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      processElement(node as Element);
+    }
+  });
+
+  return blocks.length > 0 ? blocks : [{ _type: 'block', _key: genKey(), style: 'normal', markDefs: [], children: [{ _type: 'span', _key: genKey(), text: '', marks: [] }] }];
+}
+
+// ── Portable Text to HTML (for loading existing posts) ──
+function portableTextToHtml(blocks: any[]): string {
+  if (!blocks || !Array.isArray(blocks)) return '';
+  return blocks.map(block => {
+    if (block._type === 'image') {
+      const url = block.url || block.asset?.url || '';
+      return url ? `<img src="${url}" alt="" style="max-width:100%;height:auto;margin:8px 0;" />` : '';
+    }
+    if (block._type !== 'block') return '';
+    const children = (block.children || []).map((span: any) => {
+      let text = (span.text || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const marks = span.marks || [];
+      if (marks.includes('strong')) text = `<strong>${text}</strong>`;
+      if (marks.includes('em')) text = `<em>${text}</em>`;
+      if (marks.includes('underline')) text = `<u>${text}</u>`;
+      if (marks.includes('code')) text = `<code>${text}</code>`;
+      // Handle link marks
+      const linkMark = marks.find((m: string) => {
+        return (block.markDefs || []).some((md: any) => md._key === m && md._type === 'link');
+      });
+      if (linkMark) {
+        const def = (block.markDefs || []).find((md: any) => md._key === linkMark);
+        if (def) text = `<a href="${def.href}">${text}</a>`;
+      }
+      return text;
+    }).join('');
+
+    const style = block.style || 'normal';
+    if (block.listItem === 'bullet') return `<li>${children}</li>`;
+    if (block.listItem === 'number') return `<li>${children}</li>`;
+    if (style === 'blockquote') return `<blockquote>${children}</blockquote>`;
+    if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(style)) return `<${style}>${children}</${style}>`;
+    return `<p>${children}</p>`;
+  }).join('\n');
+}
+
+// ══════════════════════════════════════
 // ── Blog Editor Page ──
 // ══════════════════════════════════════
 function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page: string) => void }) {
@@ -291,12 +703,21 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
     fetchCategories().then(setCategories);
     if (postId) {
       fetchBlogPost(postId).then((post: any) => {
-        if (post) setForm({
-          title: post.title || '', excerpt: post.excerpt || '', body: '', // body is Portable Text, simplified here
-          focusKeyword: post.focusKeyword || '', seoTitle: post.seoTitle || '', seoDescription: post.seoDescription || '',
-          categoryId: post.category?._id || '', tags: post.tags || [], tagInput: '',
-          publishedAt: post.publishedAt ? post.publishedAt.split('T')[0] : '',
-        });
+        if (post) {
+          // Convert Portable Text body to HTML for the rich editor
+          let bodyHtml = '';
+          if (post.body && Array.isArray(post.body)) {
+            bodyHtml = portableTextToHtml(post.body);
+          } else if (typeof post.body === 'string') {
+            bodyHtml = post.body;
+          }
+          setForm({
+            title: post.title || '', excerpt: post.excerpt || '', body: bodyHtml,
+            focusKeyword: post.focusKeyword || '', seoTitle: post.seoTitle || '', seoDescription: post.seoDescription || '',
+            categoryId: post.category?._id || '', tags: post.tags || [], tagInput: '',
+            publishedAt: post.publishedAt ? post.publishedAt.split('T')[0] : '',
+          });
+        }
       });
     }
   }, [postId]);
@@ -314,9 +735,13 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
   const handleSave = async (publish: boolean) => {
     setSaving(true);
     try {
+      // Convert HTML body to Sanity Portable Text blocks
+      const bodyBlocks = htmlToPortableText(form.body);
+
       const data: any = {
         title: form.title,
         excerpt: form.excerpt,
+        body: bodyBlocks,
         focusKeyword: form.focusKeyword,
         seoTitle: form.seoTitle,
         seoDescription: form.seoDescription,
@@ -373,8 +798,7 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
             </div>
             <div style={{ marginBottom: 16 }}>
               <label style={s.label}>본문 내용</label>
-              <p style={{ fontSize: 11, color: colors.textLight, marginBottom: 8 }}>마크다운 형식: ## 소제목, **굵게**, - 목록, [링크](url)</p>
-              <textarea style={{ ...s.textarea, minHeight: 400, fontFamily: 'monospace', fontSize: 14, lineHeight: 1.8 }} value={form.body} onChange={e => updateField('body', e.target.value)} placeholder="본문을 작성하세요..." />
+              <RichTextEditor value={form.body} onChange={(html) => updateField('body', html)} />
             </div>
           </div>
 
