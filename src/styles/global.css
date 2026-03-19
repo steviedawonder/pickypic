@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* GTM에서 삽입된 기존 카카오 플로팅 버튼 숨김 */
+#kakao-floating-btn {
+  display: none !important;
+}
+
 /* Bebas Neue Font */
 @font-face {
   font-family: 'Bebas Neue';

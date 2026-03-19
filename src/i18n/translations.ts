@@ -45,6 +45,7 @@ export const translations: Record<Lang, Record<string, string>> = {
 
     // Floating Button
     'floating.rental': '렌탈문의',
+    'floating.kakao': '카카오톡 상담',
 
     // About Page
     'about.title': '회사소개 페이지 | 피키픽 | 포토부스 대여 및 기업 행사 렌탈 전문',
@@ -167,6 +168,7 @@ export const translations: Record<Lang, Record<string, string>> = {
 
     // Floating Button
     'floating.rental': 'Rental Inquiry',
+    'floating.kakao': 'KakaoTalk Chat',
 
     // About Page
     'about.title': 'About | PICKYPIC | Photo Booth Rental & Corporate Event Specialist',
@@ -289,6 +291,7 @@ export const translations: Record<Lang, Record<string, string>> = {
 
     // Floating Button
     'floating.rental': 'レンタルお問合せ',
+    'floating.kakao': 'カカオトーク相談',
 
     // About Page
     'about.title': '会社紹介 | PICKYPIC | フォトブースレンタル＆企業イベント専門',
