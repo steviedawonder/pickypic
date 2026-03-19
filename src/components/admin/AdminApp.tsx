@@ -788,123 +788,172 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
     tags: form.tags, category: form.categoryId,
   });
 
+  const [mainImageUploading, setMainImageUploading] = useState(false);
+  const [mainImageUrl, setMainImageUrl] = useState('');
+  const mainImageRef = useRef<HTMLInputElement>(null);
+
+  const handleMainImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setMainImageUploading(true);
+    try {
+      const asset = await uploadImage(file);
+      setMainImageUrl(asset.url);
+      updateField('mainImageRef', asset._id);
+    } catch (err: any) {
+      alert('이미지 업로드 실패: ' + err.message);
+    } finally {
+      setMainImageUploading(false);
+    }
+  };
+
   return (
     <div>
-      <div style={s.header}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <button onClick={() => onNavigate('blogs')} style={{ ...s.btn, ...s.btnOutline, padding: '6px 12px' }}>← 목록</button>
-          <h1 style={s.title}>{postId ? '글 수정' : '새 글 작성'}</h1>
-        </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={() => handleSave(false)} disabled={saving} style={{ ...s.btn, ...s.btnOutline }}>{saving ? '저장 중...' : '임시저장'}</button>
-          <button onClick={() => handleSave(true)} disabled={saving} style={{ ...s.btn, ...s.btnPrimary }}>{saving ? '저장 중...' : '발행하기'}</button>
-        </div>
-      </div>
+      {/* Back link */}
+      <button onClick={() => onNavigate('blogs')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: colors.textLight, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 4 }}>
+        <span>{'<'}</span> 글 목록으로
+      </button>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 16 }}>
-        {/* Left: Editor */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 20 }}>
+        {/* ── Left: Title + Slug + Editor ── */}
         <div>
+          {/* Title */}
+          <input
+            value={form.title}
+            onChange={e => updateField('title', e.target.value)}
+            placeholder="제목을 입력하세요"
+            style={{ width: '100%', fontSize: 28, fontWeight: 800, border: 'none', outline: 'none', padding: '8px 0', marginBottom: 8, color: colors.text, fontFamily: 'inherit', background: 'transparent' }}
+          />
+
+          {/* Slug */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 16, fontSize: 13, color: colors.textLight }}>
+            <span style={{ fontWeight: 600 }}>/blog/</span>
+            <input
+              value={form.title ? form.title.toLowerCase().replace(/[^a-z0-9가-힣\s]/g, '').replace(/\s+/g, '-') : ''}
+              readOnly
+              style={{ border: `1px solid ${colors.border}`, borderRadius: 4, padding: '4px 8px', fontSize: 13, color: colors.textLight, flex: 1, outline: 'none', background: '#fafafa' }}
+            />
+          </div>
+
+          {/* Rich Text Editor */}
+          <RichTextEditor value={form.body} onChange={(html) => updateField('body', html)} />
+        </div>
+
+        {/* ── Right: Sidebar Panels ── */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+
+          {/* SEO Score Panel */}
           <div style={s.card}>
-            <div style={{ marginBottom: 16 }}>
-              <label style={s.label}>제목</label>
-              <input style={s.input} value={form.title} onChange={e => updateField('title', e.target.value)} placeholder="글 제목을 입력하세요" />
+            <h3 style={{ fontSize: 13, fontWeight: 700, marginBottom: 12 }}>SEO 점수</h3>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginBottom: 12 }}>
+              <ScoreCircle score={scores.seoScore} label="SEO" size={48} />
+              <ScoreCircle score={scores.totalScore} label="종합" size={60} />
+              <ScoreCircle score={scores.geoScore} label="GEO" size={48} />
             </div>
-            <div style={{ marginBottom: 16 }}>
-              <label style={s.label}>요약 (미리보기)</label>
-              <textarea style={{ ...s.textarea, minHeight: 60 }} value={form.excerpt} onChange={e => updateField('excerpt', e.target.value)} placeholder="글의 요약을 2~3줄로 작성하세요" />
+            {scores.seoChecks.filter(c => !c.ok).slice(0, 3).map((c, i) => (
+              <div key={i} style={{ display: 'flex', gap: 6, padding: '4px 0', fontSize: 11 }}>
+                <span>🔴</span>
+                <span style={{ color: '#555' }}>{c.label}</span>
+              </div>
+            ))}
+            {scores.seoChecks.filter(c => !c.ok).length > 3 && (
+              <div style={{ fontSize: 11, color: colors.textLight, marginTop: 4 }}>+{scores.seoChecks.filter(c => !c.ok).length - 3}개 항목 개선 필요</div>
+            )}
+          </div>
+
+          {/* Publish Panel */}
+          <div style={s.card}>
+            <h3 style={{ fontSize: 13, fontWeight: 700, marginBottom: 12 }}>발행</h3>
+            <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+              <button onClick={() => handleSave(false)} disabled={saving} style={{ ...s.btn, ...s.btnOutline, flex: 1, fontSize: 12 }}>{saving ? '...' : '임시저장'}</button>
+              <button onClick={() => handleSave(true)} disabled={saving} style={{ ...s.btn, padding: '10px 20px', fontSize: 12, fontWeight: 600, borderRadius: 8, border: '2px solid #22c55e', background: '#fff', color: '#22c55e', cursor: 'pointer', flex: 1 }}>{saving ? '...' : '발행'}</button>
             </div>
-            <div style={{ marginBottom: 16 }}>
-              <label style={s.label}>본문 내용</label>
-              <RichTextEditor value={form.body} onChange={(html) => updateField('body', html)} />
+            <div style={{ marginBottom: 8 }}>
+              <label style={{ fontSize: 12, fontWeight: 600, color: colors.orange }}>예약 발행</label>
+              <input type="datetime-local" style={{ ...s.input, fontSize: 12, marginTop: 4 }} value={form.publishedAt} onChange={e => updateField('publishedAt', e.target.value)} />
             </div>
+            <button onClick={() => handleSave(true)} disabled={saving} style={{ ...s.btn, width: '100%', background: colors.text, color: '#fff', fontSize: 13, padding: '12px 0', fontWeight: 700, borderRadius: 8, border: 'none', cursor: 'pointer' }}>저장</button>
+          </div>
+
+          {/* Category */}
+          <div style={s.card}>
+            <h3 style={{ fontSize: 13, fontWeight: 700, marginBottom: 8 }}>카테고리</h3>
+            <select style={s.input} value={form.categoryId} onChange={e => updateField('categoryId', e.target.value)}>
+              <option value="">카테고리 선택</option>
+              {categories.map((cat: any) => <option key={cat._id} value={cat._id}>{cat.title}</option>)}
+            </select>
+          </div>
+
+          {/* Tags */}
+          <div style={s.card}>
+            <h3 style={{ fontSize: 13, fontWeight: 700, marginBottom: 8 }}>태그</h3>
+            <input style={s.input} value={form.tagInput} onChange={e => updateField('tagInput', e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addTag())} placeholder="태그 입력 후 Enter" />
+            {form.tags.length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
+                {form.tags.map(tag => (
+                  <span key={tag} style={{ ...s.badge, background: '#f0f0f0', cursor: 'pointer', fontSize: 11 }} onClick={() => removeTag(tag)}>#{tag} ✕</span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Main Image */}
+          <div style={s.card}>
+            <h3 style={{ fontSize: 13, fontWeight: 700, marginBottom: 8 }}>대표 이미지</h3>
+            <div
+              onClick={() => mainImageRef.current?.click()}
+              style={{ border: `2px dashed ${colors.border}`, borderRadius: 8, padding: 24, textAlign: 'center', cursor: 'pointer', background: '#fafafa', transition: 'border-color 0.15s' }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = colors.primary)}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = colors.border)}
+            >
+              {mainImageUrl ? (
+                <img src={mainImageUrl} alt="대표 이미지" style={{ maxWidth: '100%', maxHeight: 150, objectFit: 'cover', borderRadius: 4 }} />
+              ) : (
+                <>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="1.5" style={{ margin: '0 auto 8px' }}><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  <div style={{ fontSize: 12, color: colors.textLight }}>{mainImageUploading ? '업로드 중...' : '이미지 선택'}</div>
+                </>
+              )}
+            </div>
+            <input ref={mainImageRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleMainImageUpload} />
           </div>
 
           {/* SEO Settings */}
           <div style={s.card}>
-            <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 16 }}>🔍 SEO 설정</h3>
-            <div style={{ marginBottom: 12 }}>
-              <label style={s.label}>포커스 키워드</label>
-              <input style={s.input} value={form.focusKeyword} onChange={e => updateField('focusKeyword', e.target.value)} placeholder="이 글의 핵심 키워드" />
+            <h3 style={{ fontSize: 13, fontWeight: 700, marginBottom: 12 }}>SEO 설정</h3>
+            <div style={{ marginBottom: 10 }}>
+              <label style={{ fontSize: 12, fontWeight: 600, color: colors.textLight, marginBottom: 4, display: 'block' }}>포커스 키워드</label>
+              <input style={s.input} value={form.focusKeyword} onChange={e => updateField('focusKeyword', e.target.value)} placeholder="예: 웨딩 촬영" />
             </div>
-            <div style={{ marginBottom: 12 }}>
-              <label style={s.label}>SEO 제목 (검색 결과에 표시)</label>
-              <input style={s.input} value={form.seoTitle} onChange={e => updateField('seoTitle', e.target.value)} placeholder="검색엔진에 표시될 제목 (20~60자)" />
+            <div style={{ marginBottom: 10 }}>
+              <label style={{ fontSize: 12, fontWeight: 600, color: colors.textLight, marginBottom: 4, display: 'block' }}>SEO 제목</label>
+              <input style={s.input} value={form.seoTitle} onChange={e => updateField('seoTitle', e.target.value)} placeholder="SEO 제목" />
               <span style={{ fontSize: 11, color: form.seoTitle.length > 60 ? colors.red : colors.textLight }}>{form.seoTitle.length}/60자</span>
             </div>
-            <div style={{ marginBottom: 12 }}>
-              <label style={s.label}>SEO 설명</label>
-              <textarea style={{ ...s.textarea, minHeight: 60 }} value={form.seoDescription} onChange={e => updateField('seoDescription', e.target.value)} placeholder="검색 결과에 표시될 설명 (120~155자)" />
-              <span style={{ fontSize: 11, color: form.seoDescription.length > 155 ? colors.red : colors.textLight }}>{form.seoDescription.length}/155자</span>
-            </div>
-          </div>
-
-          {/* Meta */}
-          <div style={s.card}>
-            <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 16 }}>📋 분류 및 태그</h3>
-            <div style={{ marginBottom: 12 }}>
-              <label style={s.label}>카테고리</label>
-              <select style={s.input} value={form.categoryId} onChange={e => updateField('categoryId', e.target.value)}>
-                <option value="">선택하세요</option>
-                {categories.map((cat: any) => <option key={cat._id} value={cat._id}>{cat.title}</option>)}
-              </select>
-            </div>
-            <div style={{ marginBottom: 12 }}>
-              <label style={s.label}>태그</label>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <input style={{ ...s.input, flex: 1 }} value={form.tagInput} onChange={e => updateField('tagInput', e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addTag())} placeholder="태그 입력 후 Enter" />
-                <button onClick={addTag} style={{ ...s.btn, ...s.btnOutline }}>추가</button>
-              </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
-                {form.tags.map(tag => (
-                  <span key={tag} style={{ ...s.badge, background: '#f0f0f0', cursor: 'pointer' }} onClick={() => removeTag(tag)}>#{tag} ✕</span>
-                ))}
-              </div>
-            </div>
             <div>
-              <label style={s.label}>발행일</label>
-              <input type="date" style={s.input} value={form.publishedAt} onChange={e => updateField('publishedAt', e.target.value)} />
+              <label style={{ fontSize: 12, fontWeight: 600, color: colors.textLight, marginBottom: 4, display: 'block' }}>SEO 설명</label>
+              <textarea style={{ ...s.textarea, minHeight: 60 }} value={form.seoDescription} onChange={e => { updateField('seoDescription', e.target.value); updateField('excerpt', e.target.value); }} placeholder="검색 결과에 표시될 설명" />
+              <span style={{ fontSize: 11, color: form.seoDescription.length > 160 ? colors.red : colors.textLight }}>{form.seoDescription.length}/160자</span>
             </div>
           </div>
-        </div>
 
-        {/* Right: SEO/GEO Score Panel */}
-        <div style={{ position: 'sticky', top: 24, alignSelf: 'start' }}>
+          {/* Share Preview */}
           <div style={s.card}>
-            <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 16, textAlign: 'center' }}>SEO + GEO 점수</h3>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginBottom: 16 }}>
-              <ScoreCircle score={scores.seoScore} label="SEO" size={56} />
-              <ScoreCircle score={scores.totalScore} label="종합" size={72} />
-              <ScoreCircle score={scores.geoScore} label="GEO" size={56} />
+            <h3 style={{ fontSize: 13, fontWeight: 700, marginBottom: 12 }}>공유 미리보기</h3>
+            <div style={{ fontSize: 11, color: colors.textLight, marginBottom: 6 }}>카카오톡 / Facebook</div>
+            <div style={{ border: `1px solid ${colors.border}`, borderRadius: 6, padding: 12, marginBottom: 12, background: '#fafafa' }}>
+              <div style={{ fontSize: 11, color: colors.textLight }}>pickypic.vercel.app</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: colors.text, margin: '4px 0 2px' }}>{form.seoTitle || form.title || 'SEO 제목'}</div>
+              <div style={{ fontSize: 11, color: colors.textLight }}>{form.seoDescription || '메타 설명이 여기에 표시됩니다.'}</div>
             </div>
-
-            {/* SEO Checks */}
-            <div style={{ marginBottom: 12 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: colors.text, padding: '8px 0', borderBottom: `1px solid ${colors.border}` }}>기본 SEO ({scores.seoChecks.filter(c => c.ok).length}/{scores.seoChecks.length})</div>
-              {scores.seoChecks.map((c, i) => (
-                <div key={i} style={{ display: 'flex', gap: 6, padding: '6px 0', fontSize: 11, alignItems: 'flex-start', borderBottom: `1px solid #f5f5f5` }}>
-                  <span style={{ flexShrink: 0 }}>{c.ok ? '🟢' : '🔴'}</span>
-                  <div>
-                    <div style={{ fontWeight: 600, color: c.ok ? '#333' : '#555' }}>{c.label}</div>
-                    {!c.ok && <div style={{ color: colors.orange, marginTop: 2 }}>💡 {c.fix}</div>}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* GEO Checks */}
-            <div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: colors.text, padding: '8px 0', borderBottom: `1px solid ${colors.border}` }}>GEO AI검색 ({scores.geoChecks.filter(c => c.ok).length}/{scores.geoChecks.length})</div>
-              {scores.geoChecks.map((c, i) => (
-                <div key={i} style={{ display: 'flex', gap: 6, padding: '6px 0', fontSize: 11, alignItems: 'flex-start', borderBottom: `1px solid #f5f5f5` }}>
-                  <span style={{ flexShrink: 0 }}>{c.ok ? '🟢' : '🔴'}</span>
-                  <div>
-                    <div style={{ fontWeight: 600, color: c.ok ? '#333' : '#555' }}>{c.label}</div>
-                    {!c.ok && <div style={{ color: colors.orange, marginTop: 2 }}>💡 {c.fix}</div>}
-                  </div>
-                </div>
-              ))}
+            <div style={{ fontSize: 11, color: colors.textLight, marginBottom: 6 }}>Google 검색결과</div>
+            <div style={{ marginBottom: 4 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#1a0dab' }}>{form.seoTitle || form.title || 'SEO 제목'} - PICKYPIC</div>
+              <div style={{ fontSize: 11, color: '#006621' }}>pickypic.vercel.app/blog/{form.title ? form.title.toLowerCase().replace(/[^a-z0-9가-힣\s]/g, '').replace(/\s+/g, '-') : 'post-slug'}</div>
+              <div style={{ fontSize: 11, color: colors.textLight }}>{form.seoDescription || '메타 설명이 여기에 표시됩니다.'}</div>
             </div>
           </div>
+
         </div>
       </div>
     </div>
