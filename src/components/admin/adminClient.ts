@@ -134,6 +134,32 @@ export async function deletePopupBanner(id: string) {
   return adminClient.delete(id);
 }
 
+// ── Download Files ──
+export async function fetchDownloadFiles() {
+  return adminClient.fetch(`*[_type == "downloadFile"] | order(order asc) {
+    _id, displayName, category, isActive, order, linkedProducts,
+    "fileUrl": file.asset->url,
+    "fileName": file.asset->originalFilename,
+    "fileSize": file.asset->size
+  }`);
+}
+
+export async function createDownloadFile(data: any) {
+  return adminClient.create({ _type: 'downloadFile', ...data });
+}
+
+export async function updateDownloadFile(id: string, data: any) {
+  return adminClient.patch(id).set(data).commit();
+}
+
+export async function deleteDownloadFile(id: string) {
+  return adminClient.delete(id);
+}
+
+export async function uploadFile(file: File) {
+  return adminClient.assets.upload('file', file, { filename: file.name });
+}
+
 // ── Dashboard Stats ──
 export async function fetchDashboardStats() {
   const [totalPosts, published, drafts, categories, portfolioCount, faqCount] = await Promise.all([

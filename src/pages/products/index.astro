@@ -2,6 +2,32 @@
 import BaseLayout from '@layouts/BaseLayout.astro';
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import { products, productCategories } from '@data/products';
+import { createClient } from '@sanity/client';
+
+const sanityClient = createClient({
+  projectId: '7b9lcco4',
+  dataset: 'production',
+  useCdn: true,
+  apiVersion: '2024-01-01',
+});
+
+const downloadFiles = await sanityClient.fetch(`*[_type == "downloadFile" && isActive == true && category == "product"] {
+  displayName, linkedProducts, "fileUrl": file.asset->url
+}`);
+
+// 제품 슬러그 순서 (캐러셀 순서와 동일)
+const productSlugs = [
+  'modern-picky', 'classic-picky', 'urban-picky',
+  'modern-mini-picky', 'urban-mini-picky',
+  'modern-retro-picky', 'urban-retro-picky',
+  'outdoor-picky', 'air-picky',
+];
+
+// 제품별 PDF URL 매핑
+const productPdfMap = productSlugs.map(slug => {
+  const match = downloadFiles.find((f: any) => f.linkedProducts?.includes(slug));
+  return match?.fileUrl || '';
+});
 ---
 
 <BaseLayout
@@ -211,14 +237,18 @@ import { products, productCategories } from '@data/products';
     <div class="mx-auto max-w-3xl px-6 lg:px-8 text-center">
       <a
         id="product-download-btn"
-        href="/files/products/stand-picky-intro.pdf"
-        download
+        href={productPdfMap[0] || '#'}
+        target="_blank"
+        rel="noopener"
         class="inline-flex items-center justify-center gap-2 px-10 py-4 border border-gray-400 rounded-full text-primary font-semibold text-sm tracking-[0.02em] hover:bg-primary hover:text-white hover:border-primary transition-colors duration-300"
       >
         제품소개서 다운로드
       </a>
     </div>
   </section>
+
+  <!-- Product PDF Data (from Sanity) -->
+  <script id="product-pdf-data" type="application/json" set:html={JSON.stringify(productPdfMap)} />
 
   <!-- Structured Data: Products -->
   <script type="application/ld+json" set:html={JSON.stringify({
@@ -279,18 +309,8 @@ import { products, productCategories } from '@data/products';
 
     if (!track || !prevBtn || !nextBtn) return;
 
-    // 제품별 PDF 매핑 (9개 제품 → 5개 PDF)
-    const productPdfMap = [
-      '/files/products/stand-picky-intro.pdf',   // 0: Modern Picky
-      '/files/products/stand-picky-intro.pdf',   // 1: Classic Picky
-      '/files/products/stand-picky-intro.pdf',   // 2: Urban Picky
-      '/files/products/mini-picky-intro.pdf',    // 3: Modern Mini Picky
-      '/files/products/mini-picky-intro.pdf',    // 4: Urban Mini Picky
-      '/files/products/retro-picky-intro.pdf',   // 5: Modern Retro Picky
-      '/files/products/retro-picky-intro.pdf',   // 6: Urban Retro Picky
-      '/files/products/outdoor-picky-intro.pdf', // 7: Outdoor Picky
-      '/files/products/air-picky-intro.pdf',     // 8: Air Picky
-    ];
+    // 제품별 PDF 매핑 (Sanity에서 가져온 데이터)
+    const productPdfMap = JSON.parse(document.getElementById('product-pdf-data')?.textContent || '[]');
 
     const totalSlides = track.children.length;
     let currentIndex = 0;

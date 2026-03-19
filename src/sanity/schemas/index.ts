@@ -6,6 +6,7 @@ import { faqItem } from './faqItem';
 import { popupBanner } from './popupBanner';
 import { siteSettings } from './siteSettings';
 import { collaborationRequest } from './collaborationRequest';
+import { downloadFile } from './downloadFile';
 
 export const schemaTypes = [
   blogPost,
@@ -16,4 +17,5 @@ export const schemaTypes = [
   popupBanner,
   siteSettings,
   collaborationRequest,
+  downloadFile,
 ];
