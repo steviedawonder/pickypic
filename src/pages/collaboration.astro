@@ -291,7 +291,7 @@ import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
         const emailjs = await import('@emailjs/browser');
         await emailjs.default.send(
           import.meta.env.PUBLIC_EMAILJS_SERVICE_ID,
-          import.meta.env.PUBLIC_EMAILJS_TEMPLATE_ID,
+          import.meta.env.PUBLIC_EMAILJS_COLLAB_TEMPLATE_ID,
           templateParams,
           import.meta.env.PUBLIC_EMAILJS_PUBLIC_KEY
         );
