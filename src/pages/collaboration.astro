@@ -295,6 +295,39 @@ import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
           templateParams,
           import.meta.env.PUBLIC_EMAILJS_PUBLIC_KEY
         );
+
+        // Sanity에도 저장
+        try {
+          const { createClient } = await import('@sanity/client');
+          const client = createClient({
+            projectId: '7b9lcco4',
+            dataset: 'production',
+            apiVersion: '2024-01-01',
+            useCdn: false,
+            token: 'skrKYET4T3eI3gjxAn1QSq7D7Xr1QUrItYlZJ4raBKET6BE2LeMJlYbvgusk36LnlL0hQH0kJZ2HDYTPffdDSuecTjc9eCzlhuLL2MKFlUaV406LPblIcWDn7Gms3sb4OHoZWDdpKx91USwYOmqexS2VPgjQOOkLm3VKmGozcKAs35JqaIY2',
+          });
+          await client.create({
+            _type: 'collaborationRequest',
+            collaborationType: templateParams.collaboration_type,
+            eventName: templateParams.event_name,
+            companyName: templateParams.company_name,
+            contactName: templateParams.contact_name,
+            contactPhone: templateParams.contact_phone,
+            contactEmail: templateParams.contact_email,
+            installLocation: templateParams.install_location,
+            eventSchedule: templateParams.event_schedule,
+            removalSchedule: templateParams.removal_schedule,
+            boothType: templateParams.booth_type,
+            wrapping: templateParams.wrapping,
+            shootingType: templateParams.shooting_type,
+            additionalMessage: templateParams.additional_message,
+            status: 'pending',
+            submittedAt: new Date().toISOString(),
+          });
+        } catch (sanityErr) {
+          console.error('Sanity save error:', sanityErr);
+        }
+
         alert('협업 문의가 접수되었습니다. 담당자가 빠르게 연락드리겠습니다.');
         form.reset();
       } catch (error) {

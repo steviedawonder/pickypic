@@ -5,6 +5,7 @@ import { portfolio } from './portfolio';
 import { faqItem } from './faqItem';
 import { popupBanner } from './popupBanner';
 import { siteSettings } from './siteSettings';
+import { collaborationRequest } from './collaborationRequest';
 
 export const schemaTypes = [
   blogPost,
@@ -14,4 +15,5 @@ export const schemaTypes = [
   faqItem,
   popupBanner,
   siteSettings,
+  collaborationRequest,
 ];

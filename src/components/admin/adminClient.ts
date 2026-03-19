@@ -93,6 +93,47 @@ export async function deleteFAQItem(id: string) {
   return adminClient.delete(id);
 }
 
+// ── Collaboration ──
+export async function fetchCollaborationRequests() {
+  return adminClient.fetch(`*[_type == "collaborationRequest"] | order(submittedAt desc) {
+    _id, collaborationType, eventName, companyName, contactName, contactPhone, contactEmail,
+    installLocation, eventSchedule, removalSchedule, boothType, wrapping, shootingType,
+    additionalMessage, status, submittedAt, memo
+  }`);
+}
+
+export async function createCollaborationRequest(data: any) {
+  return adminClient.create({ _type: 'collaborationRequest', ...data });
+}
+
+export async function updateCollaborationRequest(id: string, data: any) {
+  return adminClient.patch(id).set(data).commit();
+}
+
+export async function deleteCollaborationRequest(id: string) {
+  return adminClient.delete(id);
+}
+
+// ── Popup Banner ──
+export async function fetchPopupBanners() {
+  return adminClient.fetch(`*[_type == "popupBanner"] {
+    _id, isActive, linkUrl, altText,
+    image { asset-> { _id, url } }
+  }`);
+}
+
+export async function createPopupBanner(data: any) {
+  return adminClient.create({ _type: 'popupBanner', ...data });
+}
+
+export async function updatePopupBanner(id: string, data: any) {
+  return adminClient.patch(id).set(data).commit();
+}
+
+export async function deletePopupBanner(id: string) {
+  return adminClient.delete(id);
+}
+
 // ── Dashboard Stats ──
 export async function fetchDashboardStats() {
   const [totalPosts, published, drafts, categories, portfolioCount, faqCount] = await Promise.all([
