@@ -1190,25 +1190,20 @@ function DownloadManager() {
         {form.category === 'product' && (
           <div style={{ marginTop: 16 }}>
             <label style={s.label}>연결 제품 (제품소개 페이지에서 해당 제품 선택 시 이 파일이 다운로드됩니다)</label>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
+            <select
+              multiple
+              style={{ ...s.input, height: 180 }}
+              value={form.linkedProducts}
+              onChange={e => {
+                const selected = Array.from(e.target.selectedOptions, o => o.value);
+                setForm(p => ({ ...p, linkedProducts: selected }));
+              }}
+            >
               {productOptions.map(opt => (
-                <label key={opt.value} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, cursor: 'pointer', padding: '4px 10px', borderRadius: 6, border: `1px solid ${form.linkedProducts.includes(opt.value) ? colors.primary : colors.border}`, background: form.linkedProducts.includes(opt.value) ? colors.sidebarActive : '#fff' }}>
-                  <input
-                    type="checkbox"
-                    checked={form.linkedProducts.includes(opt.value)}
-                    onChange={e => {
-                      if (e.target.checked) {
-                        setForm(p => ({ ...p, linkedProducts: [...p.linkedProducts, opt.value] }));
-                      } else {
-                        setForm(p => ({ ...p, linkedProducts: p.linkedProducts.filter(v => v !== opt.value) }));
-                      }
-                    }}
-                    style={{ marginRight: 2 }}
-                  />
-                  {opt.label}
-                </label>
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
-            </div>
+            </select>
+            <p style={{ fontSize: 11, color: colors.textLight, marginTop: 4 }}>Ctrl(Cmd) + 클릭으로 여러 제품을 선택할 수 있습니다</p>
           </div>
         )}
       </div>
