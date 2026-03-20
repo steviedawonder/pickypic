@@ -1834,6 +1834,31 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
 }
 
 // ── HTML to Portable Text converter ──
+// Extract Sanity asset ID from CDN URL
+// e.g. "https://cdn.sanity.io/images/proj/prod/abc123-381x441.png" → "image-abc123-381x441-png"
+function sanityUrlToAssetId(url: string): string | null {
+  try {
+    const match = url.match(/\/images\/[^/]+\/[^/]+\/([^?]+)/);
+    if (match) {
+      const filename = match[1]; // e.g. "abc123-381x441.png"
+      const dotIdx = filename.lastIndexOf('.');
+      const name = filename.substring(0, dotIdx);  // "abc123-381x441"
+      const ext = filename.substring(dotIdx + 1);   // "png"
+      return `image-${name}-${ext}`;
+    }
+    // For file assets
+    const fileMatch = url.match(/\/files\/[^/]+\/[^/]+\/([^?]+)/);
+    if (fileMatch) {
+      const filename = fileMatch[1];
+      const dotIdx = filename.lastIndexOf('.');
+      const name = filename.substring(0, dotIdx);
+      const ext = filename.substring(dotIdx + 1);
+      return `file-${name}-${ext}`;
+    }
+  } catch {}
+  return null;
+}
+
 function htmlToPortableText(html: string): any[] {
   if (!html || !html.trim()) return [];
 
@@ -1913,12 +1938,13 @@ function htmlToPortableText(html: string): any[] {
     if (tag === 'img') {
       const src = el.getAttribute('src') || '';
       if (src) {
-        blocks.push({
-          _type: 'image',
-          _key: genKey(),
-          asset: { _type: 'reference', _ref: src },
-          url: src,
-        });
+        const assetId = sanityUrlToAssetId(src);
+        if (assetId) {
+          blocks.push({ _type: 'image', _key: genKey(), asset: { _type: 'reference', _ref: assetId } });
+        } else {
+          // Non-Sanity image, store as custom block with URL
+          blocks.push({ _type: 'image', _key: genKey(), url: src });
+        }
       }
       return;
     }
@@ -2002,7 +2028,12 @@ function htmlToPortableText(html: string): any[] {
       imgs.forEach(img => {
         const src = img.getAttribute('src') || '';
         if (src) {
-          blocks.push({ _type: 'image', _key: genKey(), asset: { _type: 'reference', _ref: src }, url: src });
+          const assetId = sanityUrlToAssetId(src);
+          if (assetId) {
+            blocks.push({ _type: 'image', _key: genKey(), asset: { _type: 'reference', _ref: assetId } });
+          } else {
+            blocks.push({ _type: 'image', _key: genKey(), url: src });
+          }
         }
       });
 
@@ -2326,14 +2357,14 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
                       if (!figureEl) {
                         figureEl = document.createElement('div');
                         figureEl.className = 'img-figure-wrapper';
-                        figureEl.style.cssText = 'display:block;margin:8px 0;max-width:100%;';
+                        figureEl.style.cssText = 'display:inline-block;margin:8px 0;max-width:100%;vertical-align:top;';
                         imgEl.parentElement?.insertBefore(figureEl, imgEl);
                         figureEl.appendChild(imgEl);
                       }
                       if (!captionEl) {
                         captionEl = document.createElement('div');
                         captionEl.className = 'img-caption';
-                        captionEl.style.cssText = 'text-align:center;font-size:13px;color:#888;margin-top:4px;padding:2px 0;';
+                        captionEl.style.cssText = 'text-align:center;font-size:13px;color:#888;margin:0;padding:2px 0;word-wrap:break-word;overflow-wrap:break-word;';
                         figureEl.appendChild(captionEl);
                       }
                       captionEl.textContent = e.target.value;
