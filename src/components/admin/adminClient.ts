@@ -37,19 +37,14 @@ async function sanityDelete(id: string) {
 }
 
 async function sanityUpload(action: 'uploadImage' | 'uploadFile', file: File) {
-  const formData = new FormData();
-  formData.append('action', action);
-  formData.append('file', file);
-  const res = await fetch('/api/sanity', {
-    method: 'POST',
-    headers: { ...getAuthHeaders() },
-    body: formData,
+  const arrayBuffer = await file.arrayBuffer();
+  const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+  return sanityAction({
+    action,
+    fileData: base64,
+    fileName: file.name,
+    fileType: file.type,
   });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(err.error || `Upload error ${res.status}`);
-  }
-  return res.json();
 }
 
 // ── Blog ──

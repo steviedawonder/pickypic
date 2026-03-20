@@ -48,39 +48,6 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     const client = getClient();
 
-    // Handle file/image uploads via FormData
-    if (contentType.includes('multipart/form-data')) {
-      const formData = await request.formData();
-      const action = formData.get('action') as string;
-      const file = formData.get('file') as File;
-
-      if (!file) {
-        return jsonResponse({ error: 'No file provided' }, 400);
-      }
-
-      if (action === 'uploadImage') {
-        const arrayBuffer = await file.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-        const result = await client.assets.upload('image', buffer, {
-          filename: file.name,
-          contentType: file.type,
-        });
-        return jsonResponse(result);
-      }
-
-      if (action === 'uploadFile') {
-        const arrayBuffer = await file.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-        const result = await client.assets.upload('file', buffer, {
-          filename: file.name,
-          contentType: file.type,
-        });
-        return jsonResponse(result);
-      }
-
-      return jsonResponse({ error: 'Invalid upload action' }, 400);
-    }
-
     // Handle JSON actions
     const body = await request.json();
     const { action, ...params } = body;
@@ -103,6 +70,17 @@ export const POST: APIRoute = async ({ request }) => {
 
       case 'delete': {
         const result = await client.delete(params.id);
+        return jsonResponse(result);
+      }
+
+      case 'uploadImage':
+      case 'uploadFile': {
+        const buffer = Buffer.from(params.fileData, 'base64');
+        const assetType = action === 'uploadImage' ? 'image' : 'file';
+        const result = await client.assets.upload(assetType as 'image' | 'file', buffer, {
+          filename: params.fileName,
+          contentType: params.fileType,
+        });
         return jsonResponse(result);
       }
 
