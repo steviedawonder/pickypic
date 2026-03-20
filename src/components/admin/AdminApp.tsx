@@ -3,6 +3,7 @@ import PasswordGate from './PasswordGate';
 import {
   fetchDashboardStats, fetchBlogPosts, fetchBlogPost, fetchCategories,
   createBlogPost, updateBlogPost, deleteBlogPost,
+  fetchBlogTemplates, createBlogTemplate, deleteBlogTemplate,
   fetchPortfolioItems, createPortfolioItem, deletePortfolioItem, uploadImage,
   fetchFAQItems, createFAQItem, updateFAQItem, deleteFAQItem,
   fetchCollaborationRequests, updateCollaborationRequest, deleteCollaborationRequest,
@@ -2089,6 +2090,10 @@ function portableTextToHtml(blocks: any[]): string {
 function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page: string) => void }) {
   const [categories, setCategories] = useState<any[]>([]);
   const [saving, setSaving] = useState(false);
+  const [currentPostId, setCurrentPostId] = useState<string | undefined>(postId);
+  const [toastMsg, setToastMsg] = useState('');
+  const [templates, setTemplates] = useState<any[]>([]);
+  const [showTemplates, setShowTemplates] = useState(false);
   const [selectedEditorImg, setSelectedEditorImg] = useState<HTMLImageElement | null>(null);
   const [imgAlt, setImgAlt] = useState('');
   const [imgCaption, setImgCaption] = useState('');
@@ -2101,6 +2106,7 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
 
   useEffect(() => {
     fetchCategories().then(setCategories);
+    fetchBlogTemplates().then(setTemplates).catch(() => {});
     if (postId) {
       fetchBlogPost(postId).then((post: any) => {
         if (post) {
@@ -2132,6 +2138,11 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
 
   const removeTag = (tag: string) => setForm(prev => ({ ...prev, tags: prev.tags.filter(t => t !== tag) }));
 
+  const showToast = (msg: string) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(''), 2500);
+  };
+
   const handleSave = async (publish: boolean) => {
     setSaving(true);
     try {
@@ -2150,14 +2161,20 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
         ...(publish && { publishedAt: form.publishedAt || new Date().toISOString() }),
       };
 
-      if (postId) {
-        await updateBlogPost(postId, data);
+      if (currentPostId) {
+        await updateBlogPost(currentPostId, data);
       } else {
         data.slug = { _type: 'slug', current: form.title.toLowerCase().replace(/[^a-z0-9가-힣]/g, '-').replace(/-+/g, '-') };
-        await createBlogPost(data);
+        const created = await createBlogPost(data);
+        if (created?._id) setCurrentPostId(created._id);
       }
-      alert(publish ? '발행되었습니다!' : '저장되었습니다!');
-      onNavigate('blogs');
+
+      if (publish) {
+        showToast('발행되었습니다!');
+        setTimeout(() => onNavigate('blogs'), 1000);
+      } else {
+        showToast('임시저장 완료!');
+      }
     } catch (e: any) {
       alert('저장 실패: ' + e.message);
     } finally {
@@ -2192,7 +2209,14 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
   };
 
   return (
-    <div>
+    <div style={{ position: 'relative' }}>
+      {/* Toast message */}
+      {toastMsg && (
+        <div style={{ position: 'fixed', top: 24, left: '50%', transform: 'translateX(-50%)', background: '#1a1a1a', color: '#fff', padding: '10px 28px', borderRadius: 8, fontSize: 13, fontWeight: 600, zIndex: 9999, boxShadow: '0 4px 16px rgba(0,0,0,0.2)', animation: 'fadeIn 0.3s ease' }}>
+          {toastMsg}
+        </div>
+      )}
+
       {/* Back link */}
       <button onClick={() => onNavigate('blogs')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: colors.textLight, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 4 }}>
         <span>{'<'}</span> 글 목록으로
@@ -2224,10 +2248,12 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
             setSelectedEditorImg(img);
             if (img && img.tagName === 'IMG') {
               setImgAlt(img.getAttribute('alt') || '');
-              // Check for caption (figcaption)
-              const figure = img.closest('figure');
-              const figcaption = figure?.querySelector('figcaption');
-              setImgCaption(figcaption?.textContent || '');
+              // Check for caption (div.img-caption inside figure wrapper)
+              const wrapper = img.closest('.img-overlay-wrapper');
+              const container = wrapper || img;
+              const figureWrapper = container.closest('.img-figure-wrapper');
+              const captionEl = figureWrapper?.querySelector('.img-caption');
+              setImgCaption(captionEl?.textContent || '');
               // Check for link
               const link = img.closest('a');
               setImgLink(link?.getAttribute('href') || '');
@@ -2289,27 +2315,34 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
                   value={imgCaption}
                   onChange={e => {
                     setImgCaption(e.target.value);
-                    const figure = selectedEditorImg.closest('figure');
+                    const wrapper = selectedEditorImg.closest('.img-overlay-wrapper');
+                    const imgEl = wrapper || selectedEditorImg;
+                    // Look for figure wrapper that holds image + caption together
+                    let figureEl = imgEl.closest('.img-figure-wrapper') as HTMLElement | null;
+                    let captionEl = figureEl?.querySelector('.img-caption') as HTMLElement | null;
+
                     if (e.target.value) {
-                      if (figure) {
-                        let fc = figure.querySelector('figcaption');
-                        if (!fc) { fc = document.createElement('figcaption'); fc.style.cssText = 'text-align:center;font-size:13px;color:#666;margin-top:6px;font-style:italic;'; figure.appendChild(fc); }
-                        fc.textContent = e.target.value;
-                      } else {
-                        // Wrap in figure
-                        const fig = document.createElement('figure');
-                        fig.style.cssText = 'margin:12px 0;max-width:100%;';
-                        selectedEditorImg.parentElement?.insertBefore(fig, selectedEditorImg);
-                        fig.appendChild(selectedEditorImg);
-                        const fc = document.createElement('figcaption');
-                        fc.style.cssText = 'text-align:center;font-size:13px;color:#666;margin-top:6px;font-style:italic;';
-                        fc.textContent = e.target.value;
-                        fig.appendChild(fc);
+                      // Create figure wrapper if not exists
+                      if (!figureEl) {
+                        figureEl = document.createElement('div');
+                        figureEl.className = 'img-figure-wrapper';
+                        figureEl.style.cssText = 'display:block;margin:8px 0;max-width:100%;';
+                        imgEl.parentElement?.insertBefore(figureEl, imgEl);
+                        figureEl.appendChild(imgEl);
                       }
+                      if (!captionEl) {
+                        captionEl = document.createElement('div');
+                        captionEl.className = 'img-caption';
+                        captionEl.style.cssText = 'text-align:center;font-size:13px;color:#888;margin-top:4px;padding:2px 0;';
+                        figureEl.appendChild(captionEl);
+                      }
+                      captionEl.textContent = e.target.value;
                     } else {
-                      if (figure) {
-                        const fc = figure.querySelector('figcaption');
-                        fc?.remove();
+                      if (captionEl) captionEl.remove();
+                      // Unwrap figure if only image remains
+                      if (figureEl && !figureEl.querySelector('.img-caption')) {
+                        figureEl.parentElement?.insertBefore(imgEl, figureEl);
+                        figureEl.remove();
                       }
                     }
                     updateField('body', document.querySelector('[contenteditable]')?.innerHTML || form.body);
@@ -2402,6 +2435,86 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
               <input type="datetime-local" style={{ ...s.input, fontSize: 12, marginTop: 4 }} value={form.publishedAt} onChange={e => updateField('publishedAt', e.target.value)} />
             </div>
             <button onClick={() => handleSave(true)} disabled={saving} style={{ ...s.btn, width: '100%', background: colors.text, color: '#fff', fontSize: 13, padding: '12px 0', fontWeight: 700, borderRadius: 8, border: 'none', cursor: 'pointer' }}>저장</button>
+          </div>
+
+          {/* Template Panel */}
+          <div style={s.card}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+              <h3 style={{ fontSize: 13, fontWeight: 700, margin: 0 }}>템플릿</h3>
+              <button onClick={() => setShowTemplates(!showTemplates)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 11, color: colors.textLight }}>
+                {showTemplates ? '접기 ▲' : '펼치기 ▼'}
+              </button>
+            </div>
+            <button
+              onClick={async () => {
+                const name = prompt('템플릿 이름을 입력하세요:');
+                if (!name) return;
+                try {
+                  const bodyBlocks = htmlToPortableText(form.body);
+                  await createBlogTemplate({
+                    title: name,
+                    body: bodyBlocks,
+                    excerpt: form.excerpt,
+                    tags: form.tags,
+                    focusKeyword: form.focusKeyword,
+                    seoTitle: form.seoTitle,
+                    seoDescription: form.seoDescription,
+                    ...(form.categoryId && { category: { _type: 'reference', _ref: form.categoryId } }),
+                  });
+                  showToast('템플릿이 저장되었습니다!');
+                  fetchBlogTemplates().then(setTemplates).catch(() => {});
+                } catch (err: any) {
+                  alert('템플릿 저장 실패: ' + err.message);
+                }
+              }}
+              style={{ ...s.btn, ...s.btnOutline, width: '100%', fontSize: 11, padding: '8px 0', marginBottom: 8 }}
+            >
+              현재 글을 템플릿으로 저장
+            </button>
+            {showTemplates && (
+              <div style={{ maxHeight: 200, overflowY: 'auto' }}>
+                {templates.length === 0 ? (
+                  <div style={{ fontSize: 11, color: colors.textLight, textAlign: 'center', padding: 12 }}>저장된 템플릿이 없습니다</div>
+                ) : templates.map((t: any) => (
+                  <div key={t._id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 0', borderBottom: `1px solid ${colors.border}` }}>
+                    <button
+                      onClick={() => {
+                        let bodyHtml = '';
+                        if (t.body && Array.isArray(t.body)) {
+                          bodyHtml = portableTextToHtml(t.body);
+                        } else if (typeof t.body === 'string') {
+                          bodyHtml = t.body;
+                        }
+                        setForm(prev => ({
+                          ...prev,
+                          body: bodyHtml,
+                          excerpt: t.excerpt || prev.excerpt,
+                          tags: t.tags || prev.tags,
+                          focusKeyword: t.focusKeyword || prev.focusKeyword,
+                          seoTitle: t.seoTitle || prev.seoTitle,
+                          seoDescription: t.seoDescription || prev.seoDescription,
+                          categoryId: t.categoryId || prev.categoryId,
+                        }));
+                        showToast(`"${t.title}" 템플릿 적용!`);
+                      }}
+                      style={{ flex: 1, background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: colors.text, textAlign: 'left', padding: '2px 0' }}
+                      title="클릭하여 적용"
+                    >
+                      📄 {t.title}
+                    </button>
+                    <button
+                      onClick={async () => {
+                        if (!confirm(`"${t.title}" 템플릿을 삭제하시겠습니까?`)) return;
+                        await deleteBlogTemplate(t._id);
+                        fetchBlogTemplates().then(setTemplates).catch(() => {});
+                        showToast('템플릿 삭제됨');
+                      }}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 11, color: '#ef4444', padding: '2px 4px' }}
+                    >✕</button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Category */}

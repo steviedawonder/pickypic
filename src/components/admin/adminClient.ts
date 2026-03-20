@@ -92,6 +92,22 @@ export async function deleteBlogPost(id: string) {
   return sanityDelete(id);
 }
 
+// ── Blog Templates ──
+export async function fetchBlogTemplates() {
+  return sanityFetch(`*[_type == "blogTemplate"] | order(_createdAt desc) {
+    _id, title, body, tags, excerpt, focusKeyword, seoTitle, seoDescription,
+    "categoryId": category._ref
+  }`);
+}
+
+export async function createBlogTemplate(data: any) {
+  return sanityCreate({ _type: 'blogTemplate', ...data });
+}
+
+export async function deleteBlogTemplate(id: string) {
+  return sanityDelete(id);
+}
+
 // ── Portfolio ──
 export async function fetchPortfolioItems() {
   return sanityFetch(`*[_type == "portfolio"] | order(order desc) {
