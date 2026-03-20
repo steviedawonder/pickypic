@@ -90,18 +90,20 @@ import { portfolioItems, portfolioCategories } from '@data/portfolio';
             itemscope
             itemtype="https://schema.org/CreativeWork"
           >
-            <div class="overflow-hidden rounded-lg">
-              <img
-                src={item.image}
-                alt={`${item.title} | 포토부스 렌탈`}
-                class="w-full aspect-[5/6] object-cover transition-transform duration-500 hover:scale-105"
-                loading="lazy"
-                itemprop="image"
-              />
-            </div>
-            <h2 class="mt-2 text-[11px] lg:text-base font-semibold text-primary leading-snug line-clamp-1" itemprop="name">
-              {item.title} | 포토부스 렌탈
-            </h2>
+            <a href={`/portfolio/${item.id}`} class="block">
+              <div class="overflow-hidden rounded-lg">
+                <img
+                  src={item.image}
+                  alt={`${item.title} | 포토부스 렌탈`}
+                  class="w-full aspect-[5/6] object-cover transition-transform duration-500 hover:scale-105"
+                  loading="lazy"
+                  itemprop="image"
+                />
+              </div>
+              <h2 class="mt-2 text-[11px] lg:text-base font-semibold text-primary leading-snug line-clamp-1" itemprop="name">
+                {item.title} | 포토부스 렌탈
+              </h2>
+            </a>
           </article>
         ))}
       </div>

@@ -1,0 +1,126 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import { portfolioItems } from '@data/portfolio';
+
+export function getStaticPaths() {
+  return portfolioItems.map((item) => ({
+    params: { id: String(item.id) },
+    props: { item },
+  }));
+}
+
+const { item } = Astro.props;
+
+// Find prev/next items
+const currentIndex = portfolioItems.findIndex((p) => p.id === item.id);
+const prevItem = currentIndex < portfolioItems.length - 1 ? portfolioItems[currentIndex + 1] : null;
+const nextItem = currentIndex > 0 ? portfolioItems[currentIndex - 1] : null;
+---
+
+<BaseLayout
+  title={`${item.title} > 포트폴리오 | 피키픽 | 포토부스 대여 및 기업 행사 렌탈 전문`}
+  description={`${item.title} - ${item.categoryKo} ${item.categoryEn}. 피키픽 포토부스 렌탈 포트폴리오.`}
+>
+  <BreadcrumbSchema items={[
+    { name: '홈', href: '/' },
+    { name: '포트폴리오', href: '/portfolio' },
+    { name: item.title, href: `/portfolio/${item.id}` },
+  ]} />
+
+  <!-- Detail Content -->
+  <section class="pt-14 pb-6 lg:pt-20 lg:pb-10 bg-white">
+    <div class="mx-auto max-w-3xl px-6 lg:px-8">
+      <!-- Category Header -->
+      <div class="text-center mb-8 lg:mb-12">
+        <h2 class="text-lg lg:text-xl font-semibold text-primary">{item.categoryKo}</h2>
+        <h3 class="text-2xl lg:text-4xl font-bold text-primary mt-1">{item.categoryEn}</h3>
+      </div>
+
+      <!-- Detail Images -->
+      <div class="space-y-4 lg:space-y-6">
+        {item.detailImages.map((img: string, i: number) => (
+          <img
+            src={img}
+            alt={`${item.title} 포토부스 렌탈 이미지 ${i + 1}`}
+            class="w-full rounded-lg"
+            loading={i === 0 ? 'eager' : 'lazy'}
+          />
+        ))}
+      </div>
+
+      <!-- Description -->
+      <div class="mt-8 lg:mt-12 text-center">
+        {item.description && (
+          <p class="text-base lg:text-lg font-bold text-primary">{item.description}</p>
+        )}
+        {item.rentalDevice && (
+          <p class="text-base lg:text-lg text-primary mt-1">{item.rentalDevice}</p>
+        )}
+      </div>
+
+      <!-- Inquiry Button -->
+      <div class="mt-8 lg:mt-10 text-center">
+        <p class="text-xs lg:text-sm text-secondary mb-3">하단 문의하기 클릭 시, 바로 비용 문의가 가능합니다.</p>
+        <a
+          href="/rental"
+          class="inline-block px-8 py-3 lg:px-10 lg:py-4 bg-primary text-white text-sm lg:text-base font-semibold rounded-lg hover:bg-primary/90 transition-colors duration-300"
+        >
+          이 포트폴리오와 동일한 기기 렌탈 비용 문의하기
+        </a>
+      </div>
+
+      <!-- Navigation -->
+      <div class="mt-12 lg:mt-16 border-t border-border pt-6">
+        <!-- Next/Prev (다음=older/down the list, 이전=newer/up the list) -->
+        {prevItem && (
+          <div class="flex items-center justify-between py-3 border-b border-border/50">
+            <span class="text-xs lg:text-sm text-secondary font-medium min-w-[40px]">다음</span>
+            <a
+              href={`/portfolio/${prevItem.id}`}
+              class="text-sm lg:text-base text-primary hover:underline truncate ml-4"
+            >
+              {prevItem.title} | 포토부스 렌탈
+            </a>
+            <span class="text-xs text-secondary ml-4 whitespace-nowrap hidden lg:block"></span>
+          </div>
+        )}
+        {nextItem && (
+          <div class="flex items-center justify-between py-3 border-b border-border/50">
+            <span class="text-xs lg:text-sm text-secondary font-medium min-w-[40px]">이전</span>
+            <a
+              href={`/portfolio/${nextItem.id}`}
+              class="text-sm lg:text-base text-primary hover:underline truncate ml-4"
+            >
+              {nextItem.title} | 포토부스 렌탈
+            </a>
+            <span class="text-xs text-secondary ml-4 whitespace-nowrap hidden lg:block"></span>
+          </div>
+        )}
+
+        <!-- List Button -->
+        <div class="mt-6 text-center">
+          <a
+            href="/portfolio"
+            class="inline-flex items-center justify-center px-8 py-3 border border-border rounded-lg text-sm font-medium text-primary hover:bg-gray-50 transition-colors duration-300"
+          >
+            목록
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Structured Data -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    "name": item.title,
+    "description": `${item.description} - ${item.rentalDevice}`,
+    "image": item.detailImages,
+    "author": {
+      "@type": "Organization",
+      "name": "PICKYPIC"
+    }
+  })} />
+</BaseLayout>
