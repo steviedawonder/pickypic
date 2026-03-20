@@ -639,7 +639,7 @@ const toolbarBtnStyle: React.CSSProperties = {
   minWidth: 32, textAlign: 'center', transition: 'background 0.15s',
 };
 
-function RichTextEditor({ value, onChange }: { value: string; onChange: (html: string) => void }) {
+function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onChange: (html: string) => void; onImageSelect?: (img: HTMLImageElement | null) => void }) {
   const editorRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const isInternalChange = useRef(false);
@@ -649,10 +649,15 @@ function RichTextEditor({ value, onChange }: { value: string; onChange: (html: s
   const [selectedImg, setSelectedImg] = useState<HTMLImageElement | null>(null);
   const [imgRect, setImgRect] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
 
+  // Notify parent when image selection changes
+  useEffect(() => {
+    onImageSelect?.(selectedImg);
+  }, [selectedImg]);
+
   // Click outside to deselect image
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (selectedImg && !(e.target as HTMLElement)?.closest?.('.img-resize-overlay') && e.target !== selectedImg) {
+      if (selectedImg && !(e.target as HTMLElement)?.closest?.('.img-resize-overlay') && !(e.target as HTMLElement)?.closest?.('.image-settings-panel') && !(e.target as HTMLElement)?.closest?.('.img-overlay-wrapper') && !(e.target as HTMLElement)?.closest?.('.img-overlay-minibar') && e.target !== selectedImg) {
         setSelectedImg(null);
         setImgRect(null);
       }
@@ -670,7 +675,14 @@ function RichTextEditor({ value, onChange }: { value: string; onChange: (html: s
       const tag = media.tagName.toLowerCase();
       setSelectedImg(media as any);
       const editorRect = editor.getBoundingClientRect();
-      const target = (tag === 'iframe' || tag === 'video') ? media.parentElement! : media;
+      let target: HTMLElement;
+      if (tag === 'iframe' || tag === 'video') {
+        target = media.parentElement!;
+      } else if (media.parentElement?.classList?.contains('img-overlay-wrapper')) {
+        target = media.parentElement!;
+      } else {
+        target = media;
+      }
       const r = target.getBoundingClientRect();
       setImgRect({ top: r.top - editorRect.top, left: r.left - editorRect.left, width: r.width, height: r.height });
     };
@@ -710,12 +722,16 @@ function RichTextEditor({ value, onChange }: { value: string; onChange: (html: s
     };
   }, []);
 
-  // Get the resizable target element (for iframes/videos, resize the parent wrapper)
+  // Get the resizable target element (for iframes/videos or overlay wrappers, resize the parent wrapper)
   const getResizeTarget = (): HTMLElement | null => {
     if (!selectedImg) return null;
     const tag = selectedImg.tagName.toLowerCase();
     if (tag === 'iframe' || tag === 'video') {
       return selectedImg.parentElement as HTMLElement;
+    }
+    const parent = selectedImg.parentElement;
+    if (parent?.classList?.contains('img-overlay-wrapper')) {
+      return parent as HTMLElement;
     }
     return selectedImg;
   };
@@ -776,29 +792,41 @@ function RichTextEditor({ value, onChange }: { value: string; onChange: (html: s
     document.addEventListener('mouseup', onMouseUp);
   };
 
-  // Image alignment
+  // Image alignment - apply to wrapper if image has text overlay wrapper
   const alignImage = (align: 'left' | 'center' | 'right') => {
     if (!selectedImg) return;
-    selectedImg.style.display = align === 'center' ? 'block' : 'inline-block';
-    selectedImg.style.margin = align === 'center' ? '8px auto' : '8px 0';
-    selectedImg.style.float = align === 'center' ? 'none' : align;
+    const parent = selectedImg.parentElement;
+    const hasWrapper = parent?.style?.position === 'relative' && parent?.classList?.contains('img-overlay-wrapper');
+    const target = hasWrapper ? parent! : selectedImg;
+    target.style.display = align === 'center' ? 'block' : 'inline-block';
+    target.style.margin = align === 'center' ? '8px auto' : '8px 0';
+    target.style.float = align === 'center' ? 'none' : align;
     syncContent();
     // Update rect
     const editor = editorRef.current;
     if (editor) {
       setTimeout(() => {
         const editorRect = editor.getBoundingClientRect();
-        const r = selectedImg.getBoundingClientRect();
+        const r = target.getBoundingClientRect();
         setImgRect({ top: r.top - editorRect.top, left: r.left - editorRect.left, width: r.width, height: r.height });
       }, 50);
     }
   };
 
-  // Delete selected media (image/video/iframe)
+  // Delete selected media (image/video/iframe) - also removes wrapper if present
   const deleteSelectedMedia = () => {
     if (!selectedImg) return;
     const tag = selectedImg.tagName.toLowerCase();
-    const target = (tag === 'iframe' || tag === 'video') ? selectedImg.parentElement : selectedImg;
+    const parent = selectedImg.parentElement;
+    const hasOverlayWrapper = parent?.classList?.contains('img-overlay-wrapper');
+    let target: HTMLElement | null;
+    if (tag === 'iframe' || tag === 'video') {
+      target = parent;
+    } else if (hasOverlayWrapper) {
+      target = parent;
+    } else {
+      target = selectedImg;
+    }
     if (target) {
       target.remove();
       setSelectedImg(null);
@@ -807,14 +835,10 @@ function RichTextEditor({ value, onChange }: { value: string; onChange: (html: s
     }
   };
 
-  // Keyboard handler for deleting selected media
+  // Keyboard handler - only Escape to deselect (delete only via toolbar button)
   useEffect(() => {
     if (!selectedImg) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Delete' || e.key === 'Backspace') {
-        e.preventDefault();
-        deleteSelectedMedia();
-      }
       if (e.key === 'Escape') {
         setSelectedImg(null);
         setImgRect(null);
@@ -859,6 +883,51 @@ function RichTextEditor({ value, onChange }: { value: string; onChange: (html: s
     if (url) exec('createLink', url);
   };
 
+  // Heading dropdown state
+  const [showHeadingDropdown, setShowHeadingDropdown] = useState(false);
+  const [currentHeading, setCurrentHeading] = useState('본문');
+  const headingDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (headingDropdownRef.current && !headingDropdownRef.current.contains(e.target as Node)) setShowHeadingDropdown(false);
+    };
+    if (showHeadingDropdown) document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showHeadingDropdown]);
+
+  // Detect current heading at cursor
+  useEffect(() => {
+    const editor = editorRef.current;
+    if (!editor) return;
+    const detectHeading = () => {
+      const sel = window.getSelection();
+      if (!sel || sel.rangeCount === 0) return;
+      const node = sel.anchorNode;
+      if (!node || !editor.contains(node)) return;
+      let el = node.nodeType === Node.TEXT_NODE ? node.parentElement : node as HTMLElement;
+      while (el && el !== editor) {
+        const tag = el.tagName?.toLowerCase();
+        if (tag === 'h1') { setCurrentHeading('제목 1'); return; }
+        if (tag === 'h2') { setCurrentHeading('제목 2'); return; }
+        if (tag === 'h3') { setCurrentHeading('제목 3'); return; }
+        if (tag === 'h4') { setCurrentHeading('제목 4'); return; }
+        el = el.parentElement;
+      }
+      setCurrentHeading('본문');
+    };
+    document.addEventListener('selectionchange', detectHeading);
+    return () => document.removeEventListener('selectionchange', detectHeading);
+  }, []);
+
+  const applyHeading = (tag: string, label: string) => {
+    editorRef.current?.focus();
+    document.execCommand('formatBlock', false, tag);
+    setCurrentHeading(label);
+    setShowHeadingDropdown(false);
+    syncContent();
+  };
+
   // Insert menu state
   const [showInsertMenu, setShowInsertMenu] = useState(false);
   const insertMenuRef = useRef<HTMLDivElement>(null);
@@ -882,13 +951,208 @@ function RichTextEditor({ value, onChange }: { value: string; onChange: (html: s
     try {
       const asset = await uploadImage(file);
       const imgUrl = asset.url;
+      const altText = file.name.replace(/\.[^/.]+$/, '');
       editorRef.current?.focus();
-      document.execCommand('insertHTML', false, `<img src="${imgUrl}" alt="${file.name}" style="max-width:100%;height:auto;margin:8px 0;" />`);
+      document.execCommand('insertHTML', false, `<img src="${imgUrl}" alt="${altText}" style="max-width:100%;height:auto;margin:8px 0;" />`);
       syncContent();
     } catch (err: any) {
       alert('이미지 업로드 실패: ' + err.message);
     }
     if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  // Rotate selected image
+  const rotateImage = (degrees: number) => {
+    if (!selectedImg || selectedImg.tagName.toLowerCase() !== 'img') return;
+    const current = selectedImg.style.transform || '';
+    const match = current.match(/rotate\((\d+)deg\)/);
+    const currentDeg = match ? parseInt(match[1]) : 0;
+    const newDeg = (currentDeg + degrees) % 360;
+    selectedImg.style.transform = newDeg === 0 ? '' : `rotate(${newDeg}deg)`;
+    syncContent();
+  };
+
+  // Add text overlay to selected image - inline editable, draggable within image bounds
+  const addTextOverlay = () => {
+    if (!selectedImg || selectedImg.tagName.toLowerCase() !== 'img') return;
+    const parent = selectedImg.parentElement;
+
+    // If overlay already exists, focus it for editing
+    if (parent?.classList?.contains('img-overlay-wrapper') && parent?.querySelector?.('.img-text-overlay')) {
+      const overlay = parent.querySelector('.img-text-overlay') as HTMLElement;
+      overlay.focus();
+      return;
+    }
+
+    // Wrap image in relative container
+    const wrapper = document.createElement('div');
+    wrapper.className = 'img-overlay-wrapper';
+    wrapper.style.cssText = 'position:relative;display:inline-block;max-width:100%;overflow:hidden;';
+    selectedImg.parentElement?.insertBefore(wrapper, selectedImg);
+    wrapper.appendChild(selectedImg);
+
+    // Create editable overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'img-text-overlay';
+    overlay.contentEditable = 'true';
+    overlay.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#ffffff;font-size:24px;font-weight:700;text-shadow:0 2px 6px rgba(0,0,0,0.6);padding:8px 16px;cursor:text;min-width:40px;min-height:1em;outline:none;white-space:nowrap;user-select:text;z-index:5;';
+    overlay.textContent = '텍스트 입력';
+    wrapper.appendChild(overlay);
+
+    // Create mini toolbar (hidden by default)
+    const miniBar = document.createElement('div');
+    miniBar.className = 'img-overlay-minibar';
+    miniBar.style.cssText = 'position:absolute;top:-32px;left:50%;transform:translateX(-50%);display:none;gap:4px;background:#1a1a1a;border-radius:6px;padding:3px 6px;z-index:20;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,0.3);white-space:nowrap;';
+    miniBar.innerHTML = `
+      <button class="overlay-btn" data-action="size-down" title="글씨 축소" style="width:24px;height:22px;border:none;background:none;cursor:pointer;border-radius:3px;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;">A-</button>
+      <button class="overlay-btn" data-action="size-up" title="글씨 확대" style="width:24px;height:22px;border:none;background:none;cursor:pointer;border-radius:3px;color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;">A+</button>
+      <input type="color" data-action="color" value="#ffffff" title="글씨 색상" style="width:22px;height:22px;border:1px solid #555;border-radius:3px;cursor:pointer;padding:0;background:none;" />
+      <button class="overlay-btn" data-action="remove-text" title="텍스트 삭제" style="width:24px;height:22px;border:none;background:none;cursor:pointer;border-radius:3px;color:#ff6666;font-size:12px;display:flex;align-items:center;justify-content:center;">✕</button>
+    `;
+    wrapper.appendChild(miniBar);
+
+    // Mini toolbar button handlers
+    miniBar.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const btn = (e.target as HTMLElement).closest('[data-action]') as HTMLElement;
+      if (!btn) return;
+      const action = btn.dataset.action;
+      if (action === 'size-up') {
+        const cur = parseInt(overlay.style.fontSize) || 24;
+        overlay.style.fontSize = Math.min(cur + 4, 80) + 'px';
+        syncContent();
+      } else if (action === 'size-down') {
+        const cur = parseInt(overlay.style.fontSize) || 24;
+        overlay.style.fontSize = Math.max(cur - 4, 10) + 'px';
+        syncContent();
+      } else if (action === 'remove-text') {
+        overlay.remove();
+        miniBar.remove();
+        // Unwrap: move image out of wrapper
+        const img = wrapper.querySelector('img');
+        if (img) {
+          wrapper.parentElement?.insertBefore(img, wrapper);
+          wrapper.remove();
+        }
+        syncContent();
+      }
+    });
+
+    // Color input change
+    const colorInput = miniBar.querySelector('input[data-action="color"]') as HTMLInputElement;
+    colorInput?.addEventListener('input', (e) => {
+      overlay.style.color = (e.target as HTMLInputElement).value;
+      syncContent();
+    });
+
+    // Show minibar when overlay is focused/clicked
+    overlay.addEventListener('focus', () => {
+      miniBar.style.display = 'flex';
+    });
+
+    overlay.addEventListener('blur', () => {
+      setTimeout(() => {
+        // Don't hide if focus went to minibar
+        if (!miniBar.contains(document.activeElement)) {
+          miniBar.style.display = 'none';
+          syncContent();
+        }
+      }, 200);
+    });
+
+    // Dragging logic
+    let isDragging = false;
+    let dragStartX = 0, dragStartY = 0;
+    let overlayStartLeft = 0, overlayStartTop = 0;
+
+    overlay.addEventListener('mousedown', (e: MouseEvent) => {
+      // If clicking to edit text, don't drag
+      if (overlay === document.activeElement || (e.target as HTMLElement).isContentEditable) {
+        // Already editing, let text selection work
+        if (overlay.textContent !== '텍스트 입력') return;
+      }
+      e.preventDefault();
+      isDragging = true;
+      dragStartX = e.clientX;
+      dragStartY = e.clientY;
+      const wrapperRect = wrapper.getBoundingClientRect();
+      const overlayRect = overlay.getBoundingClientRect();
+      overlayStartLeft = overlayRect.left - wrapperRect.left + overlayRect.width / 2;
+      overlayStartTop = overlayRect.top - wrapperRect.top + overlayRect.height / 2;
+      overlay.style.cursor = 'grabbing';
+
+      const onMove = (ev: MouseEvent) => {
+        if (!isDragging) return;
+        const dx = ev.clientX - dragStartX;
+        const dy = ev.clientY - dragStartY;
+        const wRect = wrapper.getBoundingClientRect();
+        const oRect = overlay.getBoundingClientRect();
+        // Calculate new center position as percentage
+        let newLeft = overlayStartLeft + dx;
+        let newTop = overlayStartTop + dy;
+        // Clamp within wrapper bounds
+        const halfW = oRect.width / 2;
+        const halfH = oRect.height / 2;
+        newLeft = Math.max(halfW, Math.min(wRect.width - halfW, newLeft));
+        newTop = Math.max(halfH, Math.min(wRect.height - halfH, newTop));
+        // Convert to percentage for responsive
+        const leftPct = (newLeft / wRect.width) * 100;
+        const topPct = (newTop / wRect.height) * 100;
+        overlay.style.left = leftPct + '%';
+        overlay.style.top = topPct + '%';
+      };
+
+      const onUp = () => {
+        isDragging = false;
+        overlay.style.cursor = 'text';
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+        syncContent();
+      };
+
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    });
+
+    // Double-click to edit text
+    overlay.addEventListener('dblclick', (e) => {
+      e.stopPropagation();
+      overlay.focus();
+      miniBar.style.display = 'flex';
+      // Select all text on double click for easy replacement
+      const range = document.createRange();
+      range.selectNodeContents(overlay);
+      const sel = window.getSelection();
+      sel?.removeAllRanges();
+      sel?.addRange(range);
+    });
+
+    // Prevent editor from deselecting image when clicking overlay
+    overlay.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+
+    // Focus the overlay for immediate editing
+    setTimeout(() => {
+      overlay.focus();
+      const range = document.createRange();
+      range.selectNodeContents(overlay);
+      const sel = window.getSelection();
+      sel?.removeAllRanges();
+      sel?.addRange(range);
+    }, 50);
+
+    syncContent();
+    // Update rect after DOM change
+    const editor = editorRef.current;
+    if (editor) {
+      setTimeout(() => {
+        const editorRect = editor.getBoundingClientRect();
+        const r = wrapper.getBoundingClientRect();
+        setImgRect({ top: r.top - editorRect.top, left: r.left - editorRect.left, width: r.width, height: r.height });
+      }, 100);
+    }
   };
 
   // YouTube modal state
@@ -1147,7 +1411,54 @@ function RichTextEditor({ value, onChange }: { value: string; onChange: (html: s
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
           >{btn.label}</button>
         ))}
-        {/* 2. Text color picker */}
+        {/* 2. Heading dropdown */}
+        <div ref={headingDropdownRef} style={{ position: 'relative', marginLeft: 2 }}>
+          <button type="button" title="소제목"
+            onMouseDown={e => { e.preventDefault(); setShowHeadingDropdown(!showHeadingDropdown); }}
+            style={{
+              ...toolbarBtnStyle, display: 'flex', alignItems: 'center', gap: 3,
+              padding: '5px 8px', minWidth: 64, justifyContent: 'center',
+              border: `1px solid ${colors.border}`, borderRadius: 4, background: '#fff',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = '#f0f0f0')}
+            onMouseLeave={e => (e.currentTarget.style.background = '#fff')}
+          >
+            <span style={{ fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>{currentHeading}</span>
+            <span style={{ fontSize: 8, color: colors.textLight }}>▾</span>
+          </button>
+          {showHeadingDropdown && (
+            <div style={{
+              position: 'absolute', top: '100%', left: 0, marginTop: 4, background: '#fff',
+              border: `1px solid ${colors.border}`, borderRadius: 8, boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+              zIndex: 100, minWidth: 150, padding: '4px 0',
+            }}>
+              {[
+                { tag: 'p', label: '본문', size: 13, weight: 400 },
+                { tag: 'h1', label: '제목 1', size: 20, weight: 800 },
+                { tag: 'h2', label: '제목 2', size: 17, weight: 700 },
+                { tag: 'h3', label: '제목 3', size: 15, weight: 700 },
+                { tag: 'h4', label: '제목 4', size: 13, weight: 700 },
+              ].map(h => (
+                <button key={h.tag}
+                  onMouseDown={e => { e.preventDefault(); applyHeading(h.tag, h.label); }}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    width: '100%', padding: '8px 14px', border: 'none', background: 'none',
+                    cursor: 'pointer', fontSize: h.size, fontWeight: h.weight,
+                    color: currentHeading === h.label ? colors.green : colors.text, transition: 'background 0.1s',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = '#f5f5f5')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                >
+                  <span>{h.label}</span>
+                  {currentHeading === h.label && <span style={{ fontSize: 14 }}>✓</span>}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        <div style={{ width: 1, height: 20, background: colors.border, margin: '0 4px' }} />
+        {/* Text color picker */}
         <div ref={textColorRef} style={{ position: 'relative' }}>
           <button type="button" title="글자색"
             onMouseDown={e => { e.preventDefault(); setShowTextColor(!showTextColor); }}
@@ -1388,6 +1699,34 @@ function RichTextEditor({ value, onChange }: { value: string; onChange: (html: s
                   : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="6" y1="18" x2="21" y2="18"/></svg>}
                 </button>
               ))}
+              <div style={{ width: 1, height: 16, background: '#555', margin: '0 2px' }} />
+              {/* Rotate left */}
+              <button onMouseDown={e => { e.preventDefault(); e.stopPropagation(); rotateImage(270); }}
+                style={{ width: 28, height: 24, border: 'none', background: 'none', cursor: 'pointer', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 12 }}
+                onMouseEnter={e => (e.currentTarget.style.background = '#444')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                title="왼쪽 회전"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+              </button>
+              {/* Rotate right */}
+              <button onMouseDown={e => { e.preventDefault(); e.stopPropagation(); rotateImage(90); }}
+                style={{ width: 28, height: 24, border: 'none', background: 'none', cursor: 'pointer', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 12 }}
+                onMouseEnter={e => (e.currentTarget.style.background = '#444')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                title="오른쪽 회전"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.13-9.36L23 10"/></svg>
+              </button>
+              {/* Text overlay */}
+              <button onMouseDown={e => { e.preventDefault(); e.stopPropagation(); addTextOverlay(); }}
+                style={{ width: 28, height: 24, border: 'none', background: 'none', cursor: 'pointer', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 12 }}
+                onMouseEnter={e => (e.currentTarget.style.background = '#444')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                title="텍스트 추가"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 3v18"/><path d="M5 6V3h14v3"/></svg>
+              </button>
               <div style={{ width: 1, height: 16, background: '#555', margin: '0 2px' }} />
               <button onMouseDown={e => { e.preventDefault(); e.stopPropagation(); deleteSelectedMedia(); }}
                 style={{ width: 28, height: 24, border: 'none', background: 'none', cursor: 'pointer', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ff6666', fontSize: 12 }}
@@ -1750,6 +2089,11 @@ function portableTextToHtml(blocks: any[]): string {
 function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page: string) => void }) {
   const [categories, setCategories] = useState<any[]>([]);
   const [saving, setSaving] = useState(false);
+  const [selectedEditorImg, setSelectedEditorImg] = useState<HTMLImageElement | null>(null);
+  const [imgAlt, setImgAlt] = useState('');
+  const [imgCaption, setImgCaption] = useState('');
+  const [imgLink, setImgLink] = useState('');
+  const editorBodyRef = useRef<{ syncContent: () => void } | null>(null);
   const [form, setForm] = useState({
     title: '', excerpt: '', body: '', focusKeyword: '', seoTitle: '', seoDescription: '',
     categoryId: '', tags: [] as string[], tagInput: '', publishedAt: '',
@@ -1876,13 +2220,146 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
           </div>
 
           {/* Rich Text Editor */}
-          <RichTextEditor value={form.body} onChange={(html) => updateField('body', html)} />
+          <RichTextEditor value={form.body} onChange={(html) => updateField('body', html)} onImageSelect={(img) => {
+            setSelectedEditorImg(img);
+            if (img && img.tagName === 'IMG') {
+              setImgAlt(img.getAttribute('alt') || '');
+              // Check for caption (figcaption)
+              const figure = img.closest('figure');
+              const figcaption = figure?.querySelector('figcaption');
+              setImgCaption(figcaption?.textContent || '');
+              // Check for link
+              const link = img.closest('a');
+              setImgLink(link?.getAttribute('href') || '');
+            } else {
+              setImgAlt('');
+              setImgCaption('');
+              setImgLink('');
+            }
+          }} />
         </div>
 
         {/* ── Right: Sidebar Panels ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
 
-          {/* SEO/GEO Score Panel */}
+          {/* Image Settings Panel (replaces SEO when image selected) */}
+          {selectedEditorImg && selectedEditorImg.tagName === 'IMG' ? (
+            <div style={s.card} className="image-settings-panel">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, paddingBottom: 12, borderBottom: `1px solid ${colors.border}` }}>
+                <div style={{ width: 32, height: 32, borderRadius: 6, background: colors.blue, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </div>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: colors.text }}>이미지 설정</div>
+                  <div style={{ fontSize: 10, color: colors.textLight }}>다른 곳을 클릭하면 SEO 분석으로 돌아갑니다</div>
+                </div>
+              </div>
+
+              {/* Preview thumbnail */}
+              <div style={{ marginBottom: 14, borderRadius: 8, overflow: 'hidden', border: `1px solid ${colors.border}`, background: '#f5f5f5' }}>
+                <img src={selectedEditorImg.src} style={{ width: '100%', display: 'block', maxHeight: 160, objectFit: 'contain' }} />
+              </div>
+
+              {/* Alt text */}
+              <div style={{ marginBottom: 12 }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: colors.text, marginBottom: 4 }}>
+                  이미지 설명 (Alt Text)
+                  <span style={{ fontSize: 9, fontWeight: 500, color: '#fff', background: colors.green, padding: '1px 5px', borderRadius: 3 }}>SEO</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="검색엔진이 이미지를 이해할 수 있도록 설명을 입력하세요"
+                  value={imgAlt}
+                  onChange={e => {
+                    setImgAlt(e.target.value);
+                    selectedEditorImg.setAttribute('alt', e.target.value);
+                  }}
+                  style={{ ...s.input, fontSize: 12, padding: '8px 10px' }}
+                />
+              </div>
+
+              {/* Caption */}
+              <div style={{ marginBottom: 12 }}>
+                <label style={{ fontSize: 12, fontWeight: 600, color: colors.text, marginBottom: 4, display: 'block' }}>
+                  캡션
+                </label>
+                <input
+                  type="text"
+                  placeholder="이미지 하단 설명 (선택)"
+                  value={imgCaption}
+                  onChange={e => {
+                    setImgCaption(e.target.value);
+                    const figure = selectedEditorImg.closest('figure');
+                    if (e.target.value) {
+                      if (figure) {
+                        let fc = figure.querySelector('figcaption');
+                        if (!fc) { fc = document.createElement('figcaption'); fc.style.cssText = 'text-align:center;font-size:13px;color:#666;margin-top:6px;font-style:italic;'; figure.appendChild(fc); }
+                        fc.textContent = e.target.value;
+                      } else {
+                        // Wrap in figure
+                        const fig = document.createElement('figure');
+                        fig.style.cssText = 'margin:12px 0;max-width:100%;';
+                        selectedEditorImg.parentElement?.insertBefore(fig, selectedEditorImg);
+                        fig.appendChild(selectedEditorImg);
+                        const fc = document.createElement('figcaption');
+                        fc.style.cssText = 'text-align:center;font-size:13px;color:#666;margin-top:6px;font-style:italic;';
+                        fc.textContent = e.target.value;
+                        fig.appendChild(fc);
+                      }
+                    } else {
+                      if (figure) {
+                        const fc = figure.querySelector('figcaption');
+                        fc?.remove();
+                      }
+                    }
+                    updateField('body', document.querySelector('[contenteditable]')?.innerHTML || form.body);
+                  }}
+                  style={{ ...s.input, fontSize: 12, padding: '8px 10px' }}
+                />
+              </div>
+
+              {/* Link */}
+              <div style={{ marginBottom: 12 }}>
+                <label style={{ fontSize: 12, fontWeight: 600, color: colors.text, marginBottom: 4, display: 'block' }}>
+                  클릭 시 이동 링크
+                </label>
+                <input
+                  type="text"
+                  placeholder="https://example.com (선택)"
+                  value={imgLink}
+                  onChange={e => {
+                    setImgLink(e.target.value);
+                    const existingLink = selectedEditorImg.closest('a');
+                    if (e.target.value) {
+                      if (existingLink) {
+                        existingLink.setAttribute('href', e.target.value);
+                      } else {
+                        const a = document.createElement('a');
+                        a.href = e.target.value;
+                        a.target = '_blank';
+                        a.rel = 'noopener';
+                        selectedEditorImg.parentElement?.insertBefore(a, selectedEditorImg);
+                        a.appendChild(selectedEditorImg);
+                      }
+                    } else {
+                      if (existingLink) {
+                        existingLink.parentElement?.insertBefore(selectedEditorImg, existingLink);
+                        existingLink.remove();
+                      }
+                    }
+                    updateField('body', document.querySelector('[contenteditable]')?.innerHTML || form.body);
+                  }}
+                  style={{ ...s.input, fontSize: 12, padding: '8px 10px' }}
+                />
+              </div>
+
+              {/* Image info */}
+              <div style={{ fontSize: 11, color: colors.textLight, padding: '8px 0', borderTop: `1px solid ${colors.border}` }}>
+                <div>크기: {selectedEditorImg.naturalWidth} x {selectedEditorImg.naturalHeight}px</div>
+              </div>
+            </div>
+          ) : (
+          /* SEO/GEO Score Panel */
           <div style={s.card}>
             {/* Score header with circles */}
             <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginBottom: 16, paddingBottom: 16, borderBottom: `1px solid ${colors.border}` }}>
@@ -1911,6 +2388,7 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
               ))}
             </div>
           </div>
+          )}
 
           {/* Publish Panel */}
           <div style={s.card}>
