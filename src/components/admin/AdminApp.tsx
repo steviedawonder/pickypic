@@ -617,7 +617,8 @@ function BlogList({ onNavigate }: { onNavigate: (page: string, id?: string) => v
                     </span>
                   </td>
                   <td style={{ ...s.td, fontSize: 12, color: colors.textLight }}>{post.publishedAt ? new Date(post.publishedAt).toLocaleDateString('ko') : '-'}</td>
-                  <td style={s.td}>
+                  <td style={{ ...s.td, display: 'flex', gap: 4 }}>
+                    <button onClick={(e) => { e.stopPropagation(); onNavigate('blog-edit', post._id); }} style={{ ...s.btn, ...s.btnOutline, padding: '4px 10px', fontSize: 11 }}>수정</button>
                     <button onClick={(e) => { e.stopPropagation(); handleDelete(post._id, post.title); }} style={{ ...s.btn, ...s.btnDanger, padding: '4px 10px', fontSize: 11 }}>삭제</button>
                   </td>
                 </tr>
@@ -1675,6 +1676,27 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
           suppressContentEditableWarning
           onInput={syncContent}
           onBlur={syncContent}
+          onPaste={async (e) => {
+            const items = e.clipboardData?.items;
+            if (!items) return;
+            for (let i = 0; i < items.length; i++) {
+              if (items[i].type.startsWith('image/')) {
+                e.preventDefault();
+                const file = items[i].getAsFile();
+                if (!file) return;
+                try {
+                  const asset = await uploadImage(file);
+                  const imgUrl = asset.url;
+                  editorRef.current?.focus();
+                  document.execCommand('insertHTML', false, `<img src="${imgUrl}" alt="붙여넣기 이미지" style="max-width:100%;height:auto;margin:8px 0;" />`);
+                  syncContent();
+                } catch (err: any) {
+                  alert('이미지 업로드 실패: ' + err.message);
+                }
+                return;
+              }
+            }
+          }}
           style={{
             minHeight: 400, padding: '16px 18px', fontSize: 15, lineHeight: 1.8,
             border: `1px solid ${colors.border}`, borderRadius: '0 0 8px 8px',
