@@ -133,9 +133,9 @@ const productPdfMap = productSlugs.map(slug => {
               </div>
 
               <!-- Desktop: 3-column layout -->
-              <div class="hidden lg:grid lg:grid-cols-12 gap-0 items-end">
+              <div class={`hidden lg:grid lg:grid-cols-12 gap-0 ${['modern-mini-picky', 'urban-mini-picky', 'modern-retro-picky', 'urban-retro-picky'].includes(product.id) ? 'items-center' : 'items-end'}`}>
                 <!-- Left: Line Image -->
-                <div class="lg:col-span-3 flex items-end justify-center">
+                <div class="lg:col-span-3 flex items-center justify-center">
                   <img
                     src={product.imageLeft}
                     alt={`${product.name} ${product.nameKo} 라인 이미지`}
@@ -145,7 +145,7 @@ const productPdfMap = productSlugs.map(slug => {
                 </div>
 
                 <!-- Center: Spec Table -->
-                <div class="lg:col-span-5 px-6 flex flex-col justify-end">
+                <div class="lg:col-span-5 px-6 flex flex-col justify-center">
                   <h3 class="text-sm font-bold tracking-[0.1em] text-primary uppercase mb-4 text-center">
                     Photo booth specification
                   </h3>
@@ -166,11 +166,11 @@ const productPdfMap = productSlugs.map(slug => {
                 </div>
 
                 <!-- Right: Product Photo -->
-                <div class="lg:col-span-4 flex items-end justify-center">
+                <div class="lg:col-span-4 flex items-center justify-center">
                   <img
                     src={product.imageRight}
                     alt={`${product.name} ${product.nameKo} 제품 이미지`}
-                    class="max-w-full max-h-[550px]"
+                    class={`max-w-full ${['modern-mini-picky', 'urban-mini-picky', 'modern-retro-picky', 'urban-retro-picky'].includes(product.id) ? 'max-h-[467px] scale-[0.85]' : 'max-h-[550px]'}`}
                     loading="lazy"
                     itemprop="image"
                   />
@@ -179,8 +179,8 @@ const productPdfMap = productSlugs.map(slug => {
 
               <!-- Mobile: Images + Spec -->
               <div class="lg:hidden">
-                <div class="flex gap-4 justify-center mb-6">
-                  <div class="w-1/2 max-w-[200px] flex items-end justify-center">
+                <div class={`flex gap-4 justify-center mb-6 ${['modern-mini-picky', 'urban-mini-picky', 'modern-retro-picky', 'urban-retro-picky'].includes(product.id) ? 'items-center' : 'items-end'}`}>
+                  <div class="w-1/2 max-w-[200px] flex items-center justify-center">
                     <img
                       src={product.imageLeft}
                       alt={`${product.name} ${product.nameKo} 라인 이미지`}
@@ -188,11 +188,11 @@ const productPdfMap = productSlugs.map(slug => {
                       loading="lazy"
                     />
                   </div>
-                  <div class="w-1/2 max-w-[200px] flex items-end justify-center">
+                  <div class="w-1/2 max-w-[200px] flex items-center justify-center">
                     <img
                       src={product.imageRight}
                       alt={`${product.name} ${product.nameKo} 제품 이미지`}
-                      class="max-w-full max-h-[300px] object-contain"
+                      class={`max-w-full object-contain ${['modern-mini-picky', 'urban-mini-picky', 'modern-retro-picky', 'urban-retro-picky'].includes(product.id) ? 'max-h-[255px]' : 'max-h-[300px]'}`}
                       loading="lazy"
                     />
                   </div>
