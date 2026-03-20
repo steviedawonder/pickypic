@@ -17,7 +17,14 @@ const sanityClient = createClient({
 const { slug } = Astro.params;
 
 const post = await sanityClient.fetch(`*[_type == "blogPost" && slug.current == $slug][0] {
-  _id, title, slug, excerpt, publishedAt, body, tags,
+  _id, title, slug, excerpt, publishedAt, tags,
+  body[] {
+    ...,
+    _type == "image" => {
+      ...,
+      asset-> { _id, url }
+    }
+  },
   mainImage { asset-> { _id, url } },
   category-> { title },
   author-> { name, role, bio },
@@ -39,7 +46,25 @@ const formattedDate = post.publishedAt
 let bodyHtml = '';
 try {
   if (post.body) {
-    bodyHtml = toHTML(post.body);
+    bodyHtml = toHTML(post.body, {
+      components: {
+        types: {
+          image: ({ value }: { value: any }) => {
+            let url = value.url || value.asset?.url || '';
+            if (!url && value.asset?._ref) {
+              const ref = value.asset._ref;
+              const match = ref.match(/^image-(.+)-(\w+)$/);
+              if (match) {
+                url = `https://cdn.sanity.io/images/7b9lcco4/production/${match[1]}.${match[2]}`;
+              }
+            }
+            if (!url) return '';
+            const alt = value.alt || '';
+            return `<img src="${url}" alt="${alt}" style="max-width:100%;height:auto;margin:16px 0;border-radius:8px;" loading="lazy" />`;
+          },
+        },
+      },
+    });
   }
 } catch {
   bodyHtml = `<p>${post.excerpt || ''}</p>`;

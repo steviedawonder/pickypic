@@ -2106,7 +2106,15 @@ function portableTextToHtml(blocks: any[]): string {
   if (!blocks || !Array.isArray(blocks)) return '';
   return blocks.map(block => {
     if (block._type === 'image') {
-      const url = block.url || block.asset?.url || '';
+      let url = block.url || block.asset?.url || '';
+      // If no URL but has asset ref, reconstruct URL from asset ID
+      if (!url && block.asset?._ref) {
+        const ref = block.asset._ref; // e.g. "image-abc123-381x441-png"
+        const match = ref.match(/^image-(.+)-(\w+)$/);
+        if (match) {
+          url = `https://cdn.sanity.io/images/7b9lcco4/production/${match[1]}.${match[2]}`;
+        }
+      }
       return url ? `<img src="${url}" alt="" style="max-width:100%;height:auto;margin:8px 0;" />` : '';
     }
     if (block._type !== 'block') return '';

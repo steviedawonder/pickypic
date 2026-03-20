@@ -66,7 +66,14 @@ export async function fetchBlogPosts() {
 
 export async function fetchBlogPost(id: string) {
   return sanityFetch(`*[_type == "blogPost" && _id == $id][0] {
-    _id, title, slug, excerpt, body, publishedAt,
+    _id, title, slug, excerpt, publishedAt,
+    body[] {
+      ...,
+      _type == "image" => {
+        ...,
+        asset-> { _id, url }
+      }
+    },
     category-> { _id, title },
     tags, focusKeyword, seoTitle, seoDescription,
     mainImage { asset-> { _id, url }, alt }
