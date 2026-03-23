@@ -66,12 +66,14 @@ import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
   .about-hero {
     width: 100%;
     overflow: hidden;
-    padding-top: 60px;
+    padding-top: 0;
+    margin-bottom: -180px;
   }
 
   @media (max-width: 768px) {
     .about-hero {
-      padding-top: 70px;
+      padding-top: 50px;
+      margin-bottom: -20px;
     }
   }
 
@@ -104,8 +106,8 @@ import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
     display: flex;
     justify-content: center;
     position: relative;
-    margin-top: -180px;
-    padding: 0 24px 40px;
+    margin-top: 0;
+    padding: 0 24px 20px;
     z-index: 1;
   }
 

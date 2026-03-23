@@ -54,10 +54,10 @@ const rentalProducts = [
   ]} />
   <ServiceSchema />
   <!-- RENTAL Hero Heading -->
-  <section class="relative bg-white pt-14 pb-3 lg:pt-20 lg:pb-8 overflow-hidden">
+  <section class="relative bg-white pt-14 pb-2 lg:pt-12 lg:pb-4 overflow-hidden">
     <div class="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 gs-fade-up">
       <div class="flex items-center justify-between">
-        <h1 class="text-2xl lg:text-[clamp(3.5rem,10vw,8rem)] font-bold tracking-[0.04em] text-primary leading-none" style="font-family: 'Montserrat', sans-serif;">
+        <h1 class="text-2xl lg:text-[clamp(2.5rem,6vw,4.5rem)] font-bold tracking-[0.04em] text-primary leading-none" style="font-family: 'Montserrat', sans-serif;">
           RENTAL
         </h1>
         <a href="/products" class="text-sm border border-gray-400 rounded-full px-5 py-2 text-primary hover:bg-primary hover:text-white transition-colors lg:hidden" data-i18n="rental.btn_products">제품소개</a>
@@ -66,7 +66,7 @@ const rentalProducts = [
   </section>
 
   <!-- Product Carousel -->
-  <section class="pb-4 lg:pb-12 bg-white overflow-hidden" aria-label="렌탈 제품 갤러리">
+  <section class="pb-2 lg:pb-6 bg-white overflow-hidden" aria-label="렌탈 제품 갤러리">
     <div class="relative mx-auto max-w-7xl px-6 lg:px-8 gs-fade-up">
       <div class="relative">
         <!-- Carousel Track -->
@@ -118,10 +118,10 @@ const rentalProducts = [
   </section>
 
   <!-- Rental Inquiry Form Section -->
-  <section class="py-12 lg:py-16 bg-bg-light" aria-labelledby="rental-form-heading">
+  <section class="py-8 lg:py-10 bg-bg-light" aria-labelledby="rental-form-heading">
     <div class="mx-auto max-w-3xl px-6 lg:px-8">
       <!-- Section Heading -->
-      <div class="mb-8 gs-fade-up">
+      <div class="mb-8">
         <h2 id="rental-form-heading" class="text-2xl lg:text-3xl font-bold text-primary tracking-tight" data-i18n="rental.inquiry_title">렌탈 문의</h2>
         <p class="mt-4 text-sm lg:text-base text-secondary leading-relaxed" data-i18n="rental.inquiry_desc">
           희망하시는 렌탈 내용을 아래 양식에 맞춰 작성 부탁드립니다!<br />
@@ -129,70 +129,60 @@ const rentalProducts = [
         </p>
       </div>
 
-      <form id="rental-form" class="space-y-10 gs-fade-up" novalidate>
+      <form id="rental-form" class="space-y-10" novalidate>
         <!-- 포토부스 타입 -->
         <fieldset>
           <legend class="text-lg font-bold text-primary mb-6 tracking-tight flex items-center gap-1">
             <span data-i18n="rental.booth_type">포토부스 타입</span> <span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 ml-1" aria-label="필수"></span>
           </legend>
 
-          <!-- 1. 테이블형 -->
-          <div class="mb-6">
-            <p class="text-sm font-semibold text-primary mb-3" data-i18n="rental.table_type">1. 테이블형</p>
-            <div class="space-y-2.5">
-              <label class="flex items-start gap-3 cursor-pointer group">
+          <div class="space-y-3">
+              <label class="booth-label flex items-start gap-3 cursor-pointer group" data-img-left="/images/products/urban-mini-picky-line.png" data-img-right="/images/products/urban-mini-picky-photo.png">
                 <input type="checkbox" name="boothType" value="urban-mini" class="w-4 h-4 accent-primary mt-0.5 flex-shrink-0" />
-                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span data-i18n="rental.urban_mini">어반 미니</span> <span class="text-secondary">(W350 x L350 x H400)</span></span>
+                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold">[테이블형]</span> 어반 미니 <span class="text-secondary">(W350 x L350 x H400)</span></span>
               </label>
-              <label class="flex items-start gap-3 cursor-pointer group">
+              <label class="booth-label flex items-start gap-3 cursor-pointer group" data-img-left="/images/products/modern-mini-picky-line.png" data-img-right="/images/products/modern-mini-picky-photo.png">
                 <input type="checkbox" name="boothType" value="modern-mini" class="w-4 h-4 accent-primary mt-0.5 flex-shrink-0" />
-                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span data-i18n="rental.modern_mini">모던 미니</span> <span class="text-secondary">(W330 x L330 x H390)</span></span>
+                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold">[테이블형]</span> 모던 미니 <span class="text-secondary">(W330 x L330 x H390)</span></span>
               </label>
-              <label class="flex items-start gap-3 cursor-pointer group">
+              <label class="booth-label flex items-start gap-3 cursor-pointer group" data-img-left="/images/products/modern-retro-picky-line.png" data-img-right="/images/products/modern-retro-picky-photo.png">
                 <input type="checkbox" name="boothType" value="modern-retro" class="w-4 h-4 accent-primary mt-0.5 flex-shrink-0" />
-                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span data-i18n="rental.receipt_modern_retro">[영수증 사진기] 모던 레트로피키</span> <span class="text-secondary">(W290 x L290 x H310)</span></span>
+                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold">[테이블형] [감열지 사진기]</span> 모던 레트로피키 <span class="text-secondary">(W290 x L290 x H310)</span></span>
               </label>
-              <label class="flex items-start gap-3 cursor-pointer group">
+              <label class="booth-label flex items-start gap-3 cursor-pointer group" data-img-left="/images/products/urban-retro-picky-line.png" data-img-right="/images/products/urban-retro-picky-photo.png">
                 <input type="checkbox" name="boothType" value="urban-retro" class="w-4 h-4 accent-primary mt-0.5 flex-shrink-0" />
-                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span data-i18n="rental.urban_retro">어반 레트로 피키</span> <span class="text-secondary">(W190 x L230 x H316)</span></span>
+                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold">[테이블형]</span> 어반 레트로 피키 <span class="text-secondary">(W190 x L230 x H316)</span></span>
               </label>
-            </div>
-          </div>
-
-          <!-- 2. 스탠드형 -->
-          <div class="mb-6">
-            <p class="text-sm font-semibold text-primary mb-3" data-i18n="rental.stand_type">2. 스탠드형</p>
-            <div class="space-y-2.5">
-              <label class="flex items-start gap-3 cursor-pointer group">
+              <label class="booth-label flex items-start gap-3 cursor-pointer group" data-img-left="/images/products/modern-picky-line.png" data-img-right="/images/products/modern-picky-photo.png">
                 <input type="checkbox" name="boothType" value="modern-picky" class="w-4 h-4 accent-primary mt-0.5 flex-shrink-0" />
-                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span data-i18n="rental.modern_picky">모던 피키</span> <span class="text-secondary">(W550 x L550 x H1,570)</span></span>
+                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold">[스탠드형]</span> 모던 피키 <span class="text-secondary">(W550 x L550 x H1,570)</span></span>
               </label>
-              <label class="flex items-start gap-3 cursor-pointer group">
+              <label class="booth-label flex items-start gap-3 cursor-pointer group" data-img-left="/images/products/classic-picky-line.png" data-img-right="/images/products/classic-picky-photo.png">
                 <input type="checkbox" name="boothType" value="classic-picky" class="w-4 h-4 accent-primary mt-0.5 flex-shrink-0" />
-                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span data-i18n="rental.classic_picky">클래식 피키</span> <span class="text-secondary">(W550 x L550 x H1,570)</span></span>
+                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold">[스탠드형]</span> 클래식 피키 <span class="text-secondary">(W550 x L550 x H1,570)</span></span>
               </label>
-              <label class="flex items-start gap-3 cursor-pointer group">
+              <label class="booth-label flex items-start gap-3 cursor-pointer group" data-img-left="/images/products/urban-picky-line.png" data-img-right="/images/products/urban-picky-photo.png">
                 <input type="checkbox" name="boothType" value="urban-picky" class="w-4 h-4 accent-primary mt-0.5 flex-shrink-0" />
-                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span data-i18n="rental.urban_picky">어반 피키</span> <span class="text-secondary">(W500 x L500 x H1,440)</span></span>
+                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold">[스탠드형]</span> 어반 피키 <span class="text-secondary">(W500 x L500 x H1,440)</span></span>
               </label>
-            </div>
-          </div>
-
-          <!-- 3. 부스형 -->
-          <div>
-            <p class="text-sm font-semibold text-primary mb-3" data-i18n="rental.booth_type_3">3. 부스형</p>
-            <div class="space-y-2.5">
-              <label class="flex items-start gap-3 cursor-pointer group">
+              <label class="booth-label flex items-start gap-3 cursor-pointer group" data-img-left="/images/products/air-picky-line.png" data-img-right="/images/products/air-picky-photo.png">
                 <input type="checkbox" name="boothType" value="air-picky" class="w-4 h-4 accent-primary mt-0.5 flex-shrink-0" />
-                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span data-i18n="rental.air_picky">에어 피키</span> <span class="text-secondary">(Booth: W930 x L930 x H2,350 / Kiosk: W500 x L600 x H1,200)</span></span>
+                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold">[부스형]</span> 에어 피키 <span class="text-secondary">(Booth: W930 x L930 x H2,350 / Kiosk: W500 x L600 x H1,200)</span></span>
               </label>
-              <label class="flex items-start gap-3 cursor-pointer group">
+              <label class="booth-label flex items-start gap-3 cursor-pointer group" data-img-left="/images/products/outdoor-picky-line.png" data-img-right="/images/products/outdoor-picky-photo.png">
                 <input type="checkbox" name="boothType" value="outdoor-picky" class="w-4 h-4 accent-primary mt-0.5 flex-shrink-0" />
-                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span data-i18n="rental.outdoor_picky">아웃도어 피키</span> <span class="text-secondary">(W1,400 x L1,000 x H2,050)</span></span>
+                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold">[부스형]</span> 아웃도어 피키 <span class="text-secondary">(W1,400 x L1,000 x H2,050)</span></span>
               </label>
-            </div>
           </div>
         </fieldset>
+
+        <!-- Booth Preview Popup (desktop only) -->
+        <div id="booth-preview" class="hidden fixed z-50 bg-white shadow-xl rounded-lg border border-border/30 p-3 pointer-events-none transition-opacity duration-150" style="width: 380px;">
+          <div class="flex gap-2">
+            <img id="preview-left" src="" alt="제품 라인아트" class="w-1/2 h-auto object-contain bg-gray-50 rounded" />
+            <img id="preview-right" src="" alt="제품 사진" class="w-1/2 h-auto object-contain bg-gray-50 rounded" />
+          </div>
+        </div>
 
         <div class="h-px bg-border-light"></div>
 
@@ -656,4 +646,51 @@ const rentalProducts = [
 
   document.addEventListener('DOMContentLoaded', initRentalPage);
   document.addEventListener('astro:after-swap', initRentalPage);
+
+  // Booth type hover preview (desktop only)
+  function initBoothPreview() {
+    const isTouchOnly = 'ontouchstart' in window && !window.matchMedia('(min-width: 1024px)').matches;
+    if (isTouchOnly) return;
+
+    const preview = document.getElementById('booth-preview') as HTMLDivElement | null;
+    const previewLeft = document.getElementById('preview-left') as HTMLImageElement | null;
+    const previewRight = document.getElementById('preview-right') as HTMLImageElement | null;
+    if (!preview || !previewLeft || !previewRight) return;
+
+    const labels = document.querySelectorAll<HTMLLabelElement>('.booth-label');
+
+    labels.forEach((label) => {
+      label.addEventListener('mouseenter', () => {
+        const imgLeft = label.dataset.imgLeft;
+        const imgRight = label.dataset.imgRight;
+        if (!imgLeft || !imgRight) return;
+
+        previewLeft.src = imgLeft;
+        previewRight.src = imgRight;
+        preview.classList.remove('hidden');
+      });
+
+      label.addEventListener('mousemove', (e: MouseEvent) => {
+        const pw = 400;
+        const ph = 250;
+        let x = e.clientX + 20;
+        let y = e.clientY - 100;
+
+        // Keep within viewport
+        if (x + pw > window.innerWidth) x = e.clientX - pw - 20;
+        if (y < 10) y = 10;
+        if (y + ph > window.innerHeight) y = window.innerHeight - ph - 10;
+
+        preview.style.left = x + 'px';
+        preview.style.top = y + 'px';
+      });
+
+      label.addEventListener('mouseleave', () => {
+        preview.classList.add('hidden');
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initBoothPreview);
+  document.addEventListener('astro:after-swap', initBoothPreview);
 </script>

@@ -59,6 +59,8 @@ export const translations: Record<Lang, Record<string, string>> = {
     // Portfolio Page
     'portfolio.no_results': '검색 결과가 없습니다.',
     'portfolio.photobooth_rental': '포토부스 렌탈',
+    'portfolio.inquiry_guide': '하단 문의하기 클릭 시, 바로 비용 문의가 가능합니다.',
+    'portfolio.inquiry_button': '이 포트폴리오와 동일한 기기 렌탈 비용 문의하기',
 
     // Support Page
     'support.title': '고객지원',
@@ -182,6 +184,8 @@ export const translations: Record<Lang, Record<string, string>> = {
     // Portfolio Page
     'portfolio.no_results': 'No results found.',
     'portfolio.photobooth_rental': 'Photo Booth Rental',
+    'portfolio.inquiry_guide': 'Click below to get an instant quote for rental costs.',
+    'portfolio.inquiry_button': 'Inquire about rental costs for this model',
 
     // Support Page
     'support.title': 'Support',
@@ -305,6 +309,8 @@ export const translations: Record<Lang, Record<string, string>> = {
     // Portfolio Page
     'portfolio.no_results': '検索結果がありません。',
     'portfolio.photobooth_rental': 'フォトブースレンタル',
+    'portfolio.inquiry_guide': '下記ボタンより、レンタル費用をすぐにお問い合わせいただけます。',
+    'portfolio.inquiry_button': 'この事例と同じ機種のレンタル費用を問い合わせる',
 
     // Support Page
     'support.title': 'サポート',

@@ -45,9 +45,9 @@ const productPdfMap = productSlugs.map(slug => {
   ]} />
 
   <!-- Hero: PRODUCT TYPE -->
-  <section class="pt-14 pb-3 lg:pt-20 lg:pb-6 bg-white">
+  <section class="pt-10 pb-5 lg:pt-14 lg:pb-8 bg-white">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <h1 class="text-center text-2xl sm:text-4xl md:text-7xl lg:text-8xl font-black tracking-tight text-primary uppercase gs-fade-up">
+      <h1 class="text-center text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-black tracking-tight text-primary uppercase gs-fade-up">
         PRODUCT TYPE
       </h1>
     </div>
@@ -139,13 +139,13 @@ const productPdfMap = productSlugs.map(slug => {
                   <img
                     src={product.imageLeft}
                     alt={`${product.name} ${product.nameKo} 라인 이미지`}
-                    class="max-w-full max-h-[550px]"
+                    class={`max-w-full ${['modern-mini-picky', 'urban-mini-picky', 'modern-retro-picky', 'urban-retro-picky'].includes(product.id) ? 'max-h-[340px]' : ['modern-picky', 'classic-picky', 'urban-picky'].includes(product.id) ? 'max-h-[480px]' : 'max-h-[420px]'}`}
                     loading="lazy"
                   />
                 </div>
 
                 <!-- Center: Spec Table -->
-                <div class="lg:col-span-5 px-6 flex flex-col justify-center">
+                <div class="lg:col-span-6 px-6 flex flex-col justify-center">
                   <h3 class="text-sm font-bold tracking-[0.1em] text-primary uppercase mb-4 text-center">
                     Photo booth specification
                   </h3>
@@ -166,11 +166,11 @@ const productPdfMap = productSlugs.map(slug => {
                 </div>
 
                 <!-- Right: Product Photo -->
-                <div class="lg:col-span-4 flex items-center justify-center">
+                <div class="lg:col-span-3 flex items-center justify-start">
                   <img
                     src={product.imageRight}
                     alt={`${product.name} ${product.nameKo} 제품 이미지`}
-                    class={`max-w-full ${['modern-mini-picky', 'urban-mini-picky', 'modern-retro-picky', 'urban-retro-picky'].includes(product.id) ? 'max-h-[467px] scale-[0.85]' : 'max-h-[550px]'}`}
+                    class={`max-w-full ${['modern-mini-picky', 'urban-mini-picky', 'modern-retro-picky', 'urban-retro-picky'].includes(product.id) ? 'max-h-[340px] scale-[0.85]' : ['modern-picky', 'classic-picky', 'urban-picky'].includes(product.id) ? 'max-h-[480px]' : 'max-h-[420px]'}`}
                     loading="lazy"
                     itemprop="image"
                   />

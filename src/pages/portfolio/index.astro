@@ -14,9 +14,9 @@ import { portfolioItems, portfolioCategories } from '@data/portfolio';
   ]} />
 
   <!-- Hero: PORTFOLIO -->
-  <section class="pt-14 pb-3 lg:pt-20 lg:pb-6 bg-white">
+  <section class="pt-10 pb-5 lg:pt-14 lg:pb-8 bg-white">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <h1 class="text-left lg:text-center text-2xl sm:text-4xl md:text-7xl lg:text-8xl font-black tracking-tight text-primary uppercase gs-fade-up">
+      <h1 class="text-left lg:text-center text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-black tracking-tight text-primary uppercase gs-fade-up">
         PORTFOLIO
       </h1>
     </div>
@@ -31,7 +31,7 @@ import { portfolioItems, portfolioCategories } from '@data/portfolio';
             <button
               type="button"
               class:list={[
-                'portfolio-pill flex flex-col items-center px-4 lg:px-5 py-2.5 lg:py-3 rounded-xl border lg:border-2 transition-all duration-300 cursor-pointer whitespace-nowrap min-w-[100px] lg:min-w-[120px]',
+                'portfolio-pill flex flex-col items-center justify-center px-2.5 lg:px-3 h-[42px] lg:h-[50px] rounded-full border transition-all duration-300 cursor-pointer whitespace-nowrap min-w-[100px] lg:min-w-[125px]',
                 i === 0
                   ? 'bg-primary text-white border-primary'
                   : 'bg-white text-primary border-border hover:border-primary',
@@ -39,9 +39,9 @@ import { portfolioItems, portfolioCategories } from '@data/portfolio';
               data-category={cat.id}
               aria-pressed={i === 0 ? 'true' : 'false'}
             >
-              <span class="text-xs lg:text-sm font-semibold leading-tight">{cat.label}</span>
+              <span class="text-[11px] lg:text-xs font-normal leading-tight">{cat.label}</span>
               {'labelEn' in cat && cat.labelEn && (
-                <span class="text-[10px] lg:text-[11px] mt-0.5 opacity-70 leading-tight">{cat.labelEn}</span>
+                <span class="text-[10px] lg:text-xs font-normal mt-0.5 opacity-70 leading-tight">{cat.labelEn}</span>
               )}
             </button>
           ))}

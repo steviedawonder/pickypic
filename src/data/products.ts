@@ -282,7 +282,7 @@ export const products: Product[] = [
       { label: 'Power Consumption', value: 'Power used 800w ~ Up to 1kw' },
       { label: 'Connectivity', value: 'Power Input-Single outlet connection / Internet Connection Required' },
       { label: 'Adjustability', value: 'Fixed camera angle / Fixed device height' },
-      { label: 'Weight', value: '100kg (220.47 lbs)' },
+      { label: 'Weight', value: '300kg (661.39 lbs)' },
       { label: 'Print size', value: '4×6 inches / 2×4 inches / A4 210×297mm / A5 148×210mm' },
       { label: 'Customization Options', value: 'UI screen design / Template design / Exterior wrapping' },
       { label: 'Payment Methods', value: 'Card / Coin / Coupon / Free' },
