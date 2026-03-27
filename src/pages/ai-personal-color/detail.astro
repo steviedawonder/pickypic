@@ -1,0 +1,60 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+
+const totalImages = 20;
+const images = Array.from({ length: totalImages }, (_, i) => {
+  const num = String(i + 1).padStart(2, '0');
+  return `/images/ai-personal-color/detail/${num}.jpg`;
+});
+---
+
+<BaseLayout
+  title="AI 퍼스널 컬러 진단 포토부스 출시 | 피키픽 | 포토부스 대여 및 기업 행사 렌탈 전문"
+  description="피키픽의 AI 퍼스널 컬러 진단 포토부스를 소개합니다. 최신 AI 기술을 활용한 개인 맞춤형 컬러 진단 서비스로 새로운 포토부스 경험을 제공합니다."
+>
+  <BreadcrumbSchema items={[
+    { name: '홈', href: '/' },
+    { name: 'AI 퍼스널컬러', href: '/ai-personal-color' },
+    { name: 'AI 퍼스널 컬러 진단 포토부스 출시', href: '/ai-personal-color/detail' },
+  ]} />
+
+  <section class="pb-10 lg:pt-2 lg:pb-16 bg-white">
+    <div class="mx-auto max-w-5xl px-6 lg:px-8">
+      <!-- Title -->
+      <div class="text-center mb-6 lg:mb-10 gs-fade-up">
+        <h1 class="text-xl lg:text-[clamp(1.5rem,3.5vw,2.5rem)] font-bold tracking-tight text-primary leading-tight">
+          AI 퍼스널 컬러 진단 포토부스 출시
+        </h1>
+        <p class="mt-2 text-sm text-secondary">
+          Launch of the AI Personal Color Analysis Photo Booth
+        </p>
+      </div>
+
+      <!-- Image Gallery -->
+      <div class="flex flex-col gap-0 gs-fade-up">
+        {images.map((src, i) => (
+          <img
+            src={src}
+            alt={`AI 퍼스널 컬러 진단 포토부스 소개 이미지 ${i + 1}`}
+            class="w-full h-auto"
+            width="1200"
+            height="675"
+            loading={i < 3 ? 'eager' : 'lazy'}
+          />
+        ))}
+      </div>
+
+      <!-- Back Button -->
+      <div class="text-center mt-10">
+        <a
+          href="/ai-personal-color"
+          class="inline-flex items-center gap-2 px-8 py-3 border border-gray-400 rounded-full text-primary font-medium text-sm tracking-wide hover:bg-primary hover:text-white hover:border-primary transition-colors duration-300"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+          목록으로 돌아가기
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -55,28 +55,38 @@ const productPdfMap = productSlugs.map(slug => {
 
   <!-- Category Filter Pills -->
   <section class="pb-4 lg:pb-12 bg-white" aria-label="제품 카테고리 필터">
-    <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <nav class="overflow-x-auto scrollbar-hide" aria-label="제품 카테고리">
-        <div class="flex gap-2.5 lg:gap-3.5 justify-start lg:justify-center min-w-max pb-2" id="category-pills">
-          {productCategories.map((cat, i) => (
-            <button
-              type="button"
-              class:list={[
-                'product-pill flex flex-col items-center justify-center h-[42px] lg:h-[50px] px-2.5 lg:px-3 rounded-full transition-all duration-300 cursor-pointer whitespace-nowrap min-w-[100px] lg:min-w-[125px] bg-white text-black',
-                i === 0
-                  ? 'active-pill'
-                  : '',
-              ]}
-              data-category={cat.id}
-              data-index={i}
-              aria-pressed={i === 0 ? 'true' : 'false'}
-            >
-              <span class="text-[11px] lg:text-xs font-normal leading-tight">{cat.labelKo}</span>
-              <span class="text-[10px] lg:text-xs font-normal mt-0.5 opacity-70 leading-tight">{cat.labelEn}</span>
-            </button>
-          ))}
-        </div>
-      </nav>
+    <div class="mx-auto max-w-[1600px] px-6 lg:px-8">
+      <div class="relative" id="pills-wrapper">
+        <!-- Mobile scroll indicator left -->
+        <button type="button" class="pills-scroll-left absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 z-10 w-7 h-7 bg-white/90 border border-gray-300 rounded-full flex items-center justify-center text-gray-500 shadow-sm lg:hidden opacity-0 pointer-events-none transition-opacity duration-200" aria-label="왼쪽 스크롤">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <nav class="overflow-x-auto scrollbar-hide pills-scroll-container" aria-label="제품 카테고리">
+          <div class="flex gap-2.5 lg:gap-3 justify-start lg:justify-center min-w-max lg:min-w-0 lg:flex-wrap pb-2" id="category-pills">
+            {productCategories.map((cat, i) => (
+              <button
+                type="button"
+                class:list={[
+                  'product-pill flex flex-col items-center justify-center h-[42px] lg:h-[46px] px-2.5 lg:px-3 rounded-full transition-all duration-300 cursor-pointer whitespace-nowrap min-w-[100px] lg:min-w-[110px] bg-white text-black',
+                  i === 0
+                    ? 'active-pill'
+                    : '',
+                ]}
+                data-category={cat.id}
+                data-index={i}
+                aria-pressed={i === 0 ? 'true' : 'false'}
+              >
+                <span class="text-[11px] lg:text-xs font-normal leading-tight">{cat.labelKo}</span>
+                <span class="text-[10px] lg:text-xs font-normal mt-0.5 opacity-70 leading-tight">{cat.labelEn}</span>
+              </button>
+            ))}
+          </div>
+        </nav>
+        <!-- Mobile scroll indicator right -->
+        <button type="button" class="pills-scroll-right absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 z-10 w-7 h-7 bg-white/90 border border-gray-300 rounded-full flex items-center justify-center text-gray-500 shadow-sm lg:hidden opacity-0 pointer-events-none transition-opacity duration-200" aria-label="오른쪽 스크롤">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
     </div>
   </section>
 
@@ -403,6 +413,34 @@ const productPdfMap = productSlugs.map(slug => {
     }
   }
 
-  document.addEventListener('DOMContentLoaded', initProductCarousel);
-  document.addEventListener('astro:after-swap', initProductCarousel);
+  function initPillsScrollIndicators() {
+    const wrapper = document.getElementById('pills-wrapper');
+    if (!wrapper) return;
+    const container = wrapper.querySelector('.pills-scroll-container') as HTMLElement;
+    const leftBtn = wrapper.querySelector('.pills-scroll-left') as HTMLButtonElement;
+    const rightBtn = wrapper.querySelector('.pills-scroll-right') as HTMLButtonElement;
+    if (!container || !leftBtn || !rightBtn) return;
+
+    function updateIndicators() {
+      const { scrollLeft, scrollWidth, clientWidth } = container;
+      const atStart = scrollLeft <= 5;
+      const atEnd = scrollLeft + clientWidth >= scrollWidth - 5;
+
+      leftBtn.style.opacity = atStart ? '0' : '1';
+      leftBtn.style.pointerEvents = atStart ? 'none' : 'auto';
+      rightBtn.style.opacity = atEnd ? '0' : '1';
+      rightBtn.style.pointerEvents = atEnd ? 'none' : 'auto';
+    }
+
+    container.addEventListener('scroll', updateIndicators, { passive: true });
+    window.addEventListener('resize', updateIndicators);
+    leftBtn.addEventListener('click', () => container.scrollBy({ left: -150, behavior: 'smooth' }));
+    rightBtn.addEventListener('click', () => container.scrollBy({ left: 150, behavior: 'smooth' }));
+
+    // Initial check
+    setTimeout(updateIndicators, 100);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => { initProductCarousel(); initPillsScrollIndicators(); });
+  document.addEventListener('astro:after-swap', () => { initProductCarousel(); initPillsScrollIndicators(); });
 </script>

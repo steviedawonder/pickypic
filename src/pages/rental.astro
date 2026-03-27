@@ -54,7 +54,7 @@ const rentalProducts = [
   ]} />
   <ServiceSchema />
   <!-- RENTAL Hero Heading -->
-  <section class="relative bg-white pt-14 pb-2 lg:pt-12 lg:pb-4 overflow-hidden">
+  <section class="relative bg-white pt-14 pb-1 lg:pt-12 lg:pb-2 overflow-hidden">
     <div class="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 gs-fade-up">
       <div class="flex items-center justify-between">
         <h1 class="text-2xl lg:text-[clamp(2.5rem,6vw,4.5rem)] font-bold tracking-[0.04em] text-primary leading-none" style="font-family: 'Montserrat', sans-serif;">
@@ -66,11 +66,11 @@ const rentalProducts = [
   </section>
 
   <!-- Product Carousel -->
-  <section class="pb-2 lg:pb-6 bg-white overflow-hidden" aria-label="렌탈 제품 갤러리">
+  <section class="pb-0 lg:pb-0 bg-white overflow-hidden" aria-label="렌탈 제품 갤러리">
     <div class="relative mx-auto max-w-7xl px-6 lg:px-8 gs-fade-up">
       <div class="relative">
         <!-- Carousel Track -->
-        <div id="rental-carousel" class="flex gap-4 lg:gap-5 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 -mx-6 px-6 lg:-mx-8 lg:px-8" style="scrollbar-width: none; -ms-overflow-style: none;">
+        <div id="rental-carousel" class="flex gap-4 lg:gap-5 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-1 -mx-6 px-6 lg:-mx-8 lg:px-8" style="scrollbar-width: none; -ms-overflow-style: none;">
           {rentalProducts.map((product, i) => (
             <article class="flex-shrink-0 w-[calc(50%-8px)] sm:w-[300px] lg:w-[320px] snap-start">
               <div class="overflow-hidden bg-bg-light mb-2 rounded-sm">
@@ -90,7 +90,7 @@ const rentalProducts = [
         </div>
 
         <!-- Pagination Dots (mobile) -->
-        <div class="flex justify-center gap-1.5 mt-2 lg:hidden" id="rental-dots">
+        <div class="flex justify-center gap-1.5 mt-1 lg:hidden" id="rental-dots">
           {rentalProducts.map((_, i) => (
             <span class:list={['rental-dot w-2 h-2 rounded-full', i === 0 ? 'bg-primary' : 'bg-gray-300']} data-index={i}></span>
           ))}
@@ -118,7 +118,7 @@ const rentalProducts = [
   </section>
 
   <!-- Rental Inquiry Form Section -->
-  <section class="py-8 lg:py-10 bg-bg-light" aria-labelledby="rental-form-heading">
+  <section class="pt-6 pb-8 lg:pt-8 lg:pb-10 bg-bg-light" aria-labelledby="rental-form-heading">
     <div class="mx-auto max-w-3xl px-6 lg:px-8">
       <!-- Section Heading -->
       <div class="mb-8">
@@ -147,7 +147,7 @@ const rentalProducts = [
               </label>
               <label class="booth-label flex w-fit items-start gap-3 cursor-pointer group" data-img-left="/images/products/modern-retro-picky-line.png" data-img-right="/images/products/modern-retro-picky-photo.png">
                 <input type="checkbox" name="boothType" value="modern-retro" class="w-4 h-4 accent-primary mt-0.5 flex-shrink-0" />
-                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold">[테이블형] [감열지 사진기]</span> 모던 레트로피키 <span class="text-secondary">(W290 x L290 x H310)</span></span>
+                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold">[테이블형] [영수증 사진기]</span> 모던 레트로피키 <span class="text-secondary">(W290 x L290 x H310)</span></span>
               </label>
               <label class="booth-label flex w-fit items-start gap-3 cursor-pointer group" data-img-left="/images/products/urban-retro-picky-line.png" data-img-right="/images/products/urban-retro-picky-photo.png">
                 <input type="checkbox" name="boothType" value="urban-retro" class="w-4 h-4 accent-primary mt-0.5 flex-shrink-0" />
