@@ -1,6 +1,10 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+
+const emailjsServiceId = import.meta.env.PUBLIC_EMAILJS_SERVICE_ID;
+const emailjsCollabTemplateId = import.meta.env.PUBLIC_EMAILJS_COLLAB_TEMPLATE_ID;
+const emailjsPublicKey = import.meta.env.PUBLIC_EMAILJS_PUBLIC_KEY;
 ---
 
 <BaseLayout
@@ -41,7 +45,11 @@ import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
         </p>
       </div>
 
-      <form id="collaboration-form" novalidate>
+      <form id="collaboration-form" novalidate
+        data-emailjs-service={emailjsServiceId}
+        data-emailjs-template={emailjsCollabTemplateId}
+        data-emailjs-key={emailjsPublicKey}
+      >
         <!-- 협업 형태 -->
         <div class="mb-8">
           <h3 class="text-base font-bold text-primary mb-3">협업 형태 <span class="text-red-500">*</span></h3>
@@ -289,12 +297,10 @@ import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 
       try {
         const emailjs = await import('@emailjs/browser');
-        await emailjs.default.send(
-          import.meta.env.PUBLIC_EMAILJS_SERVICE_ID,
-          import.meta.env.PUBLIC_EMAILJS_COLLAB_TEMPLATE_ID,
-          templateParams,
-          import.meta.env.PUBLIC_EMAILJS_PUBLIC_KEY
-        );
+        const serviceId = form.dataset.emailjsService!;
+        const templateId = form.dataset.emailjsTemplate!;
+        const publicKey = form.dataset.emailjsKey!;
+        await emailjs.default.send(serviceId, templateId, templateParams, publicKey);
 
         // Sanity에도 저장
         try {

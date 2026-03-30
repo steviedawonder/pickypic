@@ -4,6 +4,10 @@ import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import ServiceSchema from '@components/seo/ServiceSchema.astro';
 import FAQSchema from '@components/seo/FAQSchema.astro';
 
+const emailjsServiceId = import.meta.env.PUBLIC_EMAILJS_SERVICE_ID;
+const emailjsTemplateId = import.meta.env.PUBLIC_EMAILJS_TEMPLATE_ID;
+const emailjsPublicKey = import.meta.env.PUBLIC_EMAILJS_PUBLIC_KEY;
+
 const rentalFAQ = [
   {
     question: '포토부스 렌탈 비용은 얼마인가요?',
@@ -129,7 +133,11 @@ const rentalProducts = [
         </p>
       </div>
 
-      <form id="rental-form" class="space-y-10" novalidate>
+      <form id="rental-form" class="space-y-10" novalidate
+        data-emailjs-service={emailjsServiceId}
+        data-emailjs-template={emailjsTemplateId}
+        data-emailjs-key={emailjsPublicKey}
+      >
         <!-- 포토부스 타입 -->
         <fieldset>
           <legend class="text-lg font-bold text-primary mb-6 tracking-tight flex items-center gap-1">
@@ -624,12 +632,10 @@ const rentalProducts = [
 
       try {
         const emailjs = await import('@emailjs/browser');
-        await emailjs.default.send(
-          import.meta.env.PUBLIC_EMAILJS_SERVICE_ID,
-          import.meta.env.PUBLIC_EMAILJS_TEMPLATE_ID,
-          templateParams,
-          import.meta.env.PUBLIC_EMAILJS_PUBLIC_KEY
-        );
+        const serviceId = form.dataset.emailjsService!;
+        const templateId = form.dataset.emailjsTemplate!;
+        const publicKey = form.dataset.emailjsKey!;
+        await emailjs.default.send(serviceId, templateId, templateParams, publicKey);
         alert(getT('validation.success'));
         form.reset();
       } catch (error) {
