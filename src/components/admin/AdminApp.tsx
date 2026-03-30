@@ -2645,14 +2645,14 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
             <h3 style={{ fontSize: 13, fontWeight: 700, marginBottom: 12 }}>공유 미리보기</h3>
             <div style={{ fontSize: 11, color: colors.textLight, marginBottom: 6 }}>카카오톡 / Facebook</div>
             <div style={{ border: `1px solid ${colors.border}`, borderRadius: 6, padding: 12, marginBottom: 12, background: '#fafafa' }}>
-              <div style={{ fontSize: 11, color: colors.textLight }}>pickypic.vercel.app</div>
+              <div style={{ fontSize: 11, color: colors.textLight }}>picky-pic.com</div>
               <div style={{ fontSize: 13, fontWeight: 700, color: colors.text, margin: '4px 0 2px' }}>{form.seoTitle || form.title || 'SEO 제목'}</div>
               <div style={{ fontSize: 11, color: colors.textLight }}>{form.seoDescription || '메타 설명이 여기에 표시됩니다.'}</div>
             </div>
             <div style={{ fontSize: 11, color: colors.textLight, marginBottom: 6 }}>Google 검색결과</div>
             <div style={{ marginBottom: 4 }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: '#1a0dab' }}>{form.seoTitle || form.title || 'SEO 제목'} - PICKYPIC</div>
-              <div style={{ fontSize: 11, color: '#006621' }}>pickypic.vercel.app/blog/{form.title ? form.title.toLowerCase().replace(/[^a-z0-9가-힣\s]/g, '').replace(/\s+/g, '-') : 'post-slug'}</div>
+              <div style={{ fontSize: 11, color: '#006621' }}>picky-pic.com/blog/{form.title ? form.title.toLowerCase().replace(/[^a-z0-9가-힣\s]/g, '').replace(/\s+/g, '-') : 'post-slug'}</div>
               <div style={{ fontSize: 11, color: colors.textLight }}>{form.seoDescription || '메타 설명이 여기에 표시됩니다.'}</div>
             </div>
           </div>
