@@ -63,6 +63,73 @@ Astro 프론트매터(SSR/SSG)에서 `import.meta.env.PUBLIC_*`를 읽어도 Ver
 
 ---
 
+## 어드민 패널 (/admin)
+
+### 구조
+- `src/pages/admin.astro` — React `client:only` 진입점
+- `src/components/admin/AdminApp.tsx` — 53줄 라우터 (모든 페이지 import + renderPage switch)
+- `src/components/admin/shared/` — 공통 모듈
+  - `styles.ts` (colors, s, navItems), `AdminLayout.tsx`, `Toast.tsx`, `SeoComponents.tsx`, `seoScoring.ts`, `portableText.ts`
+- `src/components/admin/pages/` — 각 관리 페이지 컴포넌트
+  - Dashboard, BlogList, BlogEditor, PortfolioManager, FAQManager, CategoryManager
+  - CollaborationManager, PopupManager, DownloadManager
+  - **InquiryManager** (문의 관리), **BannerManager** (배너 관리), **EventManager** (이벤트 관리)
+  - **FooterManager** (Footer 정보), **SettingsPage** (사이트 설정 6탭)
+- `src/components/admin/PasswordGate.tsx` — HMAC 토큰 인증 (서버 검증)
+- `src/components/admin/adminClient.ts` — 모든 Sanity API 호출 함수
+
+### 인증 방식
+- **PasswordGate → /api/auth (POST)** — 비밀번호 서버 검증 → HMAC-SHA256 토큰 발급 (24시간 유효)
+- 토큰은 localStorage에 저장, 모든 API 요청에 `x-admin-auth` 헤더로 전송
+- `/api/sanity.ts`에서 `validateToken` (auth.ts에서 import)으로 검증
+- **비밀번호는 클라이언트에 절대 노출되지 않음** (PUBLIC_ 접두사 미사용)
+- `ADMIN_PASSWORD` 환경변수 필수 (Vercel + .env 모두 설정 필요)
+
+### Sanity 스키마
+- 기존: blogPost, blogCategory, blogAuthor, portfolio, faqItem, popupBanner, collaborationRequest, downloadFile
+- **추가됨**: `banner`, `inquiry`, `event`
+- **siteSettings 확장**: SEO 기본값 + footer 12필드 + 코드삽입 5필드 + 외부서비스 11필드 + 이메일 5필드 + 보안 3필드 + 점검모드 3필드
+
+### 사이트 설정 6탭 (SettingsPage.tsx)
+1. **기본 설정** — SEO 제목/설명, 비밀번호 변경
+2. **코드 삽입** — HEAD/BODY 스크립트, 메타태그, CSS (개발자 없이 삽입 가능)
+3. **외부 서비스** — GTM, GA4, 네이버/카카오/Meta 픽셀, Search Console/네이버 인증, reCAPTCHA, 채팅 플러그인
+4. **이메일 설정** — 관리자/렌탈/협업 알림 수신처, Slack 웹훅
+5. **보안 설정** — IP 허용/차단, 로그인 실패 제한
+6. **점검 모드** — 사이트 전체 점검 전환 + 예외 IP
+
+### 프론트엔드 Sanity 연동
+- `BaseLayout.astro` — siteSettings에서 GTM/GA4/픽셀/메타태그/스크립트를 동적 주입 (하드코딩 폴백 유지)
+- `HeroSection.astro` — Sanity 배너 데이터 사용 (없으면 하드코딩 이미지 폴백)
+- `Footer.astro` — Sanity siteSettings footer 데이터 사용 (없으면 company.ts 폴백)
+- `rental.astro` — FAQ를 Sanity faqItem에서 동적 로드 (page: 'rental')
+- **Footer 상호명** → `/admin` 히든 링크
+
+### API 엔드포인트
+- `/api/auth.ts` — login(비밀번호→토큰), verify(토큰 유효성), changePassword(Vercel 환경변수 안내)
+- `/api/sanity.ts` — 범용 Sanity CRUD 프록시 + `submitInquiry` (인증 불필요, 필드 화이트리스트 적용)
+
+### 환경변수 (Vercel 필수)
+| 변수 | 설명 |
+|---|---|
+| `ADMIN_PASSWORD` | 어드민 로그인 비밀번호 (미설정 시 로그인 불가) |
+| `SANITY_API_TOKEN` | Sanity 쓰기 토큰 (서버 전용) |
+
+### Sanity에 마이그레이션된 하드코딩 값
+- GTM ID: `GTM-KDRFNN4H`
+- Google Search Console: `XALCn56VEHtBbtrm49DnZH2WdT3ccOizTGKTkTHsIns`
+- 네이버 서치어드바이저: `062e44a0df871ea7efc1955b667ed80346b8d5ef`
+- 회사 정보 (Footer): company.ts의 모든 값
+- 렌탈 FAQ 6개 항목
+
+### 주의사항
+1. **AdminApp.tsx를 수정할 때**: 새 메뉴 추가 시 `shared/styles.ts`의 navItems + AdminApp.tsx의 switch case 모두 추가
+2. **siteSettings 필드 추가 시**: 스키마 + adminClient.ts fetchSiteSettings 쿼리 + SettingsPage UI 모두 업데이트
+3. **코드 삽입/배너/Footer 변경**: SSG이므로 Sanity 저장 후 재빌드 필요 (1-2분)
+4. **submitInquiry**: 필드 화이트리스트가 적용됨, 새 필드 추가 시 sanity.ts의 allowed 배열 업데이트 필요
+
+---
+
 ## 반복 작업 시 체크리스트
 
 ### 이메일 전송 관련 기능 수정 시
