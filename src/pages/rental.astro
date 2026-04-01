@@ -5,9 +5,9 @@ import ServiceSchema from '@components/seo/ServiceSchema.astro';
 import FAQSchema from '@components/seo/FAQSchema.astro';
 import { sanityClient, faqQueries } from '../sanity/client';
 
-const emailjsServiceId = import.meta.env.PUBLIC_EMAILJS_SERVICE_ID || 'service_lo0iveb';
-const emailjsTemplateId = import.meta.env.PUBLIC_EMAILJS_TEMPLATE_ID || 'template_zyud66s';
-const emailjsPublicKey = import.meta.env.PUBLIC_EMAILJS_PUBLIC_KEY || 'DiKfjM0kSilVVTle_';
+const emailjsServiceId = 'service_lo0iveb';
+const emailjsTemplateId = 'template_zyud66s';
+const emailjsPublicKey = 'DiKfjM0kSilVVTle_';
 
 // FAQ를 Sanity에서 불러오기 (실패 시 빈 배열)
 let rentalFAQ: { question: string; answer: string }[] = [];
