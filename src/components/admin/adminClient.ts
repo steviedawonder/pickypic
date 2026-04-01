@@ -285,6 +285,18 @@ export async function changeAdminPassword(currentPassword: string, newPassword: 
   return res.json();
 }
 
+// ── Vercel Rebuild Trigger ──
+const VERCEL_DEPLOY_HOOK = 'https://api.vercel.com/v1/integrations/deploy/prj_O7XjLkUJGOEvYnDMuYAjD8y5L96J/i7uhy3EGoA';
+
+export async function triggerRebuild() {
+  try {
+    await fetch(VERCEL_DEPLOY_HOOK, { method: 'POST' });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 // ── Dashboard Stats ──
 export async function fetchDashboardStats() {
   const [totalPosts, published, drafts, categories, portfolioCount, faqCount, inquiryCount, inquiryPending, bannerCount, eventCount] = await Promise.all([

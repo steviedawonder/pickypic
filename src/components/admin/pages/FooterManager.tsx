@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { colors, s } from '../shared/styles';
-import { fetchSiteSettings, updateSiteSettings } from '../adminClient';
+import { fetchSiteSettings, updateSiteSettings, triggerRebuild } from '../adminClient';
 
 const footerFields = [
   { key: 'companyName', label: '회사명', placeholder: '주식회사 피키글로벌' },
@@ -44,7 +44,8 @@ function FooterManager() {
       const data: Record<string, string | undefined> = {};
       footerFields.forEach(f => { data[f.key] = form[f.key] || undefined; });
       await updateSiteSettings(settingsId, data);
-      alert('저장되었습니다.');
+      alert('저장되었습니다. 사이트 재빌드를 시작합니다 (1-2분 소요)');
+      triggerRebuild();
     } catch (err: any) {
       alert('저장 실패: ' + err.message);
     } finally {

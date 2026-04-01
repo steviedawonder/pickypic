@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { colors, s } from '../shared/styles';
-import { fetchBanners, createBanner, updateBanner, deleteBanner, uploadImage as uploadImageAsset } from '../adminClient';
+import { fetchBanners, createBanner, updateBanner, deleteBanner, uploadImage as uploadImageAsset, triggerRebuild } from '../adminClient';
 
 function BannerManager() {
   const [banners, setBanners] = useState<any[]>([]);
@@ -105,7 +105,8 @@ function BannerManager() {
       }
       resetForm();
       load();
-      alert(wasEditing ? '배너가 수정되었습니다.' : '배너가 추가되었습니다.');
+      alert(wasEditing ? '배너가 수정되었습니다. 사이트 재빌드 시작 (1-2분)' : '배너가 추가되었습니다. 사이트 재빌드 시작 (1-2분)');
+      triggerRebuild();
     } catch (err: any) {
       alert('저장 실패: ' + err.message);
     }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { colors, s } from '../shared/styles';
-import { fetchSiteSettings, updateSiteSettings, changeAdminPassword } from '../adminClient';
+import { fetchSiteSettings, updateSiteSettings, changeAdminPassword, triggerRebuild } from '../adminClient';
 import { useToast } from '../shared/Toast';
 
 const tabs = [
@@ -62,7 +62,8 @@ function SettingsPage() {
         data[f] = settings[f] ?? '';
       }
       await updateSiteSettings(settings._id, data);
-      showToast('저장되었습니다', 'success');
+      showToast('저장되었습니다. 사이트 재빌드를 시작합니다 (1-2분 소요)', 'success');
+      triggerRebuild();
     } catch (e: any) {
       showToast(e.message || '저장에 실패했습니다', 'error');
     } finally {
