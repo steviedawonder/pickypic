@@ -285,12 +285,10 @@ export async function changeAdminPassword(currentPassword: string, newPassword: 
   return res.json();
 }
 
-// ── Vercel Rebuild Trigger ──
-const VERCEL_DEPLOY_HOOK = 'https://api.vercel.com/v1/integrations/deploy/prj_O7XjLkUJGOEvYnDMuYAjD8y5L96J/i7uhy3EGoA';
-
+// ── Vercel Rebuild Trigger (서버 API 경유, CORS 우회) ──
 export async function triggerRebuild() {
   try {
-    await fetch(VERCEL_DEPLOY_HOOK, { method: 'POST' });
+    await sanityAction({ action: 'triggerRebuild' });
     return true;
   } catch {
     return false;

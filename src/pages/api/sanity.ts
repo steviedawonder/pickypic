@@ -105,6 +105,13 @@ export const POST: APIRoute = async ({ request }) => {
         return jsonResponse(result);
       }
 
+      case 'triggerRebuild': {
+        const hook = 'https://api.vercel.com/v1/integrations/deploy/prj_O7XjLkUJGOEvYnDMuYAjD8y5L96J/i7uhy3EGoA';
+        const res = await fetch(hook, { method: 'POST' });
+        const data = await res.json();
+        return jsonResponse({ success: true, ...data });
+      }
+
       default:
         return jsonResponse({ error: `Unknown action: ${action}` }, 400);
     }
