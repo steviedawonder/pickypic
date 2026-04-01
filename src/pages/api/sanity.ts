@@ -33,13 +33,45 @@ function jsonResponse(data: unknown, status = 200) {
   });
 }
 
-function isAuthorized(request: Request): boolean {
+async function createHmac(message: string, secret: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const keyData = encoder.encode(secret);
+  const msgData = encoder.encode(message);
+  const cryptoKey = await crypto.subtle.importKey(
+    'raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+  );
+  const signature = await crypto.subtle.sign('HMAC', cryptoKey, msgData);
+  const hashArray = Array.from(new Uint8Array(signature));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function isAuthorized(request: Request): Promise<boolean> {
   const auth = request.headers.get('x-admin-auth');
-  return auth === ADMIN_PASSWORD;
+  if (!auth) return false;
+
+  try {
+    const decoded = atob(auth);
+    const colonIdx = decoded.indexOf(':');
+    if (colonIdx === -1) return false;
+    const timestamp = decoded.substring(0, colonIdx);
+    const hmac = decoded.substring(colonIdx + 1);
+
+    // Check token age (24 hours)
+    const tokenAge = Date.now() - parseInt(timestamp);
+    if (isNaN(tokenAge) || tokenAge > 24 * 60 * 60 * 1000 || tokenAge < 0) {
+      return false;
+    }
+
+    // Verify HMAC
+    const expectedHmac = await createHmac(timestamp, ADMIN_PASSWORD);
+    return hmac === expectedHmac;
+  } catch {
+    return false;
+  }
 }
 
 export const POST: APIRoute = async ({ request }) => {
-  if (!isAuthorized(request)) {
+  if (!(await isAuthorized(request))) {
     return unauthorized();
   }
 

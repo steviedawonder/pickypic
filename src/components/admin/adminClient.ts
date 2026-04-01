@@ -1,10 +1,11 @@
 // Admin client - all Sanity mutations go through /api/sanity server-side proxy.
 // The Sanity API token is never exposed to the browser.
 
-const ADMIN_PASSWORD = import.meta.env.PUBLIC_ADMIN_PASSWORD || 'pickypic2020';
+const AUTH_STORAGE_KEY = 'pickypic-admin-auth';
 
 function getAuthHeaders(): Record<string, string> {
-  return { 'x-admin-auth': ADMIN_PASSWORD };
+  const token = (typeof localStorage !== 'undefined' && localStorage.getItem(AUTH_STORAGE_KEY)) || '';
+  return { 'x-admin-auth': token };
 }
 
 async function sanityAction(body: Record<string, unknown>) {

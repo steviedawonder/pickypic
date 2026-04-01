@@ -1,6 +1,5 @@
 import { useState, useEffect, type ReactNode } from 'react';
 
-const ADMIN_PASSWORD = import.meta.env.PUBLIC_ADMIN_PASSWORD || 'pickypic2020';
 const STORAGE_KEY = 'pickypic-admin-auth';
 
 interface PasswordGateProps {
@@ -14,21 +13,55 @@ export default function PasswordGate({ children }: PasswordGateProps) {
   const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === 'true') {
-      setIsAuthenticated(true);
+    const storedToken = localStorage.getItem(STORAGE_KEY);
+    if (storedToken && storedToken !== 'true') {
+      // Verify the token with the server
+      fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'verify', token: storedToken }),
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.valid) {
+            setIsAuthenticated(true);
+          } else {
+            localStorage.removeItem(STORAGE_KEY);
+          }
+        })
+        .catch(() => {
+          localStorage.removeItem(STORAGE_KEY);
+        })
+        .finally(() => setIsChecking(false));
+    } else {
+      // Clear legacy 'true' value
+      if (storedToken === 'true') {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+      setIsChecking(false);
     }
-    setIsChecking(false);
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === ADMIN_PASSWORD) {
-      localStorage.setItem(STORAGE_KEY, 'true');
-      setIsAuthenticated(true);
-      setError('');
-    } else {
-      setError('비밀번호가 올바르지 않습니다.');
+    setError('');
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'login', password }),
+      });
+      const data = await res.json();
+      if (data.success && data.token) {
+        localStorage.setItem(STORAGE_KEY, data.token);
+        setIsAuthenticated(true);
+        setError('');
+      } else {
+        setError(data.error || '비밀번호가 올바르지 않습니다.');
+        setPassword('');
+      }
+    } catch (err) {
+      setError('서버 연결에 실패했습니다.');
       setPassword('');
     }
   };
