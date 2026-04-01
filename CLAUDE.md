@@ -36,30 +36,32 @@
 
 ## 환경변수 & 배포 주의사항
 
-### .env는 .gitignore에 포함되어 있어 Vercel에 전달되지 않는다
+### 절대 규칙: PUBLIC_ 환경변수 사용 금지
+`import.meta.env.PUBLIC_*`는 **절대 사용하지 않는다.** Vercel 빌드에서 환경변수가 플레이스홀더로 주입되어 폴백이 무시되는 문제가 반복 발생함. 공개 키는 **반드시 하드코딩**한다.
 
-`.env` 파일은 git에 포함되지 않기 때문에 **Vercel 빌드 시 환경변수가 존재하지 않는다.**
-Astro 프론트매터(SSR/SSG)에서 `import.meta.env.PUBLIC_*`를 읽어도 Vercel 빌드에서는 `undefined`가 된다.
-
-**해결 방법 (둘 중 하나):**
-1. Vercel 대시보드 → Project Settings → Environment Variables에 직접 등록
-2. 공개 키(PUBLIC_ 접두사)는 하드코딩 폴백 사용 (현재 적용된 방식):
-   ```astro
-   const serviceId = import.meta.env.PUBLIC_EMAILJS_SERVICE_ID || 'service_lo0iveb';
-   ```
-
-### EmailJS 설정값 (PUBLIC - 브라우저 노출 무방)
-| 변수 | 값 |
+### 서버 전용 환경변수 (Vercel에 설정 필수, .env에도 필요)
+| 변수 | 용도 |
 |---|---|
-| PUBLIC_EMAILJS_SERVICE_ID | service_lo0iveb |
-| PUBLIC_EMAILJS_TEMPLATE_ID | template_zyud66s (렌탈) |
-| PUBLIC_EMAILJS_COLLAB_TEMPLATE_ID | template_1tlcr18 (협업) |
-| PUBLIC_EMAILJS_PUBLIC_KEY | DiKfjM0kSilVVTle_ |
+| `ADMIN_PASSWORD` | 어드민 비밀번호 (미설정 시 로그인 불가) |
+| `SANITY_API_TOKEN` | Sanity 쓰기 토큰 (값에 줄바꿈/공백 주의!) |
+
+### 하드코딩된 값 (코드에 직접 작성, 환경변수 불필요)
+| 값 | 위치 | 용도 |
+|---|---|---|
+| `service_lo0iveb` | rental.astro, collaboration.astro | EmailJS 서비스 ID |
+| `template_zyud66s` | rental.astro | EmailJS 렌탈 템플릿 |
+| `template_1tlcr18` | collaboration.astro | EmailJS 협업 템플릿 |
+| `DiKfjM0kSilVVTle_` | rental.astro, collaboration.astro | EmailJS 공개 키 |
+| `7b9lcco4` | sanity/client.ts 외 6곳 | Sanity 프로젝트 ID |
+| `production` | sanity/client.ts 외 6곳 | Sanity 데이터셋 |
+| `GTM-KDRFNN4H` | BaseLayout.astro, company.ts | GTM 컨테이너 ID (폴백) |
+| Deploy Hook URL | adminClient.ts → /api/sanity.ts | Vercel 재빌드 트리거 |
 
 ### EmailJS 연동 구조
-- `rental.astro`, `collaboration.astro`의 프론트매터에서 EmailJS 설정값을 읽어 form `data-*` 속성에 주입
+- `rental.astro`, `collaboration.astro`의 프론트매터에서 EmailJS 설정값을 하드코딩하여 form `data-*` 속성에 주입
 - 클라이언트 스크립트에서 `form.dataset.emailjsService` 등으로 읽어 사용
 - `@emailjs/browser` 패키지 사용
+- 폼 제출 시 EmailJS 이메일 발송 + `/api/sanity` submitInquiry/submitCollaboration으로 Sanity에도 저장
 
 ---
 
