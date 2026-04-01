@@ -85,6 +85,7 @@ function EventManager() {
     }
 
     try {
+      const wasEditing = !!editing;
       if (editing) {
         await updateEvent(editing._id, data);
       } else {
@@ -92,7 +93,7 @@ function EventManager() {
       }
       resetForm();
       load();
-      alert(editing ? '이벤트가 수정되었습니다.' : '이벤트가 추가되었습니다.');
+      alert(wasEditing ? '이벤트가 수정되었습니다.' : '이벤트가 추가되었습니다.');
     } catch (err: any) {
       alert('저장 실패: ' + err.message);
     }
@@ -100,14 +101,22 @@ function EventManager() {
 
   const handleDelete = async (id: string, title: string) => {
     if (confirm(`"${title}" 이벤트를 삭제하시겠습니까?`)) {
-      await deleteEvent(id);
-      load();
+      try {
+        await deleteEvent(id);
+        load();
+      } catch (e) {
+        alert('삭제에 실패했습니다.');
+      }
     }
   };
 
   const toggleActive = async (id: string, current: boolean) => {
-    await updateEvent(id, { isActive: !current });
-    load();
+    try {
+      await updateEvent(id, { isActive: !current });
+      load();
+    } catch (e) {
+      alert('상태 변경에 실패했습니다.');
+    }
   };
 
   const isLive = (event: any) => {

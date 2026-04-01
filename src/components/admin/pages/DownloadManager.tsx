@@ -71,14 +71,22 @@ function DownloadManager() {
   };
 
   const toggleActive = async (id: string, current: boolean) => {
-    await updateDownloadFile(id, { isActive: !current });
-    load();
+    try {
+      await updateDownloadFile(id, { isActive: !current });
+      load();
+    } catch (e) {
+      alert('상태 변경에 실패했습니다.');
+    }
   };
 
   const handleDelete = async (id: string) => {
     if (confirm('이 파일을 삭제하시겠습니까?')) {
-      await deleteDownloadFile(id);
-      load();
+      try {
+        await deleteDownloadFile(id);
+        load();
+      } catch (e) {
+        alert('삭제에 실패했습니다.');
+      }
     }
   };
 

@@ -17,14 +17,18 @@ function FAQManager() {
 
   const handleSave = async () => {
     if (!form.question || !form.answer) { alert('질문과 답변을 모두 입력해주세요.'); return; }
-    if (editId) {
-      await updateFAQItem(editId, form);
-    } else {
-      await createFAQItem({ ...form, order: items.length });
+    try {
+      if (editId) {
+        await updateFAQItem(editId, form);
+      } else {
+        await createFAQItem({ ...form, order: items.length });
+      }
+      setForm({ question: '', answer: '', page: 'home' });
+      setEditId(null);
+      load();
+    } catch (e) {
+      alert('저장에 실패했습니다.');
     }
-    setForm({ question: '', answer: '', page: 'home' });
-    setEditId(null);
-    load();
   };
 
   const handleEdit = (item: any) => {
@@ -34,8 +38,12 @@ function FAQManager() {
 
   const handleDelete = async (id: string) => {
     if (confirm('이 FAQ를 삭제하시겠습니까?')) {
-      await deleteFAQItem(id);
-      load();
+      try {
+        await deleteFAQItem(id);
+        load();
+      } catch (e) {
+        alert('삭제에 실패했습니다.');
+      }
     }
   };
 

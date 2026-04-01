@@ -46,6 +46,12 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
             categoryId: post.category?._id || '', tags: post.tags || [], tagInput: '',
             publishedAt: post.publishedAt ? post.publishedAt.split('T')[0] : '',
           });
+          if (post.mainImage?.asset?.url) {
+            setMainImageUrl(post.mainImage.asset.url);
+          }
+          if (post.mainImage?.asset?._id) {
+            setMainImageRefId(post.mainImage.asset._id);
+          }
         }
       });
     }
@@ -84,6 +90,11 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
         ...(publish && { publishedAt: form.publishedAt || new Date().toISOString() }),
       };
 
+      // Add mainImage reference if it exists
+      if (mainImageRef_id) {
+        data.mainImage = { _type: 'image', asset: { _type: 'reference', _ref: mainImageRef_id } };
+      }
+
       if (currentPostId) {
         await updateBlogPost(currentPostId, data);
       } else {
@@ -114,6 +125,7 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
 
   const [mainImageUploading, setMainImageUploading] = useState(false);
   const [mainImageUrl, setMainImageUrl] = useState('');
+  const [mainImageRef_id, setMainImageRefId] = useState('');
   const mainImageRef = useRef<HTMLInputElement>(null);
 
   const handleMainImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -123,7 +135,7 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
     try {
       const asset = await uploadImage(file);
       setMainImageUrl(asset.url);
-      updateField('mainImageRef', asset._id);
+      setMainImageRefId(asset._id);
     } catch (err: any) {
       alert('이미지 업로드 실패: ' + err.message);
     } finally {

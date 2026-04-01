@@ -70,6 +70,15 @@ function FooterManager() {
         </button>
       </div>
 
+      {/* Warning banner when no settings exist */}
+      {!settingsId && (
+        <div style={{ ...s.card, background: '#fef9c3', border: '1px solid #f59e0b', marginBottom: 16 }}>
+          <p style={{ fontSize: 13, color: '#92400e', margin: 0 }}>
+            아직 사이트 설정이 없습니다. 아래 정보를 입력하고 저장하면 자동으로 생성됩니다.
+          </p>
+        </div>
+      )}
+
       {/* Info banner */}
       <div style={{ ...s.card, background: '#eff6ff', border: `1px solid ${colors.blue}`, marginBottom: 16 }}>
         <p style={{ fontSize: 13, color: '#1e40af', margin: 0 }}>

@@ -18,22 +18,34 @@ function CollaborationManager() {
   useEffect(() => { load(); }, [load]);
 
   const handleStatusChange = async (id: string, status: string) => {
-    await updateCollaborationRequest(id, { status });
-    load();
+    try {
+      await updateCollaborationRequest(id, { status });
+      load();
+    } catch (e) {
+      alert('상태 변경에 실패했습니다.');
+    }
   };
 
   const handleDelete = async (id: string, name: string) => {
     if (confirm(`"${name}" 협업 신청을 삭제하시겠습니까?`)) {
-      await deleteCollaborationRequest(id);
-      if (detail?._id === id) setDetail(null);
-      load();
+      try {
+        await deleteCollaborationRequest(id);
+        if (detail?._id === id) setDetail(null);
+        load();
+      } catch (e) {
+        alert('삭제에 실패했습니다.');
+      }
     }
   };
 
   const handleMemoSave = async (id: string) => {
-    await updateCollaborationRequest(id, { memo });
-    alert('메모가 저장되었습니다.');
-    load();
+    try {
+      await updateCollaborationRequest(id, { memo });
+      alert('메모가 저장되었습니다.');
+      load();
+    } catch (e) {
+      alert('메모 저장에 실패했습니다.');
+    }
   };
 
   const exportExcel = () => {

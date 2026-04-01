@@ -18,22 +18,34 @@ function InquiryManager() {
   useEffect(() => { load(); }, [load]);
 
   const handleStatusChange = async (id: string, status: string) => {
-    await updateInquiry(id, { status });
-    load();
+    try {
+      await updateInquiry(id, { status });
+      load();
+    } catch (e) {
+      alert('상태 변경에 실패했습니다.');
+    }
   };
 
   const handleDelete = async (id: string, name: string) => {
     if (confirm(`"${name}" 문의를 삭제하시겠습니까?`)) {
-      await deleteInquiry(id);
-      if (detail?._id === id) setDetail(null);
-      load();
+      try {
+        await deleteInquiry(id);
+        if (detail?._id === id) setDetail(null);
+        load();
+      } catch (e) {
+        alert('삭제에 실패했습니다.');
+      }
     }
   };
 
   const handleMemoSave = async (id: string) => {
-    await updateInquiry(id, { memo });
-    alert('메모가 저장되었습니다.');
-    load();
+    try {
+      await updateInquiry(id, { memo });
+      alert('메모가 저장되었습니다.');
+      load();
+    } catch (e) {
+      alert('메모 저장에 실패했습니다.');
+    }
   };
 
   const getFiltered = () => {

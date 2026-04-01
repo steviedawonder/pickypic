@@ -15,8 +15,12 @@ export default function BlogList({ onNavigate }: { onNavigate: (page: string, id
 
   const handleDelete = async (id: string, title: string) => {
     if (confirm(`"${title}" 글을 삭제하시겠습니까?`)) {
-      await deleteBlogPost(id);
-      load();
+      try {
+        await deleteBlogPost(id);
+        load();
+      } catch (e) {
+        alert('삭제에 실패했습니다.');
+      }
     }
   };
 

@@ -1,9 +1,8 @@
 import type { APIRoute } from 'astro';
 import { createClient } from '@sanity/client';
+import { validateToken } from './auth';
 
 export const prerender = false;
-
-const ADMIN_PASSWORD = import.meta.env.ADMIN_PASSWORD || '';
 
 function getClient() {
   const token = import.meta.env.SANITY_API_TOKEN;
@@ -33,56 +32,34 @@ function jsonResponse(data: unknown, status = 200) {
   });
 }
 
-async function createHmac(message: string, secret: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const keyData = encoder.encode(secret);
-  const msgData = encoder.encode(message);
-  const cryptoKey = await crypto.subtle.importKey(
-    'raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
-  );
-  const signature = await crypto.subtle.sign('HMAC', cryptoKey, msgData);
-  const hashArray = Array.from(new Uint8Array(signature));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
+const ADMIN_PASSWORD = import.meta.env.ADMIN_PASSWORD;
+// If no password configured, block all access
 
 async function isAuthorized(request: Request): Promise<boolean> {
-  const auth = request.headers.get('x-admin-auth');
-  if (!auth) return false;
-
-  try {
-    const decoded = atob(auth);
-    const colonIdx = decoded.indexOf(':');
-    if (colonIdx === -1) return false;
-    const timestamp = decoded.substring(0, colonIdx);
-    const hmac = decoded.substring(colonIdx + 1);
-
-    // Check token age (24 hours)
-    const tokenAge = Date.now() - parseInt(timestamp);
-    if (isNaN(tokenAge) || tokenAge > 24 * 60 * 60 * 1000 || tokenAge < 0) {
-      return false;
-    }
-
-    // Verify HMAC
-    const expectedHmac = await createHmac(timestamp, ADMIN_PASSWORD);
-    return hmac === expectedHmac;
-  } catch {
-    return false;
-  }
+  if (!ADMIN_PASSWORD) return false;
+  const token = request.headers.get('x-admin-auth');
+  if (!token) return false;
+  return validateToken(token);
 }
 
 export const POST: APIRoute = async ({ request }) => {
-  const contentType = request.headers.get('content-type') || '';
-
   try {
     const body = await request.json();
     const { action, ...params } = body;
 
     // Allow public inquiry submissions without auth
     if (action === 'submitInquiry') {
+      const allowed = ['inquiryType', 'name', 'phone', 'email', 'company', 'eventName', 'eventDate', 'message', 'language'];
+      const sanitized: Record<string, unknown> = {};
+      for (const key of allowed) {
+        if (params.data?.[key] !== undefined) {
+          sanitized[key] = String(params.data[key]).slice(0, 2000); // Length limit
+        }
+      }
       const client = getClient();
       const result = await client.create({
         _type: 'inquiry',
-        ...params.data,
+        ...sanitized,
         submittedAt: new Date().toISOString(),
         status: '대기',
       });

@@ -2,7 +2,8 @@ import type { APIRoute } from 'astro';
 
 export const prerender = false;
 
-const ADMIN_PASSWORD = import.meta.env.ADMIN_PASSWORD || '';
+const ADMIN_PASSWORD = import.meta.env.ADMIN_PASSWORD;
+// If no password configured, block all access
 
 // Simple HMAC-like token: base64(timestamp:hash)
 // We use a simple hash approach since Web Crypto is available in Astro SSR
@@ -61,7 +62,12 @@ export const POST: APIRoute = async ({ request }) => {
     const body = await request.json();
     const { action, password, token } = body;
 
+    // TODO: Implement rate limiting for login attempts (e.g., via Vercel KV or Upstash Redis)
+
     if (action === 'login') {
+      if (!ADMIN_PASSWORD) {
+        return jsonResponse({ error: 'ADMIN_PASSWORD 환경변수가 설정되지 않았습니다.' }, 500);
+      }
       if (password === ADMIN_PASSWORD) {
         const newToken = await generateToken();
         return jsonResponse({ success: true, token: newToken });
@@ -75,6 +81,18 @@ export const POST: APIRoute = async ({ request }) => {
       }
       const valid = await validateToken(token);
       return jsonResponse({ valid });
+    }
+
+    if (action === 'changePassword') {
+      // Require valid session first
+      if (!token || !(await validateToken(token))) {
+        return jsonResponse({ error: 'Unauthorized' }, 401);
+      }
+      // Then explain that password change requires Vercel env var
+      return jsonResponse({
+        error: '비밀번호 변경은 Vercel 환경변수(ADMIN_PASSWORD)에서 직접 변경해야 합니다.',
+        info: true
+      }, 200);
     }
 
     return jsonResponse({ error: 'Unknown action' }, 400);

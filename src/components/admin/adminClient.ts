@@ -259,15 +259,31 @@ export async function createEvent(data: any) { return sanityCreate({ _type: 'eve
 export async function updateEvent(id: string, data: any) { return sanityUpdate(id, data); }
 export async function deleteEvent(id: string) { return sanityDelete(id); }
 
-// ── Site Settings (footer) ──
+// ── Site Settings ──
 export async function fetchSiteSettings() {
   return sanityFetch(`*[_type == "siteSettings"][0] {
     _id, defaultSeoTitle, defaultSeoDescription, analyticsUrl,
     companyName, businessNumber, address, phone, email, partnerEmail,
-    kakaoChannel, kakaoUrl, instagramOfficial, instagramGlobal, instagramSg, naverStoreUrl
+    kakaoChannel, kakaoUrl, instagramOfficial, instagramGlobal, instagramSg, naverStoreUrl,
+    headScripts, headMeta, headCustomCss, bodyStartScripts, bodyEndScripts,
+    gtmContainerId, ga4MeasurementId, naverAnalyticsId, kakaoPixelId, metaPixelId,
+    googleSiteVerification, naverSiteVerification, naverSyndicationKey,
+    recaptchaSiteKey, recaptchaSecretKey, chatPluginCode,
+    adminEmail, adminEmailName, rentalNotifyEmail, collabNotifyEmail, slackWebhookUrl,
+    allowedIps, blockedIps, maxLoginAttempts,
+    isMaintenanceMode, maintenanceMessage, maintenanceAllowedIps
   }`);
 }
 export async function updateSiteSettings(id: string, data: any) { return sanityUpdate(id, data); }
+
+export async function changeAdminPassword(currentPassword: string, newPassword: string) {
+  const res = await fetch('/api/auth', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'changePassword', currentPassword, newPassword }),
+  });
+  return res.json();
+}
 
 // ── Dashboard Stats ──
 export async function fetchDashboardStats() {

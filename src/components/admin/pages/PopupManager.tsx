@@ -39,14 +39,22 @@ function PopupManager() {
   };
 
   const toggleActive = async (id: string, current: boolean) => {
-    await updatePopupBanner(id, { isActive: !current });
-    load();
+    try {
+      await updatePopupBanner(id, { isActive: !current });
+      load();
+    } catch (e) {
+      alert('상태 변경에 실패했습니다.');
+    }
   };
 
   const handleDelete = async (id: string) => {
     if (confirm('이 팝업 배너를 삭제하시겠습니까?')) {
-      await deletePopupBanner(id);
-      load();
+      try {
+        await deletePopupBanner(id);
+        load();
+      } catch (e) {
+        alert('삭제에 실패했습니다.');
+      }
     }
   };
 

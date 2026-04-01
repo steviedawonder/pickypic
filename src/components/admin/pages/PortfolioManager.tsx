@@ -55,8 +55,12 @@ function PortfolioManager() {
 
   const handleDelete = async (id: string, title: string) => {
     if (confirm(`"${title}" 항목을 삭제하시겠습니까?`)) {
-      await deletePortfolioItem(id);
-      load();
+      try {
+        await deletePortfolioItem(id);
+        load();
+      } catch (e) {
+        alert('삭제에 실패했습니다.');
+      }
     }
   };
 

@@ -97,6 +97,7 @@ function BannerManager() {
     }
 
     try {
+      const wasEditing = !!editing;
       if (editing) {
         await updateBanner(editing._id, data);
       } else {
@@ -104,7 +105,7 @@ function BannerManager() {
       }
       resetForm();
       load();
-      alert(editing ? '배너가 수정되었습니다.' : '배너가 추가되었습니다.');
+      alert(wasEditing ? '배너가 수정되었습니다.' : '배너가 추가되었습니다.');
     } catch (err: any) {
       alert('저장 실패: ' + err.message);
     }
@@ -112,14 +113,22 @@ function BannerManager() {
 
   const handleDelete = async (id: string, title: string) => {
     if (confirm(`"${title}" 배너를 삭제하시겠습니까?`)) {
-      await deleteBanner(id);
-      load();
+      try {
+        await deleteBanner(id);
+        load();
+      } catch (e) {
+        alert('삭제에 실패했습니다.');
+      }
     }
   };
 
   const toggleActive = async (id: string, current: boolean) => {
-    await updateBanner(id, { isActive: !current });
-    load();
+    try {
+      await updateBanner(id, { isActive: !current });
+      load();
+    } catch (e) {
+      alert('상태 변경에 실패했습니다.');
+    }
   };
 
   return (
