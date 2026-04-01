@@ -138,3 +138,55 @@ Astro 프론트매터(SSR/SSG)에서 `import.meta.env.PUBLIC_*`를 읽어도 Ver
 
 ### 배포 후 기능 확인 시
 - [ ] picky-pic.com에서 직접 테스트 (로컬 .env와 Vercel 환경 차이 주의)
+- [ ] 어드민에서 데이터 수정 후 1-2분 뒤 사이트에 반영되는지 확인 (SSG 재빌드)
+
+### 새 Manager 컴포넌트 추가 시
+- [ ] `shared/styles.ts`의 navItems에 새 메뉴 추가
+- [ ] `AdminApp.tsx`의 switch case에 새 페이지 추가
+- [ ] 프론트엔드에 표시되는 데이터라면 **반드시 triggerRebuild() 호출 추가**
+- [ ] adminClient.ts에 CRUD 함수 추가
+- [ ] Sanity 스키마 + schemas/index.ts 업데이트
+
+### siteSettings 필드 추가 시
+- [ ] `src/sanity/schemas/siteSettings.ts` 스키마에 필드 추가
+- [ ] `adminClient.ts`의 fetchSiteSettings 쿼리에 필드 추가
+- [ ] `SettingsPage.tsx` UI에 필드 추가
+- [ ] 프론트엔드에서 사용하는 필드라면 `BaseLayout.astro` 쿼리에도 추가
+
+---
+
+## 실수 방지 — 반드시 지켜야 할 규칙
+
+### 1. SSG 재빌드 필수 (가장 중요!)
+Astro는 정적 사이트. Sanity 데이터 변경이 사이트에 반영되려면 **Vercel 재빌드**가 필요함.
+- 모든 Manager 컴포넌트에서 create/update/delete 후 `triggerRebuild()` 호출 필수
+- triggerRebuild()는 `/api/sanity`의 `triggerRebuild` 액션을 통해 서버에서 호출 (CORS 우회)
+- Deploy Hook URL: `https://api.vercel.com/v1/integrations/deploy/prj_O7XjLkUJGOEvYnDMuYAjD8y5L96J/i7uhy3EGoA`
+
+### 2. 로컬 테스트 ≠ 프로덕션 테스트
+- 로컬 빌드 성공해도 Vercel 빌드가 실패할 수 있음 (환경변수 차이)
+- **반드시 배포 후 picky-pic.com에서 직접 테스트**
+- 브라우저 콘솔 에러, 네트워크 500 에러 확인 필수
+
+### 3. Vercel 환경변수 주의
+- `ADMIN_PASSWORD`: All Environments로 설정 필수 (미설정 시 로그인 불가)
+- `SANITY_API_TOKEN`: Production에 설정. **값에 줄바꿈/공백 포함되지 않도록 주의** (과거 이 문제로 모든 API가 500 에러 발생)
+- `PUBLIC_SANITY_PROJECT_ID`, `PUBLIC_SANITY_DATASET`: 코드에 하드코딩됨 (환경변수 불필요)
+
+### 4. Vercel 프로젝트 중복 금지
+- GitHub 레포 `steviedawonder/pickypic`은 **picky-pic** 프로젝트에만 연결
+- 같은 레포로 두 번째 Vercel 프로젝트를 만들면 배포가 꼬임 (과거 `pickypic` 프로젝트 중복으로 배포 실패 경험)
+
+### 5. QA는 코드 리뷰만으로 불충분
+- 반드시 **배포된 사이트에서 브라우저로 실제 클릭/입력 테스트**
+- 저장 후 사이트 반영까지 확인 (1-2분 대기)
+- 네트워크 요청 상태코드 확인 (200 OK인지, 500 에러인지)
+
+### 6. 하드코딩 값은 Sanity로 마이그레이션
+- 새로운 하드코딩 값 발견 시 Sanity siteSettings로 이전
+- company.ts는 폴백용으로만 유지, 실제 데이터는 Sanity에서 관리
+
+### 7. pickyglobal.com 관련
+- pickyglobal.com은 별도 그누보드 사이트 (origin IP 222.122.39.40)
+- **절대 Vercel 연결/리다이렉트 금지** (MEMORY.md 참고)
+- 쇼핑몰 관련 기능은 pickyglobal.com 어드민에서만 관리
