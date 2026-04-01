@@ -152,3 +152,35 @@ export const faqQueries = {
     answer
   }`,
 };
+
+// Banner Queries
+export const bannerQueries = {
+  activeBanners: `*[_type == "banner" && isActive == true &&
+    (startDate == null || startDate <= now()) &&
+    (endDate == null || endDate >= now())] | order(order asc) {
+    _id, title, altText, linkUrl, order,
+    desktopImage { asset-> { _id, url } },
+    mobileImage { asset-> { _id, url } }
+  }`,
+};
+
+// Inquiry Queries
+export const inquiryQueries = {
+  all: `*[_type == "inquiry"] | order(submittedAt desc) {
+    _id, inquiryType, name, phone, email, company, eventName, eventDate,
+    message, status, memo, submittedAt, language
+  }`,
+};
+
+// Event Queries
+export const eventQueries = {
+  activeEvents: `*[_type == "event" && isActive == true &&
+    startDate <= now() && endDate >= now()] | order(order asc) {
+    _id, title, description, linkUrl, startDate, endDate,
+    image { asset-> { _id, url } }
+  }`,
+  allEvents: `*[_type == "event"] | order(startDate desc) {
+    _id, title, description, linkUrl, isActive, startDate, endDate, order,
+    image { asset-> { _id, url } }
+  }`,
+};

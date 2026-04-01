@@ -39,18 +39,29 @@ function isAuthorized(request: Request): boolean {
 }
 
 export const POST: APIRoute = async ({ request }) => {
-  if (!isAuthorized(request)) {
-    return unauthorized();
-  }
-
   const contentType = request.headers.get('content-type') || '';
 
   try {
-    const client = getClient();
-
-    // Handle JSON actions
     const body = await request.json();
     const { action, ...params } = body;
+
+    // Allow public inquiry submissions without auth
+    if (action === 'submitInquiry') {
+      const client = getClient();
+      const result = await client.create({
+        _type: 'inquiry',
+        ...params.data,
+        submittedAt: new Date().toISOString(),
+        status: '대기',
+      });
+      return jsonResponse(result);
+    }
+
+    if (!isAuthorized(request)) {
+      return unauthorized();
+    }
+
+    const client = getClient();
 
     switch (action) {
       case 'fetch': {
