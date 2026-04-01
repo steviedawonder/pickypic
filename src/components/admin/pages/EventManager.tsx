@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { colors, s } from '../shared/styles';
-import { fetchEvents, createEvent, updateEvent, deleteEvent, uploadImage as uploadImageAsset } from '../adminClient';
+import { fetchEvents, createEvent, updateEvent, deleteEvent, uploadImage as uploadImageAsset, triggerRebuild } from '../adminClient';
 
 function EventManager() {
   const [events, setEvents] = useState<any[]>([]);
@@ -93,6 +93,7 @@ function EventManager() {
       }
       resetForm();
       load();
+      triggerRebuild();
       alert(wasEditing ? '이벤트가 수정되었습니다.' : '이벤트가 추가되었습니다.');
     } catch (err: any) {
       alert('저장 실패: ' + err.message);
@@ -104,6 +105,7 @@ function EventManager() {
       try {
         await deleteEvent(id);
         load();
+        triggerRebuild();
       } catch (e) {
         alert('삭제에 실패했습니다.');
       }
@@ -114,6 +116,7 @@ function EventManager() {
     try {
       await updateEvent(id, { isActive: !current });
       load();
+      triggerRebuild();
     } catch (e) {
       alert('상태 변경에 실패했습니다.');
     }

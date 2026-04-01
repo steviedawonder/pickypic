@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { colors, s } from '../shared/styles';
-import { fetchDownloadFiles, createDownloadFile, updateDownloadFile, deleteDownloadFile, uploadFile } from '../adminClient';
+import { fetchDownloadFiles, createDownloadFile, updateDownloadFile, deleteDownloadFile, uploadFile, triggerRebuild } from '../adminClient';
 
 function DownloadManager() {
   const [files, setFiles] = useState<any[]>([]);
@@ -62,6 +62,7 @@ function DownloadManager() {
       setForm({ displayName: '', category: 'product', order: 0, linkedProducts: [] });
       e.target.value = '';
       load();
+      triggerRebuild();
       alert('파일이 등록되었습니다!');
     } catch (err: any) {
       alert('업로드 실패: ' + err.message);
@@ -74,6 +75,7 @@ function DownloadManager() {
     try {
       await updateDownloadFile(id, { isActive: !current });
       load();
+      triggerRebuild();
     } catch (e) {
       alert('상태 변경에 실패했습니다.');
     }
@@ -84,6 +86,7 @@ function DownloadManager() {
       try {
         await deleteDownloadFile(id);
         load();
+        triggerRebuild();
       } catch (e) {
         alert('삭제에 실패했습니다.');
       }

@@ -6,7 +6,7 @@ import { htmlToPortableText, portableTextToHtml } from '../shared/portableText';
 import {
   fetchCategories, fetchBlogPost, fetchBlogTemplates,
   createBlogPost, updateBlogPost, createBlogTemplate, deleteBlogTemplate,
-  uploadImage,
+  uploadImage, triggerRebuild,
 } from '../adminClient';
 import RichTextEditor from './RichTextEditor';
 
@@ -103,6 +103,7 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
         if (created?._id) setCurrentPostId(created._id);
       }
 
+      triggerRebuild();
       if (publish) {
         showToast('발행되었습니다!');
         setTimeout(() => onNavigate('blogs'), 1000);

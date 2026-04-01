@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { colors, s } from '../shared/styles';
-import { fetchBlogPosts, deleteBlogPost } from '../adminClient';
+import { fetchBlogPosts, deleteBlogPost, triggerRebuild } from '../adminClient';
 
 export default function BlogList({ onNavigate }: { onNavigate: (page: string, id?: string) => void }) {
   const [posts, setPosts] = useState<any[]>([]);
@@ -18,6 +18,7 @@ export default function BlogList({ onNavigate }: { onNavigate: (page: string, id
       try {
         await deleteBlogPost(id);
         load();
+        triggerRebuild();
       } catch (e) {
         alert('삭제에 실패했습니다.');
       }

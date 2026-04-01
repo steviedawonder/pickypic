@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { colors, s } from '../shared/styles';
-import { fetchPortfolioItems, createPortfolioItem, deletePortfolioItem, uploadImage } from '../adminClient';
+import { fetchPortfolioItems, createPortfolioItem, deletePortfolioItem, uploadImage, triggerRebuild } from '../adminClient';
 import { portfolioItems as localPortfolioItems } from '../../../data/portfolio';
 
 function PortfolioManager() {
@@ -45,6 +45,7 @@ function PortfolioManager() {
       setForm({ title: '', category: '', client: '' });
       e.target.value = '';
       load();
+      triggerRebuild();
       alert('포트폴리오가 추가되었습니다!');
     } catch (err: any) {
       alert('업로드 실패: ' + err.message);
@@ -58,6 +59,7 @@ function PortfolioManager() {
       try {
         await deletePortfolioItem(id);
         load();
+        triggerRebuild();
       } catch (e) {
         alert('삭제에 실패했습니다.');
       }

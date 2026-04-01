@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { colors, s } from '../shared/styles';
-import { fetchPopupBanners, createPopupBanner, updatePopupBanner, deletePopupBanner, uploadImage as uploadImageAsset } from '../adminClient';
+import { fetchPopupBanners, createPopupBanner, updatePopupBanner, deletePopupBanner, uploadImage as uploadImageAsset, triggerRebuild } from '../adminClient';
 
 function PopupManager() {
   const [banners, setBanners] = useState<any[]>([]);
@@ -30,6 +30,7 @@ function PopupManager() {
       setForm({ linkUrl: '/rental', altText: '' });
       e.target.value = '';
       load();
+      triggerRebuild();
       alert('팝업 배너가 추가되었습니다!');
     } catch (err: any) {
       alert('업로드 실패: ' + err.message);
@@ -42,6 +43,7 @@ function PopupManager() {
     try {
       await updatePopupBanner(id, { isActive: !current });
       load();
+      triggerRebuild();
     } catch (e) {
       alert('상태 변경에 실패했습니다.');
     }
@@ -52,6 +54,7 @@ function PopupManager() {
       try {
         await deletePopupBanner(id);
         load();
+        triggerRebuild();
       } catch (e) {
         alert('삭제에 실패했습니다.');
       }

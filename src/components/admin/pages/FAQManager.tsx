@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { colors, s } from '../shared/styles';
-import { fetchFAQItems, createFAQItem, updateFAQItem, deleteFAQItem } from '../adminClient';
+import { fetchFAQItems, createFAQItem, updateFAQItem, deleteFAQItem, triggerRebuild } from '../adminClient';
 
 function FAQManager() {
   const [items, setItems] = useState<any[]>([]);
@@ -26,6 +26,7 @@ function FAQManager() {
       setForm({ question: '', answer: '', page: 'home' });
       setEditId(null);
       load();
+      triggerRebuild();
     } catch (e) {
       alert('저장에 실패했습니다.');
     }
@@ -41,6 +42,7 @@ function FAQManager() {
       try {
         await deleteFAQItem(id);
         load();
+        triggerRebuild();
       } catch (e) {
         alert('삭제에 실패했습니다.');
       }
