@@ -66,6 +66,25 @@ export const POST: APIRoute = async ({ request }) => {
       return jsonResponse(result);
     }
 
+    // Allow public collaboration submissions without auth
+    if (action === 'submitCollaboration') {
+      const allowed = ['collaborationType', 'eventName', 'companyName', 'contactName', 'contactPhone', 'contactEmail', 'installLocation', 'eventSchedule', 'removalSchedule', 'boothType', 'wrapping', 'shootingType', 'additionalMessage'];
+      const sanitized: Record<string, unknown> = {};
+      for (const key of allowed) {
+        if (params.data?.[key] !== undefined) {
+          sanitized[key] = String(params.data[key]).slice(0, 2000);
+        }
+      }
+      const client = getClient();
+      const result = await client.create({
+        _type: 'collaborationRequest',
+        ...sanitized,
+        status: 'pending',
+        submittedAt: new Date().toISOString(),
+      });
+      return jsonResponse(result);
+    }
+
     // All other actions require HMAC token auth
     if (!(await isAuthorized(request))) {
       return unauthorized();

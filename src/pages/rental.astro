@@ -621,6 +621,31 @@ const rentalProducts = [
         const templateId = form.dataset.emailjsTemplate!;
         const publicKey = form.dataset.emailjsKey!;
         await emailjs.default.send(serviceId, templateId, templateParams, publicKey);
+
+        // Sanity에도 저장 (서버 API 경유, 토큰 노출 없음)
+        try {
+          await fetch('/api/sanity', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'submitInquiry',
+              data: {
+                inquiryType: '렌탈문의',
+                name: templateParams.contact_name,
+                phone: templateParams.contact_phone,
+                email: templateParams.contact_email,
+                company: templateParams.company_name,
+                eventName: templateParams.event_name,
+                eventDate: templateParams.event_schedule,
+                message: `설치장소: ${templateParams.install_location}\n부스타입: ${templateParams.booth_type}\n래핑: ${templateParams.wrapping}\n촬영: ${templateParams.shooting_type}\n철거: ${templateParams.removal_schedule}\n추가메시지: ${templateParams.additional_message}`,
+                language: document.documentElement.lang || 'ko',
+              },
+            }),
+          });
+        } catch (sanityErr) {
+          console.error('Sanity save error:', sanityErr);
+        }
+
         alert(getT('validation.success'));
         form.reset();
       } catch (error) {

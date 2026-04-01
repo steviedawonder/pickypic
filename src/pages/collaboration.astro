@@ -302,33 +302,29 @@ const emailjsPublicKey = import.meta.env.PUBLIC_EMAILJS_PUBLIC_KEY || 'DiKfjM0kS
         const publicKey = form.dataset.emailjsKey!;
         await emailjs.default.send(serviceId, templateId, templateParams, publicKey);
 
-        // Sanity에도 저장
+        // Sanity에도 저장 (서버 API 경유, 토큰 노출 없음)
         try {
-          const { createClient } = await import('@sanity/client');
-          const client = createClient({
-            projectId: '7b9lcco4',
-            dataset: 'production',
-            apiVersion: '2024-01-01',
-            useCdn: false,
-            token: 'skrKYET4T3eI3gjxAn1QSq7D7Xr1QUrItYlZJ4raBKET6BE2LeMJlYbvgusk36LnlL0hQH0kJZ2HDYTPffdDSuecTjc9eCzlhuLL2MKFlUaV406LPblIcWDn7Gms3sb4OHoZWDdpKx91USwYOmqexS2VPgjQOOkLm3VKmGozcKAs35JqaIY2',
-          });
-          await client.create({
-            _type: 'collaborationRequest',
-            collaborationType: templateParams.collaboration_type,
-            eventName: templateParams.event_name,
-            companyName: templateParams.company_name,
-            contactName: templateParams.contact_name,
-            contactPhone: templateParams.contact_phone,
-            contactEmail: templateParams.contact_email,
-            installLocation: templateParams.install_location,
-            eventSchedule: templateParams.event_schedule,
-            removalSchedule: templateParams.removal_schedule,
-            boothType: templateParams.booth_type,
-            wrapping: templateParams.wrapping,
-            shootingType: templateParams.shooting_type,
-            additionalMessage: templateParams.additional_message,
-            status: 'pending',
-            submittedAt: new Date().toISOString(),
+          await fetch('/api/sanity', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'submitCollaboration',
+              data: {
+                collaborationType: templateParams.collaboration_type,
+                eventName: templateParams.event_name,
+                companyName: templateParams.company_name,
+                contactName: templateParams.contact_name,
+                contactPhone: templateParams.contact_phone,
+                contactEmail: templateParams.contact_email,
+                installLocation: templateParams.install_location,
+                eventSchedule: templateParams.event_schedule,
+                removalSchedule: templateParams.removal_schedule,
+                boothType: templateParams.booth_type,
+                wrapping: templateParams.wrapping,
+                shootingType: templateParams.shooting_type,
+                additionalMessage: templateParams.additional_message,
+              },
+            }),
           });
         } catch (sanityErr) {
           console.error('Sanity save error:', sanityErr);
