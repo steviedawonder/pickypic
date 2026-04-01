@@ -33,11 +33,15 @@ export const s = {
 export const navItems = [
   { id: 'dashboard', icon: '📊', label: '대시보드' },
   { id: 'collaboration', icon: '🤝', label: '협업신청 관리' },
+  { id: 'inquiry', icon: '📩', label: '문의 관리' },
   { id: 'blogs', icon: '📝', label: '글 관리' },
   { id: 'categories', icon: '📁', label: '카테고리' },
   { id: 'portfolio', icon: '📸', label: '포트폴리오' },
   { id: 'faq', icon: '❓', label: 'FAQ 관리' },
   { id: 'popup', icon: '🖼️', label: '팝업 관리' },
+  { id: 'banner', icon: '🎨', label: '배너 관리' },
+  { id: 'event', icon: '🎉', label: '이벤트 관리' },
   { id: 'downloads', icon: '📥', label: '다운로드 파일' },
+  { id: 'footer', icon: '🏢', label: 'Footer 정보' },
   { id: 'settings', icon: '⚙️', label: '사이트 설정' },
 ];

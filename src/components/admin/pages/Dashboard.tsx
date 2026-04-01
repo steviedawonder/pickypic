@@ -1,15 +1,28 @@
 import { useState, useEffect } from 'react';
 import { colors, s } from '../shared/styles';
-import { fetchDashboardStats, fetchBlogPosts } from '../adminClient';
+import { fetchDashboardStats, fetchBlogPosts, fetchInquiries } from '../adminClient';
 
 export default function Dashboard({ onNavigate }: { onNavigate: (page: string) => void }) {
   const [stats, setStats] = useState<any>(null);
   const [posts, setPosts] = useState<any[]>([]);
+  const [inquiries, setInquiries] = useState<any[]>([]);
 
   useEffect(() => {
     fetchDashboardStats().then(setStats).catch(() => {});
     fetchBlogPosts().then(setPosts).catch(() => {});
+    fetchInquiries().then(setInquiries).catch(() => {});
   }, []);
+
+  const inquiryStatusBadge = (status: string) => {
+    const map: Record<string, { bg: string; color: string }> = {
+      '대기': { bg: '#fef9c3', color: colors.orange },
+      '확인': { bg: '#dbeafe', color: colors.blue },
+      '답변완료': { bg: '#dcfce7', color: colors.green },
+      '보류': { bg: '#f3f4f6', color: '#6b7280' },
+    };
+    const st = map[status] || map['대기'];
+    return <span style={{ ...s.badge, background: st.bg, color: st.color }}>{status}</span>;
+  };
 
   return (
     <div>
@@ -17,8 +30,8 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
         <h1 style={s.title}>대시보드</h1>
       </div>
 
-      {/* Stat Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(120px, 1fr))', gap: 12, marginBottom: 24 }}>
+      {/* Stat Cards - Row 1: Content */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(120px, 1fr))', gap: 12, marginBottom: 12 }}>
         {[
           { icon: '📄', label: '전체 글', value: stats?.totalPosts ?? '-', color: colors.text },
           { icon: '✅', label: '발행됨', value: stats?.published ?? '-', color: colors.green },
@@ -33,7 +46,23 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(240px, 1fr)', gap: 12 }}>
+      {/* Stat Cards - Row 2: Inquiry & Others */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(120px, 1fr))', gap: 12, marginBottom: 24 }}>
+        {[
+          { icon: '📩', label: '전체 문의', value: stats?.inquiryCount ?? '-', color: colors.text },
+          { icon: '🔔', label: '대기 문의', value: stats?.inquiryPending ?? '-', color: colors.orange },
+          { icon: '🎨', label: '활성 배너', value: stats?.bannerCount ?? '-', color: colors.blue },
+          { icon: '🎉', label: '활성 이벤트', value: stats?.eventCount ?? '-', color: colors.green },
+        ].map((item, i) => (
+          <div key={i} style={s.statCard}>
+            <div style={{ fontSize: 22, marginBottom: 2 }}>{item.icon}</div>
+            <div style={{ fontSize: 11, color: colors.textLight, marginBottom: 2, whiteSpace: 'nowrap' }}>{item.label}</div>
+            <div style={{ fontSize: 26, fontWeight: 800, color: item.color }}>{item.value}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(240px, 1fr)', gap: 12, marginBottom: 12 }}>
         {/* Recent Posts */}
         <div style={s.card}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
@@ -94,6 +123,37 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
             ))}
           </div>
         </div>
+      </div>
+
+      {/* Recent Inquiries */}
+      <div style={s.card}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <h2 style={{ fontSize: 16, fontWeight: 700 }}>최근 문의</h2>
+          <button onClick={() => onNavigate('inquiry')} style={{ ...s.btn, ...s.btnOutline, padding: '6px 14px', fontSize: 12 }}>전체 보기 →</button>
+        </div>
+        <table style={s.table}>
+          <thead>
+            <tr>
+              <th style={s.th}>이름</th>
+              <th style={s.th}>문의유형</th>
+              <th style={s.th}>상태</th>
+              <th style={s.th}>제출일</th>
+            </tr>
+          </thead>
+          <tbody>
+            {inquiries.slice(0, 5).map((item: any) => (
+              <tr key={item._id}>
+                <td style={{ ...s.td, fontWeight: 500 }}>{item.name || '-'}</td>
+                <td style={{ ...s.td, fontSize: 12 }}>{item.inquiryType || '-'}</td>
+                <td style={s.td}>{inquiryStatusBadge(item.status)}</td>
+                <td style={{ ...s.td, color: colors.textLight, fontSize: 12 }}>
+                  {item.submittedAt ? new Date(item.submittedAt).toLocaleDateString('ko') : '-'}
+                </td>
+              </tr>
+            ))}
+            {inquiries.length === 0 && <tr><td colSpan={4} style={{ ...s.td, textAlign: 'center', color: colors.textLight }}>문의가 없습니다</td></tr>}
+          </tbody>
+        </table>
       </div>
     </div>
   );

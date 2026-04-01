@@ -226,15 +226,62 @@ export async function uploadFile(file: File) {
   return sanityUpload('uploadFile', file);
 }
 
+// ── Banner ──
+export async function fetchBanners() {
+  return sanityFetch(`*[_type == "banner"] | order(order asc) {
+    _id, title, altText, linkUrl, isActive, order, startDate, endDate,
+    desktopImage { asset-> { _id, url } },
+    mobileImage { asset-> { _id, url } }
+  }`);
+}
+export async function createBanner(data: any) { return sanityCreate({ _type: 'banner', ...data }); }
+export async function updateBanner(id: string, data: any) { return sanityUpdate(id, data); }
+export async function deleteBanner(id: string) { return sanityDelete(id); }
+
+// ── Inquiry ──
+export async function fetchInquiries() {
+  return sanityFetch(`*[_type == "inquiry"] | order(submittedAt desc) {
+    _id, inquiryType, name, phone, email, company, eventName, eventDate,
+    message, status, memo, submittedAt, language
+  }`);
+}
+export async function updateInquiry(id: string, data: any) { return sanityUpdate(id, data); }
+export async function deleteInquiry(id: string) { return sanityDelete(id); }
+
+// ── Event ──
+export async function fetchEvents() {
+  return sanityFetch(`*[_type == "event"] | order(startDate desc) {
+    _id, title, description, linkUrl, isActive, startDate, endDate, order,
+    image { asset-> { _id, url } }
+  }`);
+}
+export async function createEvent(data: any) { return sanityCreate({ _type: 'event', ...data }); }
+export async function updateEvent(id: string, data: any) { return sanityUpdate(id, data); }
+export async function deleteEvent(id: string) { return sanityDelete(id); }
+
+// ── Site Settings (footer) ──
+export async function fetchSiteSettings() {
+  return sanityFetch(`*[_type == "siteSettings"][0] {
+    _id, defaultSeoTitle, defaultSeoDescription, analyticsUrl,
+    companyName, businessNumber, address, phone, email, partnerEmail,
+    kakaoChannel, kakaoUrl, instagramOfficial, instagramGlobal, instagramSg, naverStoreUrl
+  }`);
+}
+export async function updateSiteSettings(id: string, data: any) { return sanityUpdate(id, data); }
+
 // ── Dashboard Stats ──
 export async function fetchDashboardStats() {
-  const [totalPosts, published, drafts, categories, portfolioCount, faqCount] = await Promise.all([
+  const [totalPosts, published, drafts, categories, portfolioCount, faqCount, inquiryCount, inquiryPending, bannerCount, eventCount] = await Promise.all([
     sanityFetch(`count(*[_type == "blogPost"])`),
     sanityFetch(`count(*[_type == "blogPost" && publishedAt != null])`),
     sanityFetch(`count(*[_type == "blogPost" && publishedAt == null])`),
     sanityFetch(`*[_type == "blogCategory"] { title, "count": count(*[_type == "blogPost" && references(^._id)]) }`),
     sanityFetch(`count(*[_type == "portfolio"])`),
     sanityFetch(`count(*[_type == "faqItem"])`),
+    sanityFetch(`count(*[_type == "inquiry"])`),
+    sanityFetch(`count(*[_type == "inquiry" && status == "대기"])`),
+    sanityFetch(`count(*[_type == "banner" && isActive == true])`),
+    sanityFetch(`count(*[_type == "event" && isActive == true])`),
   ]);
-  return { totalPosts, published, drafts, categories, portfolioCount, faqCount };
+  return { totalPosts, published, drafts, categories, portfolioCount, faqCount, inquiryCount, inquiryPending, bannerCount, eventCount };
 }

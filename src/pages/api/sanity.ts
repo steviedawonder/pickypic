@@ -3,7 +3,7 @@ import { createClient } from '@sanity/client';
 
 export const prerender = false;
 
-const ADMIN_PASSWORD = import.meta.env.ADMIN_PASSWORD || 'pickypic2020';
+const ADMIN_PASSWORD = import.meta.env.ADMIN_PASSWORD || '';
 
 function getClient() {
   const token = import.meta.env.SANITY_API_TOKEN;

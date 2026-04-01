@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 
 export const prerender = false;
 
-const ADMIN_PASSWORD = import.meta.env.ADMIN_PASSWORD || 'pickypic2020';
+const ADMIN_PASSWORD = import.meta.env.ADMIN_PASSWORD || '';
 
 // Simple HMAC-like token: base64(timestamp:hash)
 // We use a simple hash approach since Web Crypto is available in Astro SSR

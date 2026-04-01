@@ -1,15 +1,43 @@
 ---
-const desktopSlides = [
+import { sanityClient, bannerQueries } from '../../sanity/client';
+
+// Fetch active banners from Sanity at build time
+let sanityBanners: any[] = [];
+try {
+  sanityBanners = await sanityClient.fetch(bannerQueries.activeBanners);
+} catch (e) {
+  // Fallback to hardcoded if Sanity fetch fails
+}
+
+const fallbackDesktop = [
   '/images/hero/main-1.jpg',
   '/images/hero/main-2.jpg',
   '/images/hero/main-3.jpg',
 ];
 
-const mobileSlides = [
+const fallbackMobile = [
   '/images/hero/main-mo1.jpg',
   '/images/hero/main-mo2.jpg',
   '/images/hero/main-mo3.jpg',
 ];
+
+const hasSanityBanners = sanityBanners && sanityBanners.length > 0;
+
+const desktopSlides = hasSanityBanners
+  ? sanityBanners.map((b: any) => ({
+      src: b.desktopImage?.asset?.url,
+      alt: b.altText || '피키픽 포토부스',
+      linkUrl: b.linkUrl || null,
+    }))
+  : fallbackDesktop.map((src, i) => ({ src, alt: `피키픽 포토부스 ${i + 1}`, linkUrl: null }));
+
+const mobileSlides = hasSanityBanners
+  ? sanityBanners.map((b: any) => ({
+      src: b.mobileImage?.asset?.url || b.desktopImage?.asset?.url,
+      alt: b.altText || '피키픽 포토부스 모바일',
+      linkUrl: b.linkUrl || null,
+    }))
+  : fallbackMobile.map((src, i) => ({ src, alt: `피키픽 포토부스 모바일 ${i + 1}`, linkUrl: null }));
 ---
 
 <section class="hero-section" style="background-color: #f7f7f5;">
@@ -17,9 +45,15 @@ const mobileSlides = [
   <div class="hero-desktop">
     <div class="hero-carousel" id="desktop-carousel">
       <div class="carousel-track" id="desktop-track">
-        {desktopSlides.map((src, i) => (
+        {desktopSlides.map((slide, i) => (
           <div class="carousel-slide" data-index={i}>
-            <img src={src} alt={`피키픽 포토부스 ${i + 1}`} loading={i === 0 ? 'eager' : 'lazy'} />
+            {slide.linkUrl ? (
+              <a href={slide.linkUrl}>
+                <img src={slide.src} alt={slide.alt} loading={i === 0 ? 'eager' : 'lazy'} />
+              </a>
+            ) : (
+              <img src={slide.src} alt={slide.alt} loading={i === 0 ? 'eager' : 'lazy'} />
+            )}
           </div>
         ))}
       </div>
@@ -51,9 +85,15 @@ const mobileSlides = [
   <div class="hero-mobile">
     <div class="hero-carousel" id="mobile-carousel">
       <div class="carousel-track" id="mobile-track">
-        {mobileSlides.map((src, i) => (
+        {mobileSlides.map((slide, i) => (
           <div class="carousel-slide" data-index={i}>
-            <img src={src} alt={`피키픽 포토부스 모바일 ${i + 1}`} loading={i === 0 ? 'eager' : 'lazy'} />
+            {slide.linkUrl ? (
+              <a href={slide.linkUrl}>
+                <img src={slide.src} alt={slide.alt} loading={i === 0 ? 'eager' : 'lazy'} />
+              </a>
+            ) : (
+              <img src={slide.src} alt={slide.alt} loading={i === 0 ? 'eager' : 'lazy'} />
+            )}
           </div>
         ))}
       </div>
@@ -388,8 +428,10 @@ const mobileSlides = [
   }
 
   function initAllCarousels() {
-    initCarousel('desktop-track', 'desktop-prev', 'desktop-next', 3);
-    initCarousel('mobile-track', 'mobile-prev', 'mobile-next', 3);
+    const desktopCount = document.getElementById('desktop-track')?.querySelectorAll('.carousel-slide').length || 3;
+    const mobileCount = document.getElementById('mobile-track')?.querySelectorAll('.carousel-slide').length || 3;
+    initCarousel('desktop-track', 'desktop-prev', 'desktop-next', desktopCount);
+    initCarousel('mobile-track', 'mobile-prev', 'mobile-next', mobileCount);
   }
 
   document.addEventListener('DOMContentLoaded', initAllCarousels);
