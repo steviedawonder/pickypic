@@ -399,6 +399,16 @@ const rentalProducts = [
 
   <!-- Rental FAQ Section -->
   <FAQSchema items={rentalFAQ} title="렌탈 자주 묻는 질문" />
+
+  <!-- 문의 완료 모달 -->
+  <div id="inquiry-result-overlay" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40" style="display:none;">
+    <div id="inquiry-result-modal" class="relative bg-white rounded-2xl shadow-2xl w-[90vw] max-w-[400px] p-8 text-center">
+      <p id="inquiry-result-message" class="text-base text-gray-800 whitespace-pre-line leading-relaxed"></p>
+      <button id="inquiry-result-confirm" class="mt-6 px-8 py-2.5 bg-black text-white rounded-full text-sm font-medium hover:bg-gray-800 transition-colors cursor-pointer">
+        확인
+      </button>
+    </div>
+  </div>
 </BaseLayout>
 
 <style>
@@ -451,6 +461,20 @@ const rentalProducts = [
       },
     };
     return translations[lang]?.[key] ?? translations['ko'][key] ?? key;
+  }
+
+  function showInquiryModal(message: string) {
+    const overlay = document.getElementById('inquiry-result-overlay');
+    const msgEl = document.getElementById('inquiry-result-message');
+    const confirmBtn = document.getElementById('inquiry-result-confirm');
+    if (!overlay || !msgEl || !confirmBtn) return;
+
+    msgEl.textContent = message;
+    overlay.style.display = 'flex';
+
+    const close = () => { overlay.style.display = 'none'; };
+    confirmBtn.onclick = close;
+    overlay.onclick = (e) => { if (e.target === overlay) close(); };
   }
 
   function initRentalPage() {
@@ -648,11 +672,11 @@ const rentalProducts = [
           console.error('Sanity save error:', sanityErr);
         }
 
-        alert(getT('validation.success'));
+        showInquiryModal(getT('validation.success'));
         form.reset();
       } catch (error) {
         console.error('EmailJS Error:', error);
-        alert(getT('validation.error'));
+        showInquiryModal(getT('validation.error'));
       } finally {
         if (submitBtn) {
           submitBtn.disabled = false;
