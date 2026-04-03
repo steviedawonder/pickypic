@@ -53,13 +53,31 @@ import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
   <article class="about-content">
     <section class="about-intro gs-fade-up">
       <nav class="about-buttons" aria-label="회사 관련 링크">
-        <a href="#" class="about-btn" download data-i18n="about.btn_company">회사소개</a>
+        <a href="/files/company/PICKYPIC_회사소개서_KR.pdf" class="about-btn" download id="company-pdf-btn" data-i18n="about.btn_company">회사소개</a>
         <a href="/products" class="about-btn" data-i18n="about.btn_products">제품소개</a>
         <a href="/collaboration" class="about-btn" data-i18n="about.btn_partnership">협업제안</a>
       </nav>
     </section>
   </article>
 </BaseLayout>
+
+<script>
+  import { getCurrentLang } from '../i18n/i18n';
+
+  const pdfMap: Record<string, string> = {
+    ko: '/files/company/PICKYPIC_회사소개서_KR.pdf',
+    en: '/files/company/PICKYPIC_Company_Introduction_EN.pdf',
+    jp: '/files/company/PICKYPIC_Company_Introduction_JP.pdf',
+  };
+
+  function updatePdfLink() {
+    const btn = document.getElementById('company-pdf-btn') as HTMLAnchorElement | null;
+    if (btn) btn.href = pdfMap[getCurrentLang()] || pdfMap.ko;
+  }
+
+  updatePdfLink();
+  document.addEventListener('langChanged', updatePdfLink);
+</script>
 
 <style>
   /* Hero */

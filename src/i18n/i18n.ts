@@ -19,6 +19,7 @@ export function setLang(lang: Lang): void {
   updateLangSelector(lang);
   updateShopVisibility(lang);
   document.documentElement.lang = lang === 'jp' ? 'ja' : lang;
+  document.dispatchEvent(new CustomEvent('langChanged', { detail: lang }));
 }
 
 export function t(key: string, lang?: Lang): string {
