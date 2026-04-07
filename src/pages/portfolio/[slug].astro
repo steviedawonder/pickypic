@@ -1,0 +1,249 @@
+---
+export const prerender = false;
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import { createClient } from '@sanity/client';
+import { toHTML } from '@portabletext/to-html';
+
+const sanityClient = createClient({
+  projectId: '7b9lcco4',
+  dataset: 'production',
+  useCdn: false,
+  apiVersion: '2024-01-01',
+});
+
+const { slug } = Astro.params;
+
+const item = await sanityClient.fetch(`*[_type == "portfolio" && slug.current == $slug && isVisible == true][0] {
+  _id,
+  title,
+  slug,
+  category,
+  client,
+  description,
+  thumbnail {
+    asset-> { _id, url },
+    alt
+  },
+  images[] {
+    ...,
+    asset-> { _id, url }
+  },
+  body[] {
+    ...,
+    _type == "image" => {
+      ...,
+      asset-> { _id, url }
+    }
+  },
+  seoTitle,
+  seoDescription,
+  focusKeyword,
+  "relatedItems": *[_type == "portfolio" && category == ^.category && _id != ^._id && isVisible == true] | order(order desc) [0..2] {
+    _id, title, slug, category,
+    thumbnail { asset-> { url }, alt }
+  }
+}`, { slug });
+
+if (!item) {
+  return Astro.redirect('/portfolio');
+}
+
+// Category display names
+const categoryMap: Record<string, { ko: string; en: string }> = {
+  'modern-picky': { ko: '모던피키', en: 'Modern Picky' },
+  'classic-picky': { ko: '클래식피키', en: 'Classic Picky' },
+  'urban-picky': { ko: '어반피키', en: 'Urban Picky' },
+  'modern-mini': { ko: '모던_미니피키', en: 'Modern Mini Picky' },
+  'urban-mini': { ko: '어반_미니피키', en: 'Urban Mini Picky' },
+  'modern-retro': { ko: '모던_레트로피키', en: 'Modern Retro Picky' },
+  'urban-retro': { ko: '어반_레트로피키', en: 'Urban Retro Picky' },
+  'outdoor': { ko: '아웃도어피키', en: 'Outdoor Picky' },
+  'air': { ko: '에어피키', en: 'Air Picky' },
+};
+
+const cat = categoryMap[item.category] || { ko: item.category, en: item.category };
+
+// Render Portable Text body
+let bodyHtml = '';
+try {
+  if (item.body && Array.isArray(item.body) && item.body.length > 0) {
+    bodyHtml = toHTML(item.body, {
+      components: {
+        types: {
+          image: ({ value }: { value: any }) => {
+            let url = value.url || value.asset?.url || '';
+            if (!url && value.asset?._ref) {
+              const ref = value.asset._ref;
+              const match = ref.match(/^image-(.+)-(\w+)$/);
+              if (match) {
+                url = `https://cdn.sanity.io/images/7b9lcco4/production/${match[1]}.${match[2]}`;
+              }
+            }
+            if (!url) return '';
+            const alt = value.alt || `피키픽 포토부스 포트폴리오 — ${item.title} 행사 현장`;
+            return `<img src="${url}" alt="${alt}" style="max-width:100%;height:auto;margin:16px 0;border-radius:8px;" loading="lazy" />`;
+          },
+        },
+      },
+    });
+  }
+} catch {
+  bodyHtml = '';
+}
+
+const seoTitle = item.seoTitle || `${item.title} > 포트폴리오 | 피키픽 | 포토부스 대여 및 기업 행사 렌탈 전문`;
+const seoDescription = item.seoDescription || `${item.title} - ${cat.ko} ${cat.en}. 피키픽 포토부스 렌탈 포트폴리오.`;
+const ogImage = item.thumbnail?.asset?.url || item.images?.[0]?.asset?.url || '';
+---
+
+<BaseLayout
+  title={seoTitle}
+  description={seoDescription}
+>
+  <BreadcrumbSchema items={[
+    { name: '홈', href: '/' },
+    { name: '포트폴리오', href: '/portfolio' },
+    { name: item.title, href: `/portfolio/${item.slug?.current}` },
+  ]} />
+
+  {/* Open Graph image */}
+  {ogImage && (
+    <Fragment>
+      <meta slot="head" property="og:image" content={ogImage} />
+      <meta slot="head" name="twitter:image" content={ogImage} />
+    </Fragment>
+  )}
+
+  {/* Focus keyword meta */}
+  {item.focusKeyword && (
+    <meta slot="head" name="keywords" content={item.focusKeyword} />
+  )}
+
+  <!-- Detail Content -->
+  <section class="pt-14 pb-6 lg:pt-20 lg:pb-10 bg-white">
+    <div class="mx-auto max-w-3xl px-6 lg:px-8">
+      <!-- Title & Category Header -->
+      <div class="text-center mb-8 lg:mb-12">
+        <h1 class="text-2xl lg:text-4xl font-bold text-primary">{item.title}</h1>
+        <p class="text-lg lg:text-xl font-semibold text-secondary mt-2">{cat.ko} · {cat.en}</p>
+      </div>
+
+      <!-- Detail Images with captions -->
+      <div class="space-y-6 lg:space-y-8">
+        {item.images && item.images.map((img: any, i: number) => (
+          <figure class="m-0">
+            <img
+              src={img.asset?.url}
+              alt={img.alt || `${item.title} 포토부스 렌탈 이미지 ${i + 1}`}
+              class="w-full rounded-lg"
+              loading={i === 0 ? 'eager' : 'lazy'}
+              width="800"
+              height="600"
+            />
+            {img.caption && (
+              <figcaption class="text-center text-sm text-secondary mt-2 italic">
+                {img.caption}
+              </figcaption>
+            )}
+          </figure>
+        ))}
+      </div>
+
+      <!-- Description -->
+      <div class="mt-8 lg:mt-12 text-center">
+        {item.description && (
+          <p class="text-base lg:text-lg font-bold text-primary">{item.description}</p>
+        )}
+      </div>
+
+      <!-- Body Content (Rich Text) -->
+      {bodyHtml && (
+        <div class="mt-10 lg:mt-14 pt-8 border-t border-border">
+          <div
+            class="prose prose-lg max-w-none [&>p]:text-secondary [&>p]:leading-relaxed [&>p]:mb-6 [&>h2]:text-primary [&>h2]:font-bold [&>h2]:mt-10 [&>h2]:mb-4 [&>h3]:text-primary [&>h3]:font-semibold [&>h3]:mt-8 [&>h3]:mb-3 [&>ul]:list-disc [&>ul]:pl-6 [&>ol]:list-decimal [&>ol]:pl-6"
+            set:html={bodyHtml}
+          />
+        </div>
+      )}
+
+      <!-- Fixed CTA Buttons -->
+      <div class="mt-10 lg:mt-14 pt-8 border-t border-border text-center">
+        <p class="text-xs lg:text-sm text-secondary mb-4" data-i18n="portfolio.inquiry_guide">하단 문의하기 클릭 시, 바로 비용 문의가 가능합니다.</p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <a
+            href="/rental"
+            class="inline-block px-8 py-3 lg:px-10 lg:py-4 bg-primary text-white text-sm lg:text-base font-semibold rounded-lg hover:bg-primary/90 transition-colors duration-300"
+            data-i18n="portfolio.inquiry_button"
+          >
+            이 포트폴리오와 동일한 기기 렌탈 비용 문의하기
+          </a>
+          <a
+            href="https://pf.kakao.com/_pickypic"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center justify-center gap-2 px-8 py-3 lg:px-10 lg:py-4 bg-[#FEE500] text-[#3C1E1E] text-sm lg:text-base font-semibold rounded-lg hover:bg-[#FDD835] transition-colors duration-300"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#3C1E1E"><path d="M12 3C6.48 3 2 6.58 2 10.94c0 2.8 1.86 5.27 4.66 6.67-.15.53-.96 3.42-.99 3.64 0 0-.02.17.09.23.11.07.24.02.24.02.31-.04 3.65-2.4 4.22-2.81.58.08 1.17.13 1.78.13 5.52 0 10-3.58 10-7.88S17.52 3 12 3z"/></svg>
+            카카오톡 1:1 상담
+          </a>
+        </div>
+      </div>
+
+      <!-- Related Portfolios (Same Category) -->
+      {item.relatedItems && item.relatedItems.length > 0 && (
+        <div class="mt-12 lg:mt-16 pt-8 border-t border-border">
+          <h4 class="text-lg font-bold text-primary mb-6 text-center">같은 기기의 다른 포트폴리오</h4>
+          <div class="grid grid-cols-3 gap-4">
+            {item.relatedItems.map((rel: any) => (
+              <a href={`/portfolio/${rel.slug?.current}`} class="group block">
+                {rel.thumbnail?.asset?.url ? (
+                  <img
+                    src={rel.thumbnail.asset.url}
+                    alt={rel.thumbnail?.alt || rel.title}
+                    class="w-full aspect-[5/6] object-cover rounded-lg group-hover:opacity-80 transition-opacity"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div class="w-full aspect-[5/6] bg-gray-100 rounded-lg flex items-center justify-center text-sm text-secondary">No Image</div>
+                )}
+                <p class="mt-2 text-xs lg:text-sm font-medium text-primary truncate">{rel.title}</p>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <!-- Back to list -->
+      <div class="mt-12 lg:mt-16 border-t border-border pt-6 text-center">
+        <a
+          href="/portfolio"
+          class="inline-flex items-center justify-center px-8 py-3 border border-border rounded-lg text-sm font-medium text-primary hover:bg-gray-50 transition-colors duration-300"
+        >
+          목록
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Structured Data -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    "name": item.title,
+    "description": seoDescription,
+    "image": item.images?.map((img: any) => img.asset?.url).filter(Boolean) || [],
+    "author": {
+      "@type": "Organization",
+      "name": "PICKYPIC",
+      "url": "https://picky-pic.com"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "PICKYPIC"
+    },
+    "keywords": item.focusKeyword || `${cat.ko} 포토부스 렌탈`,
+    "url": `https://picky-pic.com/portfolio/${item.slug?.current}`
+  })} />
+</BaseLayout>

@@ -1,6 +1,8 @@
 // Admin client - all Sanity mutations go through /api/sanity server-side proxy.
 // The Sanity API token is never exposed to the browser.
 
+import { compressImage } from './shared/imageUtils';
+
 const AUTH_STORAGE_KEY = 'pickypic-admin-auth';
 
 function getAuthHeaders(): Record<string, string> {
@@ -119,9 +121,30 @@ export async function deleteBlogTemplate(id: string) {
 // ── Portfolio ──
 export async function fetchPortfolioItems() {
   return sanityFetch(`*[_type == "portfolio"] | order(order desc) {
-    _id, title, category, client, order, isVisible,
-    image { asset-> { _id, url } }
+    _id, title, slug, category, client, description, order, isVisible,
+    thumbnail { asset-> { _id, url }, alt },
+    "imageCount": count(images),
+    "hasBody": defined(body)
   }`);
+}
+
+export async function fetchPortfolioItem(id: string) {
+  return sanityFetch(`*[_type == "portfolio" && _id == $id][0] {
+    _id, title, slug, category, client, description, order, isVisible,
+    thumbnail { asset-> { _id, url }, alt },
+    images[] {
+      ...,
+      asset-> { _id, url }
+    },
+    body[] {
+      ...,
+      _type == "image" => {
+        ...,
+        asset-> { _id, url }
+      }
+    },
+    seoTitle, seoDescription, focusKeyword
+  }`, { id });
 }
 
 export async function createPortfolioItem(data: any) {
@@ -136,8 +159,17 @@ export async function deletePortfolioItem(id: string) {
   return sanityDelete(id);
 }
 
-export async function uploadImage(file: File) {
-  return sanityUpload('uploadImage', file);
+export async function uploadImage(file: File, onStatus?: (status: string) => void) {
+  // Compress image if over 1MB (client-side, canvas API)
+  let processedFile = file;
+  if (file.type.startsWith('image/') && file.type !== 'image/svg+xml' && file.size > 1 * 1024 * 1024) {
+    onStatus?.('압축 중...');
+    processedFile = await compressImage(file);
+  }
+  onStatus?.('업로드 중...');
+  const result = await sanityUpload('uploadImage', processedFile);
+  onStatus?.('');
+  return result;
 }
 
 // ── FAQ ──

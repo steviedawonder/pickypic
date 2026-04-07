@@ -1,13 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { colors, s } from '../shared/styles';
-import { fetchPortfolioItems, createPortfolioItem, deletePortfolioItem, uploadImage, triggerRebuild } from '../adminClient';
-import { portfolioItems as localPortfolioItems } from '../../../data/portfolio';
+import { fetchPortfolioItems, deletePortfolioItem, triggerRebuild } from '../adminClient';
 
-function PortfolioManager() {
+function PortfolioManager({ onNavigate }: { onNavigate: (page: string, id?: string) => void }) {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [uploading, setUploading] = useState(false);
-  const [form, setForm] = useState({ title: '', category: '', client: '' });
+  const [filter, setFilter] = useState('');
 
   const load = useCallback(() => {
     setLoading(true);
@@ -15,44 +13,6 @@ function PortfolioManager() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
-
-  const categoryOptions = [
-    { value: 'modern-picky', label: 'Modern Picky' },
-    { value: 'classic-picky', label: 'Classic Picky' },
-    { value: 'urban-picky', label: 'Urban Picky' },
-    { value: 'modern-mini', label: 'Modern Mini' },
-    { value: 'urban-mini', label: 'Urban Mini' },
-    { value: 'modern-retro', label: 'Modern Retro' },
-    { value: 'urban-retro', label: 'Urban Retro' },
-    { value: 'outdoor', label: 'Outdoor Picky' },
-    { value: 'air', label: 'Air Picky' },
-  ];
-
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !form.title || !form.category) {
-      alert('제목과 카테고리를 먼저 입력해주세요.');
-      return;
-    }
-    setUploading(true);
-    try {
-      const asset = await uploadImage(file);
-      await createPortfolioItem({
-        title: form.title, category: form.category, client: form.client,
-        image: { _type: 'image', asset: { _type: 'reference', _ref: asset._id } },
-        order: items.length, isVisible: true,
-      });
-      setForm({ title: '', category: '', client: '' });
-      e.target.value = '';
-      load();
-      triggerRebuild();
-      alert('포트폴리오가 추가되었습니다!');
-    } catch (err: any) {
-      alert('업로드 실패: ' + err.message);
-    } finally {
-      setUploading(false);
-    }
-  };
 
   const handleDelete = async (id: string, title: string) => {
     if (confirm(`"${title}" 항목을 삭제하시겠습니까?`)) {
@@ -66,77 +26,118 @@ function PortfolioManager() {
     }
   };
 
+  const filtered = filter ? items.filter(item => item.category === filter) : items;
+
+  const categoryOptions = [
+    { value: '', label: '전체' },
+    { value: 'modern-picky', label: 'Modern Picky' },
+    { value: 'classic-picky', label: 'Classic Picky' },
+    { value: 'urban-picky', label: 'Urban Picky' },
+    { value: 'modern-mini', label: 'Modern Mini' },
+    { value: 'urban-mini', label: 'Urban Mini' },
+    { value: 'modern-retro', label: 'Modern Retro' },
+    { value: 'urban-retro', label: 'Urban Retro' },
+    { value: 'outdoor', label: 'Outdoor Picky' },
+    { value: 'air', label: 'Air Picky' },
+  ];
+
   return (
     <div>
       <div style={s.header}>
-        <h1 style={s.title}>포트폴리오 관리</h1>
-        <span style={{ fontSize: 13, color: colors.textLight }}>새 항목 {items.length}개 · 기존 {localPortfolioItems.length}개</span>
-      </div>
-
-      {/* Upload Form */}
-      <div style={s.card}>
-        <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 16 }}>📸 새 포트폴리오 추가</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: 12, alignItems: 'end' }}>
-          <div>
-            <label style={s.label}>제목 *</label>
-            <input style={s.input} value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="예: Netflix Korea x PICKYPIC" />
-          </div>
-          <div>
-            <label style={s.label}>포토부스 모델 *</label>
-            <select style={s.input} value={form.category} onChange={e => setForm(p => ({ ...p, category: e.target.value }))}>
-              <option value="">선택</option>
-              {categoryOptions.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
-            </select>
-          </div>
-          <div>
-            <label style={s.label}>클라이언트</label>
-            <input style={s.input} value={form.client} onChange={e => setForm(p => ({ ...p, client: e.target.value }))} placeholder="브랜드명" />
-          </div>
-          <div>
-            <label style={{ ...s.btn, ...s.btnPrimary, display: 'inline-block', cursor: uploading ? 'wait' : 'pointer' }}>
-              {uploading ? '업로드 중...' : '이미지 선택'}
-              <input type="file" accept="image/*" onChange={handleUpload} style={{ display: 'none' }} disabled={uploading} />
-            </label>
-          </div>
+        <div>
+          <h1 style={s.title}>포트폴리오 관리</h1>
+          <span style={{ fontSize: 13, color: colors.textLight }}>총 {items.length}개</span>
         </div>
+        <button onClick={() => onNavigate('portfolio-new')} style={{ ...s.btn, ...s.btnPrimary }}>
+          + 새 포트폴리오
+        </button>
       </div>
 
-      {/* Portfolio Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
-        {loading ? <p style={{ color: colors.textLight, padding: 40 }}>로딩 중...</p> :
-          items.map((item: any) => (
-            <div key={item._id} style={{ ...s.card, padding: 0, overflow: 'hidden', position: 'relative' }}>
-              {item.image?.asset?.url && (
-                <img src={item.image.asset.url} alt={item.title} style={{ width: '100%', height: 160, objectFit: 'cover' }} />
-              )}
-              <div style={{ padding: 12 }}>
-                <p style={{ fontSize: 12, fontWeight: 600, marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</p>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ ...s.badge, background: '#f0f0f0', fontSize: 10 }}>{item.category}</span>
-                  <button onClick={() => handleDelete(item._id, item.title)} style={{ fontSize: 11, color: colors.red, background: 'none', border: 'none', cursor: 'pointer' }}>삭제</button>
-                </div>
-              </div>
-            </div>
-          ))
-        }
-      </div>
-
-      {/* Existing Local Portfolio */}
-      <div style={{ ...s.card, marginTop: 8 }}>
-        <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>📂 기존 포트폴리오 ({localPortfolioItems.length}개)</h3>
-        <p style={{ fontSize: 11, color: colors.textLight, marginBottom: 16 }}>코드에 등록된 기존 포트폴리오입니다. 수정/삭제는 코드에서 관리됩니다.</p>
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 10 }}>
-        {localPortfolioItems.map((item) => (
-          <div key={item.id} style={{ ...s.card, padding: 0, overflow: 'hidden' }}>
-            <img src={item.image} alt={item.title} style={{ width: '100%', height: 140, objectFit: 'cover' }} />
-            <div style={{ padding: 10 }}>
-              <p style={{ fontSize: 11, fontWeight: 600, marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</p>
-              <span style={{ ...s.badge, background: '#f0f0f0', fontSize: 10 }}>{item.category}</span>
-            </div>
-          </div>
+      {/* Filter */}
+      <div style={{ ...s.card, display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', padding: 16 }}>
+        {categoryOptions.map(c => (
+          <button
+            key={c.value}
+            onClick={() => setFilter(c.value)}
+            style={{
+              ...s.btn,
+              padding: '6px 14px', fontSize: 12,
+              background: filter === c.value ? colors.text : '#fff',
+              color: filter === c.value ? '#fff' : colors.text,
+              border: `1px solid ${filter === c.value ? colors.text : colors.border}`,
+            }}
+          >
+            {c.label}
+          </button>
         ))}
       </div>
+
+      {/* Table */}
+      {loading ? (
+        <p style={{ color: colors.textLight, padding: 40, textAlign: 'center' }}>로딩 중...</p>
+      ) : filtered.length === 0 ? (
+        <p style={{ color: colors.textLight, padding: 40, textAlign: 'center' }}>포트폴리오가 없습니다.</p>
+      ) : (
+        <div style={s.card}>
+          <table style={s.table}>
+            <thead>
+              <tr>
+                <th style={s.th}>썸네일</th>
+                <th style={s.th}>제목</th>
+                <th style={s.th}>카테고리</th>
+                <th style={s.th}>이미지</th>
+                <th style={s.th}>본문</th>
+                <th style={s.th}>순서</th>
+                <th style={s.th}>표시</th>
+                <th style={s.th}>관리</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((item: any) => (
+                <tr key={item._id} style={{ cursor: 'pointer' }} onClick={() => onNavigate('portfolio-edit', item._id)}>
+                  <td style={s.td}>
+                    {item.thumbnail?.asset?.url ? (
+                      <img src={item.thumbnail.asset.url} alt={item.title} style={{ width: 60, height: 45, objectFit: 'cover', borderRadius: 4 }} />
+                    ) : (
+                      <div style={{ width: 60, height: 45, background: '#f0f0f0', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: colors.textLight }}>없음</div>
+                    )}
+                  </td>
+                  <td style={{ ...s.td, fontWeight: 600, maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {item.title}
+                  </td>
+                  <td style={s.td}>
+                    <span style={{ ...s.badge, background: '#f0f0f0', fontSize: 11 }}>{item.category}</span>
+                  </td>
+                  <td style={s.td}>{item.imageCount || 0}장</td>
+                  <td style={s.td}>
+                    {item.hasBody ? (
+                      <span style={{ ...s.badge, background: '#dcfce7', color: colors.green }}>있음</span>
+                    ) : (
+                      <span style={{ ...s.badge, background: '#f0f0f0', color: colors.textLight }}>없음</span>
+                    )}
+                  </td>
+                  <td style={s.td}>{item.order}</td>
+                  <td style={s.td}>
+                    {item.isVisible ? (
+                      <span style={{ color: colors.green }}>●</span>
+                    ) : (
+                      <span style={{ color: colors.textLight }}>○</span>
+                    )}
+                  </td>
+                  <td style={s.td}>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleDelete(item._id, item.title); }}
+                      style={{ fontSize: 11, color: colors.red, background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                      삭제
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

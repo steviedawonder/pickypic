@@ -129,18 +129,21 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
   const [mainImageRef_id, setMainImageRefId] = useState('');
   const mainImageRef = useRef<HTMLInputElement>(null);
 
+  const [mainImageStatus, setMainImageStatus] = useState('');
+
   const handleMainImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setMainImageUploading(true);
     try {
-      const asset = await uploadImage(file);
+      const asset = await uploadImage(file, setMainImageStatus);
       setMainImageUrl(asset.url);
       setMainImageRefId(asset._id);
     } catch (err: any) {
       alert('이미지 업로드 실패: ' + err.message);
     } finally {
       setMainImageUploading(false);
+      setMainImageStatus('');
     }
   };
 
@@ -219,7 +222,7 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
 
               {/* Preview thumbnail */}
               <div style={{ marginBottom: 14, borderRadius: 8, overflow: 'hidden', border: `1px solid ${colors.border}`, background: '#f5f5f5' }}>
-                <img src={selectedEditorImg.src} style={{ width: '100%', display: 'block', maxHeight: 160, objectFit: 'contain' }} />
+                <img src={selectedEditorImg.src} alt="블로그 에디터 이미지 미리보기" style={{ width: '100%', display: 'block', maxHeight: 160, objectFit: 'contain' }} />
               </div>
 
               {/* Alt text */}
@@ -489,7 +492,7 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
               ) : (
                 <>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="1.5" style={{ margin: '0 auto 8px' }}><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                  <div style={{ fontSize: 12, color: colors.textLight }}>{mainImageUploading ? '업로드 중...' : '이미지 선택'}</div>
+                  <div style={{ fontSize: 12, color: colors.textLight }}>{mainImageStatus || (mainImageUploading ? '업로드 중...' : '이미지 선택')}</div>
                 </>
               )}
             </div>

@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import BlogList from './pages/BlogList';
 import BlogEditor from './pages/BlogEditor';
 import PortfolioManager from './pages/PortfolioManager';
+import PortfolioEditor from './pages/PortfolioEditor';
 import FAQManager from './pages/FAQManager';
 import CategoryManager from './pages/CategoryManager';
 import CollaborationManager from './pages/CollaborationManager';
@@ -37,7 +38,9 @@ export default function AdminApp() {
       case 'blog-edit': return <BlogEditor postId={editId} onNavigate={navigate} />;
       case 'collaboration': return <CollaborationManager />;
       case 'inquiry': return <InquiryManager />;
-      case 'portfolio': return <PortfolioManager />;
+      case 'portfolio': return <PortfolioManager onNavigate={navigate} />;
+      case 'portfolio-new': return <PortfolioEditor onNavigate={navigate} />;
+      case 'portfolio-edit': return <PortfolioEditor itemId={editId} onNavigate={navigate} />;
       case 'faq': return <FAQManager />;
       case 'popup': return <PopupManager />;
       case 'banner': return <BannerManager />;

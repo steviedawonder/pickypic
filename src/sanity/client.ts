@@ -120,27 +120,58 @@ export const portfolioQueries = {
   allItems: `*[_type == "portfolio" && isVisible == true] | order(order desc) {
     _id,
     title,
-    image {
-      asset-> {
-        _id,
-        url
-      }
+    slug,
+    thumbnail {
+      asset-> { _id, url },
+      alt
     },
     category,
-    client
+    client,
+    description,
   }`,
 
   byCategory: `*[_type == "portfolio" && isVisible == true && category == $category] | order(order desc) {
     _id,
     title,
-    image {
-      asset-> {
-        _id,
-        url
-      }
+    slug,
+    thumbnail {
+      asset-> { _id, url },
+      alt
     },
     category,
-    client
+    client,
+    description,
+  }`,
+
+  bySlug: `*[_type == "portfolio" && slug.current == $slug && isVisible == true][0] {
+    _id,
+    title,
+    slug,
+    category,
+    client,
+    description,
+    thumbnail {
+      asset-> { _id, url },
+      alt
+    },
+    images[] {
+      ...,
+      asset-> { _id, url }
+    },
+    body[] {
+      ...,
+      _type == "image" => {
+        ...,
+        asset-> { _id, url }
+      }
+    },
+    seoTitle,
+    seoDescription,
+    focusKeyword,
+    "relatedItems": *[_type == "portfolio" && category == ^.category && _id != ^._id && isVisible == true] | order(order desc) [0..2] {
+      _id, title, slug, category,
+      thumbnail { asset-> { url }, alt }
+    }
   }`,
 };
 

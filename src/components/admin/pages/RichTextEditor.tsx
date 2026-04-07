@@ -18,6 +18,9 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
   const [selectedImg, setSelectedImg] = useState<HTMLImageElement | null>(null);
   const [imgRect, setImgRect] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
 
+  // Upload status indicator
+  const [uploadStatus, setUploadStatus] = useState('');
+
   // Notify parent when image selection changes
   useEffect(() => {
     onImageSelect?.(selectedImg);
@@ -318,7 +321,7 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
     const file = e.target.files?.[0];
     if (!file) return;
     try {
-      const asset = await uploadImage(file);
+      const asset = await uploadImage(file, setUploadStatus);
       const imgUrl = asset.url;
       const altText = file.name.replace(/\.[^/.]+$/, '');
       editorRef.current?.focus();
@@ -326,6 +329,8 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
       syncContent();
     } catch (err: any) {
       alert('이미지 업로드 실패: ' + err.message);
+    } finally {
+      setUploadStatus('');
     }
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
@@ -572,12 +577,15 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
     const file = e.target.files?.[0];
     if (!file) return;
     try {
-      const asset = await uploadImage(file);
+      setUploadStatus('업로드 중...');
+      const asset = await uploadImage(file, setUploadStatus);
       editorRef.current?.focus();
       document.execCommand('insertHTML', false, `<div style="max-width:560px;margin:12px 0;" contenteditable="false"><video controls style="width:100%;border-radius:8px;" src="${asset.url}"></video></div>`);
       syncContent();
     } catch (err: any) {
       alert('동영상 업로드 실패: ' + err.message);
+    } finally {
+      setUploadStatus('');
     }
     if (videoInputRef.current) videoInputRef.current.value = '';
   };
@@ -1035,6 +1043,18 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
         [contenteditable] div[contenteditable="false"] { cursor: pointer; transition: outline 0.15s; border-radius: 4px; }
         [contenteditable] div[contenteditable="false"]:hover { outline: 2px solid #3b82f6; outline-offset: 2px; }
       `}</style>
+      {/* Upload status indicator */}
+      {uploadStatus && (
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+          padding: '8px 16px', background: '#eef6ff', border: `1px solid #bfdbfe`,
+          borderRadius: '0 0 0 0', fontSize: 13, fontWeight: 600, color: '#2563eb',
+        }}>
+          <span style={{ display: 'inline-block', width: 14, height: 14, border: '2px solid #93c5fd', borderTopColor: '#2563eb', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+          {uploadStatus}
+          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        </div>
+      )}
       {/* Editor Area */}
       <div style={{ position: 'relative' }}>
         <div
@@ -1052,13 +1072,15 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
                 const file = items[i].getAsFile();
                 if (!file) return;
                 try {
-                  const asset = await uploadImage(file);
+                  const asset = await uploadImage(file, setUploadStatus);
                   const imgUrl = asset.url;
                   editorRef.current?.focus();
                   document.execCommand('insertHTML', false, `<img src="${imgUrl}" alt="붙여넣기 이미지" style="max-width:100%;height:auto;margin:8px 0;" />`);
                   syncContent();
                 } catch (err: any) {
                   alert('이미지 업로드 실패: ' + err.message);
+                } finally {
+                  setUploadStatus('');
                 }
                 return;
               }
