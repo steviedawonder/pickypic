@@ -29,3 +29,4 @@ pnpm-debug.log*
 # Claude
 .claude/
 .vercel
+.env*.local
