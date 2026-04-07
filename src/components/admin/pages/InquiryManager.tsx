@@ -9,6 +9,13 @@ function InquiryManager() {
   const [search, setSearch] = useState('');
   const [detail, setDetail] = useState<any>(null);
   const [memo, setMemo] = useState('');
+  const [narrow, setNarrow] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const onResize = () => setNarrow(window.innerWidth < 768);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -85,7 +92,7 @@ function InquiryManager() {
       </div>
 
       {/* Status Summary */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(80px, 1fr))', gap: 8, marginBottom: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: narrow ? 'repeat(5, 1fr)' : 'repeat(5, minmax(80px, 1fr))', gap: narrow ? 4 : 8, marginBottom: 16 }}>
         {[
           { key: 'all', label: '전체', count: counts.all, color: colors.text },
           { key: '대기', label: '대기', count: counts['대기'], color: colors.orange },
@@ -102,14 +109,14 @@ function InquiryManager() {
 
       {/* Search */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-        <input style={{ ...s.input, width: 300 }} value={search} onChange={e => setSearch(e.target.value)} placeholder="검색 (이름, 유형, 연락처, 이메일...)" />
+        <input style={{ ...s.input, width: narrow ? '100%' : 300 }} value={search} onChange={e => setSearch(e.target.value)} placeholder="검색 (이름, 유형, 연락처, 이메일...)" />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: detail ? '1fr 400px' : '1fr', gap: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: detail && !narrow ? '1fr 400px' : '1fr', gap: 16 }}>
         {/* Table */}
-        <div style={s.card}>
+        <div style={{ ...s.card, overflowX: 'auto' }}>
           {loading ? <p style={{ textAlign: 'center', color: colors.textLight, padding: 40 }}>로딩 중...</p> : (
-            <table style={s.table}>
+            <table style={{ ...s.table, minWidth: 600 }}>
               <thead>
                 <tr>
                   <th style={s.th}>상태</th>
@@ -143,7 +150,7 @@ function InquiryManager() {
 
         {/* Detail Panel */}
         {detail && (
-          <div style={{ ...s.card, position: 'sticky', top: 24, alignSelf: 'start', maxHeight: 'calc(100vh - 80px)', overflowY: 'auto' }}>
+          <div style={{ ...s.card, ...(narrow ? {} : { position: 'sticky' as const, top: 24, alignSelf: 'start', maxHeight: 'calc(100vh - 80px)', overflowY: 'auto' as const }) }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <h3 style={{ fontSize: 14, fontWeight: 700 }}>상세 정보</h3>
               <button onClick={() => setDetail(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 16 }}>✕</button>
