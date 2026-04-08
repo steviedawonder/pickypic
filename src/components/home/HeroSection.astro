@@ -29,7 +29,7 @@ const desktopSlides = hasSanityBanners
       alt: b.altText || '피키픽 포토부스',
       linkUrl: b.linkUrl || null,
     }))
-  : fallbackDesktop.map((src, i) => ({ src, alt: `피키픽 포토부스 ${i + 1}`, linkUrl: null }));
+  : fallbackDesktop.map((src, i) => ({ src, alt: `피키픽 포토부스 대여 — 모던 레트로 감성 포토부스 렌탈 서비스 ${i + 1}`, linkUrl: null }));
 
 const mobileSlides = hasSanityBanners
   ? sanityBanners.map((b: any) => ({
@@ -37,7 +37,7 @@ const mobileSlides = hasSanityBanners
       alt: b.altText || '피키픽 포토부스 모바일',
       linkUrl: b.linkUrl || null,
     }))
-  : fallbackMobile.map((src, i) => ({ src, alt: `피키픽 포토부스 모바일 ${i + 1}`, linkUrl: null }));
+  : fallbackMobile.map((src, i) => ({ src, alt: `피키픽 포토부스 렌탈 — 기업행사 팝업스토어 포토부스 대여 ${i + 1}`, linkUrl: null }));
 ---
 
 <section class="hero-section" style="background-color: #f7f7f5;">
@@ -73,10 +73,10 @@ const mobileSlides = hasSanityBanners
 
       <!-- Navigation Arrows -->
       <button class="carousel-arrow carousel-arrow-left" id="desktop-prev" aria-label="이전 슬라이드">
-        <img src="/images/common/left.png" alt="이전" />
+        <img src="/images/common/left.png" alt="" role="presentation" />
       </button>
       <button class="carousel-arrow carousel-arrow-right" id="desktop-next" aria-label="다음 슬라이드">
-        <img src="/images/common/right.png" alt="다음" />
+        <img src="/images/common/right.png" alt="" role="presentation" />
       </button>
     </div>
   </div>
@@ -113,10 +113,10 @@ const mobileSlides = hasSanityBanners
 
       <!-- Navigation Arrows -->
       <button class="carousel-arrow carousel-arrow-left" id="mobile-prev" aria-label="이전 슬라이드">
-        <img src="/images/common/left.png" alt="이전" />
+        <img src="/images/common/left.png" alt="" role="presentation" />
       </button>
       <button class="carousel-arrow carousel-arrow-right" id="mobile-next" aria-label="다음 슬라이드">
-        <img src="/images/common/right.png" alt="다음" />
+        <img src="/images/common/right.png" alt="" role="presentation" />
       </button>
     </div>
   </div>

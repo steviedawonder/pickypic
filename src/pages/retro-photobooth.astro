@@ -1,0 +1,343 @@
+---
+// SEO landing page for retro/receipt-style photo booth keywords
+import BaseLayout from '@layouts/BaseLayout.astro';
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import ServiceSchema from '@components/seo/ServiceSchema.astro';
+import FAQSchema from '@components/seo/FAQSchema.astro';
+
+// FAQ items for retro photo booth
+const faqItems = [
+  {
+    question: '레트로 포토부스와 일반 포토부스의 차이점은 무엇인가요?',
+    answer: '레트로 포토부스는 빈티지 감성의 디자인과 영수증 형태의 사진 출력이 특징입니다. 일반 포토부스가 4x6 또는 2컷/4컷 인화지를 사용하는 반면, 레트로 포토부스는 감열지(영수증 용지)에 사진을 출력하여 독특한 뉴트로 감성을 연출합니다.',
+  },
+  {
+    question: '영수증 사진기(영수증 포토부스)는 어떤 원리인가요?',
+    answer: '영수증 사진기는 감열 프린터(thermal printer)를 사용하여 영수증 용지에 사진을 출력합니다. 촬영 후 즉시 영수증 형태의 사진이 출력되며, 흑백 또는 세피아 톤의 빈티지한 느낌이 특징입니다. 피키픽의 Modern Retro Picky와 Urban Retro Picky 모델이 이 방식을 사용합니다.',
+  },
+  {
+    question: '피키픽 레트로 포토부스 모델은 어떤 종류가 있나요?',
+    answer: '피키픽은 두 가지 레트로 포토부스 모델을 보유하고 있습니다. Modern Retro Picky(W290×L290×H310mm)는 모던한 디자인에 영수증 출력 기능을 갖추고 있으며, Urban Retro Picky(W190×L230×H316mm)는 보다 컴팩트한 사이즈로 공간 활용도가 높습니다. 두 모델 모두 테이블형으로 어디서든 쉽게 설치할 수 있습니다.',
+  },
+  {
+    question: '레트로 포토부스는 어떤 행사에 적합한가요?',
+    answer: '레트로 포토부스는 브랜드 팝업스토어, 카페, 레스토랑, 빈티지 콘셉트 파티, 웨딩 리셉션, 기업 이벤트 등 다양한 장소에서 활용됩니다. 특히 뉴트로 트렌드에 맞는 감성적인 콘텐츠를 원하는 MZ세대 타겟 브랜드 행사에 인기가 높습니다.',
+  },
+  {
+    question: '레트로 포토부스 대여 비용은 얼마인가요?',
+    answer: '레트로 포토부스 대여 비용은 행사 기간, 설치 장소, 커스터마이징 옵션에 따라 달라집니다. 정확한 견적은 피키픽 렌탈문의 페이지에서 요청하실 수 있으며, 영업시간 기준 1시간 내에 답변을 드리고 있습니다.',
+  },
+  {
+    question: '영수증 사진의 보관 기간은 얼마나 되나요?',
+    answer: '감열지 특성상 영수증 사진은 시간이 지나면 서서히 바래질 수 있습니다. 일반적으로 실내 보관 시 수개월에서 1년 이상 유지됩니다. 피키픽 레트로 포토부스는 촬영한 사진을 디지털 파일로도 제공하므로, 원본 이미지를 영구적으로 보관할 수 있습니다.',
+  },
+];
+---
+
+<BaseLayout
+  title="영수증 사진기 · 감열지 사진기 대여 · 구매 | 피키픽 레트로 사진기 PICKYPIC"
+  description="영수증 사진기, 감열지 사진기 대여 및 구매 전문 피키픽. 레트로 사진기 Modern Retro Picky, Urban Retro Picky로 브랜드 팝업, 카페, 파티에 뉴트로 감성을 더하세요."
+>
+  <!-- Structured data -->
+  <BreadcrumbSchema items={[
+    { name: '홈', href: '/' },
+    { name: '영수증 사진기 · 레트로 사진기', href: '/retro-photobooth' },
+  ]} />
+  <ServiceSchema
+    serviceName="영수증 사진기 · 감열지 사진기"
+    serviceType="Receipt Photo Printer / Thermal Photo Printer"
+    description="피키픽의 영수증 사진기(레트로 사진기)는 감열지에 사진을 출력하는 뉴트로 스타일 포토 기기입니다. Modern Retro Picky와 Urban Retro Picky 두 가지 모델을 통해 브랜드 팝업, 카페, 파티 등에서 빈티지 감성의 포토 경험을 제공합니다."
+  />
+
+  <!-- Hero Section -->
+  <section class="relative bg-white pt-14 pb-8 lg:pt-12 lg:pb-12 overflow-hidden">
+    <div class="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 gs-fade-up">
+      <h1 class="text-2xl lg:text-[clamp(2.5rem,5vw,3.5rem)] font-bold tracking-tight text-primary leading-tight">
+        영수증 사진기 · 감열지 사진기 대여 · 구매
+      </h1>
+      <p class="mt-4 text-sm lg:text-base text-secondary leading-relaxed max-w-3xl">
+        피키픽(PICKYPIC)의 <strong>영수증 사진기</strong>(레트로 사진기)는 <strong>Modern Retro Picky</strong>와 <strong>Urban Retro Picky</strong> 두 가지 모델로, 감열지에 뉴트로 감성의 사진을 출력합니다.
+        감열지 사진기 특유의 빈티지 감성과 최신 기술을 결합하여 브랜드 팝업스토어, 카페, 파티 등에서 MZ세대가 열광하는 특별한 포토 경험을 제공합니다.
+      </p>
+    </div>
+  </section>
+
+  <!-- Section: 레트로 포토부스란? -->
+  <section class="bg-bg-muted py-16 lg:py-20" aria-labelledby="what-is-retro">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8 gs-fade-up">
+      <h2 id="what-is-retro" class="text-xl lg:text-3xl font-bold text-primary mb-6">영수증 사진기(레트로 사진기)란?</h2>
+      <div class="grid lg:grid-cols-2 gap-8 lg:gap-12">
+        <div class="space-y-4 text-secondary leading-relaxed text-sm lg:text-base">
+          <p>
+            <strong class="text-primary">영수증 사진기</strong>(감열지 사진기, 레트로 사진기)는 1990~2000년대의 빈티지 감성을 현대적으로 재해석한 <strong>뉴트로(Newtro)</strong> 트렌드의 대표적인 포토 기기입니다.
+            일반 포토부스와 달리, 감열 프린터(thermal printer)를 사용하여 <strong>감열지(영수증 용지)에 사진</strong>을 출력하는 것이 가장 큰 특징입니다.
+          </p>
+          <p>
+            뉴트로 트렌드는 '새로움(New)'과 '복고(Retro)'를 합친 신조어로, 과거의 감성을 MZ세대의 시각으로 새롭게 즐기는 문화 현상입니다.
+            레트로 포토부스는 이러한 뉴트로 감성을 포토 경험에 접목시켜, SNS에서 폭발적인 인기를 얻고 있습니다.
+          </p>
+        </div>
+        <div class="space-y-4 text-secondary leading-relaxed text-sm lg:text-base">
+          <p>
+            영수증 사진은 기존 포토부스의 4컷 사진과는 완전히 다른 매력을 가집니다.
+            감열지 특유의 질감과 흑백 톤이 만들어내는 <strong>빈티지 감성</strong>은 촬영하는 순간부터 인쇄물을 손에 들기까지 아날로그적인 경험을 선사합니다.
+          </p>
+          <p>
+            특히 <strong>빈티지 포토부스</strong>와 <strong>뉴트로 포토부스</strong>는 단순한 사진 촬영을 넘어,
+            브랜드 경험을 극대화하는 마케팅 도구로도 활용되며 팝업스토어와 카페에서 필수 콘텐츠 아이템으로 자리잡았습니다.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: 영수증 사진기의 매력 -->
+  <section class="bg-white py-16 lg:py-20" aria-labelledby="receipt-charm">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8 gs-fade-up">
+      <h2 id="receipt-charm" class="text-xl lg:text-3xl font-bold text-primary mb-10 text-center">영수증 사진기의 매력</h2>
+      <div class="grid sm:grid-cols-3 gap-6 lg:gap-8">
+        <!-- Card 1: Aesthetic -->
+        <div class="bg-bg-muted rounded-lg p-6 lg:p-8">
+          <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </div>
+          <h3 class="text-base lg:text-lg font-bold text-primary mb-2">독특한 빈티지 감성</h3>
+          <p class="text-sm text-secondary leading-relaxed">
+            감열지 특유의 질감과 흑백·세피아 톤이 만들어내는 아날로그적 매력. 디지털 시대에 아날로그 감성을 간직할 수 있는 특별한 경험을 제공합니다.
+          </p>
+        </div>
+        <!-- Card 2: SNS -->
+        <div class="bg-bg-muted rounded-lg p-6 lg:p-8">
+          <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 4V2m0 2a2 2 0 100 4m0-4a2 2 0 110 4m10-4V2m0 2a2 2 0 100 4m0-4a2 2 0 110 4M3 20h18M3 10h18M3 14h18" />
+            </svg>
+          </div>
+          <h3 class="text-base lg:text-lg font-bold text-primary mb-2">SNS 바이럴 콘텐츠</h3>
+          <p class="text-sm text-secondary leading-relaxed">
+            영수증 사진은 인스타그램, 틱톡 등 SNS에서 높은 공유율을 보이는 콘텐츠입니다. #영수증사진 #레트로포토 해시태그로 자연스러운 브랜드 노출 효과를 기대할 수 있습니다.
+          </p>
+        </div>
+        <!-- Card 3: MZ Generation -->
+        <div class="bg-bg-muted rounded-lg p-6 lg:p-8">
+          <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <h3 class="text-base lg:text-lg font-bold text-primary mb-2">MZ세대 트렌드</h3>
+          <p class="text-sm text-secondary leading-relaxed">
+            뉴트로 트렌드의 중심에 있는 MZ세대는 레트로 감성 포토부스를 통해 새로운 경험을 추구합니다. 브랜드 충성도와 방문 체류 시간을 높이는 효과적인 마케팅 도구입니다.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: 피키픽 레트로 포토부스 라인업 -->
+  <section class="bg-bg-muted py-16 lg:py-20" aria-labelledby="lineup">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8 gs-fade-up">
+      <h2 id="lineup" class="text-xl lg:text-3xl font-bold text-primary mb-4 text-center">피키픽 영수증 사진기 · 레트로 사진기 라인업</h2>
+      <p class="text-sm lg:text-base text-secondary text-center mb-10 max-w-2xl mx-auto">
+        피키픽은 두 가지 영수증 사진기(레트로 사진기) 모델을 보유하고 있습니다. 모두 테이블형으로, 감열지 프린터를 탑재하여 뉴트로 감성의 사진을 출력합니다.
+      </p>
+      <div class="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-4xl mx-auto">
+        <!-- Modern Retro Picky -->
+        <div class="bg-white rounded-lg border border-border-default overflow-hidden">
+          <div class="aspect-[4/3] bg-gray-50 flex items-center justify-center p-6">
+            <img src="/images/products/modern-retro-picky-photo.png" alt="피키픽 모던 레트로 피키 영수증 사진기 — 감열지 사진기 Modern Retro Picky" class="max-h-full max-w-full object-contain" />
+          </div>
+          <div class="p-6 lg:p-8">
+            <span class="inline-block text-[11px] font-medium text-white bg-primary px-3 py-1 rounded-full mb-4">테이블형 · 영수증 사진기</span>
+            <h3 class="text-lg lg:text-xl font-bold text-primary mb-1">Modern Retro Picky</h3>
+            <p class="text-xs text-secondary mb-4">모던 레트로 피키</p>
+            <ul class="space-y-2 text-sm text-secondary">
+              <li class="flex items-start gap-2">
+                <svg class="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span>사이즈: <strong class="text-primary">W290 × L290 × H310 mm</strong></span>
+              </li>
+              <li class="flex items-start gap-2">
+                <svg class="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span>테이블형 영수증 사진기</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <svg class="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span>모던한 디자인 + 레트로 감성 출력</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <svg class="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span>브랜드 커스터마이징 가능</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <!-- Urban Retro Picky -->
+        <div class="bg-white rounded-lg border border-border-default overflow-hidden">
+          <div class="aspect-[4/3] bg-gray-50 flex items-center justify-center p-6">
+            <img src="/images/products/urban-retro-picky-photo.png" alt="피키픽 어반 레트로 피키 영수증 사진기 — 감열지 사진기 Urban Retro Picky" class="max-h-full max-w-full object-contain" />
+          </div>
+          <div class="p-6 lg:p-8">
+            <span class="inline-block text-[11px] font-medium text-white bg-primary px-3 py-1 rounded-full mb-4">테이블형 · 영수증 사진기</span>
+            <h3 class="text-lg lg:text-xl font-bold text-primary mb-1">Urban Retro Picky</h3>
+            <p class="text-xs text-secondary mb-4">어반 레트로 피키</p>
+            <ul class="space-y-2 text-sm text-secondary">
+              <li class="flex items-start gap-2">
+                <svg class="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span>사이즈: <strong class="text-primary">W190 × L230 × H316 mm</strong></span>
+              </li>
+              <li class="flex items-start gap-2">
+                <svg class="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span>컴팩트 테이블형 영수증 사진기</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <svg class="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span>어반 스타일 + 빈티지 감성 출력</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <svg class="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span>소규모 공간에 최적화</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: 활용 사례 -->
+  <section class="bg-white py-16 lg:py-20" aria-labelledby="use-cases">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8 gs-fade-up">
+      <h2 id="use-cases" class="text-xl lg:text-3xl font-bold text-primary mb-10 text-center">영수증 사진기 · 레트로 사진기 활용 사례</h2>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Cafe -->
+        <div class="text-center">
+          <div class="w-16 h-16 bg-primary/5 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h18v8a4 4 0 01-4 4H7a4 4 0 01-4-4V3zm18 4h1a2 2 0 010 4h-1M6 19h12M8 23h8" />
+            </svg>
+          </div>
+          <h3 class="font-bold text-primary mb-2">카페 · 레스토랑</h3>
+          <p class="text-sm text-secondary leading-relaxed">뉴트로 인테리어 카페에 영수증 포토부스를 설치하여 고객 체류 시간과 재방문율을 높입니다.</p>
+        </div>
+        <!-- Popup -->
+        <div class="text-center">
+          <div class="w-16 h-16 bg-primary/5 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+          </div>
+          <h3 class="font-bold text-primary mb-2">브랜드 팝업스토어</h3>
+          <p class="text-sm text-secondary leading-relaxed">레트로 감성 포토부스로 브랜드 경험을 극대화하고, SNS 바이럴 콘텐츠를 자연스럽게 생성합니다.</p>
+        </div>
+        <!-- Party -->
+        <div class="text-center">
+          <div class="w-16 h-16 bg-primary/5 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 15.999A9.911 9.911 0 0112 20a9.911 9.911 0 01-9-4.001M12 4a8 8 0 018 8M12 4a8 8 0 00-8 8m8-8V2m-4 2l1.5 1.5M6 4l1.5 1.5" />
+            </svg>
+          </div>
+          <h3 class="font-bold text-primary mb-2">파티 · 웨딩</h3>
+          <p class="text-sm text-secondary leading-relaxed">생일 파티, 웨딩 리셉션, 졸업 파티 등에서 빈티지 감성의 영수증 사진으로 특별한 추억을 남깁니다.</p>
+        </div>
+        <!-- Corporate -->
+        <div class="text-center">
+          <div class="w-16 h-16 bg-primary/5 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h3 class="font-bold text-primary mb-2">기업 행사</h3>
+          <p class="text-sm text-secondary leading-relaxed">사내 행사, 컨퍼런스, 전시회 등에서 레트로 포토부스를 활용하여 참여도를 높이고 브랜드 인지도를 강화합니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section: 대여 vs 구매 -->
+  <section class="bg-bg-muted py-16 lg:py-20" aria-labelledby="rental-vs-purchase">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8 gs-fade-up">
+      <h2 id="rental-vs-purchase" class="text-xl lg:text-3xl font-bold text-primary mb-10 text-center">영수증 사진기 대여 vs 구매</h2>
+      <div class="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-4xl mx-auto">
+        <!-- Rental -->
+        <div class="bg-white rounded-lg border border-border-default p-6 lg:p-8">
+          <h3 class="text-lg font-bold text-primary mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold">R</span>
+            대여 (렌탈)
+          </h3>
+          <ul class="space-y-3 text-sm text-secondary">
+            <li class="flex items-start gap-2">
+              <span class="text-primary font-bold">+</span>
+              <span>초기 비용 부담 없이 행사에 맞춰 유연하게 이용</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary font-bold">+</span>
+              <span>설치·운영·철수까지 피키픽 전문 스태프가 지원</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary font-bold">+</span>
+              <span>단기 행사, 팝업스토어, 원데이 이벤트에 최적</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary font-bold">+</span>
+              <span>브랜드 맞춤 커스터마이징 옵션 제공</span>
+            </li>
+          </ul>
+        </div>
+        <!-- Purchase -->
+        <div class="bg-white rounded-lg border border-border-default p-6 lg:p-8">
+          <h3 class="text-lg font-bold text-primary mb-4 flex items-center gap-2">
+            <span class="w-8 h-8 bg-secondary text-white rounded-full flex items-center justify-center text-sm font-bold">P</span>
+            구매
+          </h3>
+          <ul class="space-y-3 text-sm text-secondary">
+            <li class="flex items-start gap-2">
+              <span class="text-primary font-bold">+</span>
+              <span>상시 운영 카페·매장에서 장기적으로 비용 절감</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary font-bold">+</span>
+              <span>자유로운 운영 시간과 장소 선택</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary font-bold">+</span>
+              <span>피키픽 네이버 스마트스토어에서 구매 가능</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary font-bold">+</span>
+              <span>A/S 및 소모품 지속 지원</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <FAQSchema items={faqItems} title="영수증 사진기 · 감열지 사진기 자주 묻는 질문" />
+
+  <!-- CTA Section -->
+  <section class="bg-primary py-16 lg:py-20" aria-labelledby="cta-heading">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8 text-center gs-fade-up">
+      <h2 id="cta-heading" class="text-xl lg:text-3xl font-bold text-white mb-4">영수증 사진기, 지금 시작하세요</h2>
+      <p class="text-sm lg:text-base text-white/80 mb-8 max-w-xl mx-auto">
+        피키픽의 영수증 사진기(감열지 사진기)로 브랜드 팝업, 카페, 파티에 특별한 뉴트로 감성을 더해보세요. 렌탈 문의부터 제품 구매까지, 피키픽이 함께합니다.
+      </p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a
+          href="/rental"
+          class="inline-flex items-center justify-center px-8 py-3 bg-white text-primary font-bold text-sm rounded-full hover:bg-gray-100 transition-colors min-w-[180px]"
+        >
+          렌탈 문의하기
+        </a>
+        <a
+          href="/products"
+          class="inline-flex items-center justify-center px-8 py-3 border-2 border-white text-white font-bold text-sm rounded-full hover:bg-white/10 transition-colors min-w-[180px]"
+        >
+          제품 소개 보기
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

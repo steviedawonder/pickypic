@@ -1,0 +1,499 @@
+---
+// SEO landing page for photo booth startup keywords
+// Not linked in navigation — targets organic search traffic
+import BaseLayout from '@layouts/BaseLayout.astro';
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import FAQSchema from '@components/seo/FAQSchema.astro';
+import { products } from '@data/products';
+
+// Group products for startup recommendations
+const smallMediumProducts = products.filter(p =>
+  ['modern-picky', 'classic-picky', 'urban-picky', 'modern-mini-picky', 'urban-mini-picky', 'modern-retro-picky', 'urban-retro-picky'].includes(p.id)
+);
+const allProducts = products;
+
+// FAQ data for structured markup
+const faqItems = [
+  {
+    question: '포토부스 창업 초기 비용은 얼마나 드나요?',
+    answer: '포토부스 창업 초기 비용은 기기 종류, 매장 규모, 인테리어 수준에 따라 달라집니다. 일반적으로 기기 구매비(1,000만~3,000만 원), 인테리어 비용(500만~2,000만 원), 초기 운영비(200만~500만 원) 등을 고려해야 합니다. 피키픽은 예산에 맞는 기기 추천과 창업 컨설팅을 제공합니다.',
+  },
+  {
+    question: '포토부스 사업의 수익성은 어떤가요?',
+    answer: '포토부스는 무인 운영이 가능해 인건비를 최소화할 수 있고, 1회 촬영당 3,000~6,000원의 매출이 발생합니다. 입지와 운영 방식에 따라 다르지만, 월 매출 300만~1,000만 원 이상을 기대할 수 있으며, 고정비가 낮아 투자 대비 수익률이 높은 편입니다.',
+  },
+  {
+    question: '1인 운영이 가능한가요?',
+    answer: '네, 가능합니다. 피키픽 포토부스는 사용자가 직접 촬영하는 셀프 방식이므로 상주 인력 없이 무인으로 운영할 수 있습니다. 원격 모니터링과 간단한 용지 교체 정도만 필요하며, 부업이나 다중 매장 운영에도 적합합니다.',
+  },
+  {
+    question: 'A/S 및 기술 지원은 어떻게 받나요?',
+    answer: '피키픽은 기기 판매 후에도 지속적인 A/S와 기술 지원을 제공합니다. 원격 진단을 통한 빠른 문제 해결, 방문 수리 서비스, 소프트웨어 업데이트 등을 지원하며, 전담 담당자가 배정되어 운영 중 발생하는 문제에 신속히 대응합니다.',
+  },
+  {
+    question: '어떤 장소에 포토부스를 설치할 수 있나요?',
+    answer: '피키픽 포토부스는 무인사진관, 카페, 쇼핑몰, 복합문화공간, 대학교, 영화관, 놀이공원 등 다양한 장소에 설치할 수 있습니다. 테이블형, 스탠드형, 부스형 등 9종 이상의 라인업이 있어 공간 크기와 용도에 맞게 선택 가능합니다.',
+  },
+  {
+    question: '포토부스 창업까지 얼마나 걸리나요?',
+    answer: '상담부터 기기 설치까지 보통 2~4주가 소요됩니다. 기기 선정, 맞춤 소프트웨어 세팅, 배송 및 설치, 운영 교육까지 원스톱으로 진행됩니다. 매장 인테리어를 포함할 경우 일정이 추가될 수 있습니다.',
+  },
+];
+---
+
+<BaseLayout
+  title="포토부스 창업 · 셀프포토스튜디오 창업 비용 & 가이드 | 피키픽 PICKYPIC"
+  description="포토부스 창업, 무인사진관 창업, 셀프포토스튜디오 창업을 준비하신다면 피키픽과 함께하세요. 9종 이상의 포토부스 라인업, 기기 판매부터 설치·A/S·운영 교육까지 올인원 창업 지원. 창업 비용 구성과 수익 모델을 확인하세요."
+>
+  <!-- Breadcrumb -->
+  <BreadcrumbSchema items={[
+    { name: '홈', href: '/' },
+    { name: '포토부스 창업', href: '/photobooth-startup' },
+  ]} />
+
+  <!-- Hero Section -->
+  <section class="relative bg-white pt-14 pb-10 lg:pt-12 lg:pb-14 overflow-hidden">
+    <div class="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 gs-fade-up">
+      <h1 class="text-2xl lg:text-[clamp(2rem,5vw,3.5rem)] font-bold tracking-tight text-primary leading-tight">
+        포토부스 창업, 피키픽과 함께 시작하세요
+      </h1>
+      <p class="mt-4 text-sm lg:text-base text-secondary leading-relaxed max-w-3xl">
+        PICKYPIC(피키픽)은 포토부스 사업 창업을 기기 판매, 기술 지원, 운영 노하우로 지원합니다.
+        스탠드형·테이블형·부스형 등 <strong>9종 이상의 포토부스 라인업</strong>을 보유하고 있어
+        셀프포토스튜디오, 카페, 이벤트 사업 등 다양한 창업 형태에 맞는 최적의 솔루션을 제공합니다.
+      </p>
+    </div>
+  </section>
+
+  <!-- Why Photo Booth Startup -->
+  <section class="bg-bg-muted py-16 lg:py-20" aria-labelledby="why-startup">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <h2 id="why-startup" class="text-xl lg:text-2xl font-bold text-primary mb-10 text-center gs-fade-up">
+        포토부스 창업이 주목받는 이유
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 gs-stagger">
+        <!-- Unmanned Operation -->
+        <div class="bg-white rounded-lg p-6 lg:p-8 border border-border-light">
+          <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-primary mb-2">무인 운영 가능</h3>
+          <p class="text-sm text-secondary leading-relaxed">
+            셀프 촬영 방식으로 상주 인력 없이 운영할 수 있습니다. 1인 창업, 부업, 다중 매장 운영에 적합하며 인건비 부담을 최소화할 수 있습니다.
+          </p>
+        </div>
+        <!-- Low Labor Cost -->
+        <div class="bg-white rounded-lg p-6 lg:p-8 border border-border-light">
+          <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-primary mb-2">낮은 고정비, 높은 수익성</h3>
+          <p class="text-sm text-secondary leading-relaxed">
+            임대료와 소모품 비용 외 큰 고정비가 없어 투자 대비 수익률이 높습니다. 기기 한 대로도 안정적인 매출을 기대할 수 있습니다.
+          </p>
+        </div>
+        <!-- MZ Generation Demand -->
+        <div class="bg-white rounded-lg p-6 lg:p-8 border border-border-light">
+          <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-primary mb-2">MZ세대 수요 폭발</h3>
+          <p class="text-sm text-secondary leading-relaxed">
+            인생네컷, 포토그레이 등 셀프 사진 문화가 MZ세대를 중심으로 확산되며 시장이 빠르게 성장하고 있습니다. SNS 공유 문화와도 자연스럽게 연결됩니다.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Startup Type Guide -->
+  <section class="bg-white py-16 lg:py-20" aria-labelledby="startup-types">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <h2 id="startup-types" class="text-xl lg:text-2xl font-bold text-primary mb-10 text-center gs-fade-up">
+        창업 형태별 가이드
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 gs-stagger">
+        <!-- Unmanned Photo Studio -->
+        <div class="rounded-lg border border-border-default p-6 lg:p-8">
+          <span class="inline-block text-xs font-semibold text-white bg-primary rounded-full px-3 py-1 mb-4">무인사진관</span>
+          <h3 class="text-lg font-semibold text-primary mb-3">독립 매장형 셀프포토스튜디오</h3>
+          <ul class="text-sm text-secondary leading-relaxed space-y-2">
+            <li class="flex items-start gap-2">
+              <span class="text-primary mt-0.5">&#8226;</span>
+              <span>역세권, 대학가, 상권 밀집 지역에 적합</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary mt-0.5">&#8226;</span>
+              <span>10~30평 규모의 전용 공간 활용</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary mt-0.5">&#8226;</span>
+              <span>복수 기기 배치로 회전율 극대화</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary mt-0.5">&#8226;</span>
+              <span>추천 기기: 스탠드형, 부스형</span>
+            </li>
+          </ul>
+        </div>
+        <!-- Cafe Photo Zone -->
+        <div class="rounded-lg border border-border-default p-6 lg:p-8">
+          <span class="inline-block text-xs font-semibold text-white bg-primary rounded-full px-3 py-1 mb-4">카페 내 포토존</span>
+          <h3 class="text-lg font-semibold text-primary mb-3">기존 매장에 포토부스 추가</h3>
+          <ul class="text-sm text-secondary leading-relaxed space-y-2">
+            <li class="flex items-start gap-2">
+              <span class="text-primary mt-0.5">&#8226;</span>
+              <span>카페, 디저트숍, 복합공간에 추가 수익원</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary mt-0.5">&#8226;</span>
+              <span>2~5평의 작은 공간에도 설치 가능</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary mt-0.5">&#8226;</span>
+              <span>매장 체류 시간 증가 및 SNS 바이럴 효과</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary mt-0.5">&#8226;</span>
+              <span>추천 기기: 테이블형, 미니 스탠드형</span>
+            </li>
+          </ul>
+        </div>
+        <!-- Event Rental Business -->
+        <div class="rounded-lg border border-border-default p-6 lg:p-8">
+          <span class="inline-block text-xs font-semibold text-white bg-primary rounded-full px-3 py-1 mb-4">이벤트 렌탈업</span>
+          <h3 class="text-lg font-semibold text-primary mb-3">행사 대여 전문 사업</h3>
+          <ul class="text-sm text-secondary leading-relaxed space-y-2">
+            <li class="flex items-start gap-2">
+              <span class="text-primary mt-0.5">&#8226;</span>
+              <span>웨딩, 기업 행사, 브랜드 팝업 등에 대여</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary mt-0.5">&#8226;</span>
+              <span>별도 매장 없이 이동형으로 운영 가능</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary mt-0.5">&#8226;</span>
+              <span>건당 높은 수익, 계절 수요 활용</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary mt-0.5">&#8226;</span>
+              <span>추천 기기: 부스형(아웃도어, 에어피키)</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recommended Equipment by Scale -->
+  <section class="bg-bg-muted py-16 lg:py-20" aria-labelledby="recommended-equipment">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <h2 id="recommended-equipment" class="text-xl lg:text-2xl font-bold text-primary mb-4 text-center gs-fade-up">
+        규모별 추천 기기
+      </h2>
+      <p class="text-sm text-secondary text-center mb-10 max-w-2xl mx-auto gs-fade-up">
+        피키픽은 9종 이상의 포토부스를 보유하고 있어 창업 규모와 목적에 맞는 기기를 추천합니다. 각 제품을 클릭하면 상세 스펙을 확인할 수 있습니다.
+      </p>
+
+      <!-- 중소형 창업 -->
+      <div class="mb-10 gs-fade-up">
+        <h3 class="text-lg font-bold text-primary mb-1 flex items-center gap-2">
+          <span class="inline-block w-2 h-2 bg-primary rounded-full"></span>
+          중소형 창업 — 테이블형 + 스탠드형
+        </h3>
+        <p class="text-xs text-secondary mb-4 ml-4">카페, 소형 매장, 무인사진관 (2~20평) — 컴팩트한 사이즈부터 프리미엄 독립형까지</p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-4">
+          {smallMediumProducts.map((p) => (
+            <button type="button" class="product-row bg-white rounded-xl border border-border-default p-4 text-center hover:border-primary hover:shadow-md transition-all duration-200 cursor-pointer group" data-product-id={p.id}>
+              <div class="aspect-square bg-gray-50 rounded-lg mb-3 flex items-center justify-center overflow-hidden">
+                <img src={p.imageRight} alt={`${p.nameKo} ${p.name}`} class="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+              </div>
+              <p class="text-sm font-bold text-primary leading-tight">{p.nameKo}</p>
+              <p class="text-[10px] text-secondary mt-0.5">{p.name}</p>
+              <span class="inline-block text-[10px] text-primary/70 bg-primary/5 rounded-full px-2 py-0.5 mt-2">{p.categoryLabel}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <!-- 대형 창업 -->
+      <div class="gs-fade-up">
+        <h3 class="text-lg font-bold text-primary mb-1 flex items-center gap-2">
+          <span class="inline-block w-2 h-2 bg-primary rounded-full"></span>
+          대형 창업 — 전 제품 라인업
+        </h3>
+        <p class="text-xs text-secondary mb-4 ml-4">대형 매장, 이벤트 렌탈업, 다중 매장 운영 (20평 이상) — 모든 기기를 활용한 풀 라인업 구성</p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 lg:gap-4">
+          {allProducts.map((p) => (
+            <button type="button" class="product-row bg-white rounded-xl border border-border-default p-4 text-center hover:border-primary hover:shadow-md transition-all duration-200 cursor-pointer group" data-product-id={p.id}>
+              <div class="aspect-square bg-gray-50 rounded-lg mb-3 flex items-center justify-center overflow-hidden">
+                <img src={p.imageRight} alt={`${p.nameKo} ${p.name}`} class="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+              </div>
+              <p class="text-sm font-bold text-primary leading-tight">{p.nameKo}</p>
+              <p class="text-[10px] text-secondary mt-0.5">{p.name}</p>
+              <span class="inline-block text-[10px] text-primary/70 bg-primary/5 rounded-full px-2 py-0.5 mt-2">{p.categoryLabel}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Startup Cost Breakdown -->
+  <section class="bg-white py-16 lg:py-20" aria-labelledby="startup-cost">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <h2 id="startup-cost" class="text-xl lg:text-2xl font-bold text-primary mb-10 text-center gs-fade-up">
+        포토부스 창업 비용 구성
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 gs-stagger">
+        <!-- Equipment Cost -->
+        <div class="text-center p-6 lg:p-8 rounded-lg border border-border-default">
+          <div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-7 h-7 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-primary mb-2">기기 구매비</h3>
+          <p class="text-2xl font-bold text-primary mb-2">1,000만 ~ 3,000만 원</p>
+          <p class="text-sm text-secondary leading-relaxed">
+            포토부스 기기 본체, 프린터, 소프트웨어 라이선스 포함. 기기 타입과 수량에 따라 달라집니다.
+          </p>
+        </div>
+        <!-- Interior Cost -->
+        <div class="text-center p-6 lg:p-8 rounded-lg border border-border-default">
+          <div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-7 h-7 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-primary mb-2">인테리어 비용</h3>
+          <p class="text-2xl font-bold text-primary mb-2">500만 ~ 2,000만 원</p>
+          <p class="text-sm text-secondary leading-relaxed">
+            촬영 배경, 조명, 대기 공간 등 매장 인테리어 비용. 카페 내 설치 시 최소화할 수 있습니다.
+          </p>
+        </div>
+        <!-- Operational Cost -->
+        <div class="text-center p-6 lg:p-8 rounded-lg border border-border-default">
+          <div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-7 h-7 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-primary mb-2">월 운영비</h3>
+          <p class="text-2xl font-bold text-primary mb-2">100만 ~ 300만 원</p>
+          <p class="text-sm text-secondary leading-relaxed">
+            임대료, 인쇄 용지, 전기료, 통신비 등 월 고정비용. 무인 운영으로 인건비는 최소화됩니다.
+          </p>
+        </div>
+      </div>
+      <p class="text-xs text-secondary text-center mt-6 gs-fade-up">
+        * 위 금액은 일반적인 범위이며, 지역·규모·기기 선택에 따라 달라질 수 있습니다. 정확한 견적은 상담을 통해 안내드립니다.
+      </p>
+    </div>
+  </section>
+
+  <!-- PICKYPIC Startup Support -->
+  <section class="bg-bg-muted py-16 lg:py-20" aria-labelledby="pickypic-support">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <h2 id="pickypic-support" class="text-xl lg:text-2xl font-bold text-primary mb-4 text-center gs-fade-up">
+        피키픽이 제공하는 창업 지원
+      </h2>
+      <p class="text-sm text-secondary text-center mb-10 max-w-2xl mx-auto gs-fade-up">
+        기기 판매부터 설치, 운영 교육, 사후 관리까지 — 포토부스 창업의 모든 단계를 함께합니다.
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 gs-stagger">
+        <!-- Equipment Sales -->
+        <div class="bg-white rounded-lg p-6 border border-border-light text-center">
+          <div class="text-3xl mb-3">01</div>
+          <h3 class="text-base font-semibold text-primary mb-2">기기 판매 & 맞춤 추천</h3>
+          <p class="text-sm text-secondary leading-relaxed">
+            창업 형태와 예산에 맞는 최적의 기기를 추천하고, 소프트웨어 커스터마이징까지 지원합니다.
+          </p>
+        </div>
+        <!-- Installation -->
+        <div class="bg-white rounded-lg p-6 border border-border-light text-center">
+          <div class="text-3xl mb-3">02</div>
+          <h3 class="text-base font-semibold text-primary mb-2">전문 설치 서비스</h3>
+          <p class="text-sm text-secondary leading-relaxed">
+            전문 기술팀이 현장에 방문하여 기기 설치, 네트워크 세팅, 테스트 운영까지 완료합니다.
+          </p>
+        </div>
+        <!-- After-service -->
+        <div class="bg-white rounded-lg p-6 border border-border-light text-center">
+          <div class="text-3xl mb-3">03</div>
+          <h3 class="text-base font-semibold text-primary mb-2">지속적인 A/S</h3>
+          <p class="text-sm text-secondary leading-relaxed">
+            원격 진단, 방문 수리, 소프트웨어 업데이트 등 운영 중 발생하는 문제에 신속히 대응합니다.
+          </p>
+        </div>
+        <!-- Training -->
+        <div class="bg-white rounded-lg p-6 border border-border-light text-center">
+          <div class="text-3xl mb-3">04</div>
+          <h3 class="text-base font-semibold text-primary mb-2">운영 교육 & 노하우</h3>
+          <p class="text-sm text-secondary leading-relaxed">
+            기기 운영법, 용지 교체, 매출 관리 등 실전 운영 노하우를 교육합니다.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <FAQSchema items={faqItems} title="포토부스 창업 자주 묻는 질문" />
+
+  <!-- CTA Section -->
+  <section class="bg-primary py-16 lg:py-20" aria-labelledby="startup-cta">
+    <div class="mx-auto max-w-4xl px-6 lg:px-8 text-center gs-fade-up">
+      <h2 id="startup-cta" class="text-xl lg:text-2xl font-bold text-white mb-4">
+        포토부스 창업, 지금 시작하세요
+      </h2>
+      <p class="text-sm lg:text-base text-white/80 mb-8 max-w-2xl mx-auto leading-relaxed">
+        피키픽의 9종 이상의 포토부스 라인업을 확인하고, 창업 상담을 받아보세요.
+        기기 선정부터 매장 오픈까지 전 과정을 함께합니다.
+      </p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a
+          href="/products"
+          class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 bg-white text-primary font-semibold rounded-full hover:bg-gray-100 transition-colors text-sm lg:text-base"
+        >
+          기기 라인업 보기
+        </a>
+        <a
+          href="/collaboration"
+          class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 border-2 border-white text-white font-semibold rounded-full hover:bg-white hover:text-primary transition-colors text-sm lg:text-base"
+        >
+          창업 · 사업 문의
+        </a>
+      </div>
+    </div>
+  </section>
+  <!-- Product Detail Modal -->
+  <div id="product-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-label="제품 상세 정보">
+    <div id="modal-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4 sm:p-6">
+      <div class="relative bg-white rounded-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto shadow-2xl" id="modal-content">
+        <button type="button" id="modal-close" class="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white border border-border-default hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 cursor-pointer" aria-label="닫기">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        <div class="pt-8 pb-4 px-8 border-b border-border-light">
+          <span id="modal-type" class="text-xl lg:text-2xl font-black tracking-[0.15em] text-primary uppercase block mb-1"></span>
+          <h3 id="modal-name" class="text-sm lg:text-base font-medium text-secondary tracking-tight"></h3>
+        </div>
+
+        <!-- Desktop: 3-column layout -->
+        <div class="hidden lg:grid lg:grid-cols-12 gap-0 p-8 items-center">
+          <div class="lg:col-span-3 flex items-center justify-center">
+            <img id="modal-img-left" src="" alt="" class="max-w-full max-h-[420px]" />
+          </div>
+          <div class="lg:col-span-6 px-6 flex flex-col justify-center">
+            <h4 class="text-sm font-bold tracking-[0.1em] text-primary uppercase mb-4 text-center">Photo booth specification</h4>
+            <table class="w-full text-sm border-collapse"><tbody id="modal-specs-desktop"></tbody></table>
+          </div>
+          <div class="lg:col-span-3 flex items-center justify-center">
+            <img id="modal-img-right" src="" alt="" class="max-w-full max-h-[420px]" />
+          </div>
+        </div>
+
+        <!-- Mobile -->
+        <div class="lg:hidden p-6">
+          <div class="flex gap-4 justify-center mb-6 items-center">
+            <div class="w-1/2 max-w-[180px] flex items-center justify-center">
+              <img id="modal-img-left-m" src="" alt="" class="max-w-full max-h-[260px] object-contain" />
+            </div>
+            <div class="w-1/2 max-w-[180px] flex items-center justify-center">
+              <img id="modal-img-right-m" src="" alt="" class="max-w-full max-h-[260px] object-contain" />
+            </div>
+          </div>
+          <h4 class="text-sm font-bold tracking-[0.1em] text-primary uppercase mb-4 text-center">Photo booth specification</h4>
+          <table class="w-full text-sm border-collapse"><tbody id="modal-specs-mobile"></tbody></table>
+        </div>
+
+        <div class="px-8 pb-8 flex justify-center gap-3">
+          <a href="/products" class="inline-flex items-center justify-center px-6 py-3 bg-primary text-white font-semibold text-sm rounded-full hover:bg-primary/90 transition-colors duration-300">전체 제품 보기</a>
+          <a href="/photobooth-purchase" class="inline-flex items-center justify-center px-6 py-3 border border-primary text-primary font-semibold text-sm rounded-full hover:bg-primary hover:text-white transition-colors duration-300">구매 안내</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script id="products-data" type="application/json" set:html={JSON.stringify(
+    products.map(p => ({ id: p.id, name: p.name, nameKo: p.nameKo, type: p.type, imageLeft: p.imageLeft, imageRight: p.imageRight, specs: p.specs }))
+  )} />
+</BaseLayout>
+
+<script>
+  function initProductModal() {
+    const modal = document.getElementById('product-modal');
+    const backdrop = document.getElementById('modal-backdrop');
+    const closeBtn = document.getElementById('modal-close');
+    if (!modal || !backdrop || !closeBtn) return;
+
+    const productsData = JSON.parse(document.getElementById('products-data')?.textContent || '[]');
+    const productById: Record<string, any> = {};
+    productsData.forEach((p: any) => { productById[p.id] = p; });
+
+    const smallTypes = ['modern-mini-picky', 'urban-mini-picky', 'modern-retro-picky', 'urban-retro-picky'];
+
+    function openModal(productId: string) {
+      const product = productById[productId];
+      if (!product) return;
+
+      const isSmall = smallTypes.includes(productId);
+      const maxH = isSmall ? 'max-h-[320px]' : 'max-h-[420px]';
+
+      (document.getElementById('modal-type') as HTMLElement).textContent = product.type;
+      (document.getElementById('modal-name') as HTMLElement).textContent = `${product.name} | ${product.nameKo}`;
+
+      const imgLeft = document.getElementById('modal-img-left') as HTMLImageElement;
+      const imgRight = document.getElementById('modal-img-right') as HTMLImageElement;
+      imgLeft.src = product.imageLeft; imgLeft.alt = `${product.name} ${product.nameKo} 라인 이미지`; imgLeft.className = `max-w-full ${maxH}`;
+      imgRight.src = product.imageRight; imgRight.alt = `${product.name} ${product.nameKo} 제품 이미지`; imgRight.className = `max-w-full ${maxH}`;
+
+      const imgLeftM = document.getElementById('modal-img-left-m') as HTMLImageElement;
+      const imgRightM = document.getElementById('modal-img-right-m') as HTMLImageElement;
+      imgLeftM.src = product.imageLeft; imgLeftM.alt = imgLeft.alt;
+      imgRightM.src = product.imageRight; imgRightM.alt = imgRight.alt;
+
+      const specHtml = product.specs.map((s: any) =>
+        `<tr class="border-b border-border-light"><th class="text-left py-2 pr-4 font-semibold text-primary text-xs whitespace-nowrap align-top w-[140px]">${s.label}</th><td class="py-2 text-secondary text-xs leading-relaxed">${s.value}</td></tr>`
+      ).join('');
+      (document.getElementById('modal-specs-desktop') as HTMLElement).innerHTML = specHtml;
+      (document.getElementById('modal-specs-mobile') as HTMLElement).innerHTML = specHtml;
+
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      modal.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll<HTMLElement>('.product-row').forEach(el => {
+      el.addEventListener('click', () => {
+        const id = el.dataset.productId;
+        if (id) openModal(id);
+      });
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', closeModal);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initProductModal);
+  document.addEventListener('astro:after-swap', initProductModal);
+</script>

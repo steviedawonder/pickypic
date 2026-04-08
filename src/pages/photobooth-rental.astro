@@ -1,0 +1,241 @@
+---
+// SEO landing page for photobooth rental keywords
+// Not linked from navigation — captures organic search traffic
+import BaseLayout from '@layouts/BaseLayout.astro';
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import ServiceSchema from '@components/seo/ServiceSchema.astro';
+import FAQSchema from '@components/seo/FAQSchema.astro';
+
+// FAQ items for structured data and visual section
+const faqItems = [
+  {
+    question: '포토부스 대여 가격은 얼마인가요?',
+    answer: '포토부스 대여 가격은 모델, 행사 규모, 운영 시간에 따라 달라집니다. 스탠드형·테이블형·부스형 등 9종의 포토부스 중 행사에 맞는 최적의 모델을 추천드리며, 정확한 견적은 문의를 통해 안내받으실 수 있습니다.',
+  },
+  {
+    question: '포토부스 렌탈 절차는 어떻게 되나요?',
+    answer: '문의 접수 → 맞춤 견적 안내 → 계약 및 결제 → 현장 설치 → 운영 지원 → 철거의 순서로 진행됩니다. 문의 후 영업시간 기준 1시간 이내에 답변을 드리고 있습니다.',
+  },
+  {
+    question: '포토부스 대여 시 최소 운영 시간이 있나요?',
+    answer: '최소 운영 시간은 2시간부터이며, 행사 성격에 따라 유연하게 조정이 가능합니다. 반일(4시간), 종일(8시간) 등 다양한 패키지를 제공하고 있습니다.',
+  },
+  {
+    question: '서울 외 지역에서도 포토부스 대여가 가능한가요?',
+    answer: '네, 전국 어디든 출장 설치가 가능합니다. 서울·수도권 외에도 부산, 대구, 제주 등 전국 지역은 물론 해외(싱가포르 등) 행사에도 포토부스를 제공하고 있습니다.',
+  },
+  {
+    question: '인생네컷처럼 프레임을 커스텀할 수 있나요?',
+    answer: '네, 피키픽의 모든 포토부스는 프레임 디자인을 자유롭게 커스터마이징할 수 있습니다. 브랜드 로고, 행사 테마, 컬러 등을 반영한 맞춤 프레임을 제작해 드립니다.',
+  },
+  {
+    question: '포토부스 대여 시 운영 인력도 지원되나요?',
+    answer: '네, 포토부스 대여 시 전문 운영 스태프가 현장에 상주하여 장비 운영 및 고객 안내를 도와드립니다. 설치부터 철거까지 원스톱으로 진행됩니다.',
+  },
+];
+---
+
+<BaseLayout
+  title="포토부스 대여 · 포토부스 렌탈 가격 안내 | 피키픽 PICKYPIC"
+  description="포토부스 대여, 포토부스 렌탈, 인생네컷 대여 전문 피키픽(PICKYPIC). 스탠드형·테이블형·부스형 등 9종의 프리미엄 포토부스를 브랜드 팝업, 기업 행사, 웨딩에 제공합니다. 지금 견적을 요청하세요."
+>
+  <!-- Structured data -->
+  <BreadcrumbSchema items={[
+    { name: '홈', href: '/' },
+    { name: '포토부스 대여', href: '/photobooth-rental' },
+  ]} />
+  <ServiceSchema
+    serviceName="포토부스 대여 · 렌탈 서비스"
+    serviceType="Photo Booth Rental"
+    description="피키픽은 2020년 설립된 서울 성수동 소재 프리미엄 포토부스 렌탈 전문 기업으로, 스탠드형·테이블형·부스형 등 9종 이상의 포토부스를 브랜드 팝업, 기업 행사, 웨딩 등에 제공합니다."
+  />
+
+  <!-- Hero Section -->
+  <section class="relative bg-white pt-14 pb-8 lg:pt-12 lg:pb-12 overflow-hidden">
+    <div class="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 gs-fade-up">
+      <h1 class="text-2xl lg:text-4xl font-bold tracking-tight text-primary leading-tight">
+        포토부스 대여 · 렌탈 서비스
+      </h1>
+      <p class="mt-4 text-sm lg:text-base text-secondary leading-relaxed max-w-3xl">
+        피키픽포토부스(PICKYPIC)는 2020년 설립된 서울 성수동 소재 프리미엄 포토부스 렌탈 전문 기업으로, 넷플릭스·현대자동차·스타벅스 등 1,000건 이상의 브랜드 팝업 및 기업 행사에 9종 이상의 포토부스를 제공하고 있습니다.
+      </p>
+      <!-- CTA buttons -->
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a href="/rental" class="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-medium text-white hover:bg-primary/90 transition-colors">
+          렌탈 문의하기
+        </a>
+        <a href="/products" class="inline-flex items-center justify-center rounded-full border border-gray-400 px-6 py-3 text-sm font-medium text-primary hover:bg-primary hover:text-white transition-colors">
+          제품 보기
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Service Introduction -->
+  <section class="bg-white py-12 lg:py-16">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8 gs-fade-up">
+      <h2 class="text-xl lg:text-2xl font-bold text-primary mb-6">포토부스 대여 서비스 소개</h2>
+      <div class="text-sm lg:text-base text-secondary leading-relaxed space-y-4 max-w-3xl">
+        <p>
+          피키픽은 브랜드 팝업, 기업 행사, 전시회, 웨딩, 파티 등 다양한 이벤트에 맞춤형 포토부스를 대여해 드리는 전문 렌탈 서비스입니다. 단순한 장비 대여를 넘어, 프레임 디자인 커스터마이징부터 현장 설치, 운영 스태프 지원, 철거까지 원스톱으로 제공합니다.
+        </p>
+        <p>
+          인생네컷, 포토이즘과 같은 셀프 포토 촬영 경험을 행사 현장에서 구현할 수 있으며, 브랜드 아이덴티티를 반영한 맞춤 프레임으로 차별화된 고객 경험을 만들어 드립니다.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Photobooth Types -->
+  <section class="bg-bg-muted py-12 lg:py-16">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8 gs-fade-up">
+      <h2 class="text-xl lg:text-2xl font-bold text-primary mb-8">포토부스 종류</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 gs-stagger">
+        <!-- Stand type -->
+        <div class="bg-white rounded-lg overflow-hidden">
+          <div class="booth-carousel relative aspect-[4/3] overflow-hidden" data-interval="3000">
+            <img src="/images/products/modern-picky-photo.png" alt="피키픽 모던피키 스탠드형 포토부스" class="booth-slide absolute inset-0 w-full h-full object-contain bg-gray-50 opacity-100 transition-opacity duration-700" />
+            <img src="/images/products/classic-picky-photo.png" alt="피키픽 클래식피키 스탠드형 포토부스" class="booth-slide absolute inset-0 w-full h-full object-contain bg-gray-50 opacity-0 transition-opacity duration-700" loading="lazy" />
+            <img src="/images/products/urban-picky-photo.png" alt="피키픽 어반피키 스탠드형 포토부스" class="booth-slide absolute inset-0 w-full h-full object-contain bg-gray-50 opacity-0 transition-opacity duration-700" loading="lazy" />
+          </div>
+          <div class="p-6 lg:p-8">
+            <h3 class="text-lg font-bold text-primary mb-3">스탠드형 포토부스</h3>
+            <p class="text-sm text-secondary leading-relaxed mb-4">
+              가장 인기 있는 포토부스 유형으로, 행사장 어디에나 설치 가능한 독립형 구조입니다. 컴팩트한 디자인과 고화질 촬영이 특징입니다.
+            </p>
+            <ul class="text-sm text-secondary space-y-1">
+              <li>· Modern Picky</li>
+              <li>· Classic Picky</li>
+              <li>· Urban Picky</li>
+            </ul>
+          </div>
+        </div>
+        <!-- Table type -->
+        <div class="bg-white rounded-lg overflow-hidden">
+          <div class="booth-carousel relative aspect-[4/3] overflow-hidden" data-interval="3500">
+            <img src="/images/products/modern-mini-picky-photo.png" alt="피키픽 모던미니피키 테이블형 포토부스" class="booth-slide absolute inset-0 w-full h-full object-contain bg-gray-50 opacity-100 transition-opacity duration-700" />
+            <img src="/images/products/urban-mini-picky-photo.png" alt="피키픽 어반미니피키 테이블형 포토부스" class="booth-slide absolute inset-0 w-full h-full object-contain bg-gray-50 opacity-0 transition-opacity duration-700" loading="lazy" />
+            <img src="/images/products/modern-retro-picky-photo.png" alt="피키픽 모던레트로피키 테이블형 포토부스" class="booth-slide absolute inset-0 w-full h-full object-contain bg-gray-50 opacity-0 transition-opacity duration-700" loading="lazy" />
+            <img src="/images/products/urban-retro-picky-photo.png" alt="피키픽 어반레트로피키 테이블형 포토부스" class="booth-slide absolute inset-0 w-full h-full object-contain bg-gray-50 opacity-0 transition-opacity duration-700" loading="lazy" />
+          </div>
+          <div class="p-6 lg:p-8">
+            <h3 class="text-lg font-bold text-primary mb-3">테이블형 포토부스</h3>
+            <p class="text-sm text-secondary leading-relaxed mb-4">
+              테이블 위에 설치하는 컴팩트 모델로, 공간이 제한된 팝업스토어나 카페, 소규모 행사에 최적화되어 있습니다.
+            </p>
+            <ul class="text-sm text-secondary space-y-1">
+              <li>· Modern Mini Picky</li>
+              <li>· Urban Mini Picky</li>
+              <li>· Modern Retro Picky</li>
+              <li>· Urban Retro Picky</li>
+            </ul>
+          </div>
+        </div>
+        <!-- Booth type -->
+        <div class="bg-white rounded-lg overflow-hidden">
+          <div class="booth-carousel relative aspect-[4/3] overflow-hidden" data-interval="4000">
+            <img src="/images/products/outdoor-picky-photo.png" alt="피키픽 아웃도어피키 부스형 포토부스" class="booth-slide absolute inset-0 w-full h-full object-contain bg-gray-50 opacity-100 transition-opacity duration-700" />
+            <img src="/images/products/air-picky-photo.png" alt="피키픽 에어피키 부스형 포토부스" class="booth-slide absolute inset-0 w-full h-full object-contain bg-gray-50 opacity-0 transition-opacity duration-700" loading="lazy" />
+          </div>
+          <div class="p-6 lg:p-8">
+            <h3 class="text-lg font-bold text-primary mb-3">부스형 포토부스</h3>
+            <p class="text-sm text-secondary leading-relaxed mb-4">
+              독립된 촬영 공간을 제공하는 부스형 모델로, 야외 행사나 대형 페스티벌에 적합합니다. 날씨에 구애받지 않는 안정적인 촬영 환경을 제공합니다.
+            </p>
+            <ul class="text-sm text-secondary space-y-1">
+              <li>· Outdoor Picky</li>
+              <li>· Air Picky</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Rental Process -->
+  <section class="bg-white py-12 lg:py-16">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8 gs-fade-up">
+      <h2 class="text-xl lg:text-2xl font-bold text-primary mb-8">포토부스 대여 절차</h2>
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-4 lg:gap-6 gs-stagger">
+        {[
+          { step: '01', title: '문의', desc: '전화, 카카오톡, 웹사이트를 통해 행사 일정과 요구사항을 알려주세요.' },
+          { step: '02', title: '견적', desc: '행사 규모와 요구사항에 맞는 최적의 포토부스와 견적을 안내드립니다.' },
+          { step: '03', title: '설치', desc: '행사 당일, 전문 팀이 현장에 포토부스를 설치하고 세팅합니다.' },
+          { step: '04', title: '운영', desc: '운영 스태프가 상주하여 촬영 안내 및 장비를 관리합니다.' },
+          { step: '05', title: '철거', desc: '행사 종료 후 깔끔하게 철거하고, 촬영 데이터를 전달드립니다.' },
+        ].map((item) => (
+          <div class="text-center p-4">
+            <span class="block text-2xl lg:text-3xl font-bold text-primary/20 mb-2" style="font-family: 'Montserrat', sans-serif;">{item.step}</span>
+            <h3 class="text-sm lg:text-base font-bold text-primary mb-2">{item.title}</h3>
+            <p class="text-xs lg:text-sm text-secondary leading-relaxed">{item.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- What's Included -->
+  <section class="bg-bg-muted py-12 lg:py-16">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8 gs-fade-up">
+      <h2 class="text-xl lg:text-2xl font-bold text-primary mb-8">포토부스 대여 포함 사항</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 gs-stagger">
+        {[
+          { title: '포토부스 장비', desc: '선택하신 모델의 포토부스 본체, DSLR 카메라, 조명, 프린터 일체 제공' },
+          { title: '맞춤 프레임 디자인', desc: '브랜드 로고, 행사 테마를 반영한 맞춤 포토 프레임 제작' },
+          { title: '현장 설치 · 철거', desc: '전문 팀의 현장 방문 설치 및 행사 종료 후 철거 서비스' },
+          { title: '운영 스태프', desc: '행사 시간 동안 상주하며 촬영 안내 및 장비 운영 지원' },
+          { title: '무제한 인화', desc: '행사 시간 내 촬영 횟수 제한 없이 즉석 인화 제공' },
+          { title: '디지털 데이터', desc: '촬영된 원본 사진 및 프레임 적용 사진 디지털 파일 제공' },
+        ].map((item) => (
+          <div class="bg-white rounded-lg p-5 lg:p-6">
+            <h3 class="text-sm lg:text-base font-bold text-primary mb-2">{item.title}</h3>
+            <p class="text-xs lg:text-sm text-secondary leading-relaxed">{item.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <FAQSchema items={faqItems} title="포토부스 대여 자주 묻는 질문" />
+
+  <!-- Bottom CTA -->
+  <section class="bg-white py-12 lg:py-16">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8 text-center gs-fade-up">
+      <h2 class="text-xl lg:text-2xl font-bold text-primary mb-4">포토부스 대여, 지금 문의하세요</h2>
+      <p class="text-sm lg:text-base text-secondary mb-6 max-w-2xl mx-auto">
+        행사 일정과 요구사항을 알려주시면 영업시간 1시간 이내에 맞춤 견적을 안내드립니다.
+      </p>
+      <div class="flex flex-wrap justify-center gap-3">
+        <a href="/rental" class="inline-flex items-center justify-center rounded-full bg-primary px-8 py-3 text-sm font-medium text-white hover:bg-primary/90 transition-colors">
+          렌탈 문의하기
+        </a>
+        <a href="/products" class="inline-flex items-center justify-center rounded-full border border-gray-400 px-8 py-3 text-sm font-medium text-primary hover:bg-primary hover:text-white transition-colors">
+          제품 보기
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<!-- Auto-slide script for booth type carousels -->
+<script>
+  function initBoothCarousels() {
+    document.querySelectorAll<HTMLElement>('.booth-carousel').forEach((carousel) => {
+      const slides = carousel.querySelectorAll<HTMLImageElement>('.booth-slide');
+      if (slides.length <= 1) return;
+
+      const interval = parseInt(carousel.dataset.interval || '3000', 10);
+      let current = 0;
+
+      setInterval(() => {
+        slides[current].style.opacity = '0';
+        current = (current + 1) % slides.length;
+        slides[current].style.opacity = '1';
+      }, interval);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initBoothCarousels);
+  document.addEventListener('astro:after-swap', initBoothCarousels);
+</script>

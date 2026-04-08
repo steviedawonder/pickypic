@@ -59,7 +59,7 @@ try {
               }
             }
             if (!url) return '';
-            const alt = value.alt || '';
+            const alt = value.alt || `피키픽 포토부스 블로그 이미지 — ${post.title}`;
             return `<img src="${url}" alt="${alt}" style="max-width:100%;height:auto;margin:16px 0;border-radius:8px;" loading="lazy" />`;
           },
         },

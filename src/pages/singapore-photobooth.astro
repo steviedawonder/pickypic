@@ -1,0 +1,307 @@
+---
+// SEO Landing Page: Photo Booth Rental Singapore
+// Target keywords: Singapore photobooth rental, photo booth rental Singapore, photobooth Singapore, event photo booth Singapore
+// This page is English-only for international/Singapore market
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import ServiceSchema from '@components/seo/ServiceSchema.astro';
+import FAQSchema from '@components/seo/FAQSchema.astro';
+
+const faqItems = [
+  {
+    question: 'How much does it cost to rent a photo booth in Singapore?',
+    answer: 'Pricing varies depending on the photo booth model, event duration, and customization requirements. Our Singapore packages start from SGD 800 for basic setups. Contact us for a detailed quote tailored to your event.',
+  },
+  {
+    question: 'Do you deliver and set up photo booths in Singapore?',
+    answer: 'Yes! PICKYPIC provides full end-to-end service in Singapore including delivery, professional setup, on-site operation during your event, and teardown. Our team handles everything so you can focus on your event.',
+  },
+  {
+    question: 'How far in advance should I book a photo booth?',
+    answer: 'We recommend booking at least 2-4 weeks in advance for standard events. For large-scale corporate events or brand activations, we suggest reaching out 4-8 weeks ahead to ensure availability and allow time for custom branding.',
+  },
+  {
+    question: 'Can I customize the photo booth design and photo templates?',
+    answer: 'Absolutely! We offer full brand customization including custom photo frame designs, booth wrapping with your brand colors and logos, custom start screens, and branded print layouts. Our design team works with you to create a cohesive brand experience.',
+  },
+  {
+    question: 'What types of events are your photo booths suitable for?',
+    answer: 'Our photo booths are perfect for corporate events, brand pop-ups, product launches, weddings, birthday parties, gala dinners, trade shows, and festivals. We have served clients like Netflix, Hyundai, Starbucks, and New Balance across various event types.',
+  },
+  {
+    question: 'Do your photo booths support instant printing and digital sharing?',
+    answer: 'Yes, all our photo booths come equipped with high-quality instant printing (4x6 or strip format). Guests can also receive digital copies via QR code, email, or Airdrop for easy sharing on social media.',
+  },
+];
+
+// Photo booth model data
+const boothModels = {
+  stand: [
+    { name: 'Modern Picky', desc: 'Sleek, minimalist standing photo booth with a premium finish. Ideal for brand pop-ups and corporate events.' },
+    { name: 'Classic Picky', desc: 'Timeless design with warm tones. Perfect for weddings, galas, and elegant gatherings.' },
+    { name: 'Urban Picky', desc: 'Bold, industrial-inspired design. Great for trendy events, festivals, and youth-oriented activations.' },
+  ],
+  table: [
+    { name: 'Modern Mini Picky', desc: 'Compact tabletop booth with modern aesthetics. Fits small venues and intimate events.' },
+    { name: 'Urban Mini Picky', desc: 'Edgy tabletop design for casual and creative event spaces.' },
+    { name: 'Modern Retro Picky', desc: 'Receipt-style photo prints with a nostalgic twist. A guest favorite for unique keepsakes.' },
+    { name: 'Urban Retro Picky', desc: 'Urban-styled receipt photo booth combining retro charm with contemporary design.' },
+  ],
+  booth: [
+    { name: 'Outdoor Picky', desc: 'Weather-ready enclosed booth for outdoor festivals, rooftop parties, and open-air events.' },
+    { name: 'Air Picky', desc: 'Inflatable photo booth with striking visual presence. Perfect for large-scale activations and exhibitions.' },
+  ],
+};
+
+const processSteps = [
+  { step: '01', title: 'Inquiry', desc: 'Tell us about your event — date, venue, guest count, and any branding needs.' },
+  { step: '02', title: 'Quote', desc: 'We provide a detailed proposal with booth recommendations, pricing, and customization options.' },
+  { step: '03', title: 'Setup', desc: 'Our team arrives early to deliver, install, and test the photo booth at your venue.' },
+  { step: '04', title: 'Event', desc: 'Sit back and enjoy. Our on-site staff operates the booth and assists your guests throughout.' },
+  { step: '05', title: 'Teardown', desc: 'After the event, we handle complete teardown and removal — no hassle for you.' },
+];
+---
+
+<BaseLayout
+  title="Photo Booth Rental Singapore | PICKYPIC Photobooth"
+  description="Premium photo booth rental in Singapore for corporate events, brand pop-ups, weddings & parties. 9+ booth models, full brand customization, instant prints. Get a free quote from PICKYPIC."
+>
+  <!-- Structured Data -->
+  <BreadcrumbSchema items={[
+    { name: 'Home', href: '/' },
+    { name: 'Photo Booth Rental Singapore', href: '/singapore-photobooth' },
+  ]} />
+  <ServiceSchema
+    serviceName="Photo Booth Rental Singapore"
+    serviceType="Photo Booth Rental"
+    description="Premium photo booth rental service in Singapore by PICKYPIC. Offering 9+ Korean-designed photo booth models for corporate events, brand pop-ups, weddings, and parties with full customization and on-site support."
+  />
+
+  <!-- Hero Section -->
+  <section class="relative bg-white pt-14 pb-8 lg:pt-12 lg:pb-12 overflow-hidden">
+    <div class="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 gs-fade-up">
+      <h1 class="text-3xl lg:text-[clamp(2.5rem,5vw,4rem)] font-bold tracking-[0.02em] text-primary leading-tight" style="font-family: 'Montserrat', sans-serif;">
+        Photo Booth Rental Singapore
+      </h1>
+      <p class="mt-4 text-sm lg:text-base text-secondary leading-relaxed max-w-3xl">
+        PICKYPIC Photobooth is a premium photo booth rental company headquartered in Seoul, South Korea, with operations in Singapore. With a lineup of 9+ photo booth models and experience serving over 1,000 brand events including Netflix, Hyundai, and Starbucks, PICKYPIC brings Korean-designed modern photo booth experiences to Singapore.
+      </p>
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a href="/rental" class="inline-flex items-center px-6 py-3 bg-primary text-white text-sm font-semibold rounded-full hover:bg-gray-800 transition-colors">
+          Get a Free Quote
+        </a>
+        <a href="https://www.instagram.com/pickypic.sg/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-6 py-3 border border-gray-400 text-primary text-sm font-semibold rounded-full hover:bg-primary hover:text-white transition-colors">
+          @pickypic.sg
+          <svg class="ml-2 w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose PICKYPIC Singapore -->
+  <section class="bg-bg-muted py-16 lg:py-20">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <h2 class="text-2xl lg:text-3xl font-bold text-primary text-center mb-12 gs-fade-up" style="font-family: 'Montserrat', sans-serif;">
+        Why Choose PICKYPIC Singapore
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 gs-stagger">
+        <div class="bg-white rounded-lg p-6 text-center">
+          <div class="text-3xl font-bold text-primary mb-2" style="font-family: 'Montserrat', sans-serif;">9+</div>
+          <h3 class="font-semibold text-primary mb-2">Photo Booth Models</h3>
+          <p class="text-sm text-secondary">Stand, table, and booth types — the widest selection of Korean-designed photo booths available in Singapore.</p>
+        </div>
+        <div class="bg-white rounded-lg p-6 text-center">
+          <div class="text-3xl font-bold text-primary mb-2" style="font-family: 'Montserrat', sans-serif;">1,000+</div>
+          <h3 class="font-semibold text-primary mb-2">Events Served</h3>
+          <p class="text-sm text-secondary">Trusted by global brands like Netflix, Hyundai, Kia, New Balance, and Starbucks for premium activations.</p>
+        </div>
+        <div class="bg-white rounded-lg p-6 text-center">
+          <div class="text-3xl font-bold text-primary mb-2" style="font-family: 'Montserrat', sans-serif;">100%</div>
+          <h3 class="font-semibold text-primary mb-2">Full-Service</h3>
+          <p class="text-sm text-secondary">End-to-end service from delivery and setup to on-site operation and teardown. We handle everything.</p>
+        </div>
+        <div class="bg-white rounded-lg p-6 text-center">
+          <div class="text-3xl font-bold text-primary mb-2" style="font-family: 'Montserrat', sans-serif;">∞</div>
+          <h3 class="font-semibold text-primary mb-2">Custom Branding</h3>
+          <p class="text-sm text-secondary">Full customization of booth wraps, photo templates, start screens, and print layouts to match your brand.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Our Photo Booth Models -->
+  <section class="bg-white py-16 lg:py-20">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <h2 class="text-2xl lg:text-3xl font-bold text-primary text-center mb-4 gs-fade-up" style="font-family: 'Montserrat', sans-serif;">
+        Our Photo Booth Models
+      </h2>
+      <p class="text-center text-secondary text-sm lg:text-base mb-12 gs-fade-up">
+        Choose from our diverse lineup of Korean-designed photo booths for your Singapore event.
+      </p>
+
+      <!-- Stand Type -->
+      <div class="mb-12 gs-fade-up">
+        <h3 class="text-lg lg:text-xl font-bold text-primary mb-4 flex items-center gap-2" style="font-family: 'Montserrat', sans-serif;">
+          <span class="w-8 h-[2px] bg-primary inline-block"></span> Stand Type
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
+          {boothModels.stand.map((model) => (
+            <div class="border border-border-default rounded-lg p-5 hover:border-primary transition-colors">
+              <h4 class="font-semibold text-primary mb-2">{model.name}</h4>
+              <p class="text-sm text-secondary leading-relaxed">{model.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Table Type -->
+      <div class="mb-12 gs-fade-up">
+        <h3 class="text-lg lg:text-xl font-bold text-primary mb-4 flex items-center gap-2" style="font-family: 'Montserrat', sans-serif;">
+          <span class="w-8 h-[2px] bg-primary inline-block"></span> Table Type
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+          {boothModels.table.map((model) => (
+            <div class="border border-border-default rounded-lg p-5 hover:border-primary transition-colors">
+              <h4 class="font-semibold text-primary mb-2">{model.name}</h4>
+              <p class="text-sm text-secondary leading-relaxed">{model.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Booth Type -->
+      <div class="gs-fade-up">
+        <h3 class="text-lg lg:text-xl font-bold text-primary mb-4 flex items-center gap-2" style="font-family: 'Montserrat', sans-serif;">
+          <span class="w-8 h-[2px] bg-primary inline-block"></span> Booth Type
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+          {boothModels.booth.map((model) => (
+            <div class="border border-border-default rounded-lg p-5 hover:border-primary transition-colors">
+              <h4 class="font-semibold text-primary mb-2">{model.name}</h4>
+              <p class="text-sm text-secondary leading-relaxed">{model.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section class="bg-bg-muted py-16 lg:py-20">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <h2 class="text-2xl lg:text-3xl font-bold text-primary text-center mb-12 gs-fade-up" style="font-family: 'Montserrat', sans-serif;">
+        Photo Booth Services in Singapore
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 gs-stagger">
+        <div class="bg-white rounded-lg p-6">
+          <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+          </div>
+          <h3 class="font-semibold text-primary mb-2">Corporate Events</h3>
+          <p class="text-sm text-secondary leading-relaxed">Company D&Ds, annual dinners, team-building events, product launches, and conferences with branded photo experiences.</p>
+        </div>
+        <div class="bg-white rounded-lg p-6">
+          <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+          </div>
+          <h3 class="font-semibold text-primary mb-2">Brand Pop-ups</h3>
+          <p class="text-sm text-secondary leading-relaxed">Retail activations, pop-up stores, and brand experience zones with fully customized booth wrapping and photo templates.</p>
+        </div>
+        <div class="bg-white rounded-lg p-6">
+          <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+          </div>
+          <h3 class="font-semibold text-primary mb-2">Weddings</h3>
+          <p class="text-sm text-secondary leading-relaxed">Elegant photo booth setups for wedding receptions, solemnizations, and pre-wedding events. Create lasting memories for your guests.</p>
+        </div>
+        <div class="bg-white rounded-lg p-6">
+          <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3 class="font-semibold text-primary mb-2">Parties &amp; Celebrations</h3>
+          <p class="text-sm text-secondary leading-relaxed">Birthday parties, graduation celebrations, festive gatherings, and private events with fun, interactive photo booth experiences.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="bg-white py-16 lg:py-20">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <h2 class="text-2xl lg:text-3xl font-bold text-primary text-center mb-12 gs-fade-up" style="font-family: 'Montserrat', sans-serif;">
+        How It Works
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-6 lg:gap-4 gs-stagger">
+        {processSteps.map((item) => (
+          <div class="text-center">
+            <div class="text-3xl font-bold text-primary/20 mb-2" style="font-family: 'Montserrat', sans-serif;">{item.step}</div>
+            <h3 class="font-semibold text-primary mb-2">{item.title}</h3>
+            <p class="text-sm text-secondary leading-relaxed">{item.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Brand Customization Options -->
+  <section class="bg-bg-muted py-16 lg:py-20">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <h2 class="text-2xl lg:text-3xl font-bold text-primary text-center mb-4 gs-fade-up" style="font-family: 'Montserrat', sans-serif;">
+        Brand Customization Options
+      </h2>
+      <p class="text-center text-secondary text-sm lg:text-base mb-12 max-w-2xl mx-auto gs-fade-up">
+        Make the photo booth truly yours. Every element can be tailored to align with your brand identity and event theme.
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 gs-stagger">
+        <div class="bg-white rounded-lg p-6">
+          <h3 class="font-semibold text-primary mb-2">Booth Wrapping</h3>
+          <p class="text-sm text-secondary leading-relaxed">Full exterior wrapping with your brand colors, logos, and campaign artwork for maximum visual impact.</p>
+        </div>
+        <div class="bg-white rounded-lg p-6">
+          <h3 class="font-semibold text-primary mb-2">Photo Frame Design</h3>
+          <p class="text-sm text-secondary leading-relaxed">Custom photo frame templates with your brand elements, event name, date, and hashtags printed on every photo.</p>
+        </div>
+        <div class="bg-white rounded-lg p-6">
+          <h3 class="font-semibold text-primary mb-2">Start Screen UI</h3>
+          <p class="text-sm text-secondary leading-relaxed">Branded welcome screen with your logo, event message, and custom animations displayed before each photo session.</p>
+        </div>
+        <div class="bg-white rounded-lg p-6">
+          <h3 class="font-semibold text-primary mb-2">Print Layouts</h3>
+          <p class="text-sm text-secondary leading-relaxed">Choose from strip photos, 4-cut grids, or single prints — all fully customizable with your branding.</p>
+        </div>
+        <div class="bg-white rounded-lg p-6">
+          <h3 class="font-semibold text-primary mb-2">Digital Sharing</h3>
+          <p class="text-sm text-secondary leading-relaxed">QR code sharing, email delivery, and Airdrop support so guests can instantly post their photos to social media.</p>
+        </div>
+        <div class="bg-white rounded-lg p-6">
+          <h3 class="font-semibold text-primary mb-2">Filter &amp; Effects</h3>
+          <p class="text-sm text-secondary leading-relaxed">Custom photo filters, color grading presets, and AR effects tailored to your brand aesthetic and campaign theme.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <FAQSchema items={faqItems} title="Frequently Asked Questions" />
+
+  <!-- Final CTA -->
+  <section class="bg-primary py-16 lg:py-20">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8 text-center gs-fade-up">
+      <h2 class="text-2xl lg:text-3xl font-bold text-white mb-4" style="font-family: 'Montserrat', sans-serif;">
+        Ready to Book a Photo Booth in Singapore?
+      </h2>
+      <p class="text-white/80 text-sm lg:text-base mb-8 max-w-2xl mx-auto">
+        Whether it's a corporate event, brand activation, wedding, or party — PICKYPIC delivers premium photo booth experiences to Singapore. Get in touch today for a free quote.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="/rental" class="inline-flex items-center px-8 py-3 bg-white text-primary text-sm font-semibold rounded-full hover:bg-gray-100 transition-colors">
+          Get a Free Quote
+        </a>
+        <a href="https://www.instagram.com/pickypic.sg/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-8 py-3 border border-white text-white text-sm font-semibold rounded-full hover:bg-white hover:text-primary transition-colors">
+          Follow @pickypic.sg
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

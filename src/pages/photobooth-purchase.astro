@@ -1,0 +1,640 @@
+---
+// SEO landing page for photo booth purchase keywords
+// Target keywords: 포토부스 구매, 포토부스 판매, 포토부스 기기 구매, 포토부스 구매 가격, 오픈형 포토부스 구매, 포토부스 기기
+import BaseLayout from '@layouts/BaseLayout.astro';
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import FAQSchema from '@components/seo/FAQSchema.astro';
+import { company } from '@data/company';
+import { products } from '@data/products';
+
+// Product ID to display name mapping for table rows
+const productMap: Record<string, typeof products[0]> = {};
+products.forEach(p => { productMap[p.id] = p; });
+
+// FAQ items for structured data
+const faqItems = [
+  {
+    question: '포토부스 구매 가격대는 어떻게 되나요?',
+    answer: 'PICKYPIC 포토부스는 모델에 따라 가격이 다릅니다. 테이블형 레트로피키는 소형 기기로 가장 합리적인 가격대이며, 스탠드형 모던피키·클래식피키·어반피키는 중간 가격대, 부스형 아웃도어피키·에어피키는 대형 기기로 가격이 높습니다. 정확한 견적은 모델, 수량, 커스터마이징 옵션에 따라 달라지므로 문의 주시면 맞춤 견적을 안내해 드립니다.',
+  },
+  {
+    question: '포토부스 배송은 어떻게 진행되나요?',
+    answer: '국내 배송은 서울·수도권 기준 직접 배송 및 설치를 지원하며, 지방의 경우 택배 또는 화물 배송이 가능합니다. 해외 배송은 항공(Air Freight) 및 해상(Ocean Freight) 운송을 모두 지원하며, 현재 싱가포르를 비롯한 동남아시아, 일본 등에 수출 실적이 있습니다.',
+  },
+  {
+    question: '포토부스 설치가 어렵지 않나요?',
+    answer: '스탠드형과 테이블형은 간단한 조립으로 설치할 수 있으며, 설치 매뉴얼과 영상 가이드를 제공합니다. 부스형(아웃도어피키, 에어피키)은 전문 설치 지원이 포함됩니다. 무인사진관 창업 시에는 공간 컨설팅부터 설치까지 원스톱으로 지원해 드립니다.',
+  },
+  {
+    question: '구매 후 A/S(애프터서비스)는 어떻게 받나요?',
+    answer: 'PICKYPIC은 자체 설계·제조 기업으로 부품부터 소프트웨어까지 직접 관리합니다. 구매 후 1년간 무상 A/S를 제공하며, 이후에도 유상 A/S를 합리적인 비용으로 지원합니다. 원격 소프트웨어 업데이트, 부품 교체, 현장 출장 수리 등 다양한 A/S 옵션이 있습니다.',
+  },
+  {
+    question: '해외에서도 포토부스를 구매할 수 있나요?',
+    answer: '네, 해외 배송이 가능합니다. 항공 및 해상 운송을 통해 전 세계로 배송하며, 영어·일본어 UI 지원도 가능합니다. 현재 싱가포르에 지사(PICKYPIC SG)를 운영 중이며, 동남아시아 지역은 현지 설치 지원도 제공합니다.',
+  },
+  {
+    question: '포토부스 커스터마이징(맞춤 제작)이 가능한가요?',
+    answer: '모든 PICKYPIC 포토부스는 외관 래핑, UI 화면 디자인, 인쇄 템플릿 디자인 등 커스터마이징이 가능합니다. 브랜드 컬러와 로고를 반영한 맞춤형 포토부스를 제작할 수 있어, 무인사진관 창업이나 브랜드 매장 설치 시 차별화된 경험을 제공합니다.',
+  },
+];
+---
+
+<BaseLayout
+  title="포토부스 구매 · 포토부스 판매 | 9종 라인업 제조사 직접 판매 - PICKYPIC"
+  description="포토부스 구매를 고려하시나요? PICKYPIC은 스탠드형·테이블형·부스형 9종 이상의 포토부스를 자체 설계·제조·판매합니다. 무인사진관 창업, 카페, 이벤트업체를 위한 포토부스 기기 구매 가이드와 가격 정보를 확인하세요."
+>
+  <!-- Breadcrumb Schema -->
+  <BreadcrumbSchema items={[
+    { name: '홈', href: '/' },
+    { name: '포토부스 구매', href: '/photobooth-purchase' },
+  ]} />
+
+  <!-- FAQ Schema -->
+  <FAQSchema items={faqItems} title="포토부스 구매 자주 묻는 질문" />
+
+  <!-- Hero Section -->
+  <section class="pt-16 pb-10 lg:pt-20 lg:pb-14 bg-white">
+    <div class="mx-auto max-w-4xl px-6 lg:px-8 text-center">
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-primary mb-6 gs-fade-up">
+        포토부스 구매 · 판매
+      </h1>
+      <p class="text-base sm:text-lg text-secondary leading-relaxed max-w-3xl mx-auto gs-fade-up">
+        PICKYPIC은 <strong>9종 이상의 프리미엄 포토부스</strong>를 자체 설계·제조·판매하는 포토부스 전문 기업입니다.
+        테이블 위에 올려놓는 미니 포토부스부터 독립형 풀사이즈 부스까지, 용도와 공간에 맞는 최적의 포토부스 기기를 제공합니다.
+        넷플릭스, 현대자동차, 스타벅스 등 1,000건 이상의 행사에서 검증된 품질을 경험하세요.
+      </p>
+    </div>
+  </section>
+
+  <!-- Purchase Guide Section -->
+  <section class="py-12 lg:py-16 bg-bg-muted" aria-labelledby="guide-heading">
+    <div class="mx-auto max-w-6xl px-6 lg:px-8">
+      <h2 id="guide-heading" class="text-2xl sm:text-3xl font-bold text-primary text-center mb-4 gs-fade-up">
+        포토부스 구매 가이드
+      </h2>
+      <p class="text-secondary text-center mb-10 max-w-2xl mx-auto gs-fade-up">
+        어떤 업종에서 포토부스가 필요하신가요? 목적에 맞는 포토부스를 추천해 드립니다.
+      </p>
+
+      <div class="grid md:grid-cols-3 gap-6 lg:gap-8 gs-stagger">
+        <!-- Cafe / Unmanned Photo Studio -->
+        <div class="bg-white rounded-xl p-6 lg:p-8 border border-border-default">
+          <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-bold text-primary mb-2">카페 · 무인사진관 창업</h3>
+          <p class="text-secondary text-sm leading-relaxed mb-3">
+            무인 운영이 가능한 스탠드형 포토부스가 적합합니다. 카드·코인·쿠폰 결제를 지원하며, 자동 인쇄까지 원스톱으로 운영됩니다.
+          </p>
+          <p class="text-xs text-primary font-medium">추천: 모던피키 · 클래식피키 · 어반피키</p>
+        </div>
+
+        <!-- Event / Brand Popup -->
+        <div class="bg-white rounded-xl p-6 lg:p-8 border border-border-default">
+          <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-bold text-primary mb-2">이벤트 · 브랜드 팝업</h3>
+          <p class="text-secondary text-sm leading-relaxed mb-3">
+            이동과 설치가 간편한 테이블형 미니 포토부스가 인기입니다. 외관 래핑과 UI 커스터마이징으로 브랜드 아이덴티티를 반영할 수 있습니다.
+          </p>
+          <p class="text-xs text-primary font-medium">추천: 모던 미니피키 · 어반 미니피키 · 레트로피키</p>
+        </div>
+
+        <!-- Large Venue / Permanent Installation -->
+        <div class="bg-white rounded-xl p-6 lg:p-8 border border-border-default">
+          <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-bold text-primary mb-2">대형 매장 · 상설 운영</h3>
+          <p class="text-secondary text-sm leading-relaxed mb-3">
+            프라이빗한 촬영 공간이 필요하다면 부스형을 추천합니다. 21인치 대형 모니터와 DSLR 카메라로 최상의 촬영 품질을 제공합니다.
+          </p>
+          <p class="text-xs text-primary font-medium">추천: 아웃도어피키 · 에어피키</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Product Lineup Summary -->
+  <section class="py-12 lg:py-16 bg-white" aria-labelledby="lineup-heading">
+    <div class="mx-auto max-w-6xl px-6 lg:px-8">
+      <h2 id="lineup-heading" class="text-2xl sm:text-3xl font-bold text-primary text-center mb-10 gs-fade-up">
+        포토부스 제품 라인업
+      </h2>
+
+      <!-- Stand Type -->
+      <div class="mb-10 gs-fade-up">
+        <h3 class="text-lg font-bold text-primary mb-1 flex items-center gap-2">
+          <span class="inline-block w-2 h-2 bg-primary rounded-full"></span>
+          스탠드형 포토부스 — 3종
+        </h3>
+        <p class="text-xs text-secondary mb-4 ml-4">무인사진관·카페에 최적화된 독립형 포토부스</p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm border-collapse min-w-[600px]">
+            <thead>
+              <tr class="border-b-2 border-primary">
+                <th class="text-left py-3 pr-4 font-semibold text-primary">모델명</th>
+                <th class="text-left py-3 pr-4 font-semibold text-primary">카메라</th>
+                <th class="text-left py-3 pr-4 font-semibold text-primary">디스플레이</th>
+                <th class="text-left py-3 pr-4 font-semibold text-primary">소재</th>
+                <th class="text-left py-3 pr-4 font-semibold text-primary">크기 (mm)</th>
+                <th class="text-left py-3 font-semibold text-primary">무게</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="product-row border-b border-border-light cursor-pointer hover:bg-primary/5 transition-colors duration-200" data-product-id="modern-picky">
+                <td class="py-3 pr-4 font-medium text-primary">모던피키<br><span class="text-xs text-secondary">Modern Picky</span></td>
+                <td class="py-3 pr-4 text-secondary">DSLR</td>
+                <td class="py-3 pr-4 text-secondary">13인치</td>
+                <td class="py-3 pr-4 text-secondary">우드</td>
+                <td class="py-3 pr-4 text-secondary">550×550×1570</td>
+                <td class="py-3 text-secondary">30kg</td>
+              </tr>
+              <tr class="product-row border-b border-border-light cursor-pointer hover:bg-primary/5 transition-colors duration-200" data-product-id="classic-picky">
+                <td class="py-3 pr-4 font-medium text-primary">클래식피키<br><span class="text-xs text-secondary">Classic Picky</span></td>
+                <td class="py-3 pr-4 text-secondary">DSLR</td>
+                <td class="py-3 pr-4 text-secondary">13인치</td>
+                <td class="py-3 pr-4 text-secondary">우드</td>
+                <td class="py-3 pr-4 text-secondary">550×550×1570</td>
+                <td class="py-3 text-secondary">23kg</td>
+              </tr>
+              <tr class="product-row border-b border-border-light cursor-pointer hover:bg-primary/5 transition-colors duration-200" data-product-id="urban-picky">
+                <td class="py-3 pr-4 font-medium text-primary">어반피키<br><span class="text-xs text-secondary">Urban Picky</span></td>
+                <td class="py-3 pr-4 text-secondary">DSLR</td>
+                <td class="py-3 pr-4 text-secondary">13인치</td>
+                <td class="py-3 pr-4 text-secondary">아크릴</td>
+                <td class="py-3 pr-4 text-secondary">550×550×1440</td>
+                <td class="py-3 text-secondary">40kg</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Table Type -->
+      <div class="mb-10 gs-fade-up">
+        <h3 class="text-lg font-bold text-primary mb-1 flex items-center gap-2">
+          <span class="inline-block w-2 h-2 bg-primary rounded-full"></span>
+          테이블형 포토부스 — 4종
+        </h3>
+        <p class="text-xs text-secondary mb-4 ml-4">이동이 간편한 컴팩트 사이즈, 이벤트·팝업에 최적</p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm border-collapse min-w-[600px]">
+            <thead>
+              <tr class="border-b-2 border-primary">
+                <th class="text-left py-3 pr-4 font-semibold text-primary">모델명</th>
+                <th class="text-left py-3 pr-4 font-semibold text-primary">카메라</th>
+                <th class="text-left py-3 pr-4 font-semibold text-primary">디스플레이</th>
+                <th class="text-left py-3 pr-4 font-semibold text-primary">소재</th>
+                <th class="text-left py-3 pr-4 font-semibold text-primary">크기 (mm)</th>
+                <th class="text-left py-3 font-semibold text-primary">무게</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="product-row border-b border-border-light cursor-pointer hover:bg-primary/5 transition-colors duration-200" data-product-id="modern-mini-picky">
+                <td class="py-3 pr-4 font-medium text-primary">모던 미니피키<br><span class="text-xs text-secondary">Modern Mini Picky</span></td>
+                <td class="py-3 pr-4 text-secondary">웹캠</td>
+                <td class="py-3 pr-4 text-secondary">11.6인치</td>
+                <td class="py-3 pr-4 text-secondary">우드</td>
+                <td class="py-3 pr-4 text-secondary">330×330×390</td>
+                <td class="py-3 text-secondary">15kg</td>
+              </tr>
+              <tr class="product-row border-b border-border-light cursor-pointer hover:bg-primary/5 transition-colors duration-200" data-product-id="urban-mini-picky">
+                <td class="py-3 pr-4 font-medium text-primary">어반 미니피키<br><span class="text-xs text-secondary">Urban Mini Picky</span></td>
+                <td class="py-3 pr-4 text-secondary">웹캠</td>
+                <td class="py-3 pr-4 text-secondary">11.6인치</td>
+                <td class="py-3 pr-4 text-secondary">아크릴</td>
+                <td class="py-3 pr-4 text-secondary">350×350×400</td>
+                <td class="py-3 text-secondary">15kg</td>
+              </tr>
+              <tr class="product-row border-b border-border-light cursor-pointer hover:bg-primary/5 transition-colors duration-200" data-product-id="modern-retro-picky">
+                <td class="py-3 pr-4 font-medium text-primary">모던 레트로피키<br><span class="text-xs text-secondary">Modern Retro Picky</span></td>
+                <td class="py-3 pr-4 text-secondary">태블릿 내장</td>
+                <td class="py-3 pr-4 text-secondary">8.7인치</td>
+                <td class="py-3 pr-4 text-secondary">우드</td>
+                <td class="py-3 pr-4 text-secondary">290×290×310</td>
+                <td class="py-3 text-secondary">5kg</td>
+              </tr>
+              <tr class="product-row border-b border-border-light cursor-pointer hover:bg-primary/5 transition-colors duration-200" data-product-id="urban-retro-picky">
+                <td class="py-3 pr-4 font-medium text-primary">어반 레트로피키<br><span class="text-xs text-secondary">Urban Retro Picky</span></td>
+                <td class="py-3 pr-4 text-secondary">태블릿 내장</td>
+                <td class="py-3 pr-4 text-secondary">8.7인치</td>
+                <td class="py-3 pr-4 text-secondary">아크릴</td>
+                <td class="py-3 pr-4 text-secondary">190×230×316</td>
+                <td class="py-3 text-secondary">5kg</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Booth Type -->
+      <div class="gs-fade-up">
+        <h3 class="text-lg font-bold text-primary mb-1 flex items-center gap-2">
+          <span class="inline-block w-2 h-2 bg-primary rounded-full"></span>
+          부스형 포토부스 — 2종
+        </h3>
+        <p class="text-xs text-secondary mb-4 ml-4">프라이빗 촬영 공간 제공, 대형 매장·상설 운영에 적합</p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm border-collapse min-w-[600px]">
+            <thead>
+              <tr class="border-b-2 border-primary">
+                <th class="text-left py-3 pr-4 font-semibold text-primary">모델명</th>
+                <th class="text-left py-3 pr-4 font-semibold text-primary">카메라</th>
+                <th class="text-left py-3 pr-4 font-semibold text-primary">디스플레이</th>
+                <th class="text-left py-3 pr-4 font-semibold text-primary">소재</th>
+                <th class="text-left py-3 pr-4 font-semibold text-primary">크기 (mm)</th>
+                <th class="text-left py-3 font-semibold text-primary">무게</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="product-row border-b border-border-light cursor-pointer hover:bg-primary/5 transition-colors duration-200" data-product-id="outdoor-picky">
+                <td class="py-3 pr-4 font-medium text-primary">아웃도어피키<br><span class="text-xs text-secondary">Outdoor Picky</span></td>
+                <td class="py-3 pr-4 text-secondary">DSLR</td>
+                <td class="py-3 pr-4 text-secondary">21인치</td>
+                <td class="py-3 pr-4 text-secondary">메탈</td>
+                <td class="py-3 pr-4 text-secondary">1000×1400×2050</td>
+                <td class="py-3 text-secondary">300kg</td>
+              </tr>
+              <tr class="product-row border-b border-border-light cursor-pointer hover:bg-primary/5 transition-colors duration-200" data-product-id="air-picky">
+                <td class="py-3 pr-4 font-medium text-primary">에어피키<br><span class="text-xs text-secondary">Air Picky</span></td>
+                <td class="py-3 pr-4 text-secondary">DSLR</td>
+                <td class="py-3 pr-4 text-secondary">21인치</td>
+                <td class="py-3 pr-4 text-secondary">메탈</td>
+                <td class="py-3 pr-4 text-secondary">930×930×2350</td>
+                <td class="py-3 text-secondary">130kg</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Purchase vs Rental Comparison -->
+  <section class="py-12 lg:py-16 bg-bg-muted" aria-labelledby="compare-heading">
+    <div class="mx-auto max-w-4xl px-6 lg:px-8">
+      <h2 id="compare-heading" class="text-2xl sm:text-3xl font-bold text-primary text-center mb-10 gs-fade-up">
+        포토부스 구매 vs 렌탈 비교
+      </h2>
+
+      <div class="overflow-x-auto gs-fade-up">
+        <table class="w-full text-sm border-collapse bg-white rounded-xl overflow-hidden min-w-[500px]">
+          <thead>
+            <tr class="bg-primary text-white">
+              <th class="text-left py-4 px-5 font-semibold">항목</th>
+              <th class="text-center py-4 px-5 font-semibold">구매</th>
+              <th class="text-center py-4 px-5 font-semibold">렌탈</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-border-light">
+              <td class="py-3 px-5 font-medium text-primary">초기 비용</td>
+              <td class="py-3 px-5 text-center text-secondary">높음 (일시불 / 할부)</td>
+              <td class="py-3 px-5 text-center text-secondary">낮음 (1회 이용료)</td>
+            </tr>
+            <tr class="border-b border-border-light bg-bg-subtle">
+              <td class="py-3 px-5 font-medium text-primary">장기 비용</td>
+              <td class="py-3 px-5 text-center text-secondary">유리 (자산 소유)</td>
+              <td class="py-3 px-5 text-center text-secondary">누적 비용 증가</td>
+            </tr>
+            <tr class="border-b border-border-light">
+              <td class="py-3 px-5 font-medium text-primary">적합한 용도</td>
+              <td class="py-3 px-5 text-center text-secondary">상설 운영 · 무인사진관</td>
+              <td class="py-3 px-5 text-center text-secondary">단기 이벤트 · 팝업</td>
+            </tr>
+            <tr class="border-b border-border-light bg-bg-subtle">
+              <td class="py-3 px-5 font-medium text-primary">커스터마이징</td>
+              <td class="py-3 px-5 text-center text-secondary">자유롭게 가능</td>
+              <td class="py-3 px-5 text-center text-secondary">제한적</td>
+            </tr>
+            <tr class="border-b border-border-light">
+              <td class="py-3 px-5 font-medium text-primary">유지보수</td>
+              <td class="py-3 px-5 text-center text-secondary">자체 관리 + A/S</td>
+              <td class="py-3 px-5 text-center text-secondary">업체 관리</td>
+            </tr>
+            <tr>
+              <td class="py-3 px-5 font-medium text-primary">수익 구조</td>
+              <td class="py-3 px-5 text-center text-secondary">매출 100% 본인</td>
+              <td class="py-3 px-5 text-center text-secondary">렌탈비 차감</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="text-xs text-secondary text-center mt-4">
+        * 월 20일 이상 상설 운영 시 구매가 경제적이며, 연 1~2회 단기 행사에는 렌탈이 효율적입니다.
+      </p>
+    </div>
+  </section>
+
+  <!-- Purchase Process -->
+  <section class="py-12 lg:py-16 bg-white" aria-labelledby="process-heading">
+    <div class="mx-auto max-w-5xl px-6 lg:px-8">
+      <h2 id="process-heading" class="text-2xl sm:text-3xl font-bold text-primary text-center mb-10 gs-fade-up">
+        포토부스 구매 절차
+      </h2>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 gs-stagger">
+        <!-- Step 1 -->
+        <div class="text-center">
+          <div class="w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">1</div>
+          <h3 class="font-bold text-primary mb-2">상담 · 견적</h3>
+          <p class="text-sm text-secondary leading-relaxed">
+            용도, 공간, 예산에 맞는 모델을 추천하고 맞춤 견적을 제공합니다.
+          </p>
+        </div>
+        <!-- Step 2 -->
+        <div class="text-center">
+          <div class="w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">2</div>
+          <h3 class="font-bold text-primary mb-2">계약 · 커스터마이징</h3>
+          <p class="text-sm text-secondary leading-relaxed">
+            계약 체결 후 외관 래핑, UI 디자인, 인쇄 템플릿 등 맞춤 제작을 진행합니다.
+          </p>
+        </div>
+        <!-- Step 3 -->
+        <div class="text-center">
+          <div class="w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">3</div>
+          <h3 class="font-bold text-primary mb-2">제조 · 배송</h3>
+          <p class="text-sm text-secondary leading-relaxed">
+            자체 공장에서 제조 후 국내 직배송 또는 해외 항공/해상 운송합니다.
+          </p>
+        </div>
+        <!-- Step 4 -->
+        <div class="text-center">
+          <div class="w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">4</div>
+          <h3 class="font-bold text-primary mb-2">설치 · 교육</h3>
+          <p class="text-sm text-secondary leading-relaxed">
+            설치 지원 및 운영 교육을 제공하며, 이후 지속적인 A/S를 보장합니다.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- After-Sales Service & Maintenance -->
+  <section class="py-12 lg:py-16 bg-bg-muted" aria-labelledby="as-heading">
+    <div class="mx-auto max-w-5xl px-6 lg:px-8">
+      <h2 id="as-heading" class="text-2xl sm:text-3xl font-bold text-primary text-center mb-10 gs-fade-up">
+        A/S 및 유지보수
+      </h2>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 gs-stagger">
+        <div class="bg-white rounded-xl p-6 border border-border-default">
+          <h3 class="font-bold text-primary mb-2">1년 무상 A/S</h3>
+          <p class="text-sm text-secondary leading-relaxed">
+            구매일로부터 1년간 제조 결함에 대한 무상 수리 및 부품 교체를 제공합니다.
+          </p>
+        </div>
+        <div class="bg-white rounded-xl p-6 border border-border-default">
+          <h3 class="font-bold text-primary mb-2">원격 소프트웨어 업데이트</h3>
+          <p class="text-sm text-secondary leading-relaxed">
+            인터넷 연결만으로 최신 소프트웨어 업데이트와 원격 진단이 가능합니다.
+          </p>
+        </div>
+        <div class="bg-white rounded-xl p-6 border border-border-default">
+          <h3 class="font-bold text-primary mb-2">부품 자체 생산</h3>
+          <p class="text-sm text-secondary leading-relaxed">
+            자체 설계·제조 기업으로 부품 수급이 빠르며, 단종 걱정 없이 장기 운영이 가능합니다.
+          </p>
+        </div>
+        <div class="bg-white rounded-xl p-6 border border-border-default">
+          <h3 class="font-bold text-primary mb-2">현장 출장 수리</h3>
+          <p class="text-sm text-secondary leading-relaxed">
+            서울·수도권은 현장 출장 수리를 지원하며, 지방은 택배 수리 서비스를 운영합니다.
+          </p>
+        </div>
+        <div class="bg-white rounded-xl p-6 border border-border-default">
+          <h3 class="font-bold text-primary mb-2">소모품 공급</h3>
+          <p class="text-sm text-secondary leading-relaxed">
+            인화지, 잉크 리본 등 소모품을 네이버 스마트스토어에서 간편하게 구매할 수 있습니다.
+          </p>
+        </div>
+        <div class="bg-white rounded-xl p-6 border border-border-default">
+          <h3 class="font-bold text-primary mb-2">운영 교육</h3>
+          <p class="text-sm text-secondary leading-relaxed">
+            초기 설치 시 운영 교육을 제공하며, 매뉴얼과 영상 가이드를 상시 제공합니다.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-14 lg:py-20 bg-white" aria-labelledby="cta-heading">
+    <div class="mx-auto max-w-3xl px-6 lg:px-8 text-center">
+      <h2 id="cta-heading" class="text-2xl sm:text-3xl font-bold text-primary mb-4 gs-fade-up">
+        포토부스 구매, 지금 시작하세요
+      </h2>
+      <p class="text-secondary mb-8 gs-fade-up">
+        9종 이상의 포토부스 라인업에서 나에게 딱 맞는 모델을 찾아보세요.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 gs-fade-up">
+        <!-- Products detail link -->
+        <a
+          href="/products"
+          class="inline-flex items-center justify-center px-8 py-3.5 bg-primary text-white font-semibold text-sm rounded-full hover:bg-primary/90 transition-colors duration-300 min-w-[200px]"
+        >
+          제품 상세보기
+        </a>
+        <!-- Online shop link -->
+        <a
+          href="/shop"
+          class="inline-flex items-center justify-center px-8 py-3.5 border border-primary text-primary font-semibold text-sm rounded-full hover:bg-primary hover:text-white transition-colors duration-300 min-w-[200px]"
+        >
+          온라인 구매하기
+        </a>
+        <!-- Naver SmartStore link -->
+        <a
+          href="https://smartstore.naver.com/pickypicphoto"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center justify-center gap-1.5 px-8 py-3.5 border border-[#03C75A] text-[#03C75A] font-semibold text-sm rounded-full hover:bg-[#03C75A] hover:text-white transition-colors duration-300 min-w-[200px]"
+        >
+          네이버 스마트스토어
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Product Detail Modal -->
+  <div id="product-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-label="제품 상세 정보">
+    <!-- Backdrop -->
+    <div id="modal-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+    <!-- Modal Content -->
+    <div class="absolute inset-0 flex items-center justify-center p-4 sm:p-6">
+      <div class="relative bg-white rounded-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto shadow-2xl" id="modal-content">
+        <!-- Close Button -->
+        <button type="button" id="modal-close" class="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white border border-border-default hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 cursor-pointer" aria-label="닫기">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        <!-- Product Title -->
+        <div class="pt-8 pb-4 px-8 border-b border-border-light">
+          <span id="modal-type" class="text-xl lg:text-2xl font-black tracking-[0.15em] text-primary uppercase block mb-1"></span>
+          <h3 id="modal-name" class="text-sm lg:text-base font-medium text-secondary tracking-tight"></h3>
+        </div>
+
+        <!-- Desktop: 3-column layout -->
+        <div class="hidden lg:grid lg:grid-cols-12 gap-0 p-8 items-center" id="modal-desktop">
+          <!-- Left: Line Image -->
+          <div class="lg:col-span-3 flex items-center justify-center">
+            <img id="modal-img-left" src="" alt="" class="max-w-full max-h-[420px]" />
+          </div>
+          <!-- Center: Spec Table -->
+          <div class="lg:col-span-6 px-6 flex flex-col justify-center">
+            <h4 class="text-sm font-bold tracking-[0.1em] text-primary uppercase mb-4 text-center">
+              Photo booth specification
+            </h4>
+            <table class="w-full text-sm border-collapse">
+              <tbody id="modal-specs-desktop"></tbody>
+            </table>
+          </div>
+          <!-- Right: Product Photo -->
+          <div class="lg:col-span-3 flex items-center justify-center">
+            <img id="modal-img-right" src="" alt="" class="max-w-full max-h-[420px]" />
+          </div>
+        </div>
+
+        <!-- Mobile: Images + Spec -->
+        <div class="lg:hidden p-6" id="modal-mobile">
+          <div class="flex gap-4 justify-center mb-6 items-center">
+            <div class="w-1/2 max-w-[180px] flex items-center justify-center">
+              <img id="modal-img-left-m" src="" alt="" class="max-w-full max-h-[260px] object-contain" />
+            </div>
+            <div class="w-1/2 max-w-[180px] flex items-center justify-center">
+              <img id="modal-img-right-m" src="" alt="" class="max-w-full max-h-[260px] object-contain" />
+            </div>
+          </div>
+          <h4 class="text-sm font-bold tracking-[0.1em] text-primary uppercase mb-4 text-center">
+            Photo booth specification
+          </h4>
+          <table class="w-full text-sm border-collapse">
+            <tbody id="modal-specs-mobile"></tbody>
+          </table>
+        </div>
+
+        <!-- CTA -->
+        <div class="px-8 pb-8 flex justify-center gap-3">
+          <a href="/products" class="inline-flex items-center justify-center px-6 py-3 bg-primary text-white font-semibold text-sm rounded-full hover:bg-primary/90 transition-colors duration-300">
+            전체 제품 보기
+          </a>
+          <a href="/rental" class="inline-flex items-center justify-center px-6 py-3 border border-primary text-primary font-semibold text-sm rounded-full hover:bg-primary hover:text-white transition-colors duration-300">
+            렌탈 문의
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product data for modal -->
+  <script id="products-data" type="application/json" set:html={JSON.stringify(
+    products.map(p => ({
+      id: p.id,
+      name: p.name,
+      nameKo: p.nameKo,
+      type: p.type,
+      imageLeft: p.imageLeft,
+      imageRight: p.imageRight,
+      specs: p.specs,
+    }))
+  )} />
+
+</BaseLayout>
+
+<script>
+  function initProductModal() {
+    const modal = document.getElementById('product-modal');
+    const backdrop = document.getElementById('modal-backdrop');
+    const closeBtn = document.getElementById('modal-close');
+    if (!modal || !backdrop || !closeBtn) return;
+
+    const productsData = JSON.parse(document.getElementById('products-data')?.textContent || '[]');
+    const productById: Record<string, any> = {};
+    productsData.forEach((p: any) => { productById[p.id] = p; });
+
+    // Size classes for mini/retro types
+    const smallTypes = ['modern-mini-picky', 'urban-mini-picky', 'modern-retro-picky', 'urban-retro-picky'];
+
+    function openModal(productId: string) {
+      const product = productById[productId];
+      if (!product) return;
+
+      const isSmall = smallTypes.includes(productId);
+      const maxH = isSmall ? 'max-h-[320px]' : 'max-h-[420px]';
+
+      // Title
+      (document.getElementById('modal-type') as HTMLElement).textContent = product.type;
+      (document.getElementById('modal-name') as HTMLElement).textContent = `${product.name} | ${product.nameKo}`;
+
+      // Desktop images
+      const imgLeft = document.getElementById('modal-img-left') as HTMLImageElement;
+      const imgRight = document.getElementById('modal-img-right') as HTMLImageElement;
+      imgLeft.src = product.imageLeft;
+      imgLeft.alt = `${product.name} ${product.nameKo} 라인 이미지`;
+      imgLeft.className = `max-w-full ${maxH}`;
+      imgRight.src = product.imageRight;
+      imgRight.alt = `${product.name} ${product.nameKo} 제품 이미지`;
+      imgRight.className = `max-w-full ${maxH}`;
+
+      // Mobile images
+      const imgLeftM = document.getElementById('modal-img-left-m') as HTMLImageElement;
+      const imgRightM = document.getElementById('modal-img-right-m') as HTMLImageElement;
+      imgLeftM.src = product.imageLeft;
+      imgLeftM.alt = imgLeft.alt;
+      imgRightM.src = product.imageRight;
+      imgRightM.alt = imgRight.alt;
+
+      // Spec tables
+      const specHtml = product.specs.map((s: any) =>
+        `<tr class="border-b border-border-light">
+          <th class="text-left py-2 pr-4 font-semibold text-primary text-xs whitespace-nowrap align-top w-[140px]">${s.label}</th>
+          <td class="py-2 text-secondary text-xs leading-relaxed">${s.value}</td>
+        </tr>`
+      ).join('');
+      (document.getElementById('modal-specs-desktop') as HTMLElement).innerHTML = specHtml;
+      (document.getElementById('modal-specs-mobile') as HTMLElement).innerHTML = specHtml;
+
+      // Show modal
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      modal.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    // Event listeners
+    document.querySelectorAll<HTMLTableRowElement>('.product-row').forEach(row => {
+      row.addEventListener('click', () => {
+        const id = row.dataset.productId;
+        if (id) openModal(id);
+      });
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', closeModal);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initProductModal);
+  document.addEventListener('astro:after-swap', initProductModal);
+</script>
