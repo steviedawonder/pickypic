@@ -5,6 +5,7 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import ServiceSchema from '@components/seo/ServiceSchema.astro';
 import FAQSchema from '@components/seo/FAQSchema.astro';
+import { products } from '@data/products';
 
 // FAQ items for structured data and visual section
 const faqItems = [
@@ -103,10 +104,10 @@ const faqItems = [
             <p class="text-sm text-secondary leading-relaxed mb-4">
               가장 인기 있는 포토부스 유형으로, 행사장 어디에나 설치 가능한 독립형 구조입니다. 컴팩트한 디자인과 고화질 촬영이 특징입니다.
             </p>
-            <ul class="text-sm text-secondary space-y-1">
-              <li>· Modern Picky</li>
-              <li>· Classic Picky</li>
-              <li>· Urban Picky</li>
+            <ul class="text-sm text-secondary space-y-1.5">
+              <li><button type="button" class="product-row text-left hover:text-primary underline underline-offset-2 decoration-primary/30 hover:decoration-primary cursor-pointer transition-colors" data-product-id="modern-picky">· 모던피키 (Modern Picky)</button></li>
+              <li><button type="button" class="product-row text-left hover:text-primary underline underline-offset-2 decoration-primary/30 hover:decoration-primary cursor-pointer transition-colors" data-product-id="classic-picky">· 클래식피키 (Classic Picky)</button></li>
+              <li><button type="button" class="product-row text-left hover:text-primary underline underline-offset-2 decoration-primary/30 hover:decoration-primary cursor-pointer transition-colors" data-product-id="urban-picky">· 어반피키 (Urban Picky)</button></li>
             </ul>
           </div>
         </div>
@@ -123,11 +124,11 @@ const faqItems = [
             <p class="text-sm text-secondary leading-relaxed mb-4">
               테이블 위에 설치하는 컴팩트 모델로, 공간이 제한된 팝업스토어나 카페, 소규모 행사에 최적화되어 있습니다.
             </p>
-            <ul class="text-sm text-secondary space-y-1">
-              <li>· Modern Mini Picky</li>
-              <li>· Urban Mini Picky</li>
-              <li>· Modern Retro Picky</li>
-              <li>· Urban Retro Picky</li>
+            <ul class="text-sm text-secondary space-y-1.5">
+              <li><button type="button" class="product-row text-left hover:text-primary underline underline-offset-2 decoration-primary/30 hover:decoration-primary cursor-pointer transition-colors" data-product-id="modern-mini-picky">· 모던 미니피키 (Modern Mini Picky)</button></li>
+              <li><button type="button" class="product-row text-left hover:text-primary underline underline-offset-2 decoration-primary/30 hover:decoration-primary cursor-pointer transition-colors" data-product-id="urban-mini-picky">· 어반 미니피키 (Urban Mini Picky)</button></li>
+              <li><button type="button" class="product-row text-left hover:text-primary underline underline-offset-2 decoration-primary/30 hover:decoration-primary cursor-pointer transition-colors" data-product-id="modern-retro-picky">· 모던 레트로피키 (Modern Retro Picky)</button></li>
+              <li><button type="button" class="product-row text-left hover:text-primary underline underline-offset-2 decoration-primary/30 hover:decoration-primary cursor-pointer transition-colors" data-product-id="urban-retro-picky">· 어반 레트로피키 (Urban Retro Picky)</button></li>
             </ul>
           </div>
         </div>
@@ -142,9 +143,9 @@ const faqItems = [
             <p class="text-sm text-secondary leading-relaxed mb-4">
               독립된 촬영 공간을 제공하는 부스형 모델로, 야외 행사나 대형 페스티벌에 적합합니다. 날씨에 구애받지 않는 안정적인 촬영 환경을 제공합니다.
             </p>
-            <ul class="text-sm text-secondary space-y-1">
-              <li>· Outdoor Picky</li>
-              <li>· Air Picky</li>
+            <ul class="text-sm text-secondary space-y-1.5">
+              <li><button type="button" class="product-row text-left hover:text-primary underline underline-offset-2 decoration-primary/30 hover:decoration-primary cursor-pointer transition-colors" data-product-id="outdoor-picky">· 아웃도어피키 (Outdoor Picky)</button></li>
+              <li><button type="button" class="product-row text-left hover:text-primary underline underline-offset-2 decoration-primary/30 hover:decoration-primary cursor-pointer transition-colors" data-product-id="air-picky">· 에어피키 (Air Picky)</button></li>
             </ul>
           </div>
         </div>
@@ -216,18 +217,56 @@ const faqItems = [
       </div>
     </div>
   </section>
+  <!-- Product Detail Modal -->
+  <div id="product-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-label="제품 상세 정보">
+    <div id="modal-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4 sm:p-6">
+      <div class="relative bg-white rounded-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto shadow-2xl">
+        <button type="button" id="modal-close" class="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white border border-border-default hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 cursor-pointer" aria-label="닫기">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+        <div class="pt-8 pb-4 px-8 border-b border-border-light">
+          <span id="modal-type" class="text-xl lg:text-2xl font-black tracking-[0.15em] text-primary uppercase block mb-1"></span>
+          <h3 id="modal-name" class="text-sm lg:text-base font-medium text-secondary tracking-tight"></h3>
+        </div>
+        <!-- Desktop 3-col -->
+        <div class="hidden lg:grid lg:grid-cols-12 gap-0 p-8 items-center">
+          <div class="lg:col-span-3 flex items-center justify-center"><img id="modal-img-left" src="" alt="" class="max-w-full max-h-[420px]" /></div>
+          <div class="lg:col-span-6 px-6 flex flex-col justify-center">
+            <h4 class="text-sm font-bold tracking-[0.1em] text-primary uppercase mb-4 text-center">Photo booth specification</h4>
+            <table class="w-full text-sm border-collapse"><tbody id="modal-specs-desktop"></tbody></table>
+          </div>
+          <div class="lg:col-span-3 flex items-center justify-center"><img id="modal-img-right" src="" alt="" class="max-w-full max-h-[420px]" /></div>
+        </div>
+        <!-- Mobile -->
+        <div class="lg:hidden p-6">
+          <div class="flex gap-4 justify-center mb-6 items-center">
+            <div class="w-1/2 max-w-[180px] flex items-center justify-center"><img id="modal-img-left-m" src="" alt="" class="max-w-full max-h-[260px] object-contain" /></div>
+            <div class="w-1/2 max-w-[180px] flex items-center justify-center"><img id="modal-img-right-m" src="" alt="" class="max-w-full max-h-[260px] object-contain" /></div>
+          </div>
+          <h4 class="text-sm font-bold tracking-[0.1em] text-primary uppercase mb-4 text-center">Photo booth specification</h4>
+          <table class="w-full text-sm border-collapse"><tbody id="modal-specs-mobile"></tbody></table>
+        </div>
+        <div class="px-8 pb-8 flex justify-center gap-3">
+          <a href="/products" class="inline-flex items-center justify-center px-6 py-3 bg-primary text-white font-semibold text-sm rounded-full hover:bg-primary/90 transition-colors duration-300">전체 제품 보기</a>
+          <a href="/rental" class="inline-flex items-center justify-center px-6 py-3 border border-primary text-primary font-semibold text-sm rounded-full hover:bg-primary hover:text-white transition-colors duration-300">렌탈 문의</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script id="products-data" type="application/json" set:html={JSON.stringify(
+    products.map(p => ({ id: p.id, name: p.name, nameKo: p.nameKo, type: p.type, imageLeft: p.imageLeft, imageRight: p.imageRight, specs: p.specs }))
+  )} />
 </BaseLayout>
 
-<!-- Auto-slide script for booth type carousels -->
 <script>
   function initBoothCarousels() {
     document.querySelectorAll<HTMLElement>('.booth-carousel').forEach((carousel) => {
       const slides = carousel.querySelectorAll<HTMLImageElement>('.booth-slide');
       if (slides.length <= 1) return;
-
       const interval = parseInt(carousel.dataset.interval || '3000', 10);
       let current = 0;
-
       setInterval(() => {
         slides[current].style.opacity = '0';
         current = (current + 1) % slides.length;
@@ -236,6 +275,64 @@ const faqItems = [
     });
   }
 
-  document.addEventListener('DOMContentLoaded', initBoothCarousels);
-  document.addEventListener('astro:after-swap', initBoothCarousels);
+  function initProductModal() {
+    const modal = document.getElementById('product-modal');
+    const backdrop = document.getElementById('modal-backdrop');
+    const closeBtn = document.getElementById('modal-close');
+    if (!modal || !backdrop || !closeBtn) return;
+
+    const productsData = JSON.parse(document.getElementById('products-data')?.textContent || '[]');
+    const productById: Record<string, any> = {};
+    productsData.forEach((p: any) => { productById[p.id] = p; });
+    const smallTypes = ['modern-mini-picky', 'urban-mini-picky', 'modern-retro-picky', 'urban-retro-picky'];
+
+    function openModal(productId: string) {
+      const product = productById[productId];
+      if (!product) return;
+      const maxH = smallTypes.includes(productId) ? 'max-h-[320px]' : 'max-h-[420px]';
+
+      (document.getElementById('modal-type') as HTMLElement).textContent = product.type;
+      (document.getElementById('modal-name') as HTMLElement).textContent = `${product.name} | ${product.nameKo}`;
+
+      const imgLeft = document.getElementById('modal-img-left') as HTMLImageElement;
+      const imgRight = document.getElementById('modal-img-right') as HTMLImageElement;
+      imgLeft.src = product.imageLeft; imgLeft.alt = `${product.name} ${product.nameKo} 라인 이미지`; imgLeft.className = `max-w-full ${maxH}`;
+      imgRight.src = product.imageRight; imgRight.alt = `${product.name} ${product.nameKo} 제품 이미지`; imgRight.className = `max-w-full ${maxH}`;
+
+      const imgLeftM = document.getElementById('modal-img-left-m') as HTMLImageElement;
+      const imgRightM = document.getElementById('modal-img-right-m') as HTMLImageElement;
+      imgLeftM.src = product.imageLeft; imgLeftM.alt = imgLeft.alt;
+      imgRightM.src = product.imageRight; imgRightM.alt = imgRight.alt;
+
+      const specHtml = product.specs.map((s: any) =>
+        `<tr class="border-b border-border-light"><th class="text-left py-2 pr-4 font-semibold text-primary text-xs whitespace-nowrap align-top w-[140px]">${s.label}</th><td class="py-2 text-secondary text-xs leading-relaxed">${s.value}</td></tr>`
+      ).join('');
+      (document.getElementById('modal-specs-desktop') as HTMLElement).innerHTML = specHtml;
+      (document.getElementById('modal-specs-mobile') as HTMLElement).innerHTML = specHtml;
+
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      modal.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll<HTMLElement>('.product-row').forEach(el => {
+      el.addEventListener('click', () => {
+        const id = el.dataset.productId;
+        if (id) openModal(id);
+      });
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', closeModal);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => { initBoothCarousels(); initProductModal(); });
+  document.addEventListener('astro:after-swap', () => { initBoothCarousels(); initProductModal(); });
 </script>
