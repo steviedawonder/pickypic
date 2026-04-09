@@ -49,6 +49,23 @@
       "source": "/home",
       "destination": "/",
       "statusCode": 301
+    },
+    {
+      "source": "/bbs/board.php",
+      "has": [
+        {
+          "type": "query",
+          "key": "bo_table",
+          "value": "portfolio"
+        }
+      ],
+      "destination": "/portfolio",
+      "statusCode": 301
+    },
+    {
+      "source": "/bbs/:path*",
+      "destination": "/",
+      "statusCode": 301
     }
   ]
 }
