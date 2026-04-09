@@ -27,6 +27,7 @@ export const faqItem = defineType({
         list: [
           { title: '홈페이지', value: 'home' },
           { title: '렌탈문의', value: 'rental' },
+          { title: '제품소개', value: 'products' },
         ],
         layout: 'radio',
       },
@@ -46,7 +47,7 @@ export const faqItem = defineType({
       subtitle: 'page',
     },
     prepare({ title, subtitle }) {
-      const pageLabel = subtitle === 'home' ? '홈페이지' : subtitle === 'rental' ? '렌탈문의' : subtitle;
+      const pageLabel = subtitle === 'home' ? '홈페이지' : subtitle === 'rental' ? '렌탈문의' : subtitle === 'products' ? '제품소개' : subtitle;
       return { title, subtitle: pageLabel };
     },
   },

@@ -1,8 +1,10 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import FAQSchema from '@components/seo/FAQSchema.astro';
 import { products, productCategories } from '@data/products';
 import { createClient } from '@sanity/client';
+import { faqQueries } from '../../sanity/client';
 
 const sanityClient = createClient({
   projectId: '7b9lcco4',
@@ -18,6 +20,23 @@ try {
   }`);
 } catch (e) {
   // Sanity 접속 실패 시 빈 배열
+}
+
+// FAQ from Sanity with hardcoded fallback
+const fallbackFAQ = [
+  { question: '피키픽 포토부스 구매와 렌탈의 차이는 무엇인가요?', answer: '구매는 포토부스를 완전히 소유하여 매장에서 상시 운영하는 방식이며, 렌탈은 일정 기간 대여하여 사용하는 방식입니다. 정기적인 사용 및 운영을 하시거나 장기간 이상 사용 계획이 있다면 구매가 경제적이며, 단기 행사나 시범 운영 목적이라면 렌탈이 적합합니다. 구매 시 1년 무상 A/S와 소프트웨어 업데이트가 포함됩니다.' },
+  { question: '피키픽 포토부스 제품 라인업에는 어떤 것이 있나요?', answer: '피키픽은 모던 레트로 디자인의 스탠딩형과 컴팩트형 두 가지 라인업을 운영하고 있습니다. 스탠딩형은 매장 설치용으로 최적화되어 있으며, 컴팩트형은 이동과 설치가 간편하여 행사장에 적합합니다. 두 모델 모두 AI 퍼스널 컬러 분석, QR + 인화 하이브리드 출력, 3개 국어 지원 등 피키픽 핵심 기능을 동일하게 탑재하고 있습니다.' },
+  { question: '포토부스 구매 후 유지비용은 얼마나 드나요?', answer: '주요 유지비용은 인화 용지와 잉크 등 소모품 비용이며, 촬영 1건당 약 200~300원 수준입니다. 월 1,000건 촬영 기준 소모품 비용은 약 20~30만 원이며, 1건당 촬영 요금(보통 3,000~5,000원)을 고려하면 높은 수익률을 기대할 수 있습니다. 소프트웨어 업데이트는 구매 후 1년간 무상, 이후 연간 유지보수 계약으로 지속 지원됩니다.' },
+  { question: '피키픽 포토부스에 자체 필터나 프레임을 추가할 수 있나요?', answer: '네, 피키픽 포토부스는 관리자 페이지를 통해 자체 필터와 프레임을 무제한으로 추가할 수 있습니다. 시즌별, 이벤트별 맞춤 프레임을 직접 디자인하여 업로드할 수 있으며, PSD 템플릿을 제공하여 디자인 작업이 간편합니다. AI 퍼스널 컬러 분석 기반 자동 추천 필터 외에 수동 선택 필터도 함께 운영할 수 있어 다양한 고객 취향을 만족시킬 수 있습니다.' },
+  { question: '구매 후 설치와 초기 세팅은 어떻게 진행되나요?', answer: '피키픽 전문 엔지니어가 구매 장소를 방문하여 설치, 네트워크 연결, 소프트웨어 세팅을 완료합니다. 설치 소요 시간은 약 1~2시간이며, 운영자 교육(약 1시간)까지 당일 완료됩니다. 설치 후 7일간 집중 모니터링을 통해 안정적인 운영을 지원하며, 서울 기준 구매 확정 후 영업일 5일 이내에 설치가 완료됩니다.' },
+];
+
+let productsFAQ: { question: string; answer: string }[] = [];
+try {
+  const sanityFAQ = await sanityClient.fetch(faqQueries.byPage, { page: 'products' });
+  productsFAQ = sanityFAQ && sanityFAQ.length > 0 ? sanityFAQ : fallbackFAQ;
+} catch {
+  productsFAQ = fallbackFAQ;
 }
 
 // 제품 슬러그 순서 (캐러셀 순서와 동일)
@@ -298,6 +317,9 @@ const productPdfMap = productSlugs.map(slug => {
       }
     }))
   })} />
+
+  <!-- Products FAQ Section -->
+  <FAQSchema items={productsFAQ} title="포토부스 제품 자주 묻는 질문" />
 </BaseLayout>
 
 <style>

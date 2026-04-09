@@ -68,6 +68,7 @@ function FAQManager() {
               <select style={s.input} value={form.page} onChange={e => setForm(p => ({ ...p, page: e.target.value }))}>
                 <option value="home">홈페이지</option>
                 <option value="rental">렌탈문의</option>
+                <option value="products">제품소개</option>
               </select>
             </div>
           </div>
@@ -83,12 +84,13 @@ function FAQManager() {
       </div>
 
       {loading ? <p style={{ color: colors.textLight, padding: 40 }}>로딩 중...</p> : (
-        ['home', 'rental'].map(page => {
+        ['home', 'rental', 'products'].map(page => {
           const pageItems = items.filter((i: any) => i.page === page);
           if (pageItems.length === 0) return null;
+          const pageLabels: Record<string, string> = { home: '🏠 홈페이지', rental: '📋 렌탈문의', products: '📦 제품소개' };
           return (
             <div key={page} style={{ ...s.card, marginTop: 8 }}>
-              <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>{page === 'home' ? '🏠 홈페이지' : '📋 렌탈문의'} FAQ ({pageItems.length}개)</h3>
+              <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>{pageLabels[page] || page} FAQ ({pageItems.length}개)</h3>
               {pageItems.map((item: any, i: number) => (
                 <div key={item._id} style={{ padding: '12px 0', borderBottom: i < pageItems.length - 1 ? `1px solid ${colors.border}` : 'none' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
