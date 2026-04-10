@@ -168,6 +168,9 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <!-- Canonical -->
     <link rel="canonical" href={canonicalURL} />
 
+    <!-- RSS Feed -->
+    <link rel="alternate" type="application/rss+xml" title="피키픽 포토부스 블로그" href="https://picky-pic.com/blog/rss.xml" />
+
     <!-- Font Preload: Bebas Neue (local) -->
     <link rel="preload" href="/fonts/BebasNeue-Regular.ttf" as="font" type="font/ttf" crossorigin />
 

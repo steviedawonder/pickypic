@@ -6,6 +6,7 @@ import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import { company } from '@data/company';
 import { createClient } from '@sanity/client';
 import { toHTML } from '@portabletext/to-html';
+import { sanitizeSlug, isCleanSlug } from '../../utils/slug';
 
 const sanityClient = createClient({
   projectId: '7b9lcco4',
@@ -16,20 +17,39 @@ const sanityClient = createClient({
 
 const { slug } = Astro.params;
 
-const post = await sanityClient.fetch(`*[_type == "blogPost" && slug.current == $slug][0] {
-  _id, title, slug, excerpt, publishedAt, tags,
-  body[] {
-    ...,
-    _type == "image" => {
+// 불량 슬러그 301 리다이렉트
+if (slug && !isCleanSlug(slug)) {
+  return Astro.redirect(`/blog/${sanitizeSlug(slug)}`, 301);
+}
+
+const post = await sanityClient.fetch(
+  `*[_type == "blogPost" && slug.current == $slug][0] {
+    _id, _updatedAt, title, slug, excerpt, publishedAt, tags,
+    body[] {
       ...,
-      asset-> { _id, url }
+      _type == "image" => {
+        ...,
+        asset-> { _id, url }
+      }
+    },
+    mainImage { asset-> { _id, url } },
+    category-> { title },
+    author-> { name, role, bio },
+    "estimatedReadingTime": round(length(pt::text(body)) / 500),
+    "relatedPosts": *[
+      _type == "blogPost" &&
+      publishedAt != null &&
+      slug.current != $slug &&
+      category._ref == ^.category._ref
+    ] | order(publishedAt desc) [0...3] {
+      _id, title, slug, excerpt, publishedAt,
+      mainImage { asset-> { url } },
+      category-> { title },
+      "estimatedReadingTime": round(length(pt::text(body)) / 500)
     }
-  },
-  mainImage { asset-> { _id, url } },
-  category-> { title },
-  author-> { name, role, bio },
-  "estimatedReadingTime": round(length(pt::text(body)) / 500)
-}`, { slug });
+  }`,
+  { slug }
+);
 
 if (!post) {
   return Astro.redirect('/blog');
@@ -43,11 +63,31 @@ const formattedDate = post.publishedAt
     })
   : '';
 
+// 목차(ToC) 헤딩 추출 — body 블록에서 h2/h3 파싱
+const headings: { level: string; text: string; id: string }[] = [];
+const keyToId: Record<string, string> = {};
+(post.body || []).forEach((block: any) => {
+  if (block._type === 'block' && (block.style === 'h2' || block.style === 'h3')) {
+    const text = (block.children || []).map((c: any) => c.text || '').join('');
+    const id = sanitizeSlug(text) || block._key;
+    headings.push({ level: block.style, text, id });
+    keyToId[block._key] = id;
+  }
+});
+const showToc = headings.length >= 3;
+
 let bodyHtml = '';
 try {
   if (post.body) {
     bodyHtml = toHTML(post.body, {
       components: {
+        block: {
+          // h2/h3에 앵커 ID 주입 (ToC 연동)
+          h2: ({ children, value }: any) =>
+            `<h2 id="${keyToId[value._key] || value._key}">${children}</h2>`,
+          h3: ({ children, value }: any) =>
+            `<h3 id="${keyToId[value._key] || value._key}">${children}</h3>`,
+        },
         types: {
           image: ({ value }: { value: any }) => {
             let url = value.url || value.asset?.url || '';
@@ -70,21 +110,85 @@ try {
   bodyHtml = `<p>${post.excerpt || ''}</p>`;
 }
 
+// wordCount 계산 (JSON-LD용)
+const plainText = bodyHtml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+const wordCount = plainText.split(/\s+/).filter(Boolean).length;
+
+// mainImage URL 빌드 (asset.url 없을 때 _id에서 직접 구성)
+function buildSanityImageUrl(asset: { url?: string; _id?: string } | undefined): string {
+  if (!asset) return '';
+  if (asset.url) return asset.url;
+  if (asset._id) {
+    const match = asset._id.match(/^image-(.+)-(\w+)$/);
+    if (match) return `https://cdn.sanity.io/images/7b9lcco4/production/${match[1]}.${match[2]}`;
+  }
+  return '';
+}
+
+const canonicalUrl = `https://picky-pic.com/blog/${slug}`;
 const seoTitle = `${post.title} | 피키픽 포토부스 블로그`;
 const seoDescription = post.excerpt || '';
+const mainImageUrl = buildSanityImageUrl(post.mainImage?.asset);
+const ogImage = mainImageUrl || '/images/common/og-image.jpg';
+const dateModified = post._updatedAt || post.publishedAt;
 ---
 
-<BaseLayout title={seoTitle} description={seoDescription} ogType="article" articleMeta={{
-  publishedTime: post.publishedAt,
-  author: post.author?.name,
-  section: post.category?.title,
-  tags: post.tags,
-}}>
+<BaseLayout
+  title={seoTitle}
+  description={seoDescription}
+  ogImage={ogImage}
+  ogType="article"
+  articleMeta={{
+    publishedTime: post.publishedAt,
+    modifiedTime: dateModified,
+    author: post.author?.name,
+    section: post.category?.title,
+    tags: post.tags,
+  }}
+>
   <BreadcrumbSchema items={[
     { name: '홈', href: '/' },
     { name: '블로그', href: '/blog' },
     { name: post.title, href: `/blog/${slug}` },
   ]} />
+
+  <!-- JSON-LD: BlogPosting (강화) -->
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "url": canonicalUrl,
+    "headline": post.title,
+    "description": post.excerpt,
+    "datePublished": post.publishedAt,
+    "dateModified": dateModified,
+    "inLanguage": "ko",
+    "wordCount": wordCount,
+    ...(mainImageUrl && {
+      "image": {
+        "@type": "ImageObject",
+        "url": mainImageUrl,
+      }
+    }),
+    "author": {
+      "@type": "Person",
+      "name": post.author?.name || 'PICKYPIC',
+    },
+    "publisher": {
+      "@type": "Organization",
+      "@id": "https://picky-pic.com/#organization",
+      "name": company.brand,
+      "logo": {
+        "@type": "ImageObject",
+        "url": company.logo,
+      },
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": canonicalUrl,
+    },
+    ...(post.tags?.length && { "keywords": post.tags.join(', ') }),
+    ...(post.category?.title && { "articleSection": post.category.title }),
+  })} />
 
   <article class="pb-20 lg:pt-4 lg:pb-28">
     <div class="mx-auto max-w-3xl px-6 lg:px-8">
@@ -115,9 +219,9 @@ const seoDescription = post.excerpt || '';
       </header>
 
       <!-- Featured Image -->
-      {post.mainImage?.asset?.url ? (
+      {mainImageUrl ? (
         <div class="aspect-[16/9] mb-12 gs-fade-in">
-          <img src={post.mainImage.asset.url} alt={post.title} class="w-full h-full object-cover" />
+          <img src={mainImageUrl} alt={post.title} class="w-full h-full object-cover" />
         </div>
       ) : (
         <div class="aspect-[16/9] bg-bg-light mb-12 flex items-center justify-center text-secondary/20 gs-fade-in">
@@ -127,8 +231,30 @@ const seoDescription = post.excerpt || '';
         </div>
       )}
 
+      <!-- 목차 (ToC) — h2/h3 합산 3개 이상일 때만 표시 -->
+      {showToc && (
+        <nav class="mb-10 p-5 bg-bg-light border-l-2 border-primary gs-fade-up" aria-label="목차">
+          <p class="text-xs font-semibold tracking-[0.1em] text-secondary uppercase mb-3">목차</p>
+          <ol class="space-y-1.5">
+            {headings.map((h) => (
+              <li class:list={['text-sm leading-snug', h.level === 'h3' ? 'pl-4' : '']}>
+                <a
+                  href={`#${h.id}`}
+                  class="text-secondary hover:text-primary transition-colors"
+                >
+                  {h.text}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )}
+
       <!-- Body -->
-      <div class="prose prose-lg max-w-none gs-fade-up [&>p]:text-secondary [&>p]:leading-relaxed [&>p]:mb-6 [&>h2]:text-primary [&>h2]:font-bold [&>h2]:mt-10 [&>h2]:mb-4 [&>h3]:text-primary [&>h3]:font-semibold [&>h3]:mt-8 [&>h3]:mb-3 [&>ul]:list-disc [&>ul]:pl-6 [&>ol]:list-decimal [&>ol]:pl-6" set:html={bodyHtml} />
+      <div
+        class="prose prose-lg max-w-none gs-fade-up [&>p]:text-secondary [&>p]:leading-relaxed [&>p]:mb-6 [&>h2]:text-primary [&>h2]:font-bold [&>h2]:mt-10 [&>h2]:mb-4 [&>h3]:text-primary [&>h3]:font-semibold [&>h3]:mt-8 [&>h3]:mb-3 [&>ul]:list-disc [&>ul]:pl-6 [&>ol]:list-decimal [&>ol]:pl-6"
+        set:html={bodyHtml}
+      />
 
       <!-- Tags -->
       {post.tags && post.tags.length > 0 && (
@@ -143,7 +269,7 @@ const seoDescription = post.excerpt || '';
         </div>
       )}
 
-      <!-- Author Bio -->
+      <!-- Author Bio (E-E-A-T 신호) -->
       <div class="mt-10 p-6 bg-bg-light gs-fade-up">
         <div class="flex items-start gap-4">
           <div class="w-12 h-12 bg-primary text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
@@ -156,6 +282,44 @@ const seoDescription = post.excerpt || '';
           </div>
         </div>
       </div>
+
+      <!-- 관련 글 -->
+      {post.relatedPosts && post.relatedPosts.length > 0 && (
+        <section class="mt-16 pt-10 border-t border-border-light gs-fade-up">
+          <h2 class="text-base font-bold tracking-[0.05em] text-primary mb-6">관련 글</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {post.relatedPosts.map((related: any) => (
+              <a href={`/blog/${related.slug.current}`} class="group block">
+                <div class="aspect-[16/9] bg-bg-light mb-3 overflow-hidden">
+                  {related.mainImage?.asset?.url ? (
+                    <img
+                      src={related.mainImage.asset.url}
+                      alt={related.title}
+                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div class="w-full h-full flex items-center justify-center text-secondary/20">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+                {related.category?.title && (
+                  <p class="text-xs text-secondary/60 mb-1">{related.category.title}</p>
+                )}
+                <p class="text-sm font-semibold text-primary leading-snug group-hover:text-secondary transition-colors line-clamp-2">
+                  {related.title}
+                </p>
+                {related.estimatedReadingTime && (
+                  <p class="text-xs text-secondary mt-1">{related.estimatedReadingTime}분 읽기</p>
+                )}
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
 
       <!-- Back to Blog -->
       <div class="mt-12 text-center">
@@ -171,31 +335,4 @@ const seoDescription = post.excerpt || '';
       </div>
     </div>
   </article>
-
-  <!-- JSON-LD: BlogPosting -->
-  <script type="application/ld+json" set:html={JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    "headline": post.title,
-    "description": post.excerpt,
-    "datePublished": post.publishedAt,
-    "dateModified": post.publishedAt,
-    "inLanguage": "ko",
-    "author": {
-      "@type": "Person",
-      "name": post.author?.name || 'PICKYPIC',
-    },
-    "publisher": {
-      "@type": "Organization",
-      "@id": "https://picky-pic.com/#organization",
-      "name": company.brand,
-      "logo": company.logo,
-    },
-    "mainEntityOfPage": {
-      "@type": "WebPage",
-      "@id": `https://picky-pic.com/blog/${slug}`,
-    },
-    ...(post.tags && { "keywords": post.tags.join(', ') }),
-    ...(post.category && { "articleSection": post.category.title }),
-  })} />
 </BaseLayout>
