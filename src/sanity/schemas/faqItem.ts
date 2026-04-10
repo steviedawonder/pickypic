@@ -19,6 +19,28 @@ export const faqItem = defineType({
       validation: (Rule) => Rule.required().error('답변을 입력해주세요.'),
     }),
     defineField({
+      name: 'questionEn',
+      title: '질문 (영어)',
+      type: 'string',
+    }),
+    defineField({
+      name: 'answerEn',
+      title: '답변 (영어)',
+      type: 'text',
+      rows: 4,
+    }),
+    defineField({
+      name: 'questionJp',
+      title: '질문 (일어)',
+      type: 'string',
+    }),
+    defineField({
+      name: 'answerJp',
+      title: '답변 (일어)',
+      type: 'text',
+      rows: 4,
+    }),
+    defineField({
       name: 'page',
       title: '표시 페이지',
       type: 'string',

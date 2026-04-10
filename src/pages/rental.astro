@@ -11,12 +11,63 @@ const emailjsServiceId = 'service_lo0iveb';
 const emailjsTemplateId = 'template_zyud66s';
 const emailjsPublicKey = 'DiKfjM0kSilVVTle_';
 
+// EN/JP translation supplements (used until Sanity admin enters translations)
+// If Sanity has questionEn/answerEn filled in, those take priority.
+const faqTranslationSupplements: Record<string, { questionEn: string; answerEn: string; questionJp: string; answerJp: string }> = {
+  '포토부스 렌탈 비용은 얼마인가요?': {
+    questionEn: 'How much does photo booth rental cost?',
+    answerEn: 'Rental pricing varies based on booth type, rental duration, and event details. Please submit an inquiry through our rental form and we will provide a custom quote within 1 business hour.',
+    questionJp: 'フォトブースのレンタル費用はいくらですか？',
+    answerJp: 'レンタル料金は、ブースの種類、レンタル期間、イベント内容によって異なります。レンタルフォームからお問い合わせいただければ、営業時間内1時間以内にお見積もりをご案内します。',
+  },
+  '최소 대여 기간은 얼마인가요?': {
+    questionEn: 'What is the minimum rental period?',
+    answerEn: 'The minimum rental period is 1 day. We also offer multi-day and long-term rental packages tailored to your event schedule.',
+    questionJp: '最低レンタル期間はどのくらいですか？',
+    answerJp: '最低レンタル期間は1日からとなります。イベントのスケジュールに合わせた複数日・長期レンタルパッケージもご用意しています。',
+  },
+  '설치와 철거는 누가 하나요?': {
+    questionEn: 'Who handles installation and dismantling?',
+    answerEn: 'Our team handles all setup and dismantling. We coordinate delivery, installation, and removal so you can focus entirely on your event.',
+    questionJp: '設置と撤去は誰が行いますか？',
+    answerJp: '設置と撤去はすべて弊社スタッフが担当します。搬入・設置・撤去まで一貫してサポートしますので、イベントに集中いただけます。',
+  },
+  '래핑 커스텀이 가능한가요?': {
+    questionEn: 'Is custom wrapping available?',
+    answerEn: 'Yes, we offer full custom wrapping services including lettering and full-surface graphics. Branded designs can be tailored to your event concept.',
+    questionJp: 'ラッピングカスタムは可能ですか？',
+    answerJp: 'はい、レタリングや全面グラフィックのカスタムラッピングが可能です。イベントのコンセプトに合わせたブランドデザインをご提案します。',
+  },
+  '해외 행사도 가능한가요?': {
+    questionEn: 'Are overseas events available?',
+    answerEn: 'Yes, we support international events. We have experience operating in Singapore, Japan, and other countries. Please contact us for overseas event inquiries.',
+    questionJp: '海外イベントにも対応していますか？',
+    answerJp: 'はい、海外イベントにも対応しています。シンガポール、日本など様々な国でのオペレーション実績があります。海外イベントのお問い合わせはお気軽にご連絡ください。',
+  },
+  '어떤 포토부스를 선택해야 할지 모르겠어요.': {
+    questionEn: "I'm not sure which photo booth to choose.",
+    answerEn: "Don't worry! Submit your rental inquiry with your event type, venue size, and concept, and our team will recommend the best booth for your needs.",
+    questionJp: 'どのフォトブースを選べばいいか分かりません。',
+    answerJp: 'ご安心ください！イベントの種類、会場の広さ、コンセプトをレンタルフォームからお知らせいただければ、担当スタッフが最適なブースをご提案します。',
+  },
+};
+
 // FAQ를 Sanity에서 불러오기 (실패 시 빈 배열)
-let rentalFAQ: { question: string; answer: string }[] = [];
+let rentalFAQ: { question: string; answer: string; questionEn?: string; answerEn?: string; questionJp?: string; answerJp?: string }[] = [];
 try {
   const sanityFAQ = await sanityClient.fetch(faqQueries.byPage, { page: 'rental' });
   if (sanityFAQ && sanityFAQ.length > 0) {
-    rentalFAQ = sanityFAQ;
+    // Merge Sanity data with translation supplements (Sanity takes priority)
+    rentalFAQ = sanityFAQ.map((item: any) => {
+      const supplement = faqTranslationSupplements[item.question] || {};
+      return {
+        ...item,
+        questionEn: item.questionEn || supplement.questionEn,
+        answerEn: item.answerEn || supplement.answerEn,
+        questionJp: item.questionJp || supplement.questionJp,
+        answerJp: item.answerJp || supplement.answerJp,
+      };
+    });
   }
 } catch (e) {
   // Sanity 연결 실패 시 빈 FAQ
@@ -53,8 +104,8 @@ const rentalProducts = [
         </h1>
         <a href="/products" class="text-sm border border-gray-400 rounded-full px-5 py-2 text-primary hover:bg-primary hover:text-white transition-colors lg:hidden" data-i18n="rental.btn_products">제품소개</a>
       </div>
-      <p class="mt-3 text-sm lg:text-base text-secondary leading-relaxed max-w-2xl">
-        피키픽포토부스(PICKYPIC)는 서울 성수동에 본사를 둔 포토부스 렌탈 전문 기업으로, 넷플릭스·현대자동차·스타벅스 등 1,000건 이상의 브랜드 팝업 및 기업 행사에 스탠드형·테이블형·부스형 등 9종의 포토부스를 제공하고 있습니다.
+      <p class="mt-3 text-sm lg:text-base text-secondary leading-relaxed max-w-2xl" data-i18n="rental.hero_desc">
+        피키픽 포토부스는 "어디에나 어울리는 포토부스"를 슬로건으로, 장소와 상황에 구애받지 않는 새로운 포토부스 경험을 만듭니다. 스탠드형·테이블형·부스형 등 9종 이상의 라인업을 갖추고 있으며, 누적 10,000건 이상의 브랜드 팝업·기업 행사를 진행한 경험으로 완벽한 솔루션을 제공합니다.
       </p>
     </div>
   </section>
@@ -137,39 +188,39 @@ const rentalProducts = [
           <div class="space-y-3">
               <label class="booth-label flex w-fit items-start gap-3 cursor-pointer group" data-img-left="/images/products/urban-mini-picky-line.png" data-img-right="/images/products/urban-mini-picky-photo.png">
                 <input type="checkbox" name="boothType" value="urban-mini" class="w-4 h-4 accent-primary mt-0.5 flex-shrink-0" />
-                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold">[테이블형]</span> 어반 미니 <span class="text-secondary">(W350 x L350 x H400)</span></span>
+                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold" data-i18n="rental.type_table">[테이블형]</span> 어반 미니 <span class="text-secondary">(W350 x L350 x H400)</span></span>
               </label>
               <label class="booth-label flex w-fit items-start gap-3 cursor-pointer group" data-img-left="/images/products/modern-mini-picky-line.png" data-img-right="/images/products/modern-mini-picky-photo.png">
                 <input type="checkbox" name="boothType" value="modern-mini" class="w-4 h-4 accent-primary mt-0.5 flex-shrink-0" />
-                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold">[테이블형]</span> 모던 미니 <span class="text-secondary">(W330 x L330 x H390)</span></span>
+                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold" data-i18n="rental.type_table">[테이블형]</span> 모던 미니 <span class="text-secondary">(W330 x L330 x H390)</span></span>
               </label>
               <label class="booth-label flex w-fit items-start gap-3 cursor-pointer group" data-img-left="/images/products/modern-retro-picky-line.png" data-img-right="/images/products/modern-retro-picky-photo.png">
                 <input type="checkbox" name="boothType" value="modern-retro" class="w-4 h-4 accent-primary mt-0.5 flex-shrink-0" />
-                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold">[테이블형] [영수증 사진기]</span> 모던 레트로피키 <span class="text-secondary">(W290 x L290 x H310)</span></span>
+                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold" data-i18n="rental.type_table">[테이블형]</span> <span class="font-semibold" data-i18n="rental.type_receipt">[영수증 사진기]</span> 모던 레트로피키 <span class="text-secondary">(W290 x L290 x H310)</span></span>
               </label>
               <label class="booth-label flex w-fit items-start gap-3 cursor-pointer group" data-img-left="/images/products/urban-retro-picky-line.png" data-img-right="/images/products/urban-retro-picky-photo.png">
                 <input type="checkbox" name="boothType" value="urban-retro" class="w-4 h-4 accent-primary mt-0.5 flex-shrink-0" />
-                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold">[테이블형]</span> <span class="font-semibold">[영수증 사진기]</span> 어반 레트로 피키 <span class="text-secondary">(W190 x L230 x H316)</span></span>
+                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold" data-i18n="rental.type_table">[테이블형]</span> <span class="font-semibold" data-i18n="rental.type_receipt">[영수증 사진기]</span> 어반 레트로 피키 <span class="text-secondary">(W190 x L230 x H316)</span></span>
               </label>
               <label class="booth-label flex w-fit items-start gap-3 cursor-pointer group" data-img-left="/images/products/modern-picky-line.png" data-img-right="/images/products/modern-picky-photo.png">
                 <input type="checkbox" name="boothType" value="modern-picky" class="w-4 h-4 accent-primary mt-0.5 flex-shrink-0" />
-                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold">[스탠드형]</span> 모던 피키 <span class="text-secondary">(W550 x L550 x H1,570)</span></span>
+                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold" data-i18n="rental.type_stand">[스탠드형]</span> 모던 피키 <span class="text-secondary">(W550 x L550 x H1,570)</span></span>
               </label>
               <label class="booth-label flex w-fit items-start gap-3 cursor-pointer group" data-img-left="/images/products/classic-picky-line.png" data-img-right="/images/products/classic-picky-photo.png">
                 <input type="checkbox" name="boothType" value="classic-picky" class="w-4 h-4 accent-primary mt-0.5 flex-shrink-0" />
-                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold">[스탠드형]</span> 클래식 피키 <span class="text-secondary">(W550 x L550 x H1,570)</span></span>
+                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold" data-i18n="rental.type_stand">[스탠드형]</span> 클래식 피키 <span class="text-secondary">(W550 x L550 x H1,570)</span></span>
               </label>
               <label class="booth-label flex w-fit items-start gap-3 cursor-pointer group" data-img-left="/images/products/urban-picky-line.png" data-img-right="/images/products/urban-picky-photo.png">
                 <input type="checkbox" name="boothType" value="urban-picky" class="w-4 h-4 accent-primary mt-0.5 flex-shrink-0" />
-                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold">[스탠드형]</span> 어반 피키 <span class="text-secondary">(W500 x L500 x H1,440)</span></span>
+                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold" data-i18n="rental.type_stand">[스탠드형]</span> 어반 피키 <span class="text-secondary">(W500 x L500 x H1,440)</span></span>
               </label>
               <label class="booth-label flex w-fit items-start gap-3 cursor-pointer group" data-img-left="/images/products/air-picky-line.png" data-img-right="/images/products/air-picky-photo.png">
                 <input type="checkbox" name="boothType" value="air-picky" class="w-4 h-4 accent-primary mt-0.5 flex-shrink-0" />
-                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold">[부스형]</span> 에어 피키 <span class="text-secondary">(Booth: W930 x L930 x H2,350 / Kiosk: W500 x L600 x H1,200)</span></span>
+                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold" data-i18n="rental.type_booth">[부스형]</span> 에어 피키 <span class="text-secondary">(Booth: W930 x L930 x H2,350 / Kiosk: W500 x L600 x H1,200)</span></span>
               </label>
               <label class="booth-label flex w-fit items-start gap-3 cursor-pointer group" data-img-left="/images/products/outdoor-picky-line.png" data-img-right="/images/products/outdoor-picky-photo.png">
                 <input type="checkbox" name="boothType" value="outdoor-picky" class="w-4 h-4 accent-primary mt-0.5 flex-shrink-0" />
-                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold">[부스형]</span> 아웃도어 피키 <span class="text-secondary">(W1,400 x L1,000 x H2,050)</span></span>
+                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold" data-i18n="rental.type_booth">[부스형]</span> 아웃도어 피키 <span class="text-secondary">(W1,400 x L1,000 x H2,050)</span></span>
               </label>
           </div>
         </fieldset>
@@ -401,7 +452,7 @@ const rentalProducts = [
   </section>
 
   <!-- Rental FAQ Section -->
-  <FAQSchema items={rentalFAQ} title="렌탈 자주 묻는 질문" />
+  <FAQSchema items={rentalFAQ} title="렌탈 자주 묻는 질문" titleKey="faq.title_rental" />
 
   <!-- 문의 완료 모달 -->
   <div id="inquiry-result-overlay" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40" style="display:none;">

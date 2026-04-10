@@ -3,33 +3,81 @@ const milestones = [
   {
     year: '2024',
     items: [
-      '넷플릭스, 현대자동차, 기아 등 대형 브랜드 협업',
-      '포토부스 라인업 9종 이상 확대',
-      '아웃도어피키, 에어피키 신제품 출시',
+      {
+        ko: '넷플릭스, 현대자동차, 기아 등 대형 브랜드 협업',
+        en: 'Major brand collaborations with Netflix, Hyundai Motor, Kia, etc.',
+        jp: 'ネットフリックス、現代自動車、起亜など大手ブランドとの協業',
+      },
+      {
+        ko: '포토부스 라인업 9종 이상 확대',
+        en: 'Photo booth lineup expanded to 9+ models',
+        jp: 'フォトブースラインナップを9種類以上に拡大',
+      },
+      {
+        ko: '아웃도어피키, 에어피키 신제품 출시',
+        en: 'New product launches: Outdoor Picky & Air Picky',
+        jp: 'アウトドアピキ、エアピキの新製品発売',
+      },
     ],
   },
   {
     year: '2023',
     items: [
-      '누적 이벤트 1,000건 돌파',
-      '뉴발란스, 로몽드 등 브랜드 팝업 협업',
-      '모던 레트로 피키 라인 론칭',
+      {
+        ko: '누적 이벤트 1,000건 돌파',
+        en: 'Surpassed 1,000 cumulative events',
+        jp: '累積イベント1,000件突破',
+      },
+      {
+        ko: '뉴발란스, 로몽드 등 브랜드 팝업 협업',
+        en: 'Brand pop-up collaborations with New Balance, Laumonde, etc.',
+        jp: 'ニューバランス、ローモンドなどブランドポップアップ協業',
+      },
+      {
+        ko: '모던 레트로 피키 라인 론칭',
+        en: 'Modern Retro Picky line launched',
+        jp: 'モダンレトロピキラインローンチ',
+      },
     ],
   },
   {
     year: '2022',
     items: [
-      '주식회사 피키글로벌 법인 설립',
-      '스탠드형 포토부스 라인업 확대',
-      '기업 행사 전문 서비스 시작',
+      {
+        ko: '주식회사 피키글로벌 법인 설립',
+        en: 'PICKYGLOBAL Co., Ltd. incorporated',
+        jp: '株式会社ピキグローバル法人設立',
+      },
+      {
+        ko: '스탠드형 포토부스 라인업 확대',
+        en: 'Stand-type photo booth lineup expanded',
+        jp: 'スタンド型フォトブースラインナップ拡大',
+      },
+      {
+        ko: '기업 행사 전문 서비스 시작',
+        en: 'Corporate event specialist service launched',
+        jp: '企業イベント専門サービス開始',
+      },
     ],
   },
   {
     year: '2021',
     items: [
-      '피키픽 포토부스 브랜드 런칭',
-      '테이블형 포토부스 최초 개발',
-      '렌탈 서비스 시작',
+      {
+        ko: '피키픽 포토부스 브랜드 런칭',
+        en: 'PICKYPIC photo booth brand launched',
+        jp: 'ピキピックフォトブースブランドローンチ',
+      },
+      {
+        ko: '테이블형 포토부스 최초 개발',
+        en: 'First development of table-type photo booth',
+        jp: 'テーブル型フォトブースを初開発',
+      },
+      {
+        ko: '렌탈 서비스 시작',
+        en: 'Rental service launched',
+        jp: 'レンタルサービス開始',
+      },
     ],
   },
 ];
@@ -39,7 +87,7 @@ const milestones = [
   <div class="mx-auto max-w-7xl px-6 lg:px-8">
     <div class="max-w-3xl mx-auto text-center mb-16 gs-fade-up">
       <p class="mb-4 text-[11px] font-semibold tracking-[0.5em] text-secondary uppercase">History</p>
-      <h2 class="text-[clamp(1.5rem,2.5vw,2.25rem)] font-bold tracking-tight text-primary">
+      <h2 class="text-[clamp(1.5rem,2.5vw,2.25rem)] font-bold tracking-tight text-primary" data-i18n="history.title">
         피키픽의 여정
       </h2>
     </div>
@@ -72,7 +120,11 @@ const milestones = [
             ]}>
               <ul class="space-y-2">
                 {milestone.items.map((item) => (
-                  <li class="text-secondary leading-relaxed">{item}</li>
+                  <li class="text-secondary leading-relaxed">
+                    <span class="history-ko">{item.ko}</span>
+                    <span class="history-en hidden">{item.en}</span>
+                    <span class="history-jp hidden">{item.jp}</span>
+                  </li>
                 ))}
               </ul>
             </div>
@@ -82,3 +134,30 @@ const milestones = [
     </div>
   </div>
 </section>
+
+<script>
+  function applyHistoryLang(lang: string) {
+    document.querySelectorAll<HTMLElement>('.history-ko').forEach((koEl) => {
+      const parent = koEl.parentElement;
+      if (!parent) return;
+      const targetEl = parent.querySelector<HTMLElement>(`.history-${lang}`);
+      const hasTranslation = targetEl && targetEl !== koEl && targetEl.textContent?.trim();
+      koEl.classList.toggle('hidden', !!hasTranslation);
+      ['en', 'jp'].forEach((l) => {
+        const el = parent.querySelector<HTMLElement>(`.history-${l}`);
+        if (el) el.classList.toggle('hidden', l !== lang || !hasTranslation);
+      });
+    });
+  }
+
+  function initHistoryLang() {
+    const lang = localStorage.getItem('pickypic-lang') || 'ko';
+    applyHistoryLang(lang);
+  }
+
+  initHistoryLang();
+  document.addEventListener('langChanged', (e: Event) => {
+    applyHistoryLang((e as CustomEvent).detail);
+  });
+  document.addEventListener('astro:after-swap', initHistoryLang);
+</script>

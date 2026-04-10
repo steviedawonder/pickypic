@@ -76,7 +76,7 @@ const allItems = [
                 data-category={cat.id}
                 aria-pressed={i === 0 ? 'true' : 'false'}
               >
-                <span class="text-[11px] lg:text-xs font-normal leading-tight">{cat.label}</span>
+                <span class="text-[11px] lg:text-xs font-normal leading-tight" {...(cat.id === 'all' ? { 'data-i18n': 'portfolio.all' } : {})}>{cat.label}</span>
                 {'labelEn' in cat && cat.labelEn && (
                   <span class="text-[10px] lg:text-xs font-normal mt-0.5 opacity-70 leading-tight">{cat.labelEn}</span>
                 )}
@@ -136,7 +136,7 @@ const allItems = [
                 />
               </div>
               <h2 class="mt-2 text-[11px] lg:text-base font-semibold text-primary leading-snug line-clamp-1" itemprop="name">
-                {item.title} | 포토부스 렌탈
+                {item.title} <span data-i18n="portfolio.rental_suffix">| 포토부스 렌탈</span>
               </h2>
             </a>
           </article>

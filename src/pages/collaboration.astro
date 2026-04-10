@@ -5,6 +5,42 @@ import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 const emailjsServiceId = 'service_lo0iveb';
 const emailjsCollabTemplateId = 'template_1tlcr18';
 const emailjsPublicKey = 'DiKfjM0kSilVVTle_';
+
+const collabTypes = [
+  { ko: '기기협찬', en: 'Equipment Sponsorship', jp: '機器協賛', value: '기기협찬' },
+  { ko: '팝업 공동진행', en: 'Joint Pop-up Event', jp: 'ポップアップ共同開催', value: '팝업 공동진행' },
+  { ko: '해외 팝업 또는 수출', en: 'Overseas Pop-up or Export', jp: '海外ポップアップまたは輸出', value: '해외 팝업 또는 수출' },
+];
+
+const tableBooths = [
+  { ko: '어반 미니 (W350 x L350 x H400)', en: 'Urban Mini (W350 x L350 x H400)', jp: 'アーバンミニ (W350 x L350 x H400)', value: '어반 미니 (W350 x L350 x H400)' },
+  { ko: '모던 미니 (W350 x L350 x H400)', en: 'Modern Mini (W350 x L350 x H400)', jp: 'モダンミニ (W350 x L350 x H400)', value: '모던 미니 (W350 x L350 x H400)' },
+  { ko: '레트로 피키 (W350 x L350 x H400)', en: 'Retro Picky (W350 x L350 x H400)', jp: 'レトロピキ (W350 x L350 x H400)', value: '레트로 피키 (W350 x L350 x H400)' },
+];
+
+const standBooths = [
+  { ko: '모던 피키 (W450 x L450 x H1,750)', en: 'Modern Picky (W450 x L450 x H1,750)', jp: 'モダンピキ (W450 x L450 x H1,750)', value: '모던 피키 (W450 x L450 x H1,750)' },
+  { ko: '클래식 피키 (W450 x L450 x H1,750)', en: 'Classic Picky (W450 x L450 x H1,750)', jp: 'クラシックピキ (W450 x L450 x H1,750)', value: '클래식 피키 (W450 x L450 x H1,750)' },
+  { ko: '어반 피키 (W500 x L500 x H1,440)', en: 'Urban Picky (W500 x L500 x H1,440)', jp: 'アーバンピキ (W500 x L500 x H1,440)', value: '어반 피키 (W500 x L500 x H1,440)' },
+];
+
+const boothBooths = [
+  { ko: '에어 피키 (부스: W930 x L930 x H2,350 / 키오스크 : W500 x L600 x H1,200)', en: 'Air Picky (Booth: W930 x L930 x H2,350 / Kiosk: W500 x L600 x H1,200)', jp: 'エアピキ (ブース: W930 x L930 x H2,350 / キオスク: W500 x L600 x H1,200)', value: '에어 피키 (부스: W930 x L930 x H2,350 / 키오스크 : W500 x L600 x H1,200)' },
+  { ko: '아웃도어 피키 (W1,400 x L1,000 x H2,050)', en: 'Outdoor Picky (W1,400 x L1,000 x H2,050)', jp: 'アウトドアピキ (W1,400 x L1,000 x H2,050)', value: '아웃도어 피키 (W1,400 x L1,000 x H2,050)' },
+];
+
+const wrappingTypes = [
+  { ko: '래핑 안함', en: 'No Wrapping', jp: 'ラッピングなし', value: '래핑 안함' },
+  { ko: '레터링 래핑', en: 'Lettering Wrapping', jp: 'レタリングラッピング', value: '레터링 래핑' },
+  { ko: '전체 래핑', en: 'Full Wrapping', jp: '全面ラッピング', value: '전체 래핑' },
+];
+
+const shootingTypes = [
+  { ko: '유료 촬영', en: 'Paid Shooting', jp: '有料撮影', value: '유료 촬영' },
+  { ko: '무료 촬영', en: 'Free Shooting', jp: '無料撮影', value: '무료 촬영' },
+  { ko: '쿠폰 촬영', en: 'Coupon Shooting', jp: 'クーポン撮影', value: '쿠폰 촬영' },
+  { ko: '미정', en: 'TBD', jp: '未定', value: '미정' },
+];
 ---
 
 <BaseLayout
@@ -20,15 +56,15 @@ const emailjsPublicKey = 'DiKfjM0kSilVVTle_';
   <section class="relative bg-white pt-14 pb-6 lg:pt-20 lg:pb-10">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
       <span class="logo-text text-[18px] lg:text-[22px] leading-none text-primary">PICKYPIC PHOTOBOOTH<span class="text-[8px] lg:text-[10px] relative -top-[1.2em] ml-0.5">®</span></span>
-      <h1 class="text-2xl lg:text-[clamp(2rem,4vw,3rem)] font-bold tracking-tight text-primary leading-tight mt-2">
+      <h1 class="text-2xl lg:text-[clamp(2rem,4vw,3rem)] font-bold tracking-tight text-primary leading-tight mt-2" data-i18n="collab.hero_title">
         포토부스 협업 제안
       </h1>
-      <p class="text-sm text-secondary mt-3 leading-relaxed">
+      <p class="text-sm text-secondary mt-3 leading-relaxed" data-i18n="collab.hero_desc">
         피키픽 포토부스는 브랜드별 맞춤<br />
         커스터마이징 비즈니스 및 마케팅 협업이 가능합니다.
       </p>
       <a href="/products" class="inline-flex items-center justify-center mt-4 px-8 py-3 border border-gray-400 rounded-full text-sm font-semibold text-primary hover:bg-primary hover:text-white hover:border-primary transition-colors">
-        제품소개
+        <span data-i18n="collab.btn_products">제품소개</span>
       </a>
     </div>
   </section>
@@ -38,8 +74,8 @@ const emailjsPublicKey = 'DiKfjM0kSilVVTle_';
     <div class="mx-auto max-w-3xl px-6 lg:px-8">
       <!-- Form Header -->
       <div class="mb-8 lg:mb-12">
-        <h2 class="text-2xl lg:text-3xl font-bold text-primary tracking-tight">협업 문의</h2>
-        <p class="text-sm text-secondary mt-3 leading-relaxed">
+        <h2 class="text-2xl lg:text-3xl font-bold text-primary tracking-tight" data-i18n="collab.form_heading">협업 문의</h2>
+        <p class="text-sm text-secondary mt-3 leading-relaxed" data-i18n="collab.form_desc">
           희망하시는 협업 내용을 아래 양식에 맞춰작성 부탁드립니다!<br />
           해당 부서에서 순차적으로 답변드릴 예정입니다. (영업 시간 기준 1시간 이내)
         </p>
@@ -52,12 +88,16 @@ const emailjsPublicKey = 'DiKfjM0kSilVVTle_';
       >
         <!-- 협업 형태 -->
         <div class="mb-8">
-          <h3 class="text-base font-bold text-primary mb-3">협업 형태 <span class="text-red-500">*</span></h3>
+          <h3 class="text-base font-bold text-primary mb-3" data-i18n="collab.type_heading">협업 형태 <span class="text-red-500">*</span></h3>
           <div class="space-y-2">
-            {['기기협찬', '팝업 공동진행', '해외 팝업 또는 수출'].map((label) => (
+            {collabTypes.map((opt) => (
               <label class="flex items-center gap-3 cursor-pointer">
-                <input type="radio" name="collaborationType" value={label} class="w-4 h-4 accent-primary" />
-                <span class="text-sm text-primary">{label}</span>
+                <input type="radio" name="collaborationType" value={opt.value} class="w-4 h-4 accent-primary" />
+                <span class="text-sm text-primary">
+                  <span class="collab-opt-ko">{opt.ko}</span>
+                  <span class="collab-opt-en hidden">{opt.en}</span>
+                  <span class="collab-opt-jp hidden">{opt.jp}</span>
+                </span>
               </label>
             ))}
           </div>
@@ -65,45 +105,46 @@ const emailjsPublicKey = 'DiKfjM0kSilVVTle_';
 
         <!-- 포토부스 타입 -->
         <div class="mb-8">
-          <h3 class="text-base font-bold text-primary mb-3">포토부스 타입 <span class="text-red-500">*</span></h3>
+          <h3 class="text-base font-bold text-primary mb-3" data-i18n="collab.booth_type_heading">포토부스 타입 <span class="text-red-500">*</span></h3>
 
-          <p class="text-sm font-semibold text-primary mb-2">1. 테이블형</p>
+          <p class="text-sm font-semibold text-primary mb-2" data-i18n="collab.table_type">1. 테이블형</p>
           <div class="space-y-2 mb-4 ml-2">
-            {[
-              '어반 미니 (W350 x L350 x H400)',
-              '모던 미니 (W350 x L350 x H400)',
-              '레트로 피키 (W350 x L350 x H400)',
-            ].map((label) => (
+            {tableBooths.map((opt) => (
               <label class="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" name="boothType" value={label} class="w-4 h-4 accent-primary" />
-                <span class="text-sm text-primary">{label}</span>
+                <input type="checkbox" name="boothType" value={opt.value} class="w-4 h-4 accent-primary" />
+                <span class="text-sm text-primary">
+                  <span class="collab-opt-ko">{opt.ko}</span>
+                  <span class="collab-opt-en hidden">{opt.en}</span>
+                  <span class="collab-opt-jp hidden">{opt.jp}</span>
+                </span>
               </label>
             ))}
           </div>
 
-          <p class="text-sm font-semibold text-primary mb-2">2. 스탠드형</p>
+          <p class="text-sm font-semibold text-primary mb-2" data-i18n="collab.stand_type">2. 스탠드형</p>
           <div class="space-y-2 mb-4 ml-2">
-            {[
-              '모던 피키 (W450 x L450 x H1,750)',
-              '클래식 피키 (W450 x L450 x H1,750)',
-              '어반 피키 (W500 x L500 x H1,440)',
-            ].map((label) => (
+            {standBooths.map((opt) => (
               <label class="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" name="boothType" value={label} class="w-4 h-4 accent-primary" />
-                <span class="text-sm text-primary">{label}</span>
+                <input type="checkbox" name="boothType" value={opt.value} class="w-4 h-4 accent-primary" />
+                <span class="text-sm text-primary">
+                  <span class="collab-opt-ko">{opt.ko}</span>
+                  <span class="collab-opt-en hidden">{opt.en}</span>
+                  <span class="collab-opt-jp hidden">{opt.jp}</span>
+                </span>
               </label>
             ))}
           </div>
 
-          <p class="text-sm font-semibold text-primary mb-2">3. 부스형</p>
+          <p class="text-sm font-semibold text-primary mb-2" data-i18n="collab.booth_type_label">3. 부스형</p>
           <div class="space-y-2 ml-2">
-            {[
-              '에어 피키 (부스: W930 x L930 x H2,350 / 키오스크 : W500 x L600 x H1,200)',
-              '아웃도어 피키 (W1,400 x L1,000 x H2,050)',
-            ].map((label) => (
+            {boothBooths.map((opt) => (
               <label class="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" name="boothType" value={label} class="w-4 h-4 accent-primary" />
-                <span class="text-sm text-primary">{label}</span>
+                <input type="checkbox" name="boothType" value={opt.value} class="w-4 h-4 accent-primary" />
+                <span class="text-sm text-primary">
+                  <span class="collab-opt-ko">{opt.ko}</span>
+                  <span class="collab-opt-en hidden">{opt.en}</span>
+                  <span class="collab-opt-jp hidden">{opt.jp}</span>
+                </span>
               </label>
             ))}
           </div>
@@ -112,47 +153,51 @@ const emailjsPublicKey = 'DiKfjM0kSilVVTle_';
         <!-- 텍스트 입력 필드들 -->
         <div class="space-y-6 mb-8">
           <div>
-            <label class="block text-sm font-bold text-primary mb-1">행사명 <span class="text-red-500">*</span></label>
-            <input type="text" id="event-name" placeholder="EX) 000 팝업스토어, 00사 행사 등" class="w-full border-b border-gray-300 py-2 text-sm outline-none focus:border-primary transition-colors" required />
+            <label class="block text-sm font-bold text-primary mb-1" data-i18n="collab.event_name">행사명 <span class="text-red-500">*</span></label>
+            <input type="text" id="event-name" data-i18n-placeholder="collab.event_name_placeholder" placeholder="EX) 000 팝업스토어, 00사 행사 등" class="w-full border-b border-gray-300 py-2 text-sm outline-none focus:border-primary transition-colors" required />
           </div>
           <div>
-            <label class="block text-sm font-bold text-primary mb-1">개인 or 사업자명 <span class="text-red-500">*</span></label>
-            <input type="text" id="company-name" placeholder="문의 주시는 업체의 사업자명(회사명)을 적어주세요." class="w-full border-b border-gray-300 py-2 text-sm outline-none focus:border-primary transition-colors" required />
+            <label class="block text-sm font-bold text-primary mb-1" data-i18n="collab.company_name">개인 or 사업자명 <span class="text-red-500">*</span></label>
+            <input type="text" id="company-name" data-i18n-placeholder="collab.company_name_placeholder" placeholder="문의 주시는 업체의 사업자명(회사명)을 적어주세요." class="w-full border-b border-gray-300 py-2 text-sm outline-none focus:border-primary transition-colors" required />
           </div>
           <div>
-            <label class="block text-sm font-bold text-primary mb-1">담당자 성함 <span class="text-red-500">*</span></label>
+            <label class="block text-sm font-bold text-primary mb-1" data-i18n="collab.contact_name">담당자 성함 <span class="text-red-500">*</span></label>
             <input type="text" id="contact-name" class="w-full border-b border-gray-300 py-2 text-sm outline-none focus:border-primary transition-colors" required />
           </div>
           <div>
-            <label class="block text-sm font-bold text-primary mb-1">담당자 연락처 <span class="text-red-500">*</span></label>
+            <label class="block text-sm font-bold text-primary mb-1" data-i18n="collab.contact_phone">담당자 연락처 <span class="text-red-500">*</span></label>
             <input type="tel" id="contact-phone" class="w-full border-b border-gray-300 py-2 text-sm outline-none focus:border-primary transition-colors" required />
           </div>
           <div>
-            <label class="block text-sm font-bold text-primary mb-1">담당자 이메일 주소 <span class="text-red-500">*</span></label>
+            <label class="block text-sm font-bold text-primary mb-1" data-i18n="collab.contact_email">담당자 이메일 주소 <span class="text-red-500">*</span></label>
             <input type="email" id="contact-email" class="w-full border-b border-gray-300 py-2 text-sm outline-none focus:border-primary transition-colors" required />
           </div>
           <div>
-            <label class="block text-sm font-bold text-primary mb-1">설치 장소 (*미정 시 대략적인 장소 작성 부탁드립니다.) <span class="text-red-500">*</span></label>
-            <input type="text" id="install-location" placeholder="EX) 더현대서울 00층 등" class="w-full border-b border-gray-300 py-2 text-sm outline-none focus:border-primary transition-colors" required />
+            <label class="block text-sm font-bold text-primary mb-1" data-i18n="collab.install_location">설치 장소 (*미정 시 대략적인 장소 작성 부탁드립니다.) <span class="text-red-500">*</span></label>
+            <input type="text" id="install-location" data-i18n-placeholder="collab.install_location_placeholder" placeholder="EX) 더현대서울 00층 등" class="w-full border-b border-gray-300 py-2 text-sm outline-none focus:border-primary transition-colors" required />
           </div>
           <div>
-            <label class="block text-sm font-bold text-primary mb-1">행사 일정 (*미정 시 대략적인 일정 작성 부탁드립니다.) <span class="text-red-500">*</span></label>
-            <input type="text" id="event-schedule" placeholder="EX) 2025년 1월 1일 ~ 7일 (7일 간)" class="w-full border-b border-gray-300 py-2 text-sm outline-none focus:border-primary transition-colors" required />
+            <label class="block text-sm font-bold text-primary mb-1" data-i18n="collab.event_schedule">행사 일정 (*미정 시 대략적인 일정 작성 부탁드립니다.) <span class="text-red-500">*</span></label>
+            <input type="text" id="event-schedule" data-i18n-placeholder="collab.schedule_placeholder" placeholder="EX) 2025년 1월 1일 ~ 7일 (7일 간)" class="w-full border-b border-gray-300 py-2 text-sm outline-none focus:border-primary transition-colors" required />
           </div>
           <div>
-            <label class="block text-sm font-bold text-primary mb-1">철거 일정 (*미정 시 대략적인 일정 작성 부탁드립니다.) <span class="text-red-500">*</span></label>
-            <input type="text" id="removal-schedule" placeholder="EX) 2025년 1월 1일 ~ 7일 (7일 간)" class="w-full border-b border-gray-300 py-2 text-sm outline-none focus:border-primary transition-colors" required />
+            <label class="block text-sm font-bold text-primary mb-1" data-i18n="collab.removal_schedule">철거 일정 (*미정 시 대략적인 일정 작성 부탁드립니다.) <span class="text-red-500">*</span></label>
+            <input type="text" id="removal-schedule" data-i18n-placeholder="collab.schedule_placeholder" placeholder="EX) 2025년 1월 1일 ~ 7일 (7일 간)" class="w-full border-b border-gray-300 py-2 text-sm outline-none focus:border-primary transition-colors" required />
           </div>
         </div>
 
         <!-- 래핑 진행 여부 -->
         <div class="mb-8">
-          <h3 class="text-sm font-bold text-primary mb-3">래핑 진행 여부 <span class="text-red-500">*</span></h3>
+          <h3 class="text-sm font-bold text-primary mb-3" data-i18n="collab.wrapping_heading">래핑 진행 여부 <span class="text-red-500">*</span></h3>
           <div class="space-y-2">
-            {['래핑 안함', '레터링 래핑', '전체 래핑'].map((label) => (
+            {wrappingTypes.map((opt) => (
               <label class="flex items-center gap-3 cursor-pointer">
-                <input type="radio" name="wrapping" value={label} class="w-4 h-4 accent-primary" />
-                <span class="text-sm text-primary">{label}</span>
+                <input type="radio" name="wrapping" value={opt.value} class="w-4 h-4 accent-primary" />
+                <span class="text-sm text-primary">
+                  <span class="collab-opt-ko">{opt.ko}</span>
+                  <span class="collab-opt-en hidden">{opt.en}</span>
+                  <span class="collab-opt-jp hidden">{opt.jp}</span>
+                </span>
               </label>
             ))}
           </div>
@@ -160,12 +205,16 @@ const emailjsPublicKey = 'DiKfjM0kSilVVTle_';
 
         <!-- 유료/무료 촬영 -->
         <div class="mb-8">
-          <h3 class="text-sm font-bold text-primary mb-3">유료 촬영 / 무료 촬영 여부 <span class="text-red-500">*</span></h3>
+          <h3 class="text-sm font-bold text-primary mb-3" data-i18n="collab.shooting_heading">유료 촬영 / 무료 촬영 여부 <span class="text-red-500">*</span></h3>
           <div class="space-y-2">
-            {['유료 촬영', '무료 촬영', '쿠폰 촬영', '미정'].map((label) => (
+            {shootingTypes.map((opt) => (
               <label class="flex items-center gap-3 cursor-pointer">
-                <input type="radio" name="shootingType" value={label} class="w-4 h-4 accent-primary" />
-                <span class="text-sm text-primary">{label}</span>
+                <input type="radio" name="shootingType" value={opt.value} class="w-4 h-4 accent-primary" />
+                <span class="text-sm text-primary">
+                  <span class="collab-opt-ko">{opt.ko}</span>
+                  <span class="collab-opt-en hidden">{opt.en}</span>
+                  <span class="collab-opt-jp hidden">{opt.jp}</span>
+                </span>
               </label>
             ))}
           </div>
@@ -173,14 +222,14 @@ const emailjsPublicKey = 'DiKfjM0kSilVVTle_';
 
         <!-- 기타 문의 -->
         <div class="mb-8">
-          <label class="block text-sm font-bold text-primary mb-2">기타 문의 사항</label>
-          <textarea id="additional-message" rows="3" placeholder="문의나 요청사항을 자유롭게 작성해주세요." class="w-full border-b border-gray-300 py-2 text-sm outline-none focus:border-primary transition-colors resize-none"></textarea>
+          <label class="block text-sm font-bold text-primary mb-2" data-i18n="collab.additional">기타 문의 사항</label>
+          <textarea id="additional-message" rows="3" data-i18n-placeholder="collab.additional_placeholder" placeholder="문의나 요청사항을 자유롭게 작성해주세요." class="w-full border-b border-gray-300 py-2 text-sm outline-none focus:border-primary transition-colors resize-none"></textarea>
         </div>
 
         <!-- 개인정보 동의 -->
         <div class="mb-8 border border-gray-200 rounded-lg p-4">
-          <h3 class="text-sm font-bold text-primary mb-2">개인정보 수집 및 이용 동의 <span class="text-red-500">*</span></h3>
-          <p class="text-xs text-secondary leading-relaxed mb-3">
+          <h3 class="text-sm font-bold text-primary mb-2" data-i18n="collab.privacy_heading">개인정보 수집 및 이용 동의 <span class="text-red-500">*</span></h3>
+          <p class="text-xs text-secondary leading-relaxed mb-3" data-i18n="collab.privacy_text">
             수집 항목: 성함, 연락처, 이메일, 소속/회사명<br />
             수집 목적: 협업 문의 상담 및 답변<br />
             보유 기간: 문의 접수 후 상담 완료 시까지 (최대 1년)<br />
@@ -188,14 +237,14 @@ const emailjsPublicKey = 'DiKfjM0kSilVVTle_';
           </p>
           <label class="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" id="privacy-check" class="w-4 h-4 accent-primary" />
-            <span class="text-sm text-primary font-medium">개인정보 수집 및 이용에 동의합니다.</span>
+            <span class="text-sm text-primary font-medium" data-i18n="collab.privacy_agree">개인정보 수집 및 이용에 동의합니다.</span>
           </label>
         </div>
 
         <!-- Submit -->
         <div class="text-center">
           <button type="submit" class="w-full py-4 bg-primary text-white font-bold text-sm tracking-wide hover:bg-accent-hover transition-colors">
-            협업 문의하기
+            <span data-i18n="collab.submit">협업 문의하기</span>
           </button>
         </div>
       </form>
@@ -212,7 +261,28 @@ const emailjsPublicKey = 'DiKfjM0kSilVVTle_';
 </style>
 
 <script>
+  function applyCollabLang(lang: string) {
+    document.querySelectorAll<HTMLElement>('.collab-opt-ko').forEach((koEl) => {
+      const parent = koEl.parentElement;
+      if (!parent) return;
+      const targetEl = parent.querySelector<HTMLElement>(`.collab-opt-${lang}`);
+      const hasTranslation = targetEl && targetEl !== koEl && targetEl.textContent?.trim();
+      koEl.classList.toggle('hidden', !!hasTranslation);
+      ['en', 'jp'].forEach((l) => {
+        const el = parent.querySelector<HTMLElement>(`.collab-opt-${l}`);
+        if (el) el.classList.toggle('hidden', l !== lang || !hasTranslation);
+      });
+    });
+  }
+
+  function initCollabLang() {
+    const lang = localStorage.getItem('pickypic-lang') || 'ko';
+    applyCollabLang(lang);
+  }
+
   function initCollaborationPage() {
+    initCollabLang();
+
     const form = document.getElementById('collaboration-form') as HTMLFormElement;
     if (!form) return;
 
@@ -263,7 +333,9 @@ const emailjsPublicKey = 'DiKfjM0kSilVVTle_';
 
       if (!isValid) {
         firstInvalid?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        alert('필수 항목을 모두 입력해주세요.');
+        const lang = localStorage.getItem('pickypic-lang') || 'ko';
+        const msg = lang === 'en' ? 'Please fill in all required fields.' : lang === 'jp' ? '必須項目をすべてご入力ください。' : '필수 항목을 모두 입력해주세요.';
+        alert(msg);
         return;
       }
 
@@ -290,9 +362,11 @@ const emailjsPublicKey = 'DiKfjM0kSilVVTle_';
       };
 
       const submitBtn = form.querySelector<HTMLButtonElement>('button[type="submit"]');
-      if (submitBtn) {
+      const submitSpan = submitBtn?.querySelector<HTMLElement>('span');
+      if (submitBtn && submitSpan) {
         submitBtn.disabled = true;
-        submitBtn.textContent = '전송 중...';
+        const lang = localStorage.getItem('pickypic-lang') || 'ko';
+        submitSpan.textContent = lang === 'en' ? 'Sending...' : lang === 'jp' ? '送信中...' : '전송 중...';
       }
 
       try {
@@ -330,15 +404,28 @@ const emailjsPublicKey = 'DiKfjM0kSilVVTle_';
           console.error('Sanity save error:', sanityErr);
         }
 
-        alert('협업 문의가 접수되었습니다. 담당자가 빠르게 연락드리겠습니다.');
+        const lang = localStorage.getItem('pickypic-lang') || 'ko';
+        const successMsg = lang === 'en'
+          ? 'Your collaboration inquiry has been received. Our team will contact you shortly.'
+          : lang === 'jp'
+          ? '協業のお問い合わせを受け付けました。担当者より速やかにご連絡します。'
+          : '협업 문의가 접수되었습니다. 담당자가 빠르게 연락드리겠습니다.';
+        alert(successMsg);
         form.reset();
       } catch (error) {
         console.error('EmailJS Error:', error);
-        alert('전송에 실패했습니다. 잠시 후 다시 시도해주세요.\n또는 pickypic.marketing@gmail.com으로 직접 문의해주세요.');
+        const lang = localStorage.getItem('pickypic-lang') || 'ko';
+        const errMsg = lang === 'en'
+          ? 'Sending failed. Please try again later or email pickypic.marketing@gmail.com directly.'
+          : lang === 'jp'
+          ? '送信に失敗しました。しばらくしてから再度お試しいただくか、pickypic.marketing@gmail.com までご連絡ください。'
+          : '전송에 실패했습니다. 잠시 후 다시 시도해주세요.\n또는 pickypic.marketing@gmail.com으로 직접 문의해주세요.';
+        alert(errMsg);
       } finally {
-        if (submitBtn) {
+        if (submitBtn && submitSpan) {
           submitBtn.disabled = false;
-          submitBtn.textContent = '협업 문의하기';
+          const lang = localStorage.getItem('pickypic-lang') || 'ko';
+          submitSpan.textContent = lang === 'en' ? 'Submit Collaboration Inquiry' : lang === 'jp' ? '協業お問い合わせ' : '협업 문의하기';
         }
       }
     });
@@ -346,4 +433,7 @@ const emailjsPublicKey = 'DiKfjM0kSilVVTle_';
 
   document.addEventListener('DOMContentLoaded', initCollaborationPage);
   document.addEventListener('astro:after-swap', initCollaborationPage);
+  document.addEventListener('langChanged', (e: Event) => {
+    applyCollabLang((e as CustomEvent).detail);
+  });
 </script>

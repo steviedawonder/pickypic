@@ -3,9 +3,11 @@ interface Props {
   title: string;
   subtitle?: string;
   description?: string;
+  titleI18n?: string;
+  descriptionI18n?: string;
 }
 
-const { title, subtitle, description } = Astro.props;
+const { title, subtitle, description, titleI18n, descriptionI18n } = Astro.props;
 ---
 
 <section class="relative bg-white pt-36 pb-16 lg:pt-44 lg:pb-20 overflow-hidden">
@@ -19,11 +21,11 @@ const { title, subtitle, description } = Astro.props;
         <p class="mb-4 text-[11px] font-semibold tracking-[0.5em] text-secondary uppercase">{subtitle}</p>
       )}
       <div class="mb-6 h-[2px] w-10 bg-primary"></div>
-      <h1 class="text-[clamp(2.2rem,5vw,4.5rem)] font-bold tracking-[0.02em] text-primary leading-[1.1]">
+      <h1 class="text-[clamp(2.2rem,5vw,4.5rem)] font-bold tracking-[0.02em] text-primary leading-[1.1]" data-i18n={titleI18n || undefined}>
         {title}
       </h1>
       {description && (
-        <p class="mt-8 text-base leading-relaxed text-secondary max-w-xl">{description}</p>
+        <p class="mt-8 text-base leading-relaxed text-secondary max-w-xl" data-i18n={descriptionI18n || undefined}>{description}</p>
       )}
     </div>
   </div>

@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import CompanyInfo from '@components/about/CompanyInfo.astro';
 ---
 
 <BaseLayout
@@ -49,17 +50,8 @@ import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
     </div>
   </section>
 
-  <!-- GEO: Company facts for AI citation -->
-  <section class="py-10 lg:py-14 bg-white">
-    <div class="mx-auto max-w-4xl px-6 lg:px-8">
-      <p class="text-sm lg:text-base text-secondary leading-relaxed text-center">
-        피키픽포토부스(PICKYPIC Photobooth)는 2020년 설립된 서울 성수동 소재 프리미엄 포토부스 렌탈 전문 기업입니다.
-        스탠드형, 테이블형, 부스형 등 9종 이상의 포토부스 라인업을 보유하고 있으며,
-        넷플릭스, 현대자동차, 기아, 뉴발란스, 스타벅스 등 1,000건 이상의 브랜드 팝업 및 기업 행사에 포토부스를 제공하고 있습니다.
-        한국과 싱가포르에서 서비스를 운영하며, 브랜드 맞춤 커스터마이징과 AI 퍼스널 컬러 분석 등 혁신적인 포토 경험을 선사합니다.
-      </p>
-    </div>
-  </section>
+  <!-- Company Info -->
+  <CompanyInfo />
 
   <!-- Company Buttons -->
   <article class="about-content">

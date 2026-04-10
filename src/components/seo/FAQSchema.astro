@@ -2,14 +2,19 @@
 interface FAQItem {
   question: string;
   answer: string;
+  questionEn?: string;
+  answerEn?: string;
+  questionJp?: string;
+  answerJp?: string;
 }
 
 interface Props {
   items: FAQItem[];
   title?: string;
+  titleKey?: string;
 }
 
-const { items, title = '자주 묻는 질문' } = Astro.props;
+const { items, title = '자주 묻는 질문', titleKey = 'faq.title' } = Astro.props;
 
 const faqSchema = {
   "@context": "https://schema.org",
@@ -30,20 +35,68 @@ const faqSchema = {
 
 <!-- Visual FAQ Section -->
 <section class="mx-auto max-w-4xl px-6 lg:px-8 py-16" aria-labelledby="faq-heading">
-  <h2 id="faq-heading" class="text-2xl font-bold text-primary mb-8 text-center" data-i18n="faq.title">{title}</h2>
+  <h2 id="faq-heading" class="text-2xl font-bold text-primary mb-8 text-center" data-i18n={titleKey}>{title}</h2>
   <div class="space-y-3">
     {items.map((item) => (
       <details class="group border border-border-default rounded-lg overflow-hidden">
         <summary class="flex items-center justify-between cursor-pointer px-6 py-4 bg-bg-muted hover:bg-bg-subtle transition-colors">
-          <span class="font-medium text-primary text-left pr-4">{item.question}</span>
+          <span class="font-medium text-primary text-left pr-4">
+            <span class="faq-question-ko">{item.question}</span>
+            {item.questionEn && <span class="faq-question-en hidden">{item.questionEn}</span>}
+            {item.questionJp && <span class="faq-question-jp hidden">{item.questionJp}</span>}
+          </span>
           <svg class="w-5 h-5 text-secondary shrink-0 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
         </summary>
         <div class="px-6 py-4 text-secondary leading-relaxed">
-          <p>{item.answer}</p>
+          <p>
+            <span class="faq-answer-ko">{item.answer}</span>
+            {item.answerEn && <span class="faq-answer-en hidden">{item.answerEn}</span>}
+            {item.answerJp && <span class="faq-answer-jp hidden">{item.answerJp}</span>}
+          </p>
         </div>
       </details>
     ))}
   </div>
 </section>
+
+<script>
+  function applyFaqLang(lang: string) {
+    // For each FAQ item, show the right language or fall back to KO
+    document.querySelectorAll<HTMLElement>('.faq-question-ko').forEach((koEl) => {
+      const parent = koEl.parentElement;
+      if (!parent) return;
+      const targetEl = parent.querySelector<HTMLElement>(`.faq-question-${lang}`);
+      // Show target lang if it exists and has content, else show ko
+      const hasTranslation = targetEl && targetEl !== koEl && targetEl.textContent?.trim();
+      koEl.classList.toggle('hidden', !!hasTranslation);
+      ['en', 'jp'].forEach((l) => {
+        const el = parent.querySelector<HTMLElement>(`.faq-question-${l}`);
+        if (el && el !== koEl) el.classList.toggle('hidden', l !== lang || !hasTranslation);
+      });
+    });
+    document.querySelectorAll<HTMLElement>('.faq-answer-ko').forEach((koEl) => {
+      const parent = koEl.parentElement;
+      if (!parent) return;
+      const targetEl = parent.querySelector<HTMLElement>(`.faq-answer-${lang}`);
+      const hasTranslation = targetEl && targetEl !== koEl && targetEl.textContent?.trim();
+      koEl.classList.toggle('hidden', !!hasTranslation);
+      ['en', 'jp'].forEach((l) => {
+        const el = parent.querySelector<HTMLElement>(`.faq-answer-${l}`);
+        if (el && el !== koEl) el.classList.toggle('hidden', l !== lang || !hasTranslation);
+      });
+    });
+  }
+
+  function initFaqLang() {
+    const lang = localStorage.getItem('pickypic-lang') || 'ko';
+    applyFaqLang(lang);
+  }
+
+  initFaqLang();
+  document.addEventListener('langChanged', (e: Event) => {
+    applyFaqLang((e as CustomEvent).detail);
+  });
+  document.addEventListener('astro:after-swap', initFaqLang);
+</script>

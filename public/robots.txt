@@ -3,4 +3,5 @@ Allow: /
 Disallow: /shop
 
 Sitemap: https://picky-pic.com/sitemap-index.xml
+Sitemap: https://picky-pic.com/sitemap-blog.xml
 Sitemap: https://picky-pic.com/image-sitemap.xml

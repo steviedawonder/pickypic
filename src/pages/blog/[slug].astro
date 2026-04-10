@@ -108,7 +108,7 @@ const seoDescription = post.excerpt || '';
           {post.estimatedReadingTime && (
             <>
               <span class="text-border-default">·</span>
-              <span>{post.estimatedReadingTime}분 읽기</span>
+              <span>{post.estimatedReadingTime}<span data-i18n="blog.read_time_suffix">분 읽기</span></span>
             </>
           )}
         </div>
@@ -166,7 +166,7 @@ const seoDescription = post.excerpt || '';
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
           </svg>
-          블로그 목록으로
+          <span data-i18n="blog.back_to_list">블로그 목록으로</span>
         </a>
       </div>
     </div>

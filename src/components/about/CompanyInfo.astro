@@ -1,84 +1,25 @@
 ---
-import { company } from '@data/company';
 ---
 
 <section class="py-20 lg:py-28 bg-white">
   <div class="mx-auto max-w-7xl px-6 lg:px-8">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
-      <!-- Left: Company Description -->
-      <div class="gs-fade-up">
-        <p class="mb-4 text-[11px] font-semibold tracking-[0.5em] text-secondary uppercase">About Us</p>
-        <div class="mb-6 h-[2px] w-10 bg-primary"></div>
-        <h2 class="text-[clamp(1.5rem,2.5vw,2.25rem)] font-bold tracking-tight text-primary leading-[1.2] mb-8">
-          특별한 순간을<br />더 특별하게
-        </h2>
-        <div class="space-y-5 text-secondary leading-relaxed">
-          <p>
-            피키픽 포토부스는 브랜드 팝업스토어, 기업 행사, 웨딩, 파티 등
-            다양한 이벤트에 맞춤형 포토부스 렌탈 서비스를 제공합니다.
-          </p>
-          <p>
-            9종 이상의 포토부스 라인업과 전문 운영팀을 통해
-            고객의 특별한 순간을 완벽하게 기록합니다.
-            맞춤형 래핑 디자인부터 즉석 인화, 디지털 공유까지
-            원스톱 서비스를 제공합니다.
-          </p>
-          <p>
-            넷플릭스, 현대자동차, 기아, 뉴발란스 등 국내외 유수 브랜드들과
-            함께한 경험을 바탕으로 최고의 포토부스 경험을 선사합니다.
-          </p>
-        </div>
-      </div>
-
-      <!-- Right: Company Details -->
-      <div class="gs-fade-up">
-        <div class="bg-bg-light p-8 lg:p-10">
-          <h3 class="text-lg font-bold text-primary mb-8 tracking-tight">회사 정보</h3>
-          <dl class="space-y-5">
-            <div class="flex flex-col sm:flex-row sm:gap-6">
-              <dt class="text-xs font-semibold tracking-[0.1em] text-secondary uppercase min-w-[100px] mb-1 sm:mb-0">회사명</dt>
-              <dd class="text-primary">{company.name}</dd>
-            </div>
-            <div class="h-px bg-border-light"></div>
-            <div class="flex flex-col sm:flex-row sm:gap-6">
-              <dt class="text-xs font-semibold tracking-[0.1em] text-secondary uppercase min-w-[100px] mb-1 sm:mb-0">브랜드</dt>
-              <dd class="text-primary">{company.brandKo} ({company.brand})</dd>
-            </div>
-            <div class="h-px bg-border-light"></div>
-            <div class="flex flex-col sm:flex-row sm:gap-6">
-              <dt class="text-xs font-semibold tracking-[0.1em] text-secondary uppercase min-w-[100px] mb-1 sm:mb-0">사업자번호</dt>
-              <dd class="text-primary">{company.businessNumber}</dd>
-            </div>
-            <div class="h-px bg-border-light"></div>
-            <div class="flex flex-col sm:flex-row sm:gap-6">
-              <dt class="text-xs font-semibold tracking-[0.1em] text-secondary uppercase min-w-[100px] mb-1 sm:mb-0">주소</dt>
-              <dd class="text-primary">{company.address}</dd>
-            </div>
-            <div class="h-px bg-border-light"></div>
-            <div class="flex flex-col sm:flex-row sm:gap-6">
-              <dt class="text-xs font-semibold tracking-[0.1em] text-secondary uppercase min-w-[100px] mb-1 sm:mb-0">전화</dt>
-              <dd class="text-primary">
-                <a href={`tel:${company.phone}`} class="hover:underline">{company.phone}</a>
-              </dd>
-            </div>
-            <div class="h-px bg-border-light"></div>
-            <div class="flex flex-col sm:flex-row sm:gap-6">
-              <dt class="text-xs font-semibold tracking-[0.1em] text-secondary uppercase min-w-[100px] mb-1 sm:mb-0">이메일</dt>
-              <dd class="text-primary">
-                <a href={`mailto:${company.email}`} class="hover:underline">{company.email}</a>
-              </dd>
-            </div>
-            <div class="h-px bg-border-light"></div>
-            <div class="flex flex-col sm:flex-row sm:gap-6">
-              <dt class="text-xs font-semibold tracking-[0.1em] text-secondary uppercase min-w-[100px] mb-1 sm:mb-0">카카오톡</dt>
-              <dd class="text-primary">
-                <a href={company.kakaoUrl} target="_blank" rel="noopener noreferrer" class="hover:underline">
-                  {company.kakaoChannel}
-                </a>
-              </dd>
-            </div>
-          </dl>
-        </div>
+    <div class="gs-fade-up">
+      <p class="mb-4 text-[11px] font-semibold tracking-[0.5em] text-secondary uppercase">About Us</p>
+      <div class="mb-6 h-[2px] w-10 bg-primary"></div>
+      <h2 class="text-[clamp(1.5rem,2.5vw,2.25rem)] font-bold tracking-tight text-primary leading-[1.2] mb-3" data-i18n="about.company_heading">
+        피키픽 포토부스<br />(PICKYPIC Photobooth)
+      </h2>
+      <p class="text-sm text-secondary mb-8" data-i18n="about.company_subtitle">대한민국 대표 오픈형 프리미엄 포토부스 전문 기업 | 2020년 설립</p>
+      <div class="space-y-5 text-secondary leading-relaxed max-w-3xl">
+        <p data-i18n="about.company_p1">
+          "어디에나 어울리는 포토부스"를 슬로건으로, 장소와 상황에 구애받지 않는 새로운 포토부스 경험을 만듭니다.
+        </p>
+        <p data-i18n="about.company_p2">
+          스탠드형·테이블형·부스형 등 9종 이상의 라인업을 렌탈과 매매 모두 제공하며, 누적 10,000건 이상의 브랜드 팝업·기업 행사에 포토부스를 공급해 왔습니다.
+        </p>
+        <p data-i18n="about.company_p3">
+          브랜드 맞춤 커스터마이징, AI 퍼스널 컬러 분석 등 차별화된 포토 솔루션을 한국과 싱가포르에서 운영하고 있으며, 글로벌 파트너십을 통해 전 세계로 포토부스를 수출하고 있습니다.
+        </p>
       </div>
     </div>
   </div>

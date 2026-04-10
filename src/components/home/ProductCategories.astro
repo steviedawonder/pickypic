@@ -4,21 +4,27 @@ const categories = [
   {
     label: 'TABLE',
     title: '테이블형',
+    titleKey: 'product_cat.table.title',
     description: '컴팩트한 사이즈로 어디서든 설치 가능한 포토부스',
+    descKey: 'product_cat.table.desc',
     models: '어반미니 · 모던미니 · 모던레트로피키 · 어반레트로피키',
     href: '/products#table',
   },
   {
     label: 'STAND',
     title: '스탠드형',
+    titleKey: 'product_cat.stand.title',
     description: '안정적인 스탠드 구조로 다양한 행사에 적합한 포토부스',
+    descKey: 'product_cat.stand.desc',
     models: '모던피키 · 클래식피키 · 어반피키',
     href: '/products#stand',
   },
   {
     label: 'BOOTH',
     title: '부스형',
+    titleKey: 'product_cat.booth.title',
     description: '프라이빗한 공간을 제공하는 프리미엄 포토부스',
+    descKey: 'product_cat.booth.desc',
     models: '에어피키 · 아웃도어피키',
     href: '/products#booth',
   },
@@ -44,10 +50,10 @@ const categories = [
           <span class="text-[10px] font-semibold tracking-[0.5em] text-secondary/50 uppercase">
             {cat.label}
           </span>
-          <h3 class="mt-3 text-2xl font-bold text-primary lg:text-3xl">
+          <h3 class="mt-3 text-2xl font-bold text-primary lg:text-3xl" data-i18n={cat.titleKey}>
             {cat.title}
           </h3>
-          <p class="mt-3 text-sm text-secondary leading-relaxed">
+          <p class="mt-3 text-sm text-secondary leading-relaxed" data-i18n={cat.descKey}>
             {cat.description}
           </p>
           <p class="mt-2 text-xs text-secondary/60">
@@ -56,7 +62,7 @@ const categories = [
 
           <!-- Arrow -->
           <div class="mt-6 flex items-center gap-2 text-primary">
-            <span class="text-xs font-medium tracking-[0.1em]">자세히 보기</span>
+            <span class="text-xs font-medium tracking-[0.1em]" data-i18n="product_cat.view_more">자세히 보기</span>
             <svg class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>

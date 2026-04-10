@@ -180,7 +180,11 @@ export const faqQueries = {
   byPage: `*[_type == "faqItem" && page == $page] | order(order asc) {
     _id,
     question,
-    answer
+    answer,
+    questionEn,
+    answerEn,
+    questionJp,
+    answerJp
   }`,
 };
 
