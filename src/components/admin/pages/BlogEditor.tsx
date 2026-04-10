@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { colors, s } from '../shared/styles';
 import { calculateScores } from '../shared/seoScoring';
 import { ScoreCategoryPanel, ScoreCircle } from '../shared/SeoComponents';
@@ -6,7 +6,7 @@ import { htmlToPortableText, portableTextToHtml } from '../shared/portableText';
 import {
   fetchCategories, fetchBlogPost, fetchBlogTemplates,
   createBlogPost, updateBlogPost, createBlogTemplate, deleteBlogTemplate,
-  uploadImage, triggerRebuild,
+  uploadImage, triggerRebuild, fetchTags, createTag,
 } from '../adminClient';
 import RichTextEditor from './RichTextEditor';
 
@@ -22,18 +22,34 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
   const [imgCaption, setImgCaption] = useState('');
   const [imgLink, setImgLink] = useState('');
   const editorBodyRef = useRef<{ syncContent: () => void } | null>(null);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [isDraft, setIsDraft] = useState(false);
+  const [allTags, setAllTags] = useState<any[]>([]);
   const [form, setForm] = useState({
     title: '', excerpt: '', body: '', focusKeyword: '', seoTitle: '', seoDescription: '',
     categoryId: '', tags: [] as string[], tagInput: '', publishedAt: '',
   });
 
+  // isDirty for page leave confirmation
+  const [isDirty, setIsDirty] = useState(false);
+  const markDirty = useCallback(() => setIsDirty(true), []);
+
+  // beforeunload warning
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      if (isDirty) { e.preventDefault(); e.returnValue = ''; }
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [isDirty]);
+
   useEffect(() => {
     fetchCategories().then(setCategories);
     fetchBlogTemplates().then(setTemplates).catch(() => {});
+    fetchTags().then(setAllTags).catch(() => {});
     if (postId) {
       fetchBlogPost(postId).then((post: any) => {
         if (post) {
-          // Convert Portable Text body to HTML for the rich editor
           let bodyHtml = '';
           if (post.body && Array.isArray(post.body)) {
             bodyHtml = portableTextToHtml(post.body);
@@ -46,26 +62,39 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
             categoryId: post.category?._id || '', tags: post.tags || [], tagInput: '',
             publishedAt: post.publishedAt ? post.publishedAt.split('T')[0] : '',
           });
-          if (post.mainImage?.asset?.url) {
-            setMainImageUrl(post.mainImage.asset.url);
-          }
-          if (post.mainImage?.asset?._id) {
-            setMainImageRefId(post.mainImage.asset._id);
-          }
+          if (post.mainImage?.asset?.url) setMainImageUrl(post.mainImage.asset.url);
+          if (post.mainImage?.asset?._id) setMainImageRefId(post.mainImage.asset._id);
         }
       });
     }
   }, [postId]);
 
-  const updateField = (field: string, value: any) => setForm(prev => ({ ...prev, [field]: value }));
-
-  const addTag = () => {
-    if (form.tagInput.trim() && !form.tags.includes(form.tagInput.trim())) {
-      setForm(prev => ({ ...prev, tags: [...prev.tags, prev.tagInput.trim()], tagInput: '' }));
-    }
+  const updateField = (field: string, value: any) => {
+    setForm(prev => ({ ...prev, [field]: value }));
+    markDirty();
   };
 
-  const removeTag = (tag: string) => setForm(prev => ({ ...prev, tags: prev.tags.filter(t => t !== tag) }));
+  const addTag = async () => {
+    const tagName = form.tagInput.trim();
+    if (!tagName || form.tags.includes(tagName)) return;
+    // Check if tag exists in allTags
+    const exists = allTags.some((t: any) => t.title === tagName);
+    if (!exists) {
+      try {
+        const newTag = await createTag(tagName);
+        setAllTags(prev => [...prev, newTag]);
+      } catch (err: any) {
+        // ignore if tag creation fails (e.g. already exists in Sanity)
+      }
+    }
+    setForm(prev => ({ ...prev, tags: [...prev.tags, tagName], tagInput: '' }));
+    markDirty();
+  };
+
+  const removeTag = (tag: string) => {
+    setForm(prev => ({ ...prev, tags: prev.tags.filter(t => t !== tag) }));
+    markDirty();
+  };
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
@@ -74,10 +103,9 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
 
   const handleSave = async (publish: boolean) => {
     setSaving(true);
+    setErrorMsg('');
     try {
-      // Convert HTML body to Sanity Portable Text blocks
       const bodyBlocks = htmlToPortableText(form.body);
-
       const data: any = {
         title: form.title,
         excerpt: form.excerpt,
@@ -89,12 +117,9 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
         ...(form.categoryId && { category: { _type: 'reference', _ref: form.categoryId } }),
         ...(publish && { publishedAt: form.publishedAt || new Date().toISOString() }),
       };
-
-      // Add mainImage reference if it exists
       if (mainImageRef_id) {
         data.mainImage = { _type: 'image', asset: { _type: 'reference', _ref: mainImageRef_id } };
       }
-
       if (currentPostId) {
         await updateBlogPost(currentPostId, data);
       } else {
@@ -102,8 +127,8 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
         const created = await createBlogPost(data);
         if (created?._id) setCurrentPostId(created._id);
       }
-
       triggerRebuild();
+      setIsDirty(false);
       if (publish) {
         showToast('발행되었습니다!');
         setTimeout(() => onNavigate('blogs'), 1000);
@@ -111,7 +136,7 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
         showToast('임시저장 완료!');
       }
     } catch (e: any) {
-      alert('저장 실패: ' + e.message);
+      setErrorMsg('저장 실패: ' + e.message);
     } finally {
       setSaving(false);
     }
@@ -128,7 +153,6 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
   const [mainImageUrl, setMainImageUrl] = useState('');
   const [mainImageRef_id, setMainImageRefId] = useState('');
   const mainImageRef = useRef<HTMLInputElement>(null);
-
   const [mainImageStatus, setMainImageStatus] = useState('');
 
   const handleMainImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -139,6 +163,7 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
       const asset = await uploadImage(file, setMainImageStatus);
       setMainImageUrl(asset.url);
       setMainImageRefId(asset._id);
+      markDirty();
     } catch (err: any) {
       alert('이미지 업로드 실패: ' + err.message);
     } finally {
@@ -146,6 +171,15 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
       setMainImageStatus('');
     }
   };
+
+  const handleNavigateBack = () => {
+    if (isDirty) {
+      if (!window.confirm('작성 중인 글이 있습니다. 나가시겠습니까?')) return;
+    }
+    onNavigate('blogs');
+  };
+
+  const slug = form.title ? form.title.toLowerCase().replace(/[^a-z0-9가-힣\s]/g, '').replace(/\s+/g, '-') : '';
 
   return (
     <div style={{ position: 'relative' }}>
@@ -157,55 +191,80 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
       )}
 
       {/* Back link */}
-      <button onClick={() => onNavigate('blogs')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: colors.textLight, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 4 }}>
+      <button onClick={handleNavigateBack} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: colors.textLight, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 4 }}>
         <span>{'<'}</span> 글 목록으로
       </button>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 20 }}>
-        {/* ── Left: Title + Slug + Editor ── */}
-        <div>
+      {/* ── Top Publish Bar ── */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px',
+        background: '#fff', border: `1px solid ${colors.border}`, borderRadius: 10,
+        marginBottom: 16, flexWrap: 'wrap',
+      }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: colors.textLight, cursor: 'pointer' }}>
+          <input type="checkbox" checked={isDraft} onChange={e => setIsDraft(e.target.checked)} />
+          임시글
+        </label>
+        <button onClick={() => handleSave(false)} disabled={saving} style={{ ...s.btn, ...s.btnOutline, fontSize: 12, padding: '8px 16px' }}>{saving ? '...' : '임시저장'}</button>
+        <button onClick={() => handleSave(true)} disabled={saving} style={{ ...s.btn, fontSize: 12, padding: '8px 16px', fontWeight: 600, borderRadius: 8, border: '2px solid #22c55e', background: '#fff', color: '#22c55e', cursor: 'pointer' }}>{saving ? '...' : '발행'}</button>
+        <button onClick={() => handleSave(true)} disabled={saving} style={{ ...s.btn, background: colors.text, color: '#fff', fontSize: 12, padding: '8px 16px', fontWeight: 700, borderRadius: 8, border: 'none', cursor: 'pointer' }}>저장</button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 4 }}>
+          <label style={{ fontSize: 11, fontWeight: 600, color: colors.orange }}>예약</label>
+          <input type="datetime-local" style={{ fontSize: 11, padding: '4px 8px', border: `1px solid ${colors.border}`, borderRadius: 6, outline: 'none' }} value={form.publishedAt} onChange={e => updateField('publishedAt', e.target.value)} />
+        </div>
+        <div style={{ flex: 1 }} />
+        {errorMsg && <span style={{ fontSize: 12, color: colors.red, fontWeight: 600 }}>{errorMsg}</span>}
+        {slug && (
+          <a href={`/blog/${slug}`} target="_blank" rel="noopener" style={{ fontSize: 11, color: colors.blue, textDecoration: 'none', fontWeight: 600 }}>미리보기 →</a>
+        )}
+      </div>
+
+      {/* ── Main Grid (fixed height, independent scroll) ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 20, height: 'calc(100vh - 180px)' }}>
+        {/* ── Left: Title + Slug + Editor (flex column, editor scrolls internally) ── */}
+        <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
           {/* Title */}
           <input
             value={form.title}
             onChange={e => updateField('title', e.target.value)}
             placeholder="제목을 입력하세요"
-            style={{ width: '100%', fontSize: 24, fontWeight: 800, border: `1px solid ${colors.border}`, borderRadius: 8, outline: 'none', padding: '14px 16px', marginBottom: 10, color: colors.text, fontFamily: 'inherit', background: '#fff', boxSizing: 'border-box' }}
+            style={{ width: '100%', fontSize: 24, fontWeight: 800, border: `1px solid ${colors.border}`, borderRadius: 8, outline: 'none', padding: '14px 16px', marginBottom: 10, color: colors.text, fontFamily: 'inherit', background: '#fff', boxSizing: 'border-box', flexShrink: 0 }}
           />
 
           {/* Slug */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 16, fontSize: 13, color: colors.textLight }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 12, fontSize: 13, color: colors.textLight, flexShrink: 0 }}>
             <span style={{ fontWeight: 600 }}>/blog/</span>
             <input
-              value={form.title ? form.title.toLowerCase().replace(/[^a-z0-9가-힣\s]/g, '').replace(/\s+/g, '-') : ''}
+              value={slug}
               readOnly
               style={{ border: `1px solid ${colors.border}`, borderRadius: 4, padding: '4px 8px', fontSize: 13, color: colors.textLight, flex: 1, outline: 'none', background: '#fafafa' }}
             />
           </div>
 
-          {/* Rich Text Editor */}
-          <RichTextEditor value={form.body} onChange={(html) => updateField('body', html)} onImageSelect={(img) => {
-            setSelectedEditorImg(img);
-            if (img && img.tagName === 'IMG') {
-              setImgAlt(img.getAttribute('alt') || '');
-              // Check for caption (div.img-caption inside figure wrapper)
-              const wrapper = img.closest('.img-overlay-wrapper');
-              const container = wrapper || img;
-              const figureWrapper = container.closest('.img-figure-wrapper');
-              const captionEl = figureWrapper?.querySelector('.img-caption');
-              setImgCaption(captionEl?.textContent || '');
-              // Check for link
-              const link = img.closest('a');
-              setImgLink(link?.getAttribute('href') || '');
-            } else {
-              setImgAlt('');
-              setImgCaption('');
-              setImgLink('');
-            }
-          }} />
+          {/* Rich Text Editor (takes remaining space, scrolls internally) */}
+          <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+            <RichTextEditor value={form.body} onChange={(html) => updateField('body', html)} onImageSelect={(img) => {
+              setSelectedEditorImg(img);
+              if (img && img.tagName === 'IMG') {
+                setImgAlt(img.getAttribute('alt') || '');
+                const wrapper = img.closest('.img-overlay-wrapper');
+                const container = wrapper || img;
+                const figureWrapper = container.closest('.img-figure-wrapper');
+                const captionEl = figureWrapper?.querySelector('.img-caption');
+                setImgCaption(captionEl?.textContent || '');
+                const link = img.closest('a');
+                setImgLink(link?.getAttribute('href') || '');
+              } else {
+                setImgAlt('');
+                setImgCaption('');
+                setImgLink('');
+              }
+            }} />
+          </div>
         </div>
 
-        {/* ── Right: Sidebar Panels ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {/* ── Right: Sidebar Panels (independent scroll) ── */}
+        <div style={{ overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 12 }}>
 
           {/* Image Settings Panel (replaces SEO when image selected) */}
           {selectedEditorImg && selectedEditorImg.tagName === 'IMG' ? (
@@ -220,12 +279,10 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
                 </div>
               </div>
 
-              {/* Preview thumbnail */}
               <div style={{ marginBottom: 14, borderRadius: 8, overflow: 'hidden', border: `1px solid ${colors.border}`, background: '#f5f5f5' }}>
                 <img src={selectedEditorImg.src} alt="블로그 에디터 이미지 미리보기" style={{ width: '100%', display: 'block', maxHeight: 160, objectFit: 'contain' }} />
               </div>
 
-              {/* Alt text */}
               <div style={{ marginBottom: 12 }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: colors.text, marginBottom: 4 }}>
                   이미지 설명 (Alt Text)
@@ -243,11 +300,8 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
                 />
               </div>
 
-              {/* Caption */}
               <div style={{ marginBottom: 12 }}>
-                <label style={{ fontSize: 12, fontWeight: 600, color: colors.text, marginBottom: 4, display: 'block' }}>
-                  캡션
-                </label>
+                <label style={{ fontSize: 12, fontWeight: 600, color: colors.text, marginBottom: 4, display: 'block' }}>캡션</label>
                 <input
                   type="text"
                   placeholder="이미지 하단 설명 (선택)"
@@ -256,12 +310,9 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
                     setImgCaption(e.target.value);
                     const wrapper = selectedEditorImg.closest('.img-overlay-wrapper');
                     const imgEl = wrapper || selectedEditorImg;
-                    // Look for figure wrapper that holds image + caption together
                     let figureEl = imgEl.closest('.img-figure-wrapper') as HTMLElement | null;
                     let captionEl = figureEl?.querySelector('.img-caption') as HTMLElement | null;
-
                     if (e.target.value) {
-                      // Create figure wrapper if not exists
                       if (!figureEl) {
                         figureEl = document.createElement('div');
                         figureEl.className = 'img-figure-wrapper';
@@ -278,7 +329,6 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
                       captionEl.textContent = e.target.value;
                     } else {
                       if (captionEl) captionEl.remove();
-                      // Unwrap figure if only image remains
                       if (figureEl && !figureEl.querySelector('.img-caption')) {
                         figureEl.parentElement?.insertBefore(imgEl, figureEl);
                         figureEl.remove();
@@ -290,11 +340,8 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
                 />
               </div>
 
-              {/* Link */}
               <div style={{ marginBottom: 12 }}>
-                <label style={{ fontSize: 12, fontWeight: 600, color: colors.text, marginBottom: 4, display: 'block' }}>
-                  클릭 시 이동 링크
-                </label>
+                <label style={{ fontSize: 12, fontWeight: 600, color: colors.text, marginBottom: 4, display: 'block' }}>클릭 시 이동 링크</label>
                 <input
                   type="text"
                   placeholder="https://example.com (선택)"
@@ -325,7 +372,6 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
                 />
               </div>
 
-              {/* Image info */}
               <div style={{ fontSize: 11, color: colors.textLight, padding: '8px 0', borderTop: `1px solid ${colors.border}` }}>
                 <div>크기: {selectedEditorImg.naturalWidth} x {selectedEditorImg.naturalHeight}px</div>
               </div>
@@ -333,14 +379,11 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
           ) : (
           /* SEO/GEO Score Panel */
           <div style={s.card}>
-            {/* Score header with circles */}
             <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginBottom: 16, paddingBottom: 16, borderBottom: `1px solid ${colors.border}` }}>
               <ScoreCircle score={scores.seoScore} label="SEO" size={48} />
               <ScoreCircle score={scores.totalScore} label="종합" size={64} />
               <ScoreCircle score={scores.geoScore} label="GEO" size={48} />
             </div>
-
-            {/* SEO Categories */}
             <div style={{ marginBottom: 8 }}>
               <div style={{ fontSize: 12, fontWeight: 800, color: colors.text, marginBottom: 4, letterSpacing: '0.02em' }}>
                 SEO 분석 <span style={{ fontWeight: 400, color: colors.textLight }}>({scores.seoScore}/100)</span>
@@ -349,8 +392,6 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
                 <ScoreCategoryPanel key={i} category={cat} defaultOpen={cat.failCount > 0 && i === 0} />
               ))}
             </div>
-
-            {/* GEO Categories */}
             <div style={{ marginTop: 16, paddingTop: 12, borderTop: `2px solid ${colors.border}` }}>
               <div style={{ fontSize: 12, fontWeight: 800, color: colors.text, marginBottom: 4, letterSpacing: '0.02em' }}>
                 GEO 분석 (AI 검색 최적화) <span style={{ fontWeight: 400, color: colors.textLight }}>({scores.geoScore}/100)</span>
@@ -361,20 +402,6 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
             </div>
           </div>
           )}
-
-          {/* Publish Panel */}
-          <div style={s.card}>
-            <h3 style={{ fontSize: 13, fontWeight: 700, marginBottom: 12 }}>발행</h3>
-            <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-              <button onClick={() => handleSave(false)} disabled={saving} style={{ ...s.btn, ...s.btnOutline, flex: 1, fontSize: 12 }}>{saving ? '...' : '임시저장'}</button>
-              <button onClick={() => handleSave(true)} disabled={saving} style={{ ...s.btn, padding: '10px 20px', fontSize: 12, fontWeight: 600, borderRadius: 8, border: '2px solid #22c55e', background: '#fff', color: '#22c55e', cursor: 'pointer', flex: 1 }}>{saving ? '...' : '발행'}</button>
-            </div>
-            <div style={{ marginBottom: 8 }}>
-              <label style={{ fontSize: 12, fontWeight: 600, color: colors.orange }}>예약 발행</label>
-              <input type="datetime-local" style={{ ...s.input, fontSize: 12, marginTop: 4 }} value={form.publishedAt} onChange={e => updateField('publishedAt', e.target.value)} />
-            </div>
-            <button onClick={() => handleSave(true)} disabled={saving} style={{ ...s.btn, width: '100%', background: colors.text, color: '#fff', fontSize: 13, padding: '12px 0', fontWeight: 700, borderRadius: 8, border: 'none', cursor: 'pointer' }}>저장</button>
-          </div>
 
           {/* Template Panel */}
           <div style={s.card}>
@@ -435,11 +462,12 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
                           categoryId: t.categoryId || prev.categoryId,
                         }));
                         showToast(`"${t.title}" 템플릿 적용!`);
+                        markDirty();
                       }}
                       style={{ flex: 1, background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: colors.text, textAlign: 'left', padding: '2px 0' }}
                       title="클릭하여 적용"
                     >
-                      📄 {t.title}
+                      {t.title}
                     </button>
                     <button
                       onClick={async () => {
@@ -449,7 +477,7 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
                         showToast('템플릿 삭제됨');
                       }}
                       style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 11, color: '#ef4444', padding: '2px 4px' }}
-                    >✕</button>
+                    >x</button>
                   </div>
                 ))}
               </div>
@@ -465,14 +493,14 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
             </select>
           </div>
 
-          {/* Tags */}
+          {/* Tags - Enter to add, auto-create new tags */}
           <div style={s.card}>
             <h3 style={{ fontSize: 13, fontWeight: 700, marginBottom: 8 }}>태그</h3>
-            <input style={s.input} value={form.tagInput} onChange={e => updateField('tagInput', e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addTag())} placeholder="태그 입력 후 Enter" />
+            <input style={s.input} value={form.tagInput} onChange={e => updateField('tagInput', e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }} placeholder="태그 입력 후 Enter" />
             {form.tags.length > 0 && (
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
                 {form.tags.map(tag => (
-                  <span key={tag} style={{ ...s.badge, background: '#f0f0f0', cursor: 'pointer', fontSize: 11 }} onClick={() => removeTag(tag)}>#{tag} ✕</span>
+                  <span key={tag} style={{ ...s.badge, background: '#f0f0f0', cursor: 'pointer', fontSize: 11 }} onClick={() => removeTag(tag)}>#{tag} x</span>
                 ))}
               </div>
             )}
@@ -488,7 +516,7 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
               onMouseLeave={e => (e.currentTarget.style.borderColor = colors.border)}
             >
               {mainImageUrl ? (
-                <img src={mainImageUrl} alt="대표 이미지" style={{ maxWidth: '100%', maxHeight: 150, objectFit: 'cover', borderRadius: 4 }} />
+                <img src={mainImageUrl} alt="대표 이미지" style={{ maxWidth: '100%', maxHeight: 150, objectFit: 'contain', borderRadius: 4 }} />
               ) : (
                 <>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="1.5" style={{ margin: '0 auto 8px' }}><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
@@ -530,7 +558,7 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
             <div style={{ fontSize: 11, color: colors.textLight, marginBottom: 6 }}>Google 검색결과</div>
             <div style={{ marginBottom: 4 }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: '#1a0dab' }}>{form.seoTitle || form.title || 'SEO 제목'} - PICKYPIC</div>
-              <div style={{ fontSize: 11, color: '#006621' }}>picky-pic.com/blog/{form.title ? form.title.toLowerCase().replace(/[^a-z0-9가-힣\s]/g, '').replace(/\s+/g, '-') : 'post-slug'}</div>
+              <div style={{ fontSize: 11, color: '#006621' }}>picky-pic.com/blog/{slug || 'post-slug'}</div>
               <div style={{ fontSize: 11, color: colors.textLight }}>{form.seoDescription || '메타 설명이 여기에 표시됩니다.'}</div>
             </div>
           </div>

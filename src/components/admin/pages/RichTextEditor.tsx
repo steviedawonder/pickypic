@@ -20,6 +20,8 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
 
   // Upload status indicator
   const [uploadStatus, setUploadStatus] = useState('');
+  // Multi-image uploading count
+  const [uploadingCount, setUploadingCount] = useState(0);
 
   // Notify parent when image selection changes
   useEffect(() => {
@@ -38,25 +40,46 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [selectedImg]);
 
+  // Recalculate imgRect helper
+  const recalcImgRect = (img: HTMLImageElement | null) => {
+    if (!img || !editorRef.current) return;
+    const editor = editorRef.current;
+    const tag = img.tagName.toLowerCase();
+    let target: HTMLElement;
+    if (tag === 'iframe' || tag === 'video') {
+      target = img.parentElement!;
+    } else if (img.parentElement?.classList?.contains('img-overlay-wrapper')) {
+      target = img.parentElement!;
+    } else {
+      target = img;
+    }
+    const r = target.getBoundingClientRect();
+    const editorRect = editor.getBoundingClientRect();
+    setImgRect({
+      top: r.top - editorRect.top + editor.scrollTop,
+      left: r.left - editorRect.left + editor.scrollLeft,
+      width: r.width,
+      height: r.height,
+    });
+  };
+
+  // Recalc on editor scroll when image is selected
+  useEffect(() => {
+    const editor = editorRef.current;
+    if (!editor || !selectedImg) return;
+    const onScroll = () => recalcImgRect(selectedImg);
+    editor.addEventListener('scroll', onScroll);
+    return () => editor.removeEventListener('scroll', onScroll);
+  }, [selectedImg]);
+
   // Select media on click and add click overlays to iframes
   useEffect(() => {
     const editor = editorRef.current;
     if (!editor) return;
 
     const selectMedia = (media: HTMLElement) => {
-      const tag = media.tagName.toLowerCase();
       setSelectedImg(media as any);
-      const editorRect = editor.getBoundingClientRect();
-      let target: HTMLElement;
-      if (tag === 'iframe' || tag === 'video') {
-        target = media.parentElement!;
-      } else if (media.parentElement?.classList?.contains('img-overlay-wrapper')) {
-        target = media.parentElement!;
-      } else {
-        target = media;
-      }
-      const r = target.getBoundingClientRect();
-      setImgRect({ top: r.top - editorRect.top, left: r.left - editorRect.left, width: r.width, height: r.height });
+      recalcImgRect(media as any);
     };
 
     // Add transparent click overlays to all iframes/videos in editor
@@ -84,7 +107,6 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
 
     addOverlays();
     editor.addEventListener('click', handleImgClick);
-    // Re-add overlays when content changes
     const observer = new MutationObserver(addOverlays);
     observer.observe(editor, { childList: true, subtree: true });
 
@@ -94,17 +116,13 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
     };
   }, []);
 
-  // Get the resizable target element (for iframes/videos or overlay wrappers, resize the parent wrapper)
+  // Get the resizable target element
   const getResizeTarget = (): HTMLElement | null => {
     if (!selectedImg) return null;
     const tag = selectedImg.tagName.toLowerCase();
-    if (tag === 'iframe' || tag === 'video') {
-      return selectedImg.parentElement as HTMLElement;
-    }
+    if (tag === 'iframe' || tag === 'video') return selectedImg.parentElement as HTMLElement;
     const parent = selectedImg.parentElement;
-    if (parent?.classList?.contains('img-overlay-wrapper')) {
-      return parent as HTMLElement;
-    }
+    if (parent?.classList?.contains('img-overlay-wrapper')) return parent as HTMLElement;
     return selectedImg;
   };
 
@@ -126,34 +144,21 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
       let newH = startH;
       const dx = ev.clientX - startX;
       const dy = ev.clientY - startY;
-
       if (handle.includes('right')) newW = Math.max(100, startW + dx);
       if (handle.includes('left')) newW = Math.max(100, startW - dx);
       if (handle.includes('bottom')) newH = Math.max(60, startH + dy);
       if (handle.includes('top')) newH = Math.max(60, startH - dy);
-
-      // Corner handles maintain aspect ratio
-      if (handle.length > 6) {
-        newH = newW / aspectRatio;
-      }
-
+      if (handle.length > 6) newH = newW / aspectRatio;
       target.style.width = `${newW}px`;
       target.style.maxWidth = '100%';
       if (isMedia) {
-        // Also resize the inner iframe/video
         selectedImg!.style.width = '100%';
         selectedImg!.style.height = `${newH}px`;
         target.style.height = 'auto';
       } else {
         target.style.height = `${newH}px`;
       }
-
-      const editor = editorRef.current;
-      if (editor) {
-        const editorRect = editor.getBoundingClientRect();
-        const r = target.getBoundingClientRect();
-        setImgRect({ top: r.top - editorRect.top, left: r.left - editorRect.left, width: r.width, height: r.height });
-      }
+      recalcImgRect(selectedImg);
     };
     const onMouseUp = () => {
       document.removeEventListener('mousemove', onMouseMove);
@@ -164,7 +169,7 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
     document.addEventListener('mouseup', onMouseUp);
   };
 
-  // Image alignment - apply to wrapper if image has text overlay wrapper
+  // Image alignment
   const alignImage = (align: 'left' | 'center' | 'right') => {
     if (!selectedImg) return;
     const parent = selectedImg.parentElement;
@@ -174,18 +179,10 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
     target.style.margin = align === 'center' ? '8px auto' : '8px 0';
     target.style.float = align === 'center' ? 'none' : align;
     syncContent();
-    // Update rect
-    const editor = editorRef.current;
-    if (editor) {
-      setTimeout(() => {
-        const editorRect = editor.getBoundingClientRect();
-        const r = target.getBoundingClientRect();
-        setImgRect({ top: r.top - editorRect.top, left: r.left - editorRect.left, width: r.width, height: r.height });
-      }, 50);
-    }
+    setTimeout(() => recalcImgRect(selectedImg), 50);
   };
 
-  // Delete selected media (image/video/iframe) - also removes wrapper if present
+  // Delete selected media
   const deleteSelectedMedia = () => {
     if (!selectedImg) return;
     const tag = selectedImg.tagName.toLowerCase();
@@ -200,27 +197,35 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
       target = selectedImg;
     }
     if (target) {
+      // If inside img-row, check if only 1 sibling left
+      const imgRow = target.closest('.img-row');
       target.remove();
+      if (imgRow) {
+        const remaining = imgRow.querySelectorAll('img, .img-overlay-wrapper, .img-figure-wrapper');
+        if (remaining.length <= 1 && remaining[0]) {
+          imgRow.parentElement?.insertBefore(remaining[0], imgRow);
+          imgRow.remove();
+        } else if (remaining.length === 0) {
+          imgRow.remove();
+        }
+      }
       setSelectedImg(null);
       setImgRect(null);
       syncContent();
     }
   };
 
-  // Keyboard handler - only Escape to deselect (delete only via toolbar button)
+  // Keyboard handler
   useEffect(() => {
     if (!selectedImg) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setSelectedImg(null);
-        setImgRect(null);
-      }
+      if (e.key === 'Escape') { setSelectedImg(null); setImgRect(null); }
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [selectedImg]);
 
-  // Sync external value into editor only when it changes externally
+  // Sync external value into editor
   useEffect(() => {
     if (isInternalChange.current) {
       isInternalChange.current = false;
@@ -268,7 +273,6 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
     return () => document.removeEventListener('mousedown', handleClick);
   }, [showHeadingDropdown]);
 
-  // Detect current heading at cursor
   useEffect(() => {
     const editor = editorRef.current;
     if (!editor) return;
@@ -306,31 +310,39 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
   const videoInputRef = useRef<HTMLInputElement>(null);
   const fileUploadRef = useRef<HTMLInputElement>(null);
 
-  // Close insert menu on outside click
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
-      if (insertMenuRef.current && !insertMenuRef.current.contains(e.target as Node)) {
-        setShowInsertMenu(false);
-      }
+      if (insertMenuRef.current && !insertMenuRef.current.contains(e.target as Node)) setShowInsertMenu(false);
     };
     if (showInsertMenu) document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, [showInsertMenu]);
 
+  // ── Multi-image upload ──
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const fileArr = Array.from(files);
+    setUploadingCount(fileArr.length);
     try {
-      const asset = await uploadImage(file, setUploadStatus);
-      const imgUrl = asset.url;
-      const altText = file.name.replace(/\.[^/.]+$/, '');
+      const results: { url: string; name: string }[] = [];
+      for (const file of fileArr) {
+        const asset = await uploadImage(file, setUploadStatus);
+        results.push({ url: asset.url, name: file.name.replace(/\.[^/.]+$/, '') });
+      }
       editorRef.current?.focus();
-      document.execCommand('insertHTML', false, `<img src="${imgUrl}" alt="${altText}" style="max-width:100%;height:auto;margin:8px 0;" />`);
+      if (results.length === 1) {
+        document.execCommand('insertHTML', false, `<img src="${results[0].url}" alt="${results[0].name}" style="max-width:100%;height:auto;margin:8px 0;" />`);
+      } else {
+        const imgs = results.map(r => `<img src="${r.url}" alt="${r.name}" style="max-width:100%;height:auto;flex:1;min-width:0;" />`).join('');
+        document.execCommand('insertHTML', false, `<div class="img-row" style="display:flex;gap:8px;margin:8px 0;">${imgs}</div>`);
+      }
       syncContent();
     } catch (err: any) {
       alert('이미지 업로드 실패: ' + err.message);
     } finally {
       setUploadStatus('');
+      setUploadingCount(0);
     }
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
@@ -346,26 +358,21 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
     syncContent();
   };
 
-  // Add text overlay to selected image - inline editable, draggable within image bounds
+  // Add text overlay to selected image
   const addTextOverlay = () => {
     if (!selectedImg || selectedImg.tagName.toLowerCase() !== 'img') return;
     const parent = selectedImg.parentElement;
-
-    // If overlay already exists, focus it for editing
     if (parent?.classList?.contains('img-overlay-wrapper') && parent?.querySelector?.('.img-text-overlay')) {
       const overlay = parent.querySelector('.img-text-overlay') as HTMLElement;
       overlay.focus();
       return;
     }
-
-    // Wrap image in relative container
     const wrapper = document.createElement('div');
     wrapper.className = 'img-overlay-wrapper';
     wrapper.style.cssText = 'position:relative;display:inline-block;max-width:100%;overflow:hidden;';
     selectedImg.parentElement?.insertBefore(wrapper, selectedImg);
     wrapper.appendChild(selectedImg);
 
-    // Create editable overlay
     const overlay = document.createElement('div');
     overlay.className = 'img-text-overlay';
     overlay.contentEditable = 'true';
@@ -373,7 +380,6 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
     overlay.textContent = '텍스트 입력';
     wrapper.appendChild(overlay);
 
-    // Create mini toolbar (hidden by default)
     const miniBar = document.createElement('div');
     miniBar.className = 'img-overlay-minibar';
     miniBar.style.cssText = 'position:absolute;top:-32px;left:50%;transform:translateX(-50%);display:none;gap:4px;background:#1a1a1a;border-radius:6px;padding:3px 6px;z-index:20;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,0.3);white-space:nowrap;';
@@ -381,11 +387,10 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
       <button class="overlay-btn" data-action="size-down" title="글씨 축소" style="width:24px;height:22px;border:none;background:none;cursor:pointer;border-radius:3px;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;">A-</button>
       <button class="overlay-btn" data-action="size-up" title="글씨 확대" style="width:24px;height:22px;border:none;background:none;cursor:pointer;border-radius:3px;color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;">A+</button>
       <input type="color" data-action="color" value="#ffffff" title="글씨 색상" style="width:22px;height:22px;border:1px solid #555;border-radius:3px;cursor:pointer;padding:0;background:none;" />
-      <button class="overlay-btn" data-action="remove-text" title="텍스트 삭제" style="width:24px;height:22px;border:none;background:none;cursor:pointer;border-radius:3px;color:#ff6666;font-size:12px;display:flex;align-items:center;justify-content:center;">✕</button>
+      <button class="overlay-btn" data-action="remove-text" title="텍스트 삭제" style="width:24px;height:22px;border:none;background:none;cursor:pointer;border-radius:3px;color:#ff6666;font-size:12px;display:flex;align-items:center;justify-content:center;">x</button>
     `;
     wrapper.appendChild(miniBar);
 
-    // Mini toolbar button handlers
     miniBar.addEventListener('mousedown', (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -403,7 +408,6 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
       } else if (action === 'remove-text') {
         overlay.remove();
         miniBar.remove();
-        // Unwrap: move image out of wrapper
         const img = wrapper.querySelector('img');
         if (img) {
           wrapper.parentElement?.insertBefore(img, wrapper);
@@ -413,21 +417,15 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
       }
     });
 
-    // Color input change
     const colorInput = miniBar.querySelector('input[data-action="color"]') as HTMLInputElement;
     colorInput?.addEventListener('input', (e) => {
       overlay.style.color = (e.target as HTMLInputElement).value;
       syncContent();
     });
 
-    // Show minibar when overlay is focused/clicked
-    overlay.addEventListener('focus', () => {
-      miniBar.style.display = 'flex';
-    });
-
+    overlay.addEventListener('focus', () => { miniBar.style.display = 'flex'; });
     overlay.addEventListener('blur', () => {
       setTimeout(() => {
-        // Don't hide if focus went to minibar
         if (!miniBar.contains(document.activeElement)) {
           miniBar.style.display = 'none';
           syncContent();
@@ -435,15 +433,12 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
       }, 200);
     });
 
-    // Dragging logic
+    // Dragging overlay
     let isDragging = false;
     let dragStartX = 0, dragStartY = 0;
     let overlayStartLeft = 0, overlayStartTop = 0;
-
     overlay.addEventListener('mousedown', (e: MouseEvent) => {
-      // If clicking to edit text, don't drag
       if (overlay === document.activeElement || (e.target as HTMLElement).isContentEditable) {
-        // Already editing, let text selection work
         if (overlay.textContent !== '텍스트 입력') return;
       }
       e.preventDefault();
@@ -455,28 +450,21 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
       overlayStartLeft = overlayRect.left - wrapperRect.left + overlayRect.width / 2;
       overlayStartTop = overlayRect.top - wrapperRect.top + overlayRect.height / 2;
       overlay.style.cursor = 'grabbing';
-
       const onMove = (ev: MouseEvent) => {
         if (!isDragging) return;
         const dx = ev.clientX - dragStartX;
         const dy = ev.clientY - dragStartY;
         const wRect = wrapper.getBoundingClientRect();
         const oRect = overlay.getBoundingClientRect();
-        // Calculate new center position as percentage
         let newLeft = overlayStartLeft + dx;
         let newTop = overlayStartTop + dy;
-        // Clamp within wrapper bounds
         const halfW = oRect.width / 2;
         const halfH = oRect.height / 2;
         newLeft = Math.max(halfW, Math.min(wRect.width - halfW, newLeft));
         newTop = Math.max(halfH, Math.min(wRect.height - halfH, newTop));
-        // Convert to percentage for responsive
-        const leftPct = (newLeft / wRect.width) * 100;
-        const topPct = (newTop / wRect.height) * 100;
-        overlay.style.left = leftPct + '%';
-        overlay.style.top = topPct + '%';
+        overlay.style.left = (newLeft / wRect.width) * 100 + '%';
+        overlay.style.top = (newTop / wRect.height) * 100 + '%';
       };
-
       const onUp = () => {
         isDragging = false;
         overlay.style.cursor = 'text';
@@ -484,30 +472,22 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
         document.removeEventListener('mouseup', onUp);
         syncContent();
       };
-
       document.addEventListener('mousemove', onMove);
       document.addEventListener('mouseup', onUp);
     });
 
-    // Double-click to edit text
     overlay.addEventListener('dblclick', (e) => {
       e.stopPropagation();
       overlay.focus();
       miniBar.style.display = 'flex';
-      // Select all text on double click for easy replacement
       const range = document.createRange();
       range.selectNodeContents(overlay);
       const sel = window.getSelection();
       sel?.removeAllRanges();
       sel?.addRange(range);
     });
+    overlay.addEventListener('click', (e) => { e.stopPropagation(); });
 
-    // Prevent editor from deselecting image when clicking overlay
-    overlay.addEventListener('click', (e) => {
-      e.stopPropagation();
-    });
-
-    // Focus the overlay for immediate editing
     setTimeout(() => {
       overlay.focus();
       const range = document.createRange();
@@ -516,17 +496,8 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
       sel?.removeAllRanges();
       sel?.addRange(range);
     }, 50);
-
     syncContent();
-    // Update rect after DOM change
-    const editor = editorRef.current;
-    if (editor) {
-      setTimeout(() => {
-        const editorRect = editor.getBoundingClientRect();
-        const r = wrapper.getBoundingClientRect();
-        setImgRect({ top: r.top - editorRect.top, left: r.left - editorRect.left, width: r.width, height: r.height });
-      }, 100);
-    }
+    setTimeout(() => recalcImgRect(selectedImg as any), 100);
   };
 
   // YouTube modal state
@@ -544,9 +515,7 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
   };
 
   const extractYoutubeId = (url: string): string => {
-    const patterns = [
-      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
-    ];
+    const patterns = [/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/];
     for (const p of patterns) {
       const m = url.match(p);
       if (m) return m[1];
@@ -557,15 +526,11 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
   const handleYoutubeUrlChange = (url: string) => {
     setYoutubeUrl(url);
     setYoutubeError('');
-    const id = extractYoutubeId(url);
-    setYoutubePreviewId(id);
+    setYoutubePreviewId(extractYoutubeId(url));
   };
 
   const confirmYoutubeInsert = () => {
-    if (!youtubePreviewId) {
-      setYoutubeError('유효한 유튜브 링크를 입력해 주세요.');
-      return;
-    }
+    if (!youtubePreviewId) { setYoutubeError('유효한 유튜브 링크를 입력해 주세요.'); return; }
     editorRef.current?.focus();
     const embedHtml = `<div style="position:relative;max-width:560px;margin:12px 0;" contenteditable="false"><iframe width="560" height="315" src="https://www.youtube.com/embed/${youtubePreviewId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%;height:315px;border-radius:8px;"></iframe></div>`;
     document.execCommand('insertHTML', false, embedHtml);
@@ -605,8 +570,6 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
     if (fileUploadRef.current) fileUploadRef.current.value = '';
   };
 
-  // (iframe/video click handling is now in the combined selectMedia handler above)
-
   // Font size dropdown
   const fontSizes = [11, 13, 15, 16, 19, 24, 28, 30, 34, 38];
   const [showFontSize, setShowFontSize] = useState(false);
@@ -621,7 +584,6 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
     return () => document.removeEventListener('mousedown', handleClick);
   }, [showFontSize]);
 
-  // Detect current font size at cursor
   useEffect(() => {
     const editor = editorRef.current;
     if (!editor) return;
@@ -641,7 +603,6 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
     return () => document.removeEventListener('selectionchange', detectSize);
   }, [currentFontSize]);
 
-  // Helper: insert a styled span and place cursor inside it
   const insertStyledSpan = (styles: Partial<CSSStyleDeclaration>) => {
     editorRef.current?.focus();
     const sel = window.getSelection();
@@ -652,7 +613,6 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
       span.textContent = '\u200B';
       const range = sel.getRangeAt(0);
       range.insertNode(span);
-      // Place cursor inside the span, after the zero-width space
       const newRange = document.createRange();
       newRange.setStart(span.firstChild!, 1);
       newRange.collapse(true);
@@ -671,7 +631,6 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
   };
 
   const applyFontSize = (size: number) => {
-    // Preserve current font family when changing size
     const currentFont = fontFamilies.find(f => f.label === currentFontFamily);
     const styles: Partial<CSSStyleDeclaration> = { fontSize: `${size}px` };
     if (currentFont) styles.fontFamily = currentFont.value;
@@ -680,7 +639,7 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
     setShowFontSize(false);
   };
 
-  // Font family dropdown (웹폰트 기반 - 모든 OS에서 동작)
+  // Font family dropdown
   const fontFamilies = [
     { label: '프리텐다드', value: 'Pretendard, sans-serif' },
     { label: '나눔고딕', value: '"Nanum Gothic", sans-serif' },
@@ -706,22 +665,20 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
   }, [showFontFamily]);
 
   const applyFontFamily = (font: { label: string; value: string }) => {
-    // Preserve current font size when changing font family
     insertStyledSpan({ fontFamily: font.value, fontSize: `${currentFontSize}px` });
     setCurrentFontFamily(font.label);
     setShowFontFamily(false);
   };
 
-  // Text color picker - 7 columns (gray, red, orange, yellow, green, blue, purple) x 7 rows (light→dark)
+  // Text color picker
   const textColors = [
-    // Col:  Gray      Red       Orange    Yellow    Green     Blue      Purple
-    /*1*/  '#ffffff', '#ffcccc', '#ffe0cc', '#ffffcc', '#ccffcc', '#cce0ff', '#e0ccff',
-    /*2*/  '#dddddd', '#ff9999', '#ffbb77', '#ffff99', '#99ff99', '#99ccff', '#cc99ff',
-    /*3*/  '#bbbbbb', '#ff6666', '#ff9933', '#ffff66', '#66cc66', '#6699ff', '#9966ff',
-    /*4*/  '#888888', '#ff0000', '#ff6600', '#ffcc00', '#00cc00', '#0066ff', '#6633cc',
-    /*5*/  '#555555', '#cc0000', '#cc5500', '#cc9900', '#009900', '#0044cc', '#4400aa',
-    /*6*/  '#333333', '#880000', '#883300', '#886600', '#006600', '#003388', '#330077',
-    /*7*/  '#000000', '#440000', '#441a00', '#443300', '#003300', '#001a44', '#1a0033',
+    '#ffffff', '#ffcccc', '#ffe0cc', '#ffffcc', '#ccffcc', '#cce0ff', '#e0ccff',
+    '#dddddd', '#ff9999', '#ffbb77', '#ffff99', '#99ff99', '#99ccff', '#cc99ff',
+    '#bbbbbb', '#ff6666', '#ff9933', '#ffff66', '#66cc66', '#6699ff', '#9966ff',
+    '#888888', '#ff0000', '#ff6600', '#ffcc00', '#00cc00', '#0066ff', '#6633cc',
+    '#555555', '#cc0000', '#cc5500', '#cc9900', '#009900', '#0044cc', '#4400aa',
+    '#333333', '#880000', '#883300', '#886600', '#006600', '#003388', '#330077',
+    '#000000', '#440000', '#441a00', '#443300', '#003300', '#001a44', '#1a0033',
   ];
   const [showTextColor, setShowTextColor] = useState(false);
   const [currentTextColor, setCurrentTextColor] = useState('#1a1a1a');
@@ -742,6 +699,222 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
     setShowTextColor(false);
     syncContent();
   };
+
+  // ── Image drag (mouse-based, no HTML5 drag API) ──
+  useEffect(() => {
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    let dragImg: HTMLImageElement | null = null;
+    let ghostEl: HTMLDivElement | null = null;
+    let indicatorEl: HTMLDivElement | null = null;
+    let startX = 0, startY = 0;
+    let dragging = false;
+    let dropTarget: { type: 'beside-img' | 'between-block'; ref: HTMLElement; side: string } | null = null;
+
+    // Block native drag on images inside editor
+    const blockNativeDrag = (e: DragEvent) => {
+      if ((e.target as HTMLElement)?.tagName === 'IMG' && editor.contains(e.target as Node)) {
+        e.preventDefault();
+      }
+    };
+
+    const onMouseDown = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName !== 'IMG' || !editor.contains(target)) return;
+      dragImg = target as HTMLImageElement;
+      startX = e.clientX;
+      startY = e.clientY;
+      dragging = false;
+    };
+
+    const onMouseMove = (e: MouseEvent) => {
+      if (!dragImg) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      if (!dragging && Math.sqrt(dx * dx + dy * dy) < 5) return;
+
+      if (!dragging) {
+        dragging = true;
+        // Create ghost thumbnail
+        ghostEl = document.createElement('div');
+        ghostEl.style.cssText = 'position:fixed;pointer-events:none;z-index:10000;opacity:0.8;border-radius:4px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.3);';
+        const thumb = document.createElement('img');
+        thumb.src = dragImg.src;
+        thumb.style.cssText = 'width:120px;height:90px;object-fit:contain;display:block;background:#fff;';
+        ghostEl.appendChild(thumb);
+        document.body.appendChild(ghostEl);
+
+        // Create indicator line
+        indicatorEl = document.createElement('div');
+        indicatorEl.style.cssText = 'position:fixed;z-index:9999;pointer-events:none;display:none;';
+        document.body.appendChild(indicatorEl);
+      }
+
+      // Position ghost near cursor
+      if (ghostEl) {
+        ghostEl.style.left = (e.clientX + 12) + 'px';
+        ghostEl.style.top = (e.clientY + 12) + 'px';
+      }
+
+      // Check if mouse is inside editor
+      const editorRect = editor.getBoundingClientRect();
+      if (e.clientX < editorRect.left || e.clientX > editorRect.right || e.clientY < editorRect.top || e.clientY > editorRect.bottom) {
+        if (indicatorEl) indicatorEl.style.display = 'none';
+        dropTarget = null;
+        return;
+      }
+
+      // Find element under cursor
+      if (ghostEl) ghostEl.style.display = 'none';
+      const underEl = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement;
+      if (ghostEl) ghostEl.style.display = '';
+
+      if (!underEl || !editor.contains(underEl)) {
+        if (indicatorEl) indicatorEl.style.display = 'none';
+        dropTarget = null;
+        return;
+      }
+
+      // Check if hovering over another image
+      const hoverImg = underEl.tagName === 'IMG' ? underEl : underEl.closest('img');
+      if (hoverImg && hoverImg !== dragImg && editor.contains(hoverImg)) {
+        const r = hoverImg.getBoundingClientRect();
+        const midX = r.left + r.width / 2;
+        const side = e.clientX < midX ? 'left' : 'right';
+        if (indicatorEl) {
+          indicatorEl.style.display = 'block';
+          indicatorEl.style.width = '4px';
+          indicatorEl.style.height = r.height + 'px';
+          indicatorEl.style.background = '#3b82f6';
+          indicatorEl.style.borderRadius = '2px';
+          indicatorEl.style.top = r.top + 'px';
+          indicatorEl.style.left = (side === 'left' ? r.left - 2 : r.right - 2) + 'px';
+        }
+        dropTarget = { type: 'beside-img', ref: hoverImg as HTMLElement, side };
+        return;
+      }
+
+      // Hovering over a block element - show horizontal gold line
+      let block = underEl;
+      while (block && block !== editor && block.parentElement !== editor) {
+        block = block.parentElement!;
+      }
+      if (block && block !== editor) {
+        const r = block.getBoundingClientRect();
+        const midY = r.top + r.height / 2;
+        const side = e.clientY < midY ? 'top' : 'bottom';
+        if (indicatorEl) {
+          indicatorEl.style.display = 'block';
+          indicatorEl.style.width = r.width + 'px';
+          indicatorEl.style.height = '4px';
+          indicatorEl.style.background = '#d4a843';
+          indicatorEl.style.borderRadius = '2px';
+          indicatorEl.style.left = r.left + 'px';
+          indicatorEl.style.top = (side === 'top' ? r.top - 2 : r.bottom - 2) + 'px';
+        }
+        dropTarget = { type: 'between-block', ref: block, side };
+      } else {
+        if (indicatorEl) indicatorEl.style.display = 'none';
+        dropTarget = null;
+      }
+    };
+
+    const onMouseUp = () => {
+      if (dragImg && dragging && dropTarget) {
+        const imgEl = dragImg;
+        // Remove from current position
+        const oldImgRow = imgEl.closest('.img-row');
+        const oldParent = imgEl.parentElement;
+
+        if (dropTarget.type === 'beside-img') {
+          // Place beside target image in a flex row
+          const targetImg = dropTarget.ref as HTMLImageElement;
+          const targetRow = targetImg.closest('.img-row');
+
+          // Remove image from old location
+          imgEl.remove();
+
+          if (targetRow) {
+            // Already in a row, insert beside
+            if (dropTarget.side === 'left') {
+              targetRow.insertBefore(imgEl, targetImg);
+            } else {
+              targetRow.insertBefore(imgEl, targetImg.nextSibling);
+            }
+          } else {
+            // Create new img-row
+            const row = document.createElement('div');
+            row.className = 'img-row';
+            row.style.cssText = 'display:flex;gap:8px;margin:8px 0;';
+            targetImg.parentElement?.insertBefore(row, targetImg);
+            if (dropTarget.side === 'left') {
+              row.appendChild(imgEl);
+              row.appendChild(targetImg);
+            } else {
+              row.appendChild(targetImg);
+              row.appendChild(imgEl);
+            }
+          }
+          // Apply flex styles
+          imgEl.style.maxWidth = '100%';
+          imgEl.style.height = 'auto';
+          imgEl.style.flex = '1';
+          imgEl.style.minWidth = '0';
+          targetImg.style.flex = '1';
+          targetImg.style.minWidth = '0';
+        } else if (dropTarget.type === 'between-block') {
+          imgEl.remove();
+          // Reset flex styles for standalone
+          imgEl.style.flex = '';
+          imgEl.style.minWidth = '';
+          imgEl.style.maxWidth = '100%';
+          imgEl.style.height = 'auto';
+          imgEl.style.margin = '8px 0';
+          if (dropTarget.side === 'top') {
+            editor.insertBefore(imgEl, dropTarget.ref);
+          } else {
+            editor.insertBefore(imgEl, dropTarget.ref.nextSibling);
+          }
+        }
+
+        // Clean up old img-row if only 1 or 0 images left
+        if (oldImgRow && oldImgRow.classList.contains('img-row')) {
+          const remaining = oldImgRow.querySelectorAll('img');
+          if (remaining.length <= 1 && remaining[0]) {
+            remaining[0].style.flex = '';
+            remaining[0].style.minWidth = '';
+            remaining[0].style.margin = '8px 0';
+            oldImgRow.parentElement?.insertBefore(remaining[0], oldImgRow);
+            oldImgRow.remove();
+          } else if (remaining.length === 0) {
+            oldImgRow.remove();
+          }
+        }
+
+        syncContent();
+      }
+
+      // Cleanup
+      dragImg = null;
+      dragging = false;
+      dropTarget = null;
+      if (ghostEl) { ghostEl.remove(); ghostEl = null; }
+      if (indicatorEl) { indicatorEl.remove(); indicatorEl = null; }
+    };
+
+    editor.addEventListener('dragstart', blockNativeDrag, true);
+    document.addEventListener('mousedown', onMouseDown);
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+
+    return () => {
+      editor.removeEventListener('dragstart', blockNativeDrag, true);
+      document.removeEventListener('mousedown', onMouseDown);
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+  }, []);
 
   const toolbarGroups: { label: string; action: () => void; title: string }[][] = [
     [
@@ -767,14 +940,30 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
   ];
 
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
       {/* Toolbar */}
       <div style={{
         display: 'flex', flexWrap: 'wrap', gap: 2, padding: '6px 8px',
         border: `1px solid ${colors.border}`, borderBottom: 'none',
         borderRadius: '8px 8px 0 0', background: '#fafafa', alignItems: 'center',
+        flexShrink: 0,
       }}>
-        {/* 1. B I U S */}
+        {/* Undo / Redo */}
+        <button type="button" title="실행 취소 (Undo)"
+          onMouseDown={e => { e.preventDefault(); document.execCommand('undo'); syncContent(); }}
+          style={toolbarBtnStyle}
+          onMouseEnter={e => (e.currentTarget.style.background = '#e8e8e8')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+        >↺</button>
+        <button type="button" title="다시 실행 (Redo)"
+          onMouseDown={e => { e.preventDefault(); document.execCommand('redo'); syncContent(); }}
+          style={toolbarBtnStyle}
+          onMouseEnter={e => (e.currentTarget.style.background = '#e8e8e8')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+        >↻</button>
+        <div style={{ width: 1, height: 20, background: colors.border, margin: '0 4px' }} />
+
+        {/* B I U S */}
         {[
           { label: 'B', action: () => exec('bold'), title: '굵게', fw: 800, fs: 'normal' as const, td: 'none' },
           { label: 'I', action: () => exec('italic'), title: '기울임', fw: 600, fs: 'italic' as const, td: 'none' },
@@ -788,7 +977,7 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
             onMouseLeave={e => (e.currentTarget.style.background = 'none')}
           >{btn.label}</button>
         ))}
-        {/* 2. Heading dropdown */}
+        {/* Heading dropdown */}
         <div ref={headingDropdownRef} style={{ position: 'relative', marginLeft: 2 }}>
           <button type="button" title="소제목"
             onMouseDown={e => { e.preventDefault(); setShowHeadingDropdown(!showHeadingDropdown); }}
@@ -870,7 +1059,7 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
           )}
         </div>
         <div style={{ width: 1, height: 20, background: colors.border, margin: '0 4px' }} />
-        {/* 3. Font size dropdown */}
+        {/* Font size dropdown */}
         <div ref={fontSizeRef} style={{ position: 'relative', marginRight: 2 }}>
           <button type="button" title="글자 크기"
             onMouseDown={e => { e.preventDefault(); setShowFontSize(!showFontSize); }}
@@ -910,7 +1099,7 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
             </div>
           )}
         </div>
-        {/* 4. Font family dropdown */}
+        {/* Font family dropdown */}
         <div ref={fontFamilyRef} style={{ position: 'relative', marginRight: 2 }}>
           <button type="button" title="글꼴"
             onMouseDown={e => { e.preventDefault(); setShowFontFamily(!showFontFamily); }}
@@ -952,7 +1141,7 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
           )}
         </div>
         <div style={{ width: 1, height: 20, background: colors.border, margin: '0 4px' }} />
-        {/* 5. Remaining toolbar groups (UL, OL, quote, code, link, align) */}
+        {/* Remaining toolbar groups */}
         {toolbarGroups.map((group, gi, arr) => (
           <div key={gi} style={{ display: 'flex', gap: 1, alignItems: 'center' }}>
             {group.map((btn, bi) => (
@@ -998,7 +1187,7 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
               {[
                 {
                   icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>,
-                  label: '이미지', desc: '이미지 파일 업로드',
+                  label: '이미지', desc: '이미지 파일 업로드 (다중 선택 가능)',
                   action: () => { fileInputRef.current?.click(); setShowInsertMenu(false); },
                 },
                 {
@@ -1036,27 +1225,39 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
 
       {/* Google Fonts for editor */}
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&family=Nanum+Myeongjo:wght@400;700&family=Gothic+A1:wght@400;700&family=Noto+Sans+KR:wght@400;700&family=Noto+Serif+KR:wght@400;700&display=swap" />
-      {/* Editor media hover styles */}
+      {/* Editor media hover styles + caret */}
       <style>{`
+        [contenteditable] { caret-color: #1a1a1a !important; cursor: text; }
         [contenteditable] img { cursor: pointer; transition: outline 0.15s; border-radius: 4px; }
         [contenteditable] img:hover { outline: 2px solid #3b82f6; outline-offset: 2px; }
         [contenteditable] div[contenteditable="false"] { cursor: pointer; transition: outline 0.15s; border-radius: 4px; }
         [contenteditable] div[contenteditable="false"]:hover { outline: 2px solid #3b82f6; outline-offset: 2px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
       {/* Upload status indicator */}
-      {uploadStatus && (
+      {uploadStatus && !uploadingCount && (
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
           padding: '8px 16px', background: '#eef6ff', border: `1px solid #bfdbfe`,
-          borderRadius: '0 0 0 0', fontSize: 13, fontWeight: 600, color: '#2563eb',
+          borderRadius: '0 0 0 0', fontSize: 13, fontWeight: 600, color: '#2563eb', flexShrink: 0,
         }}>
           <span style={{ display: 'inline-block', width: 14, height: 14, border: '2px solid #93c5fd', borderTopColor: '#2563eb', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
           {uploadStatus}
-          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </div>
       )}
       {/* Editor Area */}
-      <div style={{ position: 'relative' }}>
+      <div style={{ position: 'relative', flex: 1, minHeight: 0 }}>
+        {/* Upload overlay */}
+        {uploadingCount > 0 && (
+          <div style={{
+            position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.75)', zIndex: 50,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12,
+            borderRadius: '0 0 8px 8px',
+          }}>
+            <span style={{ display: 'inline-block', width: 32, height: 32, border: '3px solid #93c5fd', borderTopColor: '#2563eb', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+            <span style={{ fontSize: 14, fontWeight: 700, color: '#2563eb' }}>이미지 업로드 중... ({uploadingCount}장)</span>
+          </div>
+        )}
         <div
           ref={editorRef}
           contentEditable
@@ -1066,31 +1267,43 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
           onPaste={async (e) => {
             const items = e.clipboardData?.items;
             if (!items) return;
+            const imageFiles: File[] = [];
             for (let i = 0; i < items.length; i++) {
               if (items[i].type.startsWith('image/')) {
-                e.preventDefault();
                 const file = items[i].getAsFile();
-                if (!file) return;
-                try {
-                  const asset = await uploadImage(file, setUploadStatus);
-                  const imgUrl = asset.url;
-                  editorRef.current?.focus();
-                  document.execCommand('insertHTML', false, `<img src="${imgUrl}" alt="붙여넣기 이미지" style="max-width:100%;height:auto;margin:8px 0;" />`);
-                  syncContent();
-                } catch (err: any) {
-                  alert('이미지 업로드 실패: ' + err.message);
-                } finally {
-                  setUploadStatus('');
-                }
-                return;
+                if (file) imageFiles.push(file);
               }
+            }
+            if (imageFiles.length === 0) return;
+            e.preventDefault();
+            setUploadingCount(imageFiles.length);
+            try {
+              const results: { url: string; name: string }[] = [];
+              for (const file of imageFiles) {
+                const asset = await uploadImage(file, setUploadStatus);
+                results.push({ url: asset.url, name: '붙여넣기 이미지' });
+              }
+              editorRef.current?.focus();
+              if (results.length === 1) {
+                document.execCommand('insertHTML', false, `<img src="${results[0].url}" alt="${results[0].name}" style="max-width:100%;height:auto;margin:8px 0;" />`);
+              } else {
+                const imgs = results.map(r => `<img src="${r.url}" alt="${r.name}" style="max-width:100%;height:auto;flex:1;min-width:0;" />`).join('');
+                document.execCommand('insertHTML', false, `<div class="img-row" style="display:flex;gap:8px;margin:8px 0;">${imgs}</div>`);
+              }
+              syncContent();
+            } catch (err: any) {
+              alert('이미지 업로드 실패: ' + err.message);
+            } finally {
+              setUploadStatus('');
+              setUploadingCount(0);
             }
           }}
           style={{
-            minHeight: 400, padding: '16px 18px', fontSize: 15, lineHeight: 1.8,
+            height: '100%', padding: '16px 18px', fontSize: 15, lineHeight: 1.8,
             border: `1px solid ${colors.border}`, borderRadius: '0 0 8px 8px',
             outline: 'none', background: '#fff', fontFamily: 'inherit',
-            overflowY: 'auto',
+            overflowY: 'auto', boxSizing: 'border-box',
+            caretColor: '#1a1a1a',
           }}
           data-placeholder="본문을 작성하세요..."
         />
@@ -1098,7 +1311,6 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
         {/* Image resize overlay */}
         {selectedImg && imgRect && (
           <div className="img-resize-overlay" style={{ position: 'absolute', top: imgRect.top, left: imgRect.left, width: imgRect.width, height: imgRect.height, pointerEvents: 'none', zIndex: 10 }}>
-            {/* Border */}
             <div style={{ position: 'absolute', inset: 0, border: '2px solid #3b82f6', borderRadius: 2, pointerEvents: 'none' }} />
             {/* Alignment toolbar */}
             <div style={{ position: 'absolute', top: -36, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 2, background: '#1a1a1a', borderRadius: 6, padding: '4px 6px', pointerEvents: 'auto', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
@@ -1112,7 +1324,6 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
                 </button>
               ))}
               <div style={{ width: 1, height: 16, background: '#555', margin: '0 2px' }} />
-              {/* Rotate left */}
               <button onMouseDown={e => { e.preventDefault(); e.stopPropagation(); rotateImage(270); }}
                 style={{ width: 28, height: 24, border: 'none', background: 'none', cursor: 'pointer', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 12 }}
                 onMouseEnter={e => (e.currentTarget.style.background = '#444')}
@@ -1121,7 +1332,6 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
               </button>
-              {/* Rotate right */}
               <button onMouseDown={e => { e.preventDefault(); e.stopPropagation(); rotateImage(90); }}
                 style={{ width: 28, height: 24, border: 'none', background: 'none', cursor: 'pointer', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 12 }}
                 onMouseEnter={e => (e.currentTarget.style.background = '#444')}
@@ -1130,7 +1340,6 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.13-9.36L23 10"/></svg>
               </button>
-              {/* Text overlay */}
               <button onMouseDown={e => { e.preventDefault(); e.stopPropagation(); addTextOverlay(); }}
                 style={{ width: 28, height: 24, border: 'none', background: 'none', cursor: 'pointer', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 12 }}
                 onMouseEnter={e => (e.currentTarget.style.background = '#444')}
@@ -1151,7 +1360,7 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
             </div>
             {/* Size display */}
             <div style={{ position: 'absolute', bottom: -24, left: '50%', transform: 'translateX(-50%)', background: '#1a1a1a', color: '#fff', fontSize: 10, padding: '2px 8px', borderRadius: 4, whiteSpace: 'nowrap', pointerEvents: 'none' }}>
-              {Math.round(imgRect.width)} × {Math.round(imgRect.height)}
+              {Math.round(imgRect.width)} x {Math.round(imgRect.height)}
             </div>
             {/* Resize handles */}
             {['top-left', 'top-right', 'bottom-left', 'bottom-right'].map(h => (
@@ -1161,7 +1370,6 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
                 ...(h.includes('left') ? { left: -5 } : { right: -5 }),
               }} />
             ))}
-            {/* Edge handles */}
             {['right', 'bottom', 'left', 'top'].map(h => (
               <div key={h} onMouseDown={startResize(h)} style={{
                 position: 'absolute', pointerEvents: 'auto', background: '#3b82f6', borderRadius: 1,
@@ -1176,7 +1384,7 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
       </div>
 
       {/* Hidden file inputs */}
-      <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImageUpload} />
+      <input ref={fileInputRef} type="file" accept="image/*" multiple style={{ display: 'none' }} onChange={handleImageUpload} />
       <input ref={videoInputRef} type="file" accept="video/*" style={{ display: 'none' }} onChange={handleVideoUpload} />
       <input ref={fileUploadRef} type="file" style={{ display: 'none' }} onChange={handleFileUpload} />
 
@@ -1194,7 +1402,6 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
                 <div style={{ fontSize: 12, color: colors.textLight }}>유튜브 링크를 붙여넣으면 미리보기가 표시됩니다</div>
               </div>
             </div>
-
             <input
               autoFocus
               type="text"
@@ -1204,37 +1411,19 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
               onKeyDown={e => e.key === 'Enter' && confirmYoutubeInsert()}
               style={{
                 width: '100%', padding: '12px 16px', fontSize: 14, border: `2px solid ${youtubeError ? colors.red : youtubePreviewId ? colors.green : colors.border}`,
-                borderRadius: 10, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit',
-                transition: 'border-color 0.2s',
+                borderRadius: 10, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', transition: 'border-color 0.2s',
               }}
             />
             {youtubeError && <div style={{ fontSize: 12, color: colors.red, marginTop: 6 }}>{youtubeError}</div>}
-
             {youtubePreviewId && (
               <div style={{ marginTop: 16, borderRadius: 10, overflow: 'hidden', background: '#000', aspectRatio: '16/9' }}>
-                <iframe
-                  width="100%" height="100%"
-                  src={`https://www.youtube.com/embed/${youtubePreviewId}`}
-                  frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  style={{ display: 'block' }}
-                />
+                <iframe width="100%" height="100%" src={`https://www.youtube.com/embed/${youtubePreviewId}`} frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{ display: 'block' }} />
               </div>
             )}
-
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 20 }}>
-              <button
-                onClick={() => setShowYoutubeModal(false)}
-                style={{ ...s.btn, ...s.btnOutline, padding: '10px 24px', fontSize: 13, borderRadius: 8 }}
-              >취소</button>
-              <button
-                onClick={confirmYoutubeInsert}
-                disabled={!youtubePreviewId}
-                style={{
-                  ...s.btn, padding: '10px 24px', fontSize: 13, borderRadius: 8, fontWeight: 700,
-                  background: youtubePreviewId ? colors.text : '#ccc', color: '#fff', border: 'none',
-                  cursor: youtubePreviewId ? 'pointer' : 'not-allowed',
-                }}
+              <button onClick={() => setShowYoutubeModal(false)} style={{ ...s.btn, ...s.btnOutline, padding: '10px 24px', fontSize: 13, borderRadius: 8 }}>취소</button>
+              <button onClick={confirmYoutubeInsert} disabled={!youtubePreviewId}
+                style={{ ...s.btn, padding: '10px 24px', fontSize: 13, borderRadius: 8, fontWeight: 700, background: youtubePreviewId ? colors.text : '#ccc', color: '#fff', border: 'none', cursor: youtubePreviewId ? 'pointer' : 'not-allowed' }}
               >삽입</button>
             </div>
           </div>

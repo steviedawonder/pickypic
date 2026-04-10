@@ -102,6 +102,15 @@ export async function deleteBlogPost(id: string) {
   return sanityDelete(id);
 }
 
+// ── Tags ──
+export async function fetchTags() {
+  return sanityFetch(`*[_type == "blogTag"] | order(title asc) { _id, title }`);
+}
+
+export async function createTag(title: string) {
+  return sanityCreate({ _type: 'blogTag', title });
+}
+
 // ── Blog Templates ──
 export async function fetchBlogTemplates() {
   return sanityFetch(`*[_type == "blogTemplate"] | order(_createdAt desc) {
