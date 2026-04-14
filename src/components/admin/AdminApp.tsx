@@ -7,6 +7,7 @@ import { useToast } from './shared/Toast';
 import Dashboard from './pages/Dashboard';
 import BlogList from './pages/BlogList';
 import BlogEditor from './pages/BlogEditor';
+import NaverBlogEditor from './pages/NaverBlogEditor';
 import PortfolioManager from './pages/PortfolioManager';
 import PortfolioEditor from './pages/PortfolioEditor';
 import FAQManager from './pages/FAQManager';
@@ -34,8 +35,8 @@ export default function AdminApp() {
     switch (page) {
       case 'dashboard': return <Dashboard onNavigate={navigate} />;
       case 'blogs': return <BlogList onNavigate={navigate} />;
-      case 'blog-new': return <BlogEditor onNavigate={navigate} />;
-      case 'blog-edit': return <BlogEditor postId={editId} onNavigate={navigate} />;
+      case 'blog-new': return <NaverBlogEditor onNavigate={navigate} />;
+      case 'blog-edit': return <NaverBlogEditor postId={editId} onNavigate={navigate} />;
       case 'collaboration': return <CollaborationManager />;
       case 'inquiry': return <InquiryManager />;
       case 'portfolio': return <PortfolioManager onNavigate={navigate} />;
