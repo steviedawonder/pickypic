@@ -385,7 +385,7 @@ export default function NaverBlogEditor({ postId, onNavigate }: Props) {
 
           {/* Editor Content (centered, max-width 860px) */}
           <div style={{ flex: 1, overflow: 'hidden', display: 'flex', justifyContent: 'center', background: '#f7f8fa' }}>
-            <div style={{ width: '100%', maxWidth: 860, background: '#fff', display: 'flex', flexDirection: 'column', minHeight: '100%', overflow: 'hidden' }}>
+            <div style={{ width: '100%', maxWidth: 860, background: '#fff', display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
               {/* Title Input */}
               <input
                 value={form.title}

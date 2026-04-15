@@ -1,3 +1,53 @@
+// Internal helper: auto-rows justified layout (mirrors collageLayout.ts buildCollageHtml)
+function distributeRows(n: number): number[] {
+  if (n <= 0) return [];
+  if (n === 1) return [1];
+  if (n <= 4) return [n];
+  for (let b = Math.floor(n / 4); b >= 0; b--) {
+    const rest = n - 4 * b;
+    if (rest >= 0 && rest % 3 === 0) {
+      const a = rest / 3;
+      const rows: number[] = [];
+      for (let i = 0; i < a; i++) rows.push(3);
+      for (let i = 0; i < b; i++) rows.push(4);
+      return rows;
+    }
+  }
+  return [2, 3];
+}
+
+function buildAutoRowsCollageHtml(
+  imgs: Array<{ url: string; alt?: string; aspectRatio?: number }>,
+  caption: string,
+): string {
+  const count = imgs.length;
+  if (count === 0) return '';
+  const enriched = imgs.map(i => ({ ...i, aspectRatio: i.aspectRatio && i.aspectRatio > 0 ? i.aspectRatio : 1 }));
+  let inner = '';
+  if (count === 1) {
+    const im = enriched[0];
+    inner = `<div class="img-collage" data-layout="auto-rows" style="width:100%;"><img src="${escapeAttr(im.url)}" alt="${escapeAttr(im.alt || '')}" data-aspect="${im.aspectRatio}" style="display:block;width:100%;height:auto;border-radius:2px;" loading="lazy" /></div>`;
+  } else {
+    const rows = distributeRows(count);
+    let rowsHtml = '';
+    let idx = 0;
+    for (const rowSize of rows) {
+      const rowImgs = enriched.slice(idx, idx + rowSize);
+      idx += rowSize;
+      const sum = rowImgs.reduce((a, b) => a + b.aspectRatio!, 0);
+      let rowInner = '';
+      for (const im of rowImgs) {
+        const a = im.aspectRatio!;
+        rowInner += `<img src="${escapeAttr(im.url)}" alt="${escapeAttr(im.alt || '')}" data-aspect="${a}" style="flex:${a.toFixed(4)} ${a.toFixed(4)} 0;min-width:0;width:100%;height:100%;object-fit:cover;border-radius:2px;display:block;" loading="lazy" />`;
+      }
+      rowsHtml += `<div class="img-collage-row" style="display:flex;gap:6px;aspect-ratio:${sum.toFixed(4)} / 1;width:100%;">${rowInner}</div>`;
+    }
+    inner = `<div class="img-collage" data-layout="auto-rows" style="display:flex;flex-direction:column;gap:6px;width:100%;">${rowsHtml}</div>`;
+  }
+  const capHtml = `<div class="img-caption" contenteditable="true" data-placeholder="사진 설명을 입력하세요.">${escapeAttr(caption)}</div>`;
+  return `<div class="img-collage-wrapper" contenteditable="false" style="margin:12px 0;">${inner}${capHtml}</div>`;
+}
+
 // ── HTML to Portable Text converter ──
 
 // Extract Sanity asset ID from CDN URL
@@ -97,6 +147,99 @@ export function htmlToPortableText(html: string): any[] {
 
   const processElement = (el: Element) => {
     const tag = el.tagName.toLowerCase();
+
+    // ── Collage wrapper ──
+    if (tag === 'div' && el.classList.contains('img-collage-wrapper')) {
+      const collageEl = el.querySelector('.img-collage');
+      const captionEl = el.querySelector(':scope > .img-caption');
+      const layout = (collageEl?.getAttribute('data-layout') || '') as string;
+      const imgs: any[] = [];
+      collageEl?.querySelectorAll('img').forEach((img) => {
+        const src = img.getAttribute('src') || '';
+        if (!src) return;
+        const assetId = sanityUrlToAssetId(src);
+        const alt = img.getAttribute('alt') || '';
+        const aspectStr = img.getAttribute('data-aspect');
+        const aspectRatio = aspectStr ? parseFloat(aspectStr) : undefined;
+        const entry: any = { _key: genKey(), alt };
+        if (aspectRatio && !isNaN(aspectRatio)) entry.aspectRatio = aspectRatio;
+        if (assetId) {
+          entry.asset = { _type: 'image', asset: { _type: 'reference', _ref: assetId } };
+        } else {
+          entry.url = src;
+        }
+        imgs.push(entry);
+      });
+      if (imgs.length > 0) {
+        blocks.push({
+          _type: 'collage',
+          _key: genKey(),
+          layout: layout || undefined,
+          images: imgs,
+          caption: (captionEl?.textContent || '').trim(),
+        });
+      }
+      return;
+    }
+
+    // ── Figure wrapper (single image with caption) ──
+    if (tag === 'div' && el.classList.contains('img-figure-wrapper')) {
+      const img = el.querySelector('img');
+      const captionEl = el.querySelector(':scope > .img-caption');
+      if (img) {
+        const src = img.getAttribute('src') || '';
+        const alt = img.getAttribute('alt') || '';
+        const caption = (captionEl?.textContent || '').trim();
+        if (src) {
+          const assetId = sanityUrlToAssetId(src);
+          const block: any = { _type: 'image', _key: genKey() };
+          if (assetId) {
+            block.asset = { _type: 'reference', _ref: assetId };
+          } else {
+            block.url = src;
+          }
+          if (alt) block.alt = alt;
+          if (caption) block.caption = caption;
+          blocks.push(block);
+        }
+      }
+      return;
+    }
+
+    // ── Legacy img-row (flex row of images from drag-drop) ──
+    if (tag === 'div' && el.classList.contains('img-row')) {
+      const imgs: any[] = [];
+      el.querySelectorAll('img').forEach((img) => {
+        const src = img.getAttribute('src') || '';
+        if (!src) return;
+        const assetId = sanityUrlToAssetId(src);
+        const alt = img.getAttribute('alt') || '';
+        const entry: any = { _key: genKey(), alt };
+        if (assetId) {
+          entry.asset = { _type: 'image', asset: { _type: 'reference', _ref: assetId } };
+        } else {
+          entry.url = src;
+        }
+        imgs.push(entry);
+      });
+      if (imgs.length >= 2) {
+        blocks.push({
+          _type: 'collage',
+          _key: genKey(),
+          layout: imgs.length === 2 ? 'grid-2' : imgs.length === 3 ? 'grid-3-1L2R' : imgs.length === 4 ? 'grid-4-2x2' : 'bento-5plus',
+          images: imgs,
+          caption: '',
+        });
+      } else if (imgs.length === 1) {
+        const one = imgs[0];
+        const block: any = { _type: 'image', _key: genKey() };
+        if (one.asset) block.asset = one.asset.asset;
+        else if (one.url) block.url = one.url;
+        if (one.alt) block.alt = one.alt;
+        blocks.push(block);
+      }
+      return;
+    }
 
     // Images become image blocks
     if (tag === 'img') {
@@ -240,20 +383,50 @@ export function htmlToPortableText(html: string): any[] {
   return blocks.length > 0 ? blocks : [{ _type: 'block', _key: genKey(), style: 'normal', markDefs: [], children: [{ _type: 'span', _key: genKey(), text: '', marks: [] }] }];
 }
 
+// Resolve Sanity image ref to CDN URL
+function refToUrl(ref: string | undefined | null): string {
+  if (!ref) return '';
+  const match = ref.match(/^image-(.+)-(\w+)$/);
+  if (match) return `https://cdn.sanity.io/images/7b9lcco4/production/${match[1]}.${match[2]}`;
+  return '';
+}
+
+function escapeAttr(s: string): string {
+  return (s || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 // ── Portable Text to HTML (for loading existing posts) ──
 export function portableTextToHtml(blocks: any[]): string {
   if (!blocks || !Array.isArray(blocks)) return '';
   return blocks.map(block => {
+    if (block._type === 'collage') {
+      const imgs = (block.images || []).map((entry: any) => {
+        let url = entry.url || entry.asset?.asset?.url || entry.asset?.url || '';
+        if (!url) {
+          const ref = entry.asset?.asset?._ref || entry.asset?._ref;
+          url = refToUrl(ref);
+        }
+        return { url, alt: entry.alt || '', aspectRatio: entry.aspectRatio };
+      }).filter((i: any) => !!i.url);
+      if (imgs.length === 0) return '';
+      const caption = block.caption || '';
+      return buildAutoRowsCollageHtml(imgs, caption);
+    }
     if (block._type === 'image') {
       let url = block.url || block.asset?.url || '';
       if (!url && block.asset?._ref) {
-        const ref = block.asset._ref;
-        const match = ref.match(/^image-(.+)-(\w+)$/);
-        if (match) {
-          url = `https://cdn.sanity.io/images/7b9lcco4/production/${match[1]}.${match[2]}`;
-        }
+        url = refToUrl(block.asset._ref);
       }
-      return url ? `<img src="${url}" alt="" style="max-width:100%;height:auto;margin:8px 0;" />` : '';
+      if (!url) return '';
+      const alt = block.alt || '';
+      const caption = block.caption || '';
+      // Wrap in figure for consistency (so re-saving preserves caption)
+      return `<div class="img-figure-wrapper" contenteditable="false" style="margin:12px 0;"><img src="${escapeAttr(url)}" alt="${escapeAttr(alt)}" style="max-width:100%;height:auto;display:block;margin:0 auto;border-radius:4px;" /><div class="img-caption" contenteditable="true" data-placeholder="사진 설명을 입력하세요.">${escapeAttr(caption)}</div></div>`;
     }
     if (block._type !== 'block') return '';
     const children = (block.children || []).map((span: any) => {

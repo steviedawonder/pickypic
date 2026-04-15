@@ -112,6 +112,56 @@ export const blogPost = defineType({
             { name: 'caption', title: '이미지 캡션', type: 'string' },
           ],
         },
+        {
+          type: 'object',
+          name: 'collage',
+          title: '콜라주',
+          fields: [
+            {
+              name: 'layout',
+              title: '레이아웃',
+              type: 'string',
+              options: {
+                list: [
+                  { title: '2칸 그리드', value: 'grid-2' },
+                  { title: '3칸 (1L+2R)', value: 'grid-3-1L2R' },
+                  { title: '4칸 2x2', value: 'grid-4-2x2' },
+                  { title: '벤토 (5장+)', value: 'bento-5plus' },
+                ],
+              },
+            },
+            {
+              name: 'images',
+              title: '이미지 목록',
+              type: 'array',
+              of: [
+                {
+                  type: 'object',
+                  fields: [
+                    { name: 'asset', type: 'image', options: { hotspot: true } },
+                    { name: 'alt', type: 'string', title: '대체 텍스트' },
+                    { name: 'aspectRatio', type: 'number', title: '가로/세로 비율' },
+                  ],
+                  preview: {
+                    select: { media: 'asset', title: 'alt' },
+                  },
+                },
+              ],
+            },
+            { name: 'caption', title: '사진 설명', type: 'string' },
+          ],
+          preview: {
+            select: { layout: 'layout', images: 'images' },
+            prepare({ layout, images }) {
+              const count = Array.isArray(images) ? images.length : 0;
+              return {
+                title: `콜라주 (${count}장)`,
+                subtitle: layout || '자동',
+                media: images?.[0]?.asset,
+              };
+            },
+          },
+        },
       ],
     }),
     defineField({

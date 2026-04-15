@@ -30,6 +30,13 @@ const post = await sanityClient.fetch(
       _type == "image" => {
         ...,
         asset-> { _id, url }
+      },
+      _type == "collage" => {
+        ...,
+        images[] {
+          ...,
+          asset { ..., asset-> { _id, url } }
+        }
       }
     },
     mainImage { asset-> { _id, url } },
@@ -100,7 +107,55 @@ try {
             }
             if (!url) return '';
             const alt = value.alt || `피키픽 포토부스 블로그 이미지 — ${post.title}`;
-            return `<img src="${url}" alt="${alt}" style="max-width:100%;height:auto;margin:16px 0;border-radius:8px;" loading="lazy" />`;
+            const caption = value.caption || '';
+            const imgHtml = `<img src="${url}" alt="${alt}" style="max-width:100%;height:auto;display:block;margin:0 auto;border-radius:8px;" loading="lazy" />`;
+            if (caption) {
+              return `<figure style="margin:16px 0;">${imgHtml}<figcaption style="text-align:center;font-size:13px;color:#888;padding-top:8px;">${caption}</figcaption></figure>`;
+            }
+            return `<div style="margin:16px 0;">${imgHtml}</div>`;
+          },
+          collage: ({ value }: { value: any }) => {
+            const imgs: { url: string; alt: string; aspect?: number }[] = (value.images || []).map((entry: any) => {
+              let u = entry.url || entry.asset?.asset?.url || entry.asset?.url || '';
+              if (!u) {
+                const ref = entry.asset?.asset?._ref || entry.asset?._ref;
+                if (ref) {
+                  const m = ref.match(/^image-(.+)-(\w+)$/);
+                  if (m) u = `https://cdn.sanity.io/images/7b9lcco4/production/${m[1]}.${m[2]}`;
+                }
+              }
+              return { url: u, alt: entry.alt || '', aspect: entry.aspectRatio };
+            }).filter((i: any) => !!i.url);
+            if (imgs.length === 0) return '';
+            const count = imgs.length;
+            const layout = value.layout || (count === 2 ? 'grid-2' : count === 3 ? 'grid-3-1L2R' : count === 4 ? 'grid-4-2x2' : 'bento-5plus');
+            const baseContainer = 'display:grid;gap:6px;margin:16px 0;width:100%;';
+            let container = baseContainer;
+            const items: string[] = [];
+            if (layout === 'grid-2') {
+              container += 'grid-template-columns:1fr 1fr;';
+              for (let i = 0; i < count; i++) items.push('width:100%;height:100%;object-fit:cover;border-radius:4px;aspect-ratio:1/1;');
+            } else if (layout === 'grid-3-1L2R') {
+              container += 'grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr;grid-auto-flow:column;';
+              items.push('grid-row:1 / span 2;width:100%;height:100%;object-fit:cover;border-radius:4px;');
+              items.push('width:100%;height:100%;object-fit:cover;border-radius:4px;');
+              items.push('width:100%;height:100%;object-fit:cover;border-radius:4px;');
+            } else if (layout === 'grid-4-2x2') {
+              container += 'grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;';
+              for (let i = 0; i < 4; i++) items.push('width:100%;height:100%;object-fit:cover;border-radius:4px;aspect-ratio:1/1;');
+            } else {
+              container += 'grid-template-columns:repeat(6, 1fr);';
+              items.push('grid-column:span 3;width:100%;height:100%;object-fit:cover;border-radius:4px;aspect-ratio:16/10;');
+              items.push('grid-column:span 3;width:100%;height:100%;object-fit:cover;border-radius:4px;aspect-ratio:16/10;');
+              for (let i = 2; i < count; i++) items.push('grid-column:span 2;width:100%;height:100%;object-fit:cover;border-radius:4px;aspect-ratio:1/1;');
+            }
+            const imgTags = imgs.map((img, i) => {
+              const style = items[i] || items[items.length - 1];
+              return `<img src="${img.url}" alt="${img.alt || `피키픽 포토부스 블로그 이미지 — ${post.title}`}" style="${style}" loading="lazy" />`;
+            }).join('');
+            const caption = value.caption || '';
+            const capHtml = caption ? `<figcaption style="text-align:center;font-size:13px;color:#888;padding-top:8px;">${caption}</figcaption>` : '';
+            return `<figure style="margin:16px 0;"><div style="${container}">${imgTags}</div>${capHtml}</figure>`;
           },
         },
       },
