@@ -280,55 +280,12 @@ export default function NaverBlogEditor({ postId, onNavigate }: Props) {
     if (url) editorRef.current?.exec('createLink', url);
   };
 
-  const handleCodeInsert = () => {
-    editorRef.current?.insertHTML('<pre style="background:#f4f4f4;padding:12px;border-radius:6px;font-family:monospace;overflow-x:auto;margin:12px 0;"><code>\n</code></pre>');
-  };
-
-  const handleTableInsert = () => {
-    editorRef.current?.insertHTML(
-      '<table style="width:100%;border-collapse:collapse;margin:12px 0;">' +
-      '<tr><td style="border:1px solid #ddd;padding:8px;min-width:60px;">&nbsp;</td><td style="border:1px solid #ddd;padding:8px;min-width:60px;">&nbsp;</td><td style="border:1px solid #ddd;padding:8px;min-width:60px;">&nbsp;</td></tr>' +
-      '<tr><td style="border:1px solid #ddd;padding:8px;">&nbsp;</td><td style="border:1px solid #ddd;padding:8px;">&nbsp;</td><td style="border:1px solid #ddd;padding:8px;">&nbsp;</td></tr>' +
-      '<tr><td style="border:1px solid #ddd;padding:8px;">&nbsp;</td><td style="border:1px solid #ddd;padding:8px;">&nbsp;</td><td style="border:1px solid #ddd;padding:8px;">&nbsp;</td></tr>' +
-      '</table>'
-    );
-  };
-
   const handleFileUploadTrigger = () => {
     (window as any).__naverEditorFileInput?.click();
   };
 
   const handleVideoUploadTrigger = () => {
     (window as any).__naverEditorVideoInput?.click();
-  };
-
-  const handleStickerInsert = () => {
-    showToast('스티커 기능은 준비 중입니다.');
-  };
-
-  const handleScheduleInsert = () => {
-    const today = new Date().toLocaleDateString('ko-KR');
-    editorRef.current?.insertHTML(
-      `<div contenteditable="false" style="display:inline-flex;align-items:center;gap:8px;padding:10px 16px;background:#f0f7ff;border:1px solid #bfdbfe;border-radius:8px;margin:8px 0;font-size:13px;color:#1e40af;">\u{1F4C5} ${today}</div>`
-    );
-  };
-
-  const handleMathInsert = () => {
-    const formula = prompt('수식을 입력하세요:', 'x\u00B2 + y\u00B2 = z\u00B2');
-    if (formula) {
-      editorRef.current?.insertHTML(
-        `<span style="font-family:'Cambria Math',serif;font-style:italic;font-size:16px;padding:2px 4px;background:#f9fafb;border-radius:4px;">${formula}</span>`
-      );
-    }
-  };
-
-  const handlePlaceInsert = () => {
-    const address = prompt('주소를 입력하세요:');
-    if (address) {
-      editorRef.current?.insertHTML(
-        `<div contenteditable="false" style="display:inline-flex;align-items:center;gap:8px;padding:10px 16px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;margin:8px 0;font-size:13px;color:#166534;">\u{1F4CD} ${address}</div>`
-      );
-    }
   };
 
   /* ── Render ── */
@@ -368,16 +325,10 @@ export default function NaverBlogEditor({ postId, onNavigate }: Props) {
             onImageUpload={handleImageUploadTrigger}
             onVideoInsert={handleVideoInsert}
             onVideoUpload={handleVideoUploadTrigger}
-            onStickerInsert={handleStickerInsert}
             onQuoteInsert={handleQuoteInsert}
             onDividerInsert={handleDividerInsert}
             onLinkInsert={handleLinkInsert}
             onFileUpload={handleFileUploadTrigger}
-            onScheduleInsert={handleScheduleInsert}
-            onCodeInsert={handleCodeInsert}
-            onTableInsert={handleTableInsert}
-            onMathInsert={handleMathInsert}
-            onPlaceInsert={handlePlaceInsert}
           />
 
           {/* Formatting Toolbar */}

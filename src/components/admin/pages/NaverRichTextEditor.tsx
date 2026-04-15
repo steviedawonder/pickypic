@@ -944,68 +944,56 @@ function NaverRichTextEditor(
   );
 
   /* ── Image toolbar actions ── */
-  const alignImage = useCallback(
-    (align: 'left' | 'center' | 'right') => {
+  // Editor contenteditable 의 좌우 padding (라인 1740: padding: '24px 48px')
+  // 옆트임 모드에서 이미지를 에디터 박스 좌우 끝까지 늘리기 위한 네거티브 마진 값
+  const EDITOR_H_PADDING = 48;
+
+  const setImageSize = useCallback(
+    (mode: 'small' | 'document' | 'fullbleed') => {
       if (!selectedImg) return;
 
-      // Collage / figure wrapper alignment — align the whole block
-      const blockWrapper =
-        (selectedImg.closest('.img-collage-wrapper') as HTMLElement | null) ||
-        (selectedImg.closest('.img-figure-wrapper') as HTMLElement | null);
-      if (blockWrapper) {
-        if (align === 'center') {
-          blockWrapper.style.maxWidth = '80%';
-          blockWrapper.style.marginLeft = 'auto';
-          blockWrapper.style.marginRight = 'auto';
-        } else if (align === 'right') {
-          blockWrapper.style.maxWidth = '80%';
-          blockWrapper.style.marginLeft = 'auto';
-          blockWrapper.style.marginRight = '0';
-        } else {
-          blockWrapper.style.maxWidth = '';
-          blockWrapper.style.marginLeft = '';
-          blockWrapper.style.marginRight = '';
-        }
-        refreshOverlay();
-        syncContent();
-        return;
-      }
+      const collageWrapper = selectedImg.closest('.img-collage-wrapper') as HTMLElement | null;
+      const figureWrapper = selectedImg.closest('.img-figure-wrapper') as HTMLElement | null;
+      const overlayWrapper = selectedImg.closest('.text-overlay-wrapper') as HTMLElement | null;
+      const target = (collageWrapper || figureWrapper || overlayWrapper || selectedImg) as HTMLElement;
 
-      const wrapper = selectedImg.closest('.text-overlay-wrapper') || selectedImg;
-      const parent = wrapper.parentElement;
-      if (!parent) return;
+      // 기존 크기/정렬 스타일 초기화
+      target.style.width = '';
+      target.style.maxWidth = '';
+      target.style.marginLeft = '';
+      target.style.marginRight = '';
+      target.style.textAlign = '';
 
-      if (align === 'center') {
-        (wrapper as HTMLElement).style.display = 'block';
-        (wrapper as HTMLElement).style.marginLeft = 'auto';
-        (wrapper as HTMLElement).style.marginRight = 'auto';
-        (wrapper as HTMLElement).style.textAlign = 'center';
-        if (wrapper === selectedImg) {
-          selectedImg.style.display = 'block';
-          selectedImg.style.marginLeft = 'auto';
-          selectedImg.style.marginRight = 'auto';
-        }
-      } else if (align === 'left') {
-        (wrapper as HTMLElement).style.display = '';
-        (wrapper as HTMLElement).style.marginLeft = '';
-        (wrapper as HTMLElement).style.marginRight = '';
-        (wrapper as HTMLElement).style.textAlign = '';
-        if (wrapper === selectedImg) {
-          selectedImg.style.display = '';
-          selectedImg.style.marginLeft = '';
-          selectedImg.style.marginRight = '';
-        }
+      if (mode === 'small') {
+        // 65% 폭, 좌측 정렬
+        target.style.display = 'block';
+        target.style.width = '65%';
+        target.style.maxWidth = '65%';
+        target.style.marginLeft = '0';
+        target.style.marginRight = 'auto';
+      } else if (mode === 'document') {
+        // 글 영역(본문) 100%, 가운데
+        target.style.display = 'block';
+        target.style.width = '100%';
+        target.style.maxWidth = '100%';
+        target.style.marginLeft = '0';
+        target.style.marginRight = '0';
       } else {
-        (wrapper as HTMLElement).style.display = 'block';
-        (wrapper as HTMLElement).style.marginLeft = 'auto';
-        (wrapper as HTMLElement).style.marginRight = '0';
-        (wrapper as HTMLElement).style.textAlign = 'right';
-        if (wrapper === selectedImg) {
-          selectedImg.style.display = 'block';
-          selectedImg.style.marginLeft = 'auto';
-          selectedImg.style.marginRight = '0';
-        }
+        // 옆트임: 에디터 박스 좌우 끝까지 (본문 패딩만큼 네거티브 마진)
+        target.style.display = 'block';
+        target.style.width = `calc(100% + ${EDITOR_H_PADDING * 2}px)`;
+        target.style.maxWidth = 'none';
+        target.style.marginLeft = `-${EDITOR_H_PADDING}px`;
+        target.style.marginRight = `-${EDITOR_H_PADDING}px`;
       }
+
+      // img 자체를 타겟으로 할 때 비율 유지
+      if (target === selectedImg) {
+        target.style.height = 'auto';
+      }
+
+      target.dataset.size = mode;
+
       refreshOverlay();
       syncContent();
     },
@@ -1295,14 +1283,13 @@ function NaverRichTextEditor(
     const isInCollage = !!collageWrapperEl;
     const isRepresentative = selectedImg.dataset.representative === 'true';
 
-    // Detect current alignment from block wrapper (collage/figure)
-    const alignWrapper = collageWrapperEl || figureWrapperEl;
-    const currentAlign: 'left' | 'center' | 'right' =
-      alignWrapper && alignWrapper.style.marginLeft === 'auto'
-        ? alignWrapper.style.marginRight === 'auto'
-          ? 'center'
-          : 'right'
-        : 'left';
+    // Detect current size mode from data-size attribute
+    const sizeTarget = (collageWrapperEl ||
+      figureWrapperEl ||
+      (selectedImg.closest('.text-overlay-wrapper') as HTMLElement | null) ||
+      selectedImg) as HTMLElement;
+    const currentSize: 'small' | 'document' | 'fullbleed' | null =
+      (sizeTarget.dataset.size as 'small' | 'document' | 'fullbleed' | undefined) || null;
     const activeBtn: React.CSSProperties = { background: '#e0e7ff', color: '#3b82f6' };
 
     // Toolbar top: always keep it inside the editor's visible area
@@ -1451,28 +1438,28 @@ function NaverRichTextEditor(
           }}
         >
           <button
-            onClick={() => alignImage('left')}
-            title="왼쪽 정렬"
-            aria-pressed={currentAlign === 'left'}
-            style={currentAlign === 'left' ? { ...toolBtnStyle, ...activeBtn } : toolBtnStyle}
+            onClick={() => setImageSize('small')}
+            title="작게"
+            aria-pressed={currentSize === 'small'}
+            style={currentSize === 'small' ? { ...toolBtnStyle, ...activeBtn } : toolBtnStyle}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="9" width="8" height="6" rx="1" fill="currentColor"/></svg>
           </button>
           <button
-            onClick={() => alignImage('center')}
-            title="가운데 정렬"
-            aria-pressed={currentAlign === 'center'}
-            style={currentAlign === 'center' ? { ...toolBtnStyle, ...activeBtn } : toolBtnStyle}
+            onClick={() => setImageSize('document')}
+            title="문서 너비"
+            aria-pressed={currentSize === 'document'}
+            style={currentSize === 'document' ? { ...toolBtnStyle, ...activeBtn } : toolBtnStyle}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="6" y1="12" x2="18" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="5" y="7" width="14" height="10" rx="1" fill="currentColor"/></svg>
           </button>
           <button
-            onClick={() => alignImage('right')}
-            title="오른쪽 정렬"
-            aria-pressed={currentAlign === 'right'}
-            style={currentAlign === 'right' ? { ...toolBtnStyle, ...activeBtn } : toolBtnStyle}
+            onClick={() => setImageSize('fullbleed')}
+            title="옆트임"
+            aria-pressed={currentSize === 'fullbleed'}
+            style={currentSize === 'fullbleed' ? { ...toolBtnStyle, ...activeBtn } : toolBtnStyle}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="6" width="22" height="12" rx="1" fill="currentColor"/></svg>
           </button>
 
           {!isInCollage && (

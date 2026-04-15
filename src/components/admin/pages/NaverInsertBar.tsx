@@ -4,16 +4,10 @@ interface NaverInsertBarProps {
   onImageUpload: () => void;
   onVideoInsert: () => void;
   onVideoUpload: () => void;
-  onStickerInsert: () => void;
   onQuoteInsert: () => void;
   onDividerInsert: () => void;
   onLinkInsert: () => void;
   onFileUpload: () => void;
-  onScheduleInsert: () => void;
-  onCodeInsert: () => void;
-  onTableInsert: () => void;
-  onMathInsert: () => void;
-  onPlaceInsert: () => void;
 }
 
 const iconBase = {
@@ -42,17 +36,6 @@ function VideoIcon() {
     <svg {...iconBase}>
       <rect x="3" y="5" width="18" height="14" rx="2" />
       <polygon points="10,9 10,15 15,12" fill="#676d73" stroke="none" />
-    </svg>
-  );
-}
-
-function StickerIcon() {
-  return (
-    <svg {...iconBase}>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M8 14s1.5 2 4 2 4-2 4-2" />
-      <line x1="9" y1="9.5" x2="9.01" y2="9.5" strokeWidth="2" />
-      <line x1="15" y1="9.5" x2="15.01" y2="9.5" strokeWidth="2" />
     </svg>
   );
 }
@@ -96,60 +79,6 @@ function FileIcon() {
   );
 }
 
-function ScheduleIcon() {
-  return (
-    <svg {...iconBase}>
-      <rect x="3" y="4" width="18" height="18" rx="2" />
-      <line x1="16" y1="2" x2="16" y2="6" />
-      <line x1="8" y1="2" x2="8" y2="6" />
-      <line x1="3" y1="10" x2="21" y2="10" />
-      <rect x="7" y="13" width="3" height="3" fill="#676d73" stroke="none" />
-    </svg>
-  );
-}
-
-function CodeIcon() {
-  return (
-    <svg {...iconBase}>
-      <path d="M7 8l-4 4 4 4" />
-      <path d="M17 8l4 4-4 4" />
-      <line x1="14" y1="4" x2="10" y2="20" />
-    </svg>
-  );
-}
-
-function TableIcon() {
-  return (
-    <svg {...iconBase}>
-      <rect x="3" y="3" width="18" height="18" rx="2" />
-      <line x1="3" y1="9" x2="21" y2="9" />
-      <line x1="3" y1="15" x2="21" y2="15" />
-      <line x1="12" y1="3" x2="12" y2="21" />
-    </svg>
-  );
-}
-
-function MathIcon() {
-  return (
-    <svg {...iconBase}>
-      <path d="M4 20L8 4h2l-4 16z" />
-      <path d="M4 20h4" />
-      <path d="M8 4h2" />
-      <line x1="14" y1="10" x2="20" y2="10" />
-      <line x1="17" y1="7" x2="17" y2="13" />
-    </svg>
-  );
-}
-
-function PlaceIcon() {
-  return (
-    <svg {...iconBase}>
-      <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" />
-      <circle cx="12" cy="10" r="3" />
-    </svg>
-  );
-}
-
 const buttonStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
@@ -181,16 +110,10 @@ export default function NaverInsertBar(props: NaverInsertBarProps) {
   const buttons: BarButton[] = [
     { label: '사진', icon: <PhotoIcon />, onClick: props.onImageUpload },
     { label: '동영상', icon: <VideoIcon />, onClick: props.onVideoInsert },
-    { label: '스티커', icon: <StickerIcon />, onClick: props.onStickerInsert },
     { label: '인용구', icon: <QuoteIcon />, onClick: props.onQuoteInsert },
     { label: '구분선', icon: <DividerIcon />, onClick: props.onDividerInsert },
     { label: '링크', icon: <LinkIcon />, onClick: props.onLinkInsert },
     { label: '파일', icon: <FileIcon />, onClick: props.onFileUpload },
-    { label: '일정', icon: <ScheduleIcon />, onClick: props.onScheduleInsert },
-    { label: '소스코드', icon: <CodeIcon />, onClick: props.onCodeInsert },
-    { label: '표', icon: <TableIcon />, onClick: props.onTableInsert },
-    { label: '수식', icon: <MathIcon />, onClick: props.onMathInsert },
-    { label: '장소', icon: <PlaceIcon />, onClick: props.onPlaceInsert },
   ];
 
   return (
