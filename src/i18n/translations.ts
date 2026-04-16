@@ -55,8 +55,8 @@ export const translations: Record<Lang, Record<string, string>> = {
     'notfound.rental': '렌탈문의',
 
     // Home GEO Section
-    'home.geo.title': '포토부스 대여 · 렌탈 전문 피키픽',
-    'home.geo.desc': '피키픽포토부스(PICKYPIC Photobooth)는 2020년 설립된 서울 성수동 소재 프리미엄 포토부스 렌탈 전문 기업입니다. 스탠드형, 테이블형, 부스형 등 9종 이상의 포토부스 라인업을 보유하고 있으며, 넷플릭스, 현대자동차, 기아, 뉴발란스, 스타벅스 등 1,000건 이상의 브랜드 팝업 및 기업 행사에 포토부스를 제공하고 있습니다. 한국과 싱가포르에서 서비스를 운영하며, 브랜드 맞춤 커스터마이징과 AI 퍼스널 컬러 분석 등 혁신적인 포토 경험을 선사합니다.',
+    'home.geo.title': '포토부스 대여 · 렌탈 · 매매 전문 피키픽',
+    'home.geo.desc': '피키픽(PICKYPIC)은 "어디에나 어울리는 포토부스"를 만드는 프리미엄 포토부스 전문 기업입니다. 스탠드형·테이블형·부스형 등 9종 이상의 라인업을 대여·렌탈·매매로 제공하며, 누적 10,000건 이상의 브랜드 팝업과 기업 행사를 수행했습니다. 브랜드 맞춤 커스터마이징부터 AI 포토 솔루션까지, 한국과 싱가포르를 거점으로 글로벌 포토부스 경험을 선사합니다.',
 
     // Blog
     'blog.read_time_suffix': '분 읽기',
@@ -493,8 +493,8 @@ export const translations: Record<Lang, Record<string, string>> = {
     'notfound.rental': 'Rental Inquiry',
 
     // Home GEO Section
-    'home.geo.title': 'Photo Booth Rental Specialist PICKYPIC',
-    'home.geo.desc': 'PICKYPIC Photobooth is a premium photo booth rental company established in 2020, based in Seongsu-dong, Seoul. We have 9+ photo booth lineup models including stand, table, and booth types, and have provided photo booths to over 1,000 brand pop-ups and corporate events including Netflix, Hyundai, Kia, New Balance, and Starbucks. We operate in Korea and Singapore, offering innovative photo experiences including brand-custom design and AI personal color analysis.',
+    'home.geo.title': 'Photo Booth Rental & Sales Specialist PICKYPIC',
+    'home.geo.desc': 'PICKYPIC is a premium photo booth company that creates "photo booths that fit anywhere." We offer 9+ lineup models—stand, table, and booth types—available for rental and purchase, with over 10,000 brand pop-ups and corporate events completed. From brand-custom design to AI photo solutions, we deliver global photo booth experiences from our bases in Korea and Singapore.',
 
     // Blog
     'blog.read_time_suffix': ' min read',
@@ -931,8 +931,8 @@ export const translations: Record<Lang, Record<string, string>> = {
     'notfound.rental': 'レンタルお問合せ',
 
     // Home GEO Section
-    'home.geo.title': 'フォトブースレンタル専門 ピキピック',
-    'home.geo.desc': 'ピキピックフォトブース(PICKYPIC Photobooth)は2020年に設立された、ソウル聖水洞に拠点を置くプレミアムフォトブースレンタル専門企業です。スタンド型、テーブル型、ブース型など9種類以上のフォトブースラインナップを保有しており、Netflix、現代自動車、KIA、New Balance、Starbucksなど1,000件以上のブランドポップアップ・企業イベントにフォトブースを提供しています。韓国とシンガポールでサービスを運営しており、ブランドカスタマイズとAIパーソナルカラー分析など革新的なフォト体験を提供しています。',
+    'home.geo.title': 'フォトブース レンタル・販売専門 ピキピック',
+    'home.geo.desc': 'ピキピック(PICKYPIC)は「どこにでも似合うフォトブース」を作るプレミアムフォトブース専門企業です。スタンド型・テーブル型・ブース型など9種類以上のラインナップをレンタル・販売で提供し、累計10,000件以上のブランドポップアップや企業イベントを手がけてきました。ブランドカスタマイズからAIフォトソリューションまで、韓国とシンガポールを拠点にグローバルなフォトブース体験をお届けします。',
 
     // Blog
     'blog.read_time_suffix': '分で読める',
