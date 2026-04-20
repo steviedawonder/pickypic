@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { colors, s } from '../shared/styles';
 import { fetchSiteSettings, updateSiteSettings, changeAdminPassword, triggerRebuild } from '../adminClient';
 import { useToast } from '../shared/Toast';
@@ -317,7 +317,7 @@ function SettingsPage() {
     );
   }
 
-  const tabContent: Record<TabId, () => JSX.Element> = {
+  const tabContent: Record<TabId, () => React.JSX.Element> = {
     basic: renderBasicTab,
     code: renderCodeTab,
     services: renderServicesTab,

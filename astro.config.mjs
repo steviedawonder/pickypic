@@ -9,6 +9,7 @@ export default defineConfig({
   site: 'https://picky-pic.com',
   adapter: vercel(),
   vite: {
+    // @ts-ignore vite version mismatch between astro and @tailwindcss/vite
     plugins: [tailwindcss()],
   },
   integrations: [
