@@ -60,7 +60,7 @@ const { guide } = Astro.props;
       <div class="flex justify-center mb-10 lg:mb-14">
         <div class="border border-border-light rounded-lg p-8 lg:p-12 inline-block">
           <img
-            src={`/images/support/detail-${guide.slug}.png`}
+            src={`/images/support/detail-${guide.slug}.png?v=2`}
             alt={`${guide.name} 가이드`}
             class="max-h-48 lg:max-h-72 w-auto object-contain"
           />
@@ -74,7 +74,7 @@ const { guide } = Astro.props;
         </h2>
         <div class="flex justify-center">
           <img
-            src={`/images/support/templates/${guide.slug}/notice.jpg`}
+            src={`/images/support/templates/${guide.slug}/notice.jpg?v=2`}
             alt={`${guide.name} ${guide.notice}`}
             class="max-w-full rounded-lg"
             loading="lazy"
@@ -97,7 +97,7 @@ const { guide } = Astro.props;
               >
                 <div class="aspect-square flex items-center justify-center p-4">
                   <img
-                    src={file.thumbnail}
+                    src={`${file.thumbnail}?v=2`}
                     alt={file.name}
                     class="max-w-full max-h-full object-contain"
                     loading="lazy"
