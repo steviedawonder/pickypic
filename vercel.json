@@ -75,6 +75,21 @@
       "source": "/bbs/:path*",
       "destination": "/",
       "statusCode": 301
+    },
+    {
+      "source": "/blog/피키픽-포토부스대여-가이드-모델하우스-렌탈-서비스-후기-2026-",
+      "destination": "/blog/model-house-photobooth-rental-guide-2026",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/피키픽-포토부스대여-가이드-모델하우스-렌탈-서비스-후기-2026",
+      "destination": "/blog/model-house-photobooth-rental-guide-2026",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/피키픽포토부스-브랜드-소개-포토부스대여구매렌탈장단기-선택-가이드-2026",
+      "destination": "/blog/pickypic-photobooth-rental-purchase-guide-2026",
+      "statusCode": 301
     }
   ]
 }

@@ -9,6 +9,7 @@ import {
   uploadImage, triggerRebuild, fetchTags, createTag,
 } from '../adminClient';
 import RichTextEditor from './RichTextEditor';
+import { suggestEnglishSlug, sanitizeSlug, isAsciiSlug } from '../../../utils/slug';
 
 function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page: string) => void }) {
   const [categories, setCategories] = useState<any[]>([]);
@@ -28,6 +29,7 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
   const [form, setForm] = useState({
     title: '', excerpt: '', body: '', focusKeyword: '', seoTitle: '', seoDescription: '',
     categoryId: '', tags: [] as string[], tagInput: '', publishedAt: '',
+    customSlug: '',
   });
 
   // isDirty for page leave confirmation
@@ -61,6 +63,7 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
             focusKeyword: post.focusKeyword || '', seoTitle: post.seoTitle || '', seoDescription: post.seoDescription || '',
             categoryId: post.category?._id || '', tags: post.tags || [], tagInput: '',
             publishedAt: post.publishedAt ? post.publishedAt.split('T')[0] : '',
+            customSlug: post.slug?.current || '',
           });
           if (post.mainImage?.asset?.url) setMainImageUrl(post.mainImage.asset.url);
           if (post.mainImage?.asset?._id) setMainImageRefId(post.mainImage.asset._id);
@@ -120,10 +123,20 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
       if (mainImageRef_id) {
         data.mainImage = { _type: 'image', asset: { _type: 'reference', _ref: mainImageRef_id } };
       }
+      // Slug priority: editor-supplied custom slug → English suggestion from title → sanitized title.
+      // Always pass the slug through sanitizeSlug to strip leading/trailing hyphens, which
+      // previously caused redirect-loop 500s on the public blog post route.
+      const rawSlug =
+        form.customSlug.trim() ||
+        suggestEnglishSlug(form.title) ||
+        sanitizeSlug(form.title);
+      const finalSlug = sanitizeSlug(rawSlug);
+
       if (currentPostId) {
+        if (finalSlug) data.slug = { _type: 'slug', current: finalSlug };
         await updateBlogPost(currentPostId, data);
       } else {
-        data.slug = { _type: 'slug', current: form.title.toLowerCase().replace(/[^a-z0-9가-힣]/g, '-').replace(/-+/g, '-') };
+        data.slug = { _type: 'slug', current: finalSlug };
         const created = await createBlogPost(data);
         if (created?._id) setCurrentPostId(created._id);
       }
@@ -142,11 +155,17 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
     }
   };
 
+  // Mirror the same slug derivation used at save time, so the SEO score panel
+  // and the preview link both reflect what will actually be saved.
+  const derivedSlug = sanitizeSlug(
+    form.customSlug.trim() || suggestEnglishSlug(form.title) || sanitizeSlug(form.title)
+  );
+
   const scores = calculateScores({
     title: form.title, excerpt: form.excerpt, body: form.body,
     focusKeyword: form.focusKeyword, seoTitle: form.seoTitle,
     seoDesc: form.seoDescription, tags: form.tags, category: form.categoryId,
-    slug: form.title ? form.title.toLowerCase().replace(/[^a-z0-9가-힣\s]/g, '').replace(/\s+/g, '-') : '',
+    slug: derivedSlug,
   });
 
   const [mainImageUploading, setMainImageUploading] = useState(false);
@@ -179,7 +198,8 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
     onNavigate('blogs');
   };
 
-  const slug = form.title ? form.title.toLowerCase().replace(/[^a-z0-9가-힣\s]/g, '').replace(/\s+/g, '-') : '';
+  const slug = derivedSlug;
+  const slugIsKorean = !!slug && !isAsciiSlug(slug);
 
   return (
     <div style={{ position: 'relative' }}>
@@ -231,14 +251,32 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
             style={{ width: '100%', fontSize: 24, fontWeight: 800, border: `1px solid ${colors.border}`, borderRadius: 8, outline: 'none', padding: '14px 16px', marginBottom: 10, color: colors.text, fontFamily: 'inherit', background: '#fff', boxSizing: 'border-box', flexShrink: 0 }}
           />
 
-          {/* Slug */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 12, fontSize: 13, color: colors.textLight, flexShrink: 0 }}>
-            <span style={{ fontWeight: 600 }}>/blog/</span>
-            <input
-              value={slug}
-              readOnly
-              style={{ border: `1px solid ${colors.border}`, borderRadius: 4, padding: '4px 8px', fontSize: 13, color: colors.textLight, flex: 1, outline: 'none', background: '#fafafa' }}
-            />
+          {/* Slug — editable; English (a-z, 0-9, -) recommended for SEO */}
+          <div style={{ marginBottom: 12, flexShrink: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: colors.textLight }}>
+              <span style={{ fontWeight: 600 }}>/blog/</span>
+              <input
+                value={form.customSlug || slug}
+                onChange={e => updateField('customSlug', e.target.value)}
+                placeholder="english-slug-recommended (e.g. popup-photobooth-rental-guide)"
+                style={{ border: `1px solid ${slugIsKorean ? '#dc2626' : colors.border}`, borderRadius: 4, padding: '4px 8px', fontSize: 13, color: colors.text, flex: 1, outline: 'none', background: '#fff' }}
+              />
+              {form.title && !form.customSlug.trim() && (
+                <button
+                  type="button"
+                  onClick={() => updateField('customSlug', suggestEnglishSlug(form.title))}
+                  style={{ ...s.btn, ...s.btnOutline, fontSize: 11, padding: '4px 10px' }}
+                  title="제목에서 영문 slug 자동 생성"
+                >
+                  영문 추천
+                </button>
+              )}
+            </div>
+            {slugIsKorean && (
+              <div style={{ fontSize: 11, color: '#dc2626', marginTop: 4, paddingLeft: 38 }}>
+                ⚠️ 한글 slug는 검색엔진 노출에 매우 불리합니다. 영문(소문자/숫자/하이픈)으로 변경 권장.
+              </div>
+            )}
           </div>
 
           {/* Rich Text Editor (takes remaining space, scrolls internally) */}

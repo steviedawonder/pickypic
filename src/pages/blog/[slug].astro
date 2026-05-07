@@ -17,9 +17,17 @@ const sanityClient = createClient({
 
 const { slug } = Astro.params;
 
-// 불량 슬러그 301 리다이렉트
-if (slug && !isCleanSlug(slug)) {
-  return Astro.redirect(`/blog/${sanitizeSlug(slug)}`, 301);
+// 301 redirect to canonical slug. Three guards:
+//  1. cleaned must be non-empty (otherwise we'd loop on `/blog/`).
+//  2. cleaned must differ from the input (otherwise we'd loop in place).
+//  3. cleaned must be percent-encoded; the Location header only accepts ByteString,
+//     so a raw Hangul slug would throw and surface as a 500.
+// Combined, this fixes the trailing-hyphen 500 we saw on the old Korean URLs.
+if (slug) {
+  const cleaned = sanitizeSlug(slug);
+  if (cleaned && cleaned !== slug) {
+    return Astro.redirect(`/blog/${encodeURIComponent(cleaned)}`, 301);
+  }
 }
 
 const post = await sanityClient.fetch(
