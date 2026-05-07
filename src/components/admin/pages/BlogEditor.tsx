@@ -7,6 +7,7 @@ import {
   fetchCategories, fetchBlogPost, fetchBlogTemplates,
   createBlogPost, updateBlogPost, createBlogTemplate, deleteBlogTemplate,
   uploadImage, triggerRebuild, fetchTags, createTag,
+  requestSearchEngineIndexing,
 } from '../adminClient';
 import RichTextEditor from './RichTextEditor';
 import { suggestEnglishSlug, sanitizeSlug, isAsciiSlug } from '../../../utils/slug';
@@ -143,8 +144,28 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
       triggerRebuild();
       setIsDirty(false);
       if (publish) {
-        showToast('발행되었습니다!');
-        setTimeout(() => onNavigate('blogs'), 1000);
+        // Fire and-summarise: ping Google Indexing API + IndexNow + Naver in parallel.
+        // We don't block the publish flow on this — failures are surfaced in the toast
+        // but the post is already saved.
+        if (finalSlug) {
+          const postUrl = `https://picky-pic.com/blog/${finalSlug}`;
+          showToast('발행 완료! 검색엔진에 색인 요청 중...');
+          requestSearchEngineIndexing(postUrl).then((results) => {
+            const googleRes = results.find(r => r.target === 'google');
+            const okCount = results.filter(r => r.success).length;
+            if (googleRes && googleRes.configured === false) {
+              showToast(`발행 완료 · 색인 요청 ${okCount}/3 (Google API 미설정)`);
+            } else {
+              showToast(`발행 완료 · 색인 요청 ${okCount}/3 성공`);
+            }
+            setTimeout(() => onNavigate('blogs'), 1500);
+          }).catch(() => {
+            setTimeout(() => onNavigate('blogs'), 1000);
+          });
+        } else {
+          showToast('발행되었습니다!');
+          setTimeout(() => onNavigate('blogs'), 1000);
+        }
       } else {
         showToast('임시저장 완료!');
       }

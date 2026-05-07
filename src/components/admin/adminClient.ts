@@ -336,6 +336,50 @@ export async function triggerRebuild() {
   }
 }
 
+// ── Search engine indexing notifications ──
+// Fires Google Indexing API + IndexNow (Bing/Yandex) + Naver IndexNow in parallel
+// when a blog post is published or updated. All three calls are best-effort: the
+// caller doesn't await failures, since the sitemap will eventually be crawled
+// regardless. Used by BlogEditor on publish.
+export type IndexingTarget = 'google' | 'indexnow' | 'naver';
+export interface IndexingResult {
+  target: IndexingTarget;
+  success: boolean;
+  configured?: boolean;
+  statusCode?: number;
+  error?: string;
+}
+
+export async function requestSearchEngineIndexing(url: string): Promise<IndexingResult[]> {
+  const callJson = async (target: IndexingTarget, endpoint: string, payload: object): Promise<IndexingResult> => {
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json().catch(() => ({}));
+      return {
+        target,
+        success: res.ok && data?.success !== false,
+        configured: data?.configured,
+        statusCode: res.status,
+        error: data?.error,
+      };
+    } catch (err: any) {
+      return { target, success: false, error: err?.message || 'Network error' };
+    }
+  };
+
+  const [google, indexnow, naver] = await Promise.all([
+    callJson('google', '/api/google-indexing', { url, action: 'URL_UPDATED' }),
+    callJson('indexnow', '/api/indexnow', { url }),
+    callJson('naver', '/api/naver-indexing', { url }),
+  ]);
+
+  return [google, indexnow, naver];
+}
+
 // ── Dashboard Stats ──
 export async function fetchDashboardStats() {
   const [totalPosts, published, drafts, categories, portfolioCount, faqCount, inquiryCount, inquiryPending, bannerCount, eventCount] = await Promise.all([

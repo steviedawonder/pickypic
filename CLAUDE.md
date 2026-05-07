@@ -19,6 +19,8 @@ Vercel 빌드에서 플레이스홀더 주입 문제 발생. 공개 키는 **반
 |---|---|---|
 | `ADMIN_PASSWORD` | 어드민 로그인 | All Environments 설정 필수 |
 | `SANITY_API_TOKEN` | Sanity 쓰기 토큰 | 값에 줄바꿈/공백 주의 |
+| `GOOGLE_INDEXING_SERVICE_ACCOUNT_EMAIL` | Google Indexing API | 선택 — 미설정 시 발행 후 Google 색인 요청만 스킵 |
+| `GOOGLE_INDEXING_PRIVATE_KEY` | Google Indexing API | 선택 — 줄바꿈은 `\n` 리터럴로 저장. Search Console에 서비스 계정을 OWNER로 추가 필수 |
 
 ### 하드코딩된 값
 | 값 | 용도 |
@@ -53,6 +55,10 @@ Dashboard, BlogList, BlogEditor, PortfolioManager, FAQManager, CategoryManager, 
 ### API
 - `/api/auth.ts` — login, verify, changePassword
 - `/api/sanity.ts` — Sanity CRUD 프록시 + submitInquiry (인증 불필요, 화이트리스트 적용)
+- `/api/google-indexing.ts` — Google Indexing API (JWT, 서비스 계정 키 미설정 시 no-op)
+- `/api/indexnow.ts` — IndexNow (Bing/Yandex)
+- `/api/naver-indexing.ts` — Naver IndexNow + 사이트맵/RSS ping
+- BlogEditor 발행 시 `requestSearchEngineIndexing(url)`이 위 3개 API를 병렬 호출
 
 ---
 
