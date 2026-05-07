@@ -33,9 +33,9 @@ interface Props {
 }
 
 const {
-  title = `${company.brandKo} | PICKYPIC`,
-  description = '피키픽 포토부스 - 포토부스 렌탈/대여 전문. 브랜드 팝업, 기업 행사, 웨딩 등 다양한 이벤트에 맞춤형 포토부스를 제공합니다.',
-  ogImage = '/images/common/og-image.jpg',
+  title = `포토부스 대여 · 렌탈 · 매매 전문 | 피키픽 PICKYPIC`,
+  description = '포토부스 대여·렌탈·매매 전문 피키픽(PICKYPIC). 스탠드형·테이블형·부스형 9종 라인업, 브랜드 팝업·기업 행사·웨딩까지 맞춤형 포토부스를 제공합니다. 누적 12,000건+ 운영 경험. 무료 견적 문의.',
+  ogImage = '/images/hero/main-1.jpg',
   ogType = 'website',
   noindex = false,
   articleMeta,
@@ -50,12 +50,17 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    <meta name="keywords" content="포토부스, 포토부스 대여, 포토부스 렌탈, 포토부스 매매, 포토부스 구매, 포토부스 판매, 인생네컷 대여, 브랜드 팝업 포토부스, 팝업스토어 포토부스, 기업행사 포토부스, 사내행사 포토부스, 웨딩 포토부스, 포토부스 창업, 무인사진관 창업, 셀프포토스튜디오, 영수증 사진기, 감열지 사진기, 레트로 포토부스, 피키픽, PICKYPIC, photo booth rental Korea, photo booth Singapore" />
+    <meta name="author" content="피키픽 PICKYPIC" />
     <meta name="generator" content={Astro.generator} />
     {noindex ? (
       <meta name="robots" content="noindex, nofollow" />
     ) : (
       <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     )}
+    <meta name="googlebot" content="index, follow" />
+    <meta name="bingbot" content="index, follow" />
+    <meta name="yeti" content="index, follow" />
     <meta name="theme-color" content="#ffffff" />
 
     <!-- Google Search Console -->
@@ -66,10 +71,10 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta name="naver-site-verification" content={siteSettings?.naverSiteVerification || '062e44a0df871ea7efc1955b667ed80346b8d5ef'} />
     <meta name="naver-site-verification" content="b3610845d8160c7330c915478db981de196bd1ec" />
 
-    <!-- Hreflang -->
-    <link rel="alternate" hreflang="ko" href={canonicalURL} />
-    <link rel="alternate" hreflang="en" href={canonicalURL} />
-    <link rel="alternate" hreflang="ja" href={canonicalURL} />
+    <!-- Hreflang: self-referencing only. The site uses client-side i18n
+         with no separate URLs per language, so we don't claim alternate URLs
+         for en/ja (Google would treat duplicate URLs as a misconfiguration). -->
+    <link rel="alternate" hreflang="ko-KR" href={canonicalURL} />
     <link rel="alternate" hreflang="x-default" href={canonicalURL} />
 
     <!-- Google Tag Manager -->
@@ -144,9 +149,11 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={new URL(ogImage, Astro.site)} />
+    <meta property="og:image:width" content="2000" />
+    <meta property="og:image:height" content="1050" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:alt" content="피키픽 PICKYPIC 포토부스 - 포토부스 대여 · 렌탈 · 매매 전문" />
     <meta property="og:locale" content="ko_KR" />
-    <meta property="og:locale:alternate" content="en_US" />
-    <meta property="og:locale:alternate" content="ja_JP" />
     <meta property="og:site_name" content="PICKYPIC" />
     {articleMeta?.publishedTime && <meta property="article:published_time" content={articleMeta.publishedTime} />}
     {articleMeta?.modifiedTime && <meta property="article:modified_time" content={articleMeta.modifiedTime} />}

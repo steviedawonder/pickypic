@@ -1,7 +1,57 @@
+# PICKYPIC PHOTOBOOTH - https://picky-pic.com
+# 피키픽 포토부스 - 포토부스 대여 · 렌탈 · 매매 전문
+
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
 Disallow: /shop
+Disallow: /studio
 
+# Search engines: full crawl access
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /images/
+Allow: /
+
+User-agent: Yeti
+Allow: /
+
+User-agent: NaverBot
+Allow: /
+
+User-agent: Daum
+Allow: /
+
+User-agent: bingbot
+Allow: /
+
+# AI crawlers (citation/training opt-in)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# Sitemaps
 Sitemap: https://picky-pic.com/sitemap-index.xml
 Sitemap: https://picky-pic.com/sitemap-blog.xml
 Sitemap: https://picky-pic.com/image-sitemap.xml
+
+# Host
+Host: https://picky-pic.com
