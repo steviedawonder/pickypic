@@ -1,5 +1,9 @@
 import type { APIRoute } from 'astro';
 
+// SSR endpoint — without this Astro prerenders the route at build time,
+// which silently breaks POST and returns the static 404 HTML.
+export const prerender = false;
+
 const INDEXNOW_KEY = 'pickypic2024indexnow';
 const DOMAIN = 'picky-pic.com';
 const SITEMAP_URL = `https://${DOMAIN}/sitemap-index.xml`;

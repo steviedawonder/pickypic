@@ -77,18 +77,23 @@
       "statusCode": 301
     },
     {
-      "source": "/blog/피키픽-포토부스대여-가이드-모델하우스-렌탈-서비스-후기-2026-",
+      "source": "/blog/%ED%94%BC%ED%82%A4%ED%94%BD-%ED%8F%AC%ED%86%A0%EB%B6%80%EC%8A%A4%EB%8C%80%EC%97%AC-%EA%B0%80%EC%9D%B4%EB%93%9C-%EB%AA%A8%EB%8D%B8%ED%95%98%EC%9A%B0%EC%8A%A4-%EB%A0%8C%ED%83%88-%EC%84%9C%EB%B9%84%EC%8A%A4-%ED%9B%84%EA%B8%B0-2026-",
       "destination": "/blog/model-house-photobooth-rental-guide-2026",
       "statusCode": 301
     },
     {
-      "source": "/blog/피키픽-포토부스대여-가이드-모델하우스-렌탈-서비스-후기-2026",
+      "source": "/blog/%ED%94%BC%ED%82%A4%ED%94%BD-%ED%8F%AC%ED%86%A0%EB%B6%80%EC%8A%A4%EB%8C%80%EC%97%AC-%EA%B0%80%EC%9D%B4%EB%93%9C-%EB%AA%A8%EB%8D%B8%ED%95%98%EC%9A%B0%EC%8A%A4-%EB%A0%8C%ED%83%88-%EC%84%9C%EB%B9%84%EC%8A%A4-%ED%9B%84%EA%B8%B0-2026",
       "destination": "/blog/model-house-photobooth-rental-guide-2026",
       "statusCode": 301
     },
     {
-      "source": "/blog/피키픽포토부스-브랜드-소개-포토부스대여구매렌탈장단기-선택-가이드-2026",
+      "source": "/blog/%ED%94%BC%ED%82%A4%ED%94%BD%ED%8F%AC%ED%86%A0%EB%B6%80%EC%8A%A4-%EB%B8%8C%EB%9E%9C%EB%93%9C-%EC%86%8C%EA%B0%9C-%ED%8F%AC%ED%86%A0%EB%B6%80%EC%8A%A4%EB%8C%80%EC%97%AC%EA%B5%AC%EB%A7%A4%EB%A0%8C%ED%83%88%EC%9E%A5%EB%8B%A8%EA%B8%B0-%EC%84%A0%ED%83%9D-%EA%B0%80%EC%9D%B4%EB%93%9C-2026",
       "destination": "/blog/pickypic-photobooth-rental-purchase-guide-2026",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/%EC%8A%A4%ED%8F%AC%ED%8B%B0%ED%8C%8C%EC%9D%B4-%ED%96%89%EC%82%AC-%ED%8F%AC%ED%86%A0%EB%B6%80%EC%8A%A4%EB%8C%80%EC%97%AC-%ED%9B%84%EA%B8%B0-%EC%84%9C%EA%B0%95%EB%8C%80-%EC%97%B0%EC%84%B8%EB%8C%80-%EC%BA%A0%ED%8D%BC%EC%8A%A4-%EC%9D%B4%EB%B2%A4%ED%8A%B8-%ED%98%84%EC%9E%A5%EC%97%90-%EC%84%A4%EC%B9%98%EB%90%9C-%ED%94%BC%ED%82%A4%ED%94%BD-%EB%AA%A8%EB%8D%98%ED%94%BC%ED%82%A4-%EC%B6%94%EC%B2%9C",
+      "destination": "/blog/spotify-photobooth-rental-sogang-yonsei-campus-event-2026",
       "statusCode": 301
     }
   ]

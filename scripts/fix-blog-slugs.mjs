@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-// One-shot migration: rewrite Korean blog slugs to SEO-friendly English ones.
-// Reason: Korean URLs were percent-encoded and one of them (trailing hyphen)
-// caused the public post route to enter a redirect loop and serve 500.
+// Migrate any remaining non-ASCII blog slugs to SEO-friendly English ones.
+// Korean URLs hurt indexing in practice (percent-encoded canonicals, lower
+// crawl priority), so we keep slugs ASCII and let the editor's auto-suggester
+// (suggestEnglishSlug) cover new posts going forward.
 //
 // Run with:  node scripts/fix-blog-slugs.mjs
 
@@ -28,15 +29,13 @@ const client = createClient({
   useCdn: false,
 });
 
+// Explicit mappings. Match by a substring unique to the original slug so we
+// can rerun this script idempotently — already-renamed posts simply won't match.
 const renames = [
-  {
-    fromContains: '모델하우스',
-    newSlug: 'model-house-photobooth-rental-guide-2026',
-  },
-  {
-    fromContains: '브랜드-소개',
-    newSlug: 'pickypic-photobooth-rental-purchase-guide-2026',
-  },
+  { fromContains: '모델하우스', newSlug: 'model-house-photobooth-rental-guide-2026' },
+  { fromContains: '브랜드-소개', newSlug: 'pickypic-photobooth-rental-purchase-guide-2026' },
+  // Spotify campus event recap (Sogang/Yonsei) — found by audit on 2026-05-08.
+  { fromContains: '스포티파이', newSlug: 'spotify-photobooth-rental-sogang-yonsei-campus-event-2026' },
 ];
 
 const posts = await client.fetch(
@@ -45,12 +44,26 @@ const posts = await client.fetch(
 
 console.log(`Found ${posts.length} blog posts.\n`);
 
+// Audit pass: warn about any non-ASCII slug not in our rename table.
+const ASCII_SLUG = /^[a-z0-9-]+$/;
+const remaining = posts.filter(
+  (p) =>
+    p.slug &&
+    !ASCII_SLUG.test(p.slug) &&
+    !renames.some((r) => p.slug.includes(r.fromContains))
+);
+if (remaining.length) {
+  console.warn('⚠ Non-ASCII slugs found that have no rename mapping:');
+  for (const p of remaining) console.warn(`   - ${p.slug}  (${p.title})`);
+  console.warn('   → Add a rename entry above and rerun.\n');
+}
+
 for (const rename of renames) {
   const target = posts.find(
     (p) => p.slug && p.slug.includes(rename.fromContains)
   );
   if (!target) {
-    console.warn(`✗ no post matched for "${rename.fromContains}"`);
+    console.log(`(skip) no post matches "${rename.fromContains}" — already renamed?`);
     continue;
   }
   console.log(`→ ${target.title}`);
