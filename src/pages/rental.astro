@@ -718,7 +718,10 @@ const rentalProducts = [
         booth_type: checkedBooths,
         wrapping: wrapping,
         shooting_type: shootingType,
-        additional_message: additionalMessage || '없음',
+        additional_message: [
+          additionalMessage || '없음',
+          `방문경로: ${visitRoute || '없음'}`,
+        ].join('\n'),
         visit_route: visitRoute || '없음',
       };
 
