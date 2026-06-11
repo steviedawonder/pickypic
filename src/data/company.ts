@@ -13,8 +13,8 @@ export const company = {
   kakaoUrl: 'https://pf.kakao.com/_pickypic',
   instagram: {
     official: 'pickypic.official',
-    global: 'picky.global',
-    sg: 'pickypic.sg',
+    global: 'pickypic.global',
+    sg: 'pickypic_outlet',
   },
   naverStore: 'https://smartstore.naver.com/pickypicphoto',
   gtmId: 'GTM-KDRFNN4H',
@@ -25,8 +25,8 @@ export const company = {
   geo: { lat: 37.5447, lng: 127.0561 },
   sameAs: [
     'https://www.instagram.com/pickypic.official/',
-    'https://www.instagram.com/picky.global/',
-    'https://www.instagram.com/pickypic.sg/',
+    'https://www.instagram.com/pickypic.global/',
+    'https://www.instagram.com/pickypic_outlet/',
     'https://pf.kakao.com/_pickypic',
     'https://smartstore.naver.com/pickypicphoto',
   ],
