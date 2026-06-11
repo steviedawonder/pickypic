@@ -433,14 +433,22 @@ const rentalProducts = [
           <label for="visit-route" class="block text-sm font-medium text-primary mb-2">
             <span data-i18n="rental.visit_route">방문하시게 된 경로</span>
           </label>
-          <input
-            type="text"
+          <select
             id="visit-route"
             name="visitRoute"
-            class="w-full px-4 py-3 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors bg-white"
-            placeholder="EX) 네이버 검색, 인스타그램, 지인 소개 등"
-            data-i18n-placeholder="rental.visit_route_placeholder"
-          />
+            class="w-full px-4 py-3 border border-border-light text-sm text-primary focus:outline-none focus:border-primary transition-colors bg-white appearance-none"
+            style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E&quot;); background-repeat: no-repeat; background-position: right 16px center;"
+          >
+            <option value="" selected disabled data-i18n="rental.visit_route_placeholder">선택해주세요</option>
+            <option value="네이버 검색" data-i18n="rental.visit_route_naver">네이버 검색</option>
+            <option value="구글 검색" data-i18n="rental.visit_route_google">구글 검색</option>
+            <option value="인스타그램" data-i18n="rental.visit_route_instagram">인스타그램</option>
+            <option value="블로그" data-i18n="rental.visit_route_blog">블로그</option>
+            <option value="지인 소개" data-i18n="rental.visit_route_referral">지인 소개</option>
+            <option value="유사 서비스 직접 경험" data-i18n="rental.visit_route_similar">유사 서비스 직접 경험</option>
+            <option value="피키픽 기존 이용 경험" data-i18n="rental.visit_route_existing">피키픽 기존 이용 경험</option>
+            <option value="기타" data-i18n="rental.visit_route_other">기타</option>
+          </select>
         </div>
 
         <div class="h-px bg-border-light"></div>
@@ -696,7 +704,7 @@ const rentalProducts = [
       const eventSchedule = (form.querySelector<HTMLInputElement>('#event-schedule')?.value || '').trim();
       const removalSchedule = (form.querySelector<HTMLInputElement>('#removal-schedule')?.value || '').trim();
       const additionalMessage = (form.querySelector<HTMLTextAreaElement>('#additional-message')?.value || '').trim();
-      const visitRoute = (form.querySelector<HTMLInputElement>('#visit-route')?.value || '').trim();
+      const visitRoute = (form.querySelector<HTMLSelectElement>('#visit-route')?.value || '').trim();
 
       const templateParams = {
         event_name: eventName,
