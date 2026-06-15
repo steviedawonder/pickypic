@@ -78,16 +78,10 @@ function updateLangSelector(lang: Lang): void {
   });
 }
 
-// SHOP visibility: only show when EN language AND overseas IP (not Korea)
-function updateShopVisibility(lang?: Lang): void {
-  const l = lang ?? getCurrentLang();
-  const shouldShow = l === 'en' && isOverseas === true;
+// SHOP 메뉴 비공개 처리 — 항상 숨김
+function updateShopVisibility(_lang?: Lang): void {
   document.querySelectorAll<HTMLElement>('.shop-nav-item').forEach((el) => {
-    if (shouldShow) {
-      el.classList.remove('hidden');
-    } else {
-      el.classList.add('hidden');
-    }
+    el.classList.add('hidden');
   });
 }
 
