@@ -267,7 +267,7 @@ function SeoPanel() {
       label: '출처 있는 통계/수치',
       ok: hasSourcedStats(body),
       msg: hasSourcedStats(body) ? '수치와 링크가 함께 있습니다.' : '통계에 출처 링크를 넣어보세요.',
-      howToFix: '구체적 숫자(1,000건+, 9종 등)를 사용하고, 근거가 되는 페이지 링크를 함께 넣으세요.',
+      howToFix: '구체적 숫자(16,000건+, 9종 등)를 사용하고, 근거가 되는 페이지 링크를 함께 넣으세요.',
     },
     {
       label: '전문성 신호 (고유명사 5개+)',

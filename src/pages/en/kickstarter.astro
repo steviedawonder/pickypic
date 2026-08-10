@@ -34,6 +34,13 @@ const KS_URL = '';
         </div>
       </div>
 
+      {/* The later states are only rendered once a referral link exists. Until
+          then they would ship as hidden markup that text extractors still read
+          — LLM fetchers and link-preview scrapers pull raw HTML and cannot see
+          `class="hidden"`, so a visitor-facing "campaign has ended" headline
+          would be what they report about a campaign that has not started. */}
+      {KS_URL && (
+      <>
       <!-- Live -->
       <div data-ks-state="live" class="hidden">
         <h1 class="text-3xl lg:text-[clamp(2.25rem,4vw,3.25rem)] font-bold tracking-tight text-primary leading-tight" style="font-family: 'Montserrat', sans-serif;">
@@ -69,6 +76,8 @@ const KS_URL = '';
           Get a quote
         </a>
       </div>
+      </>
+      )}
 
       <!-- Email capture: shown in the pre-launch and post-campaign states -->
       <div id="ks-signup" class="mt-12 border-t border-border-default pt-10">
@@ -104,12 +113,15 @@ const KS_URL = '';
 <script is:inline define:vars={{ LAUNCH, END, HAS_KS_URL: Boolean(KS_URL) }}>
   (function () {
     // Pick the campaign state in the browser so the page flips on schedule
-    // without a redeploy. Without a referral link there is nowhere to send
-    // backers, so we hold on the pre-launch state and keep collecting emails.
+    // without a redeploy. No referral link means the campaign never went up,
+    // so BOTH later states are gated on it — otherwise the page would sail
+    // past the end date and thank backers for a campaign that never ran.
     var now = Date.now();
     var state = 'pre';
-    if (now > Date.parse(END)) state = 'post';
-    else if (now >= Date.parse(LAUNCH) && HAS_KS_URL) state = 'live';
+    if (HAS_KS_URL) {
+      if (now > Date.parse(END)) state = 'post';
+      else if (now >= Date.parse(LAUNCH)) state = 'live';
+    }
 
     document.querySelectorAll('[data-ks-state]').forEach(function (el) {
       el.classList.toggle('hidden', el.getAttribute('data-ks-state') !== state);

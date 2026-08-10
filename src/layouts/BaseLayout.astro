@@ -40,7 +40,7 @@ const lang = isEn ? 'en' : 'ko';
 
 const {
   title = isEn
-    ? 'PICKYPIC | Handmade Photo Booths from Seoul'
+    ? 'PICKYPIC | Korean Photo Booths, Handmade in Seoul'
     : `포토부스 대여 · 렌탈 · 매매 전문 | 피키픽 PICKYPIC`,
   description = isEn
     ? 'PICKYPIC builds photo booths by hand in Seoul — the wooden enclosures are cut and finished by our carpenter. 9+ models, 500+ booths in operation, 16,000+ brand events. Shipping worldwide.'
@@ -88,12 +88,10 @@ const pair = getPair(Astro.url.pathname);
     <meta name="naver-site-verification" content={siteSettings?.naverSiteVerification || '062e44a0df871ea7efc1955b667ed80346b8d5ef'} />
     <meta name="naver-site-verification" content="b3610845d8160c7330c915478db981de196bd1ec" />
 
-    <!-- Hreflang: emitted only for pages listed in i18nPairs, and read from that
-         single table on both sides so the annotations stay reciprocal — Google
-         ignores one-way hreflang. No `ja`: there are no /jp/ routes, and a dead
-         URL in the cluster makes Google discard the whole cluster.
-         x-default points at English so third-country visitors (de, fr, ...) land
-         on a page they can read; Korean searchers still match via hreflang="ko". -->
+    {/* Emitted only for paths in src/data/i18nPairs.ts; both locales read that
+        one table, so the annotations are reciprocal by construction. See the
+        file for why ja is omitted and why x-default points at English.
+        JSX-style comment: it stays in source and never reaches the browser. */}
     {pair && (
       <>
         <link rel="alternate" hreflang="ko" href={new URL(pair.ko, Astro.site)} />
@@ -258,7 +256,10 @@ const pair = getPair(Astro.url.pathname);
       "name": "PICKYPIC PHOTOBOOTH",
       "alternateName": "피키픽 포토부스",
       "url": company.url,
-      "inLanguage": ["ko", "en", "ja"],
+      // Content languages that actually have URLs. Japanese is a client-side
+      // text swap with no /jp/ route, so no crawler can reach it — claiming it
+      // here would contradict the hreflang set, which deliberately omits ja.
+      "inLanguage": ["ko", "en"],
       "publisher": {
         "@type": "Organization",
         "@id": "https://picky-pic.com/#organization",
@@ -276,6 +277,12 @@ const pair = getPair(Astro.url.pathname);
           var lang = localStorage.getItem('pickypic-lang');
           if (lang && lang !== 'ko') {
             document.documentElement.style.visibility = 'hidden';
+            // Only i18n.ts clears this. If that chunk fails to load or throws,
+            // the visitor would sit on a permanently blank page — so give up
+            // hiding after 2s and show the Korean text rather than nothing.
+            setTimeout(function() {
+              document.documentElement.style.visibility = '';
+            }, 2000);
           }
         })();
       </script>
@@ -316,10 +323,13 @@ const pair = getPair(Astro.url.pathname);
     <!-- Body start scripts from Sanity -->
     {siteSettings?.bodyStartScripts && <Fragment set:html={siteSettings.bodyStartScripts} />}
 
-    <!-- Overseas visitors get an offer, not a redirect. Hidden until the geo
-         check in i18n.ts unhides it, so crawlers never see it. -->
+    {/* Overseas visitors get an offer, not a redirect; i18n.ts reveals this
+        after the geo check. Pinned to the bottom because the navbar is
+        `fixed top-0 z-50` — an in-flow bar at the top of <body> renders
+        underneath it and shifts the page down when the geo fetch resolves.
+        JSX-style comment: stays in source, never reaches the browser. */}
     {!isEn && (
-      <div id="en-suggest-banner" class="hidden bg-primary text-white text-sm">
+      <div id="en-suggest-banner" class="hidden fixed bottom-0 left-0 right-0 z-[60] bg-primary text-white text-sm shadow-[0_-2px_12px_rgba(0,0,0,0.15)]">
         <div class="mx-auto max-w-7xl px-6 lg:px-8 py-2.5 flex items-center justify-between gap-4">
           <a href={switchTarget(Astro.url.pathname, 'en')} class="hover:underline">
             View this page in English &rarr;

@@ -25,7 +25,10 @@ const idToKo: Record<string, string> = {
 const faqItems = [
   {
     question: 'How much does it cost to rent a photo booth in Singapore?',
-    answer: 'Pricing varies depending on the photo booth model, event duration, and customization requirements. Our Singapore packages start from SGD 800 for basic setups. Contact us for a detailed quote tailored to your event.',
+    // No figures here: Kickstarter does not allow a product that is already on
+    // sale, and they check the company site. This answer feeds FAQPage schema,
+    // so a number would also surface as a rich result.
+    answer: 'Pricing depends on the photo booth model, event duration, and how much customization you need. Tell us about your event and we will send a detailed quote.',
   },
   {
     question: 'Do you deliver and set up photo booths in Singapore?',
@@ -156,7 +159,7 @@ const processSteps = [
 
       <!-- Stand Type -->
       <div class="mb-12 gs-fade-up">
-        <h3 class="text-lg lg:text-xl font-bold text-primary mb-4 flex items-center gap-2" style="font-family: 'Montserrat', sans-serif;" data-i18n="singapore.models.stand">
+        <h3 class="text-lg lg:text-xl font-bold text-primary mb-4 flex items-center gap-2" style="font-family: 'Montserrat', sans-serif;">
           <span class="w-8 h-[2px] bg-primary inline-block"></span> Stand Type
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
@@ -171,7 +174,7 @@ const processSteps = [
 
       <!-- Table Type -->
       <div class="mb-12 gs-fade-up">
-        <h3 class="text-lg lg:text-xl font-bold text-primary mb-4 flex items-center gap-2" style="font-family: 'Montserrat', sans-serif;" data-i18n="singapore.models.table">
+        <h3 class="text-lg lg:text-xl font-bold text-primary mb-4 flex items-center gap-2" style="font-family: 'Montserrat', sans-serif;">
           <span class="w-8 h-[2px] bg-primary inline-block"></span> Table Type
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
@@ -186,7 +189,7 @@ const processSteps = [
 
       <!-- Booth Type -->
       <div class="gs-fade-up">
-        <h3 class="text-lg lg:text-xl font-bold text-primary mb-4 flex items-center gap-2" style="font-family: 'Montserrat', sans-serif;" data-i18n="singapore.models.booth">
+        <h3 class="text-lg lg:text-xl font-bold text-primary mb-4 flex items-center gap-2" style="font-family: 'Montserrat', sans-serif;">
           <span class="w-8 h-[2px] bg-primary inline-block"></span> Booth Type
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">

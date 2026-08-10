@@ -151,6 +151,14 @@ function init() {
     return;
   }
 
+  // 'en' used to be a client-side text swap on these same Korean URLs; it is a
+  // real /en/ route now. Returning visitors who clicked EN before the change
+  // still carry it in storage, and honouring it would render English at a
+  // Korean URL whose canonical and hreflang both say Korean. Drop it once.
+  if (localStorage.getItem(STORAGE_KEY) === 'en') {
+    localStorage.removeItem(STORAGE_KEY);
+  }
+
   const lang = getCurrentLang();
   document.documentElement.lang = lang === 'jp' ? 'ja' : lang;
   applyTranslations(lang);
