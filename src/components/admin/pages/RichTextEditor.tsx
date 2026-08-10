@@ -1274,7 +1274,23 @@ function RichTextEditor({ value, onChange, onImageSelect }: { value: string; onC
                 if (file) imageFiles.push(file);
               }
             }
-            if (imageFiles.length === 0) return;
+            if (imageFiles.length === 0) {
+              // Text paste: the browser's default rich-text paste flattens multi-
+              // paragraph content into one block and collapses the line breaks to
+              // spaces. Insert plain text with explicit <br> so line breaks survive
+              // through htmlToPortableText (which maps <br> → "\n" hard breaks).
+              const text = e.clipboardData?.getData('text/plain');
+              if (text) {
+                e.preventDefault();
+                const html = text
+                  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                  .replace(/\r\n?/g, '\n')
+                  .replace(/\n/g, '<br>');
+                document.execCommand('insertHTML', false, html);
+                syncContent();
+              }
+              return;
+            }
             e.preventDefault();
             setUploadingCount(imageFiles.length);
             try {

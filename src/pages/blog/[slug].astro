@@ -6,6 +6,7 @@ import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import { company } from '@data/company';
 import { createClient } from '@sanity/client';
 import { toHTML } from '@portabletext/to-html';
+import { normalizeBreakSpans } from '../../components/admin/shared/portableText';
 import { sanitizeSlug, isCleanSlug } from '../../utils/slug';
 
 const sanityClient = createClient({
@@ -94,7 +95,10 @@ const showToc = headings.length >= 3;
 let bodyHtml = '';
 try {
   if (post.body) {
-    bodyHtml = toHTML(post.body, {
+    // Restore line breaks that older paste-flattened posts stored as blank
+    // spans; toHTML then renders "\n" hard breaks as <br>.
+    const normalizedBody = post.body.map(normalizeBreakSpans);
+    bodyHtml = toHTML(normalizedBody, {
       components: {
         block: {
           // h2/h3에 앵커 ID 주입 (ToC 연동)

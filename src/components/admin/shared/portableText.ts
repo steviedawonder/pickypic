@@ -400,6 +400,56 @@ function escapeAttr(s: string): string {
     .replace(/'/g, '&#39;');
 }
 
+// A whitespace-only span sitting inside a heavily-flattened block is a paste
+// artifact standing in for a line break the author actually typed (older posts
+// were pasted before the editor preserved breaks — the whole paragraph collapses
+// into one block, often mark-wrapped, with the breaks reduced to " " spans).
+// Rewrite those spans to a real "\n" hard break so both the editor and the public
+// renderer show them.
+// ponytail: the >6-span gate targets flattened paste blocks only — normal
+// formatted paragraphs have a handful of spans and are left untouched, so we don't
+// need to inspect marks here (a lone whitespace span in such a block is never
+// meaningful content whatever its marks).
+export function normalizeBreakSpans(block: any): any {
+  if (!block || block._type !== 'block' || !Array.isArray(block.children)) return block;
+  if (block.children.length <= 6) return block;
+
+  const textSpans = block.children.filter((s: any) => s && s._type === 'span' && (s.text || '').trim() !== '');
+  if (textSpans.length === 0) return block;
+
+  // Same paste bug also wrapped the whole paragraph in a `code` mark (monospace).
+  // Only strip it when EVERY text span carries it — a genuine inline-code snippet
+  // marks just a word or two, never the entire flattened block.
+  const stripCode = textSpans.every((s: any) => (s.marks || []).includes('code'));
+
+  // When the paste split each source line into its own span, every text span
+  // shares the same marks (ignoring the stray `code`). In that case a span
+  // boundary *is* a line boundary, so insert a break between adjacent text spans
+  // to rebuild the lost line breaks. If marks vary, the spans are real inline
+  // formatting (not one-line-per-span) and we must NOT split between them.
+  const markKey = (s: any) => JSON.stringify(((s.marks || []).filter((m: string) => m !== 'code')).sort());
+  const uniform = textSpans.every((s: any) => markKey(s) === markKey(textSpans[0]));
+
+  const out: any[] = [];
+  let prevText = false;
+  for (const span of block.children) {
+    if (!span || span._type !== 'span' || typeof span.text !== 'string') {
+      out.push(span);
+      prevText = false;
+      continue;
+    }
+    if (span.text.trim() === '') {
+      out.push({ ...span, text: '\n', marks: [] });
+      prevText = false;
+      continue;
+    }
+    if (uniform && prevText) out.push({ _type: 'span', text: '\n', marks: [] });
+    out.push(stripCode ? { ...span, marks: (span.marks || []).filter((m: string) => m !== 'code') } : span);
+    prevText = true;
+  }
+  return { ...block, children: out };
+}
+
 // ── Portable Text to HTML (for loading existing posts) ──
 export function portableTextToHtml(blocks: any[]): string {
   if (!blocks || !Array.isArray(blocks)) return '';
@@ -429,8 +479,9 @@ export function portableTextToHtml(blocks: any[]): string {
       return `<div class="img-figure-wrapper" contenteditable="false" style="margin:12px 0;"><img src="${escapeAttr(url)}" alt="${escapeAttr(alt)}" style="max-width:100%;height:auto;display:block;margin:0 auto;border-radius:4px;" /><div class="img-caption" contenteditable="true" data-placeholder="사진 설명을 입력하세요.">${escapeAttr(caption)}</div></div>`;
     }
     if (block._type !== 'block') return '';
+    block = normalizeBreakSpans(block);
     const children = (block.children || []).map((span: any) => {
-      let text = (span.text || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      let text = (span.text || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
       const marks = span.marks || [];
       if (marks.includes('strong')) text = `<strong>${text}</strong>`;
       if (marks.includes('em')) text = `<em>${text}</em>`;
