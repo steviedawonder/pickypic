@@ -56,7 +56,7 @@ export const translations: Record<Lang, Record<string, string>> = {
 
     // Home GEO Section
     'home.geo.title': '포토부스 대여 · 렌탈 · 매매 전문 피키픽',
-    'home.geo.desc': '피키픽(PICKYPIC)은 "어디에나 어울리는 포토부스"를 만드는 프리미엄 포토부스 전문 기업입니다. 스탠드형·테이블형·부스형 등 9종 이상의 라인업을 대여·렌탈·매매로 제공하며, 누적 10,000건 이상의 브랜드 팝업과 기업 행사를 수행했습니다. 브랜드 맞춤 커스터마이징부터 AI 포토 솔루션까지, 한국과 싱가포르를 거점으로 글로벌 포토부스 경험을 선사합니다.',
+    'home.geo.desc': '피키픽(PICKYPIC)은 "어디에나 어울리는 포토부스"를 만드는 프리미엄 포토부스 전문 기업입니다. 스탠드형·테이블형·부스형 등 9종 이상의 라인업을 대여·렌탈·매매로 제공하며, 누적 16,000건 이상의 브랜드 팝업과 기업 행사를 수행했습니다. 브랜드 맞춤 커스터마이징부터 AI 포토 솔루션까지, 한국과 싱가포르를 거점으로 글로벌 포토부스 경험을 선사합니다.',
 
     // Blog
     'blog.read_time_suffix': '분 읽기',
@@ -74,7 +74,7 @@ export const translations: Record<Lang, Record<string, string>> = {
 
     // Photobooth Rental Page
     'rental_page.hero.title': '포토부스 대여 · 렌탈 서비스',
-    'rental_page.hero.desc': '피키픽포토부스(PICKYPIC)는 2020년 설립된 서울 성수동 소재 프리미엄 포토부스 렌탈 전문 기업으로, 넷플릭스·현대자동차·스타벅스 등 1,000건 이상의 브랜드 팝업 및 기업 행사에 9종 이상의 포토부스를 제공하고 있습니다.',
+    'rental_page.hero.desc': '피키픽포토부스(PICKYPIC)는 2020년 설립된 서울 성수동 소재 프리미엄 포토부스 렌탈 전문 기업으로, 넷플릭스·현대자동차·스타벅스 등 16,000건 이상의 브랜드 팝업 및 기업 행사에 9종 이상의 포토부스를 제공하고 있습니다.',
     'rental_page.hero.cta_rental': '렌탈 문의하기',
     'rental_page.hero.cta_products': '제품 보기',
     'rental_page.intro.title': '포토부스 대여 서비스 소개',
@@ -118,7 +118,7 @@ export const translations: Record<Lang, Record<string, string>> = {
 
     // Photobooth Purchase Page
     'purchase_page.hero.title': '포토부스 구매 · 판매',
-    'purchase_page.hero.desc': 'PICKYPIC은 9종 이상의 프리미엄 포토부스를 자체 설계·제조·판매하는 포토부스 전문 기업입니다. 테이블 위에 올려놓는 미니 포토부스부터 독립형 풀사이즈 부스까지, 용도와 공간에 맞는 최적의 포토부스 기기를 제공합니다. 넷플릭스, 현대자동차, 스타벅스 등 1,000건 이상의 행사에서 검증된 품질을 경험하세요.',
+    'purchase_page.hero.desc': 'PICKYPIC은 9종 이상의 프리미엄 포토부스를 자체 설계·제조·판매하는 포토부스 전문 기업입니다. 테이블 위에 올려놓는 미니 포토부스부터 독립형 풀사이즈 부스까지, 용도와 공간에 맞는 최적의 포토부스 기기를 제공합니다. 넷플릭스, 현대자동차, 스타벅스 등 16,000건 이상의 행사에서 검증된 품질을 경험하세요.',
     'purchase_page.guide.title': '포토부스 구매 가이드',
     'purchase_page.guide.subtitle': '어떤 업종에서 포토부스가 필요하신가요? 목적에 맞는 포토부스를 추천해 드립니다.',
     'purchase_page.guide.cafe.title': '카페 · 무인사진관 창업',
@@ -303,7 +303,8 @@ export const translations: Record<Lang, Record<string, string>> = {
     'about.company_heading': '피키픽 포토부스<br />(PICKYPIC Photobooth)',
     'about.company_subtitle': '대한민국 대표 오픈형 프리미엄 포토부스 전문 기업 | 2020년 설립',
     'about.company_p1': '"어디에나 어울리는 포토부스"를 슬로건으로, 장소와 상황에 구애받지 않는 새로운 포토부스 경험을 만듭니다.',
-    'about.company_p2': '스탠드형·테이블형·부스형 등 9종 이상의 라인업을 렌탈과 매매 모두 제공하며, 누적 10,000건 이상의 브랜드 팝업·기업 행사에 포토부스를 공급해 왔습니다.',
+    'about.company_p2': '스탠드형·테이블형·부스형 등 9종 이상의 라인업을 렌탈과 매매 모두 제공하며, 누적 16,000건 이상의 브랜드 팝업·기업 행사에 포토부스를 공급해 왔습니다. 현재 500대 이상의 기기가 현장에서 운영되고 있습니다.',
+    'about.company_p4': '피키픽의 모든 기기는 자체 공방에서 수작업으로 제작됩니다. 특히 원목 부스는 목수가 직접 나무를 깎고 다듬어 마감하기 때문에, 같은 모델이라도 나뭇결이 하나도 같지 않습니다.',
     'about.company_p3': '브랜드 맞춤 커스터마이징, AI 퍼스널 컬러 분석 등 차별화된 포토 솔루션을 한국과 싱가포르에서 운영하고 있으며, 글로벌 파트너십을 통해 전 세계로 포토부스를 수출하고 있습니다.',
 
     // Products Page
@@ -384,7 +385,7 @@ export const translations: Record<Lang, Record<string, string>> = {
     'rental.submit': '문의하기',
     'rental.submitting': '전송 중...',
     'rental.btn_products': '제품소개',
-    'rental.hero_desc': '피키픽 포토부스는 "어디에나 어울리는 포토부스"를 슬로건으로, 장소와 상황에 구애받지 않는 새로운 포토부스 경험을 만듭니다. 스탠드형·테이블형·부스형 등 9종 이상의 라인업을 갖추고 있으며, 누적 10,000건 이상의 브랜드 팝업·기업 행사를 진행한 경험으로 완벽한 솔루션을 제공합니다.',
+    'rental.hero_desc': '피키픽 포토부스는 "어디에나 어울리는 포토부스"를 슬로건으로, 장소와 상황에 구애받지 않는 새로운 포토부스 경험을 만듭니다. 스탠드형·테이블형·부스형 등 9종 이상의 라인업을 갖추고 있으며, 누적 16,000건 이상의 브랜드 팝업·기업 행사를 진행한 경험으로 완벽한 솔루션을 제공합니다.',
 
     // Popup Banner
     'popup_banner.no_show': '24시간 동안 다시 열람하지 않습니다.',
@@ -494,7 +495,7 @@ export const translations: Record<Lang, Record<string, string>> = {
 
     // Home GEO Section
     'home.geo.title': 'Photo Booth Rental & Sales Specialist PICKYPIC',
-    'home.geo.desc': 'PICKYPIC is a premium photo booth company that creates "photo booths that fit anywhere." We offer 9+ lineup models—stand, table, and booth types—available for rental and purchase, with over 10,000 brand pop-ups and corporate events completed. From brand-custom design to AI photo solutions, we deliver global photo booth experiences from our bases in Korea and Singapore.',
+    'home.geo.desc': 'PICKYPIC is a premium photo booth company that creates "photo booths that fit anywhere." We offer 9+ lineup models—stand, table, and booth types—available for rental and purchase, with over 16,000 brand pop-ups and corporate events completed. From brand-custom design to AI photo solutions, we deliver global photo booth experiences from our bases in Korea and Singapore.',
 
     // Blog
     'blog.read_time_suffix': ' min read',
@@ -512,7 +513,7 @@ export const translations: Record<Lang, Record<string, string>> = {
 
     // Photobooth Rental Page
     'rental_page.hero.title': 'Photo Booth Rental Service',
-    'rental_page.hero.desc': 'PICKYPIC is a premium photo booth rental company established in 2020 in Seongsu-dong, Seoul, having provided 9+ photo booth models to over 1,000 brand pop-ups and corporate events including Netflix, Hyundai, and Starbucks.',
+    'rental_page.hero.desc': 'PICKYPIC is a premium photo booth rental company established in 2020 in Seongsu-dong, Seoul, having provided 9+ photo booth models to over 16,000 brand pop-ups and corporate events including Netflix, Hyundai, and Starbucks.',
     'rental_page.hero.cta_rental': 'Request Rental',
     'rental_page.hero.cta_products': 'View Products',
     'rental_page.intro.title': 'About Our Rental Service',
@@ -556,7 +557,7 @@ export const translations: Record<Lang, Record<string, string>> = {
 
     // Photobooth Purchase Page
     'purchase_page.hero.title': 'Photo Booth Purchase & Sales',
-    'purchase_page.hero.desc': 'PICKYPIC is a photo booth specialist that designs, manufactures, and sells 9+ premium photo booth models. From mini tabletop photo booths to standalone full-size booths, we provide the optimal photo booth equipment for your purpose and space. Experience the quality verified in over 1,000 events including Netflix, Hyundai, and Starbucks.',
+    'purchase_page.hero.desc': 'PICKYPIC is a photo booth specialist that designs, manufactures, and sells 9+ premium photo booth models. From mini tabletop photo booths to standalone full-size booths, we provide the optimal photo booth equipment for your purpose and space. Experience the quality verified in over 16,000 events including Netflix, Hyundai, and Starbucks.',
     'purchase_page.guide.title': 'Photo Booth Purchase Guide',
     'purchase_page.guide.subtitle': 'What industry are you in? We recommend the right photo booth for your purpose.',
     'purchase_page.guide.cafe.title': 'Cafe & Unmanned Photo Studio',
@@ -741,7 +742,8 @@ export const translations: Record<Lang, Record<string, string>> = {
     'about.company_heading': 'PICKYPIC Photobooth',
     'about.company_subtitle': "Korea's Leading Open-Style Premium Photo Booth Company | Est. 2020",
     'about.company_p1': 'With the slogan "A photo booth that fits anywhere," we create new photo booth experiences unconstrained by place or occasion.',
-    'about.company_p2': 'We offer 9+ lineup models including stand, table, and booth types for both rental and purchase, having supplied photo booths to over 10,000 brand pop-ups and corporate events.',
+    'about.company_p2': 'We offer 9+ lineup models including stand, table, and booth types for both rental and purchase, having supplied photo booths to over 16,000 brand pop-ups and corporate events. More than 500 booths are in operation today.',
+    'about.company_p4': 'Every PICKYPIC booth is built by hand in our own workshop. The solid wood enclosures are cut, shaped, and finished by our carpenter — so no two booths share the same grain, even within the same model.',
     'about.company_p3': 'We operate differentiated photo solutions including brand-custom design and AI personal color analysis in Korea and Singapore, and export photo booths worldwide through global partnerships.',
 
     // Products Page
@@ -822,7 +824,7 @@ export const translations: Record<Lang, Record<string, string>> = {
     'rental.submit': 'Submit Inquiry',
     'rental.submitting': 'Sending...',
     'rental.btn_products': 'Products',
-    'rental.hero_desc': 'PICKYPIC Photobooth, with the slogan "A photo booth that fits anywhere," creates new photo booth experiences unconstrained by place or occasion. With a lineup of 9+ models including stand, table, and booth types, and experience from over 10,000 brand pop-ups and corporate events, we provide the perfect solution.',
+    'rental.hero_desc': 'PICKYPIC Photobooth, with the slogan "A photo booth that fits anywhere," creates new photo booth experiences unconstrained by place or occasion. With a lineup of 9+ models including stand, table, and booth types, and experience from over 16,000 brand pop-ups and corporate events, we provide the perfect solution.',
 
     // Popup Banner
     'popup_banner.no_show': 'Do not show for 24 hours.',
@@ -932,7 +934,7 @@ export const translations: Record<Lang, Record<string, string>> = {
 
     // Home GEO Section
     'home.geo.title': 'フォトブース レンタル・販売専門 ピキピック',
-    'home.geo.desc': 'ピキピック(PICKYPIC)は「どこにでも似合うフォトブース」を作るプレミアムフォトブース専門企業です。スタンド型・テーブル型・ブース型など9種類以上のラインナップをレンタル・販売で提供し、累計10,000件以上のブランドポップアップや企業イベントを手がけてきました。ブランドカスタマイズからAIフォトソリューションまで、韓国とシンガポールを拠点にグローバルなフォトブース体験をお届けします。',
+    'home.geo.desc': 'ピキピック(PICKYPIC)は「どこにでも似合うフォトブース」を作るプレミアムフォトブース専門企業です。スタンド型・テーブル型・ブース型など9種類以上のラインナップをレンタル・販売で提供し、累計16,000件以上のブランドポップアップや企業イベントを手がけてきました。ブランドカスタマイズからAIフォトソリューションまで、韓国とシンガポールを拠点にグローバルなフォトブース体験をお届けします。',
 
     // Blog
     'blog.read_time_suffix': '分で読める',
@@ -950,7 +952,7 @@ export const translations: Record<Lang, Record<string, string>> = {
 
     // Photobooth Rental Page
     'rental_page.hero.title': 'フォトブースレンタルサービス',
-    'rental_page.hero.desc': 'PICKYPIC(ピキピック)は2020年に設立されたソウル聖水洞のプレミアムフォトブースレンタル専門企業で、Netflix・現代自動車・Starbucksなど1,000件以上のブランドポップアップ・企業イベントに9種類以上のフォトブースを提供してきました。',
+    'rental_page.hero.desc': 'PICKYPIC(ピキピック)は2020年に設立されたソウル聖水洞のプレミアムフォトブースレンタル専門企業で、Netflix・現代自動車・Starbucksなど16,000件以上のブランドポップアップ・企業イベントに9種類以上のフォトブースを提供してきました。',
     'rental_page.hero.cta_rental': 'レンタルお問合せ',
     'rental_page.hero.cta_products': '製品を見る',
     'rental_page.intro.title': 'レンタルサービスのご紹介',
@@ -994,7 +996,7 @@ export const translations: Record<Lang, Record<string, string>> = {
 
     // Photobooth Purchase Page
     'purchase_page.hero.title': 'フォトブース購入・販売',
-    'purchase_page.hero.desc': 'PICKYPICは9種類以上のプレミアムフォトブースを自社設計・製造・販売するフォトブース専門企業です。テーブル上に置くミニフォトブースから独立型フルサイズブースまで、用途と空間に合った最適なフォトブース機器を提供します。Netflix、現代自動車、Starbucksなど1,000件以上のイベントで検証されたクオリティをご体験ください。',
+    'purchase_page.hero.desc': 'PICKYPICは9種類以上のプレミアムフォトブースを自社設計・製造・販売するフォトブース専門企業です。テーブル上に置くミニフォトブースから独立型フルサイズブースまで、用途と空間に合った最適なフォトブース機器を提供します。Netflix、現代自動車、Starbucksなど16,000件以上のイベントで検証されたクオリティをご体験ください。',
     'purchase_page.guide.title': 'フォトブース購入ガイド',
     'purchase_page.guide.subtitle': 'どのような業種でフォトブースが必要ですか？目的に合ったフォトブースをご提案します。',
     'purchase_page.guide.cafe.title': 'カフェ・無人写真館の開業',
@@ -1179,7 +1181,8 @@ export const translations: Record<Lang, Record<string, string>> = {
     'about.company_heading': 'ピキピック フォトブース<br />(PICKYPIC Photobooth)',
     'about.company_subtitle': '韓国を代表するオープン型プレミアムフォトブース専門企業 | 2020年設立',
     'about.company_p1': '「どこにでも似合うフォトブース」をスローガンに、場所や状況を問わない新しいフォトブース体験を生み出します。',
-    'about.company_p2': 'スタンド型・テーブル型・ブース型など9種類以上のラインナップをレンタルと販売の両方でご提供しており、累計10,000件以上のブランドポップアップ・企業イベントにフォトブースを提供してきました。',
+    'about.company_p2': 'スタンド型・テーブル型・ブース型など9種類以上のラインナップをレンタルと販売の両方でご提供しており、累計16,000件以上のブランドポップアップ・企業イベントにフォトブースを提供してきました。現在500台以上の機体が現場で稼働しています。',
+    'about.company_p4': 'PICKYPICのすべての機体は自社工房で手作業により製作されます。特に無垢材のブースは職人が木を直接削り、仕上げるため、同じモデルであっても木目が一つとして同じものはありません。',
     'about.company_p3': 'ブランドカスタマイズやAIパーソナルカラー分析など差別化されたフォトソリューションを韓国とシンガポールで展開しており、グローバルパートナーシップを通じて世界中にフォトブースを輸出しています。',
 
     // Products Page
@@ -1260,7 +1263,7 @@ export const translations: Record<Lang, Record<string, string>> = {
     'rental.submit': 'お問合せする',
     'rental.submitting': '送信中...',
     'rental.btn_products': '製品紹介',
-    'rental.hero_desc': 'ピキピック フォトブースは「どこにでも似合うフォトブース」をスローガンに、場所や状況を問わない新しいフォトブース体験を作ります。スタンド型・テーブル型・ブース型など9種類以上のラインナップを揃え、累計10,000件以上のブランドポップアップ・企業イベントの経験で完璧なソリューションを提供します。',
+    'rental.hero_desc': 'ピキピック フォトブースは「どこにでも似合うフォトブース」をスローガンに、場所や状況を問わない新しいフォトブース体験を作ります。スタンド型・テーブル型・ブース型など9種類以上のラインナップを揃え、累計16,000件以上のブランドポップアップ・企業イベントの経験で完璧なソリューションを提供します。',
 
     // Popup Banner
     'popup_banner.no_show': '24時間表示しない',

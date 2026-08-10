@@ -4,6 +4,7 @@ import Navbar from '@components/common/Navbar.astro';
 import Footer from '@components/common/Footer.astro';
 import FloatingContactButton from '@components/common/FloatingContactButton.astro';
 import { company } from '@data/company';
+import { getPair, switchTarget } from '@data/i18nPairs';
 import { sanityClient } from '../sanity/client';
 
 let siteSettings: any = null;
@@ -32,9 +33,18 @@ interface Props {
   articleMeta?: ArticleMeta;
 }
 
+// Locale comes from the URL, not a prop. A prop can be forgotten on one page
+// and that page then ships as Korean without anyone noticing; the path can't lie.
+const isEn = Astro.url.pathname.startsWith('/en');
+const lang = isEn ? 'en' : 'ko';
+
 const {
-  title = `포토부스 대여 · 렌탈 · 매매 전문 | 피키픽 PICKYPIC`,
-  description = '포토부스 대여·렌탈·매매 전문 피키픽(PICKYPIC). 스탠드형·테이블형·부스형 9종 라인업, 브랜드 팝업·기업 행사·웨딩까지 맞춤형 포토부스를 제공합니다. 누적 12,000건+ 운영 경험. 무료 견적 문의.',
+  title = isEn
+    ? 'PICKYPIC | Handmade Photo Booths from Seoul'
+    : `포토부스 대여 · 렌탈 · 매매 전문 | 피키픽 PICKYPIC`,
+  description = isEn
+    ? 'PICKYPIC builds photo booths by hand in Seoul — the wooden enclosures are cut and finished by our carpenter. 9+ models, 500+ booths in operation, 16,000+ brand events. Shipping worldwide.'
+    : '포토부스 대여·렌탈·매매 전문 피키픽(PICKYPIC). 스탠드형·테이블형·부스형 9종 라인업, 브랜드 팝업·기업 행사·웨딩까지 맞춤형 포토부스를 제공합니다. 누적 16,000건+ 운영 경험. 무료 견적 문의.',
   ogImage = '/images/hero/main-1.jpg',
   ogType = 'website',
   noindex = false,
@@ -42,16 +52,21 @@ const {
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+// hreflang is emitted only for pages that actually have a counterpart.
+const pair = getPair(Astro.url.pathname);
 ---
 
 <!doctype html>
-<html lang="ko">
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
-    <meta name="keywords" content="포토부스, 포토부스 대여, 포토부스 렌탈, 포토부스 매매, 포토부스 구매, 포토부스 판매, 인생네컷 대여, 브랜드 팝업 포토부스, 팝업스토어 포토부스, 기업행사 포토부스, 사내행사 포토부스, 웨딩 포토부스, 포토부스 창업, 무인사진관 창업, 셀프포토스튜디오, 영수증 사진기, 감열지 사진기, 레트로 포토부스, 피키픽, PICKYPIC, photo booth rental Korea, photo booth Singapore" />
-    <meta name="author" content="피키픽 PICKYPIC" />
+    {!isEn && (
+      <meta name="keywords" content="포토부스, 포토부스 대여, 포토부스 렌탈, 포토부스 매매, 포토부스 구매, 포토부스 판매, 인생네컷 대여, 브랜드 팝업 포토부스, 팝업스토어 포토부스, 기업행사 포토부스, 사내행사 포토부스, 웨딩 포토부스, 포토부스 창업, 무인사진관 창업, 셀프포토스튜디오, 영수증 사진기, 감열지 사진기, 레트로 포토부스, 피키픽, PICKYPIC, photo booth rental Korea, photo booth Singapore" />
+    )}
+    <meta name="author" content={isEn ? 'PICKYPIC' : '피키픽 PICKYPIC'} />
     <meta name="generator" content={Astro.generator} />
     {noindex ? (
       <meta name="robots" content="noindex, nofollow" />
@@ -73,11 +88,19 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta name="naver-site-verification" content={siteSettings?.naverSiteVerification || '062e44a0df871ea7efc1955b667ed80346b8d5ef'} />
     <meta name="naver-site-verification" content="b3610845d8160c7330c915478db981de196bd1ec" />
 
-    <!-- Hreflang: self-referencing only. The site uses client-side i18n
-         with no separate URLs per language, so we don't claim alternate URLs
-         for en/ja (Google would treat duplicate URLs as a misconfiguration). -->
-    <link rel="alternate" hreflang="ko-KR" href={canonicalURL} />
-    <link rel="alternate" hreflang="x-default" href={canonicalURL} />
+    <!-- Hreflang: emitted only for pages listed in i18nPairs, and read from that
+         single table on both sides so the annotations stay reciprocal — Google
+         ignores one-way hreflang. No `ja`: there are no /jp/ routes, and a dead
+         URL in the cluster makes Google discard the whole cluster.
+         x-default points at English so third-country visitors (de, fr, ...) land
+         on a page they can read; Korean searchers still match via hreflang="ko". -->
+    {pair && (
+      <>
+        <link rel="alternate" hreflang="ko" href={new URL(pair.ko, Astro.site)} />
+        <link rel="alternate" hreflang="en" href={new URL(pair.en, Astro.site)} />
+        <link rel="alternate" hreflang="x-default" href={new URL(pair.en, Astro.site)} />
+      </>
+    )}
 
     <!-- Google Tag Manager -->
     <script is:inline define:vars={{ gtmId: siteSettings?.gtmContainerId || 'GTM-KDRFNN4H' }}>
@@ -155,7 +178,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:image:height" content="1050" />
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:alt" content="피키픽 PICKYPIC 포토부스 - 포토부스 대여 · 렌탈 · 매매 전문" />
-    <meta property="og:locale" content="ko_KR" />
+    <meta property="og:locale" content={isEn ? 'en_US' : 'ko_KR'} />
     <meta property="og:site_name" content="PICKYPIC" />
     {articleMeta?.publishedTime && <meta property="article:published_time" content={articleMeta.publishedTime} />}
     {articleMeta?.modifiedTime && <meta property="article:modified_time" content={articleMeta.modifiedTime} />}
@@ -202,7 +225,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       "url": company.url,
       "logo": company.logo,
       "image": company.logo,
-      "description": company.description,
+      "description": isEn ? company.descriptionEn : company.description,
       "telephone": company.phone,
       "email": company.email,
       "foundingDate": company.foundingDate,
@@ -247,14 +270,16 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <slot name="head" />
 
     <title>{title}</title>
-    <script is:inline>
-      (function() {
-        var lang = localStorage.getItem('pickypic-lang');
-        if (lang && lang !== 'ko') {
-          document.documentElement.style.visibility = 'hidden';
-        }
-      })();
-    </script>
+    {!isEn && (
+      <script is:inline>
+        (function() {
+          var lang = localStorage.getItem('pickypic-lang');
+          if (lang && lang !== 'ko') {
+            document.documentElement.style.visibility = 'hidden';
+          }
+        })();
+      </script>
+    )}
     <!-- Hide page until fonts are loaded to prevent FOUT -->
     <style>
       .fonts-loading { opacity: 0; }
@@ -290,6 +315,19 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
     <!-- Body start scripts from Sanity -->
     {siteSettings?.bodyStartScripts && <Fragment set:html={siteSettings.bodyStartScripts} />}
+
+    <!-- Overseas visitors get an offer, not a redirect. Hidden until the geo
+         check in i18n.ts unhides it, so crawlers never see it. -->
+    {!isEn && (
+      <div id="en-suggest-banner" class="hidden bg-primary text-white text-sm">
+        <div class="mx-auto max-w-7xl px-6 lg:px-8 py-2.5 flex items-center justify-between gap-4">
+          <a href={switchTarget(Astro.url.pathname, 'en')} class="hover:underline">
+            View this page in English &rarr;
+          </a>
+          <button type="button" class="en-banner-close shrink-0 opacity-70 hover:opacity-100" aria-label="Dismiss">&#10005;</button>
+        </div>
+      </div>
+    )}
 
     <Navbar />
     <main>

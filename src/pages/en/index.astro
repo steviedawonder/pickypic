@@ -1,0 +1,149 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { company } from '@data/company';
+
+// Locale, hreflang, og:locale and the LocalBusiness description all switch on
+// the /en prefix inside BaseLayout — nothing to pass in here.
+
+const benefits = [
+  {
+    title: 'Fits any counter',
+    body: "Small enough for a corner that's doing nothing right now.",
+  },
+  {
+    title: 'Plug and play',
+    body: 'One outlet. No installer, no network setup, no training.',
+  },
+  {
+    title: 'Your brand on every print',
+    body: 'Custom templates with your logo, colors, and message.',
+  },
+  {
+    title: 'No consumable lock-in',
+    body: 'Standard thermal receipt paper. We don’t sell it to you — buy it anywhere. No cartridges, no subscription.',
+  },
+  {
+    title: 'QR photo download',
+    body: 'Connect WiFi and guests scan to download the original file.',
+  },
+];
+---
+
+<BaseLayout
+  title="PICKYPIC | Handmade Photo Booths from Seoul"
+  description="PICKYPIC builds photo booths by hand in Seoul — the wooden enclosures are cut and finished by our carpenter. 9+ models, 500+ booths in operation, 16,000+ brand events. Shipping worldwide."
+  ogImage="/images/hero/main-1.jpg"
+>
+  <!-- Hero -->
+  <section class="pt-28 pb-16 lg:pt-36 lg:pb-24 bg-white">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <div class="max-w-3xl gs-fade-up">
+        <h1 class="text-3xl lg:text-[clamp(2.5rem,5vw,4rem)] font-bold tracking-tight text-primary leading-tight" style="font-family: 'Montserrat', sans-serif;">
+          The photo booth that fits anywhere
+        </h1>
+        <p class="mt-6 text-base lg:text-lg text-secondary leading-relaxed">
+          Prints on receipt paper. Plugs into any outlet. Puts your logo on every
+          photo your customers take home.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a
+            href="#contact"
+            class="inline-flex items-center rounded-full bg-primary px-7 py-3 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
+          >
+            Get a quote
+          </a>
+          <a
+            href="/en/kickstarter"
+            class="inline-flex items-center rounded-full border border-primary px-7 py-3 text-sm font-semibold text-primary hover:bg-primary hover:text-white transition-colors"
+          >
+            Retro Picky 2 on Kickstarter
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust bar -->
+  <section class="border-y border-border-default bg-bg-light">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8 py-6">
+      <ul class="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm text-secondary text-center">
+        <li><strong class="text-primary">500+</strong> booths in operation</li>
+        <li aria-hidden="true" class="hidden sm:block text-border-default">·</li>
+        <li><strong class="text-primary">16,000+</strong> brand events</li>
+        <li aria-hidden="true" class="hidden sm:block text-border-default">·</li>
+        <li>Built by hand in Seoul</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Why -->
+  <section class="py-20 lg:py-28 bg-white">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <h2 class="text-[clamp(1.5rem,2.5vw,2.25rem)] font-bold tracking-tight text-primary mb-12 gs-fade-up">
+        Why shops keep it on the counter
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 gs-stagger">
+        {benefits.map((b) => (
+          <div>
+            <h3 class="font-semibold text-primary mb-2">{b.title}</h3>
+            <p class="text-sm text-secondary leading-relaxed">{b.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Made by hand -->
+  <section class="py-20 lg:py-28 bg-bg-light">
+    <div class="mx-auto max-w-3xl px-6 lg:px-8 gs-fade-up">
+      <h2 class="text-[clamp(1.5rem,2.5vw,2.25rem)] font-bold tracking-tight text-primary mb-6">
+        Every booth is made by hand
+      </h2>
+      <div class="space-y-5 text-secondary leading-relaxed">
+        <p>
+          We are a manufacturer, not a reseller. Every PICKYPIC booth is built by
+          hand in our own workshop in Seoul — the enclosure, the software, the
+          templates.
+        </p>
+        <p>
+          The solid wood models are cut, shaped, and finished by our carpenter. No
+          two booths share the same grain, even within the same model.
+        </p>
+        <p>
+          That is also why we can customize them. Wrapping, lettering, frame
+          layout, on-screen UI — if we built it, we can change it.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="contact" class="py-20 lg:py-28 bg-white">
+    <div class="mx-auto max-w-3xl px-6 lg:px-8 text-center gs-fade-up">
+      <h2 class="text-[clamp(1.5rem,2.5vw,2.25rem)] font-bold tracking-tight text-primary mb-4">
+        Ready to see it in your space?
+      </h2>
+      <p class="text-secondary mb-8">
+        Tell us about your shop and we'll send specs, pricing, and template
+        samples within one business day.
+      </p>
+      <div class="flex flex-wrap justify-center gap-3">
+        <a
+          href={`mailto:${company.email}?subject=PICKYPIC%20enquiry`}
+          class="inline-flex items-center rounded-full bg-primary px-7 py-3 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
+        >
+          Get a quote
+        </a>
+        <a
+          href="/en/kickstarter"
+          class="inline-flex items-center rounded-full border border-primary px-7 py-3 text-sm font-semibold text-primary hover:bg-primary hover:text-white transition-colors"
+        >
+          See it on Kickstarter
+        </a>
+      </div>
+      <p class="mt-8 text-sm text-secondary">
+        We ship worldwide from Seoul, with full export documentation.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

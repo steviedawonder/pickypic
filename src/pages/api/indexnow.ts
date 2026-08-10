@@ -6,7 +6,6 @@ export const prerender = false;
 
 const INDEXNOW_KEY = 'pickypic2024indexnow';
 const DOMAIN = 'picky-pic.com';
-const SITEMAP_URL = `https://${DOMAIN}/sitemap-index.xml`;
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -42,7 +41,8 @@ export const POST: APIRoute = async ({ request }) => {
         body: JSON.stringify({
           host: DOMAIN,
           key: INDEXNOW_KEY,
-          keyLocation: `https://${DOMAIN}/.well-known/indexnow/${INDEXNOW_KEY}.txt`,
+          // keyLocation omitted — the key file lives at the site root
+          // (public/pickypic2024indexnow.txt), which is IndexNow's default lookup.
           urlList: urls,
         }),
       });
@@ -55,35 +55,9 @@ export const POST: APIRoute = async ({ request }) => {
       results.push({ target: 'IndexNow (Bing/Yandex)', status: 'error', error: err.message });
     }
 
-    // 2. Google sitemap ping
-    try {
-      const googleRes = await fetch(
-        `https://www.google.com/ping?sitemap=${encodeURIComponent(SITEMAP_URL)}`
-      );
-      results.push({
-        target: 'Google Sitemap Ping',
-        status: googleRes.ok ? 'ok' : 'failed',
-        statusCode: googleRes.status,
-      });
-    } catch (err: any) {
-      results.push({ target: 'Google Sitemap Ping', status: 'error', error: err.message });
-    }
-
-    // 3. Google individual URL ping (via sitemap ping per URL — best effort)
-    for (const url of urls) {
-      try {
-        const res = await fetch(
-          `https://www.google.com/ping?sitemap=${encodeURIComponent(url)}`
-        );
-        results.push({
-          target: `Google Ping: ${url}`,
-          status: res.ok ? 'ok' : 'failed',
-          statusCode: res.status,
-        });
-      } catch (err: any) {
-        results.push({ target: `Google Ping: ${url}`, status: 'error', error: err.message });
-      }
-    }
+    // Google's sitemap ping endpoint was retired in June 2023 and now returns 404,
+    // so there is nothing to call here. Google discovery runs off robots.txt +
+    // sitemap-index.xml, plus the Indexing API in google-indexing.ts.
 
     const allOk = results.every((r) => r.status === 'ok');
 

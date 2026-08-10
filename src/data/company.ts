@@ -30,6 +30,6 @@ export const company = {
     'https://pf.kakao.com/_pickypic',
     'https://smartstore.naver.com/pickypicphoto',
   ],
-  description: '피키픽은 2020년 설립된 대한민국 서울 성수동 소재 프리미엄 포토부스 렌탈 전문 기업입니다. 스탠드형, 테이블형, 부스형 등 9종 이상의 포토부스 라인업을 보유하고 있으며, 넷플릭스, 현대자동차, 기아, 뉴발란스, 스타벅스 등 1,000건 이상의 브랜드 팝업 및 기업 행사에 포토부스를 제공하고 있습니다.',
-  descriptionEn: 'PICKYPIC is a premium photo booth rental company founded in 2020, based in Seongsu-dong, Seoul, South Korea. With a lineup of 9+ photo booth models including stand, table, and booth types, PICKYPIC has provided photo booths for over 1,000 brand pop-ups and corporate events with clients like Netflix, Hyundai, Kia, New Balance, and Starbucks.',
+  description: '피키픽은 2020년 설립된 대한민국 서울 성수동 소재 프리미엄 포토부스 제조·렌탈 전문 기업입니다. 스탠드형, 테이블형, 부스형 등 9종 이상의 포토부스 라인업을 보유하고 있으며, 넷플릭스, 현대자동차, 기아, 뉴발란스, 스타벅스 등 16,000건 이상의 브랜드 팝업 및 기업 행사에 포토부스를 제공하고 현재 500대 이상의 기기가 현장에서 운영되고 있습니다. 모든 기기는 자체 공방에서 수작업으로 제작되며, 원목 부스는 목수가 직접 나무를 깎아 마감합니다.',
+  descriptionEn: 'PICKYPIC is a premium photo booth manufacturer and rental company founded in 2020, based in Seongsu-dong, Seoul, South Korea. With a lineup of 9+ photo booth models including stand, table, and booth types, PICKYPIC has provided photo booths for over 16,000 brand pop-ups and corporate events with clients like Netflix, Hyundai, Kia, New Balance, and Starbucks, and has more than 500 booths in operation. Every booth is built by hand in our own workshop, and the solid wood enclosures are cut and finished by our carpenter.',
 } as const;

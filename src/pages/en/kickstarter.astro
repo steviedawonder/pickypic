@@ -1,0 +1,167 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+
+// Campaign window. These drive a CLIENT-side state switch on purpose: this page
+// is statically generated, so a build-time `new Date()` would freeze whatever
+// day the last deploy happened on and the page would never flip to "live".
+const LAUNCH = '2026-09-22T00:00:00Z';
+const END = '2026-10-28T23:59:59Z';
+
+// TODO: paste the Kickstarter referral link once the campaign page is created.
+// While this is empty the page stays on the pre-launch state and keeps collecting
+// emails, which is the right fallback — better than a button that goes nowhere.
+const KS_URL = '';
+---
+
+<BaseLayout
+  title="Retro Picky 2 on Kickstarter — Launching September 22 | PICKYPIC"
+  description="Our newest receipt photo booth launches on Kickstarter on September 22, 2026. Limited first units. Join the list to get the link before anyone else."
+>
+  <section class="pt-28 pb-20 lg:pt-36 lg:pb-28 bg-white">
+    <div class="mx-auto max-w-3xl px-6 lg:px-8">
+
+      <!-- Before launch -->
+      <div data-ks-state="pre">
+        <h1 class="text-3xl lg:text-[clamp(2.25rem,4vw,3.25rem)] font-bold tracking-tight text-primary leading-tight" style="font-family: 'Montserrat', sans-serif;">
+          Retro Picky 2 — launching on Kickstarter September 22
+        </h1>
+        <div class="mt-6 space-y-5 text-secondary leading-relaxed">
+          <p>The same booth people already know. Rebuilt inside.</p>
+          <p>
+            Limited first units, and early bird pricing for backers. People on our
+            list get the link before anyone else.
+          </p>
+        </div>
+      </div>
+
+      <!-- Live -->
+      <div data-ks-state="live" class="hidden">
+        <h1 class="text-3xl lg:text-[clamp(2.25rem,4vw,3.25rem)] font-bold tracking-tight text-primary leading-tight" style="font-family: 'Montserrat', sans-serif;">
+          Live on Kickstarter now
+        </h1>
+        <p class="mt-6 text-secondary leading-relaxed">
+          Retro Picky 2 is funding on Kickstarter. Early bird units are limited.
+        </p>
+        {KS_URL && (
+          <a
+            href={KS_URL}
+            rel="noopener"
+            class="mt-8 inline-flex items-center rounded-full bg-primary px-7 py-3 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
+          >
+            Back it on Kickstarter &rarr;
+          </a>
+        )}
+      </div>
+
+      <!-- After -->
+      <div data-ks-state="post" class="hidden">
+        <h1 class="text-3xl lg:text-[clamp(2.25rem,4vw,3.25rem)] font-bold tracking-tight text-primary leading-tight" style="font-family: 'Montserrat', sans-serif;">
+          The Kickstarter campaign has ended
+        </h1>
+        <div class="mt-6 space-y-5 text-secondary leading-relaxed">
+          <p>Thank you to everyone who backed Retro Picky 2.</p>
+          <p>Missed it? Tell us about your shop and we'll take it from there.</p>
+        </div>
+        <a
+          href="/en/"
+          class="mt-8 inline-flex items-center rounded-full bg-primary px-7 py-3 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
+        >
+          Get a quote
+        </a>
+      </div>
+
+      <!-- Email capture: shown in the pre-launch and post-campaign states -->
+      <div id="ks-signup" class="mt-12 border-t border-border-default pt-10">
+        <h2 class="text-lg font-semibold text-primary mb-2">Get the link first</h2>
+        <p class="text-sm text-secondary mb-5">
+          One email when we launch. Nothing else.
+        </p>
+        <form id="ks-form" class="flex flex-col sm:flex-row gap-3 max-w-md">
+          <label for="ks-email" class="sr-only">Email address</label>
+          <input
+            id="ks-email"
+            type="email"
+            name="email"
+            required
+            autocomplete="email"
+            placeholder="you@example.com"
+            class="flex-1 rounded-full border border-border-default px-5 py-3 text-sm focus:outline-none focus:border-primary"
+          />
+          <button
+            type="submit"
+            class="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white hover:opacity-90 transition-opacity disabled:opacity-50"
+          >
+            Notify me
+          </button>
+        </form>
+        <p id="ks-form-msg" class="mt-3 text-sm hidden"></p>
+      </div>
+
+    </div>
+  </section>
+</BaseLayout>
+
+<script is:inline define:vars={{ LAUNCH, END, HAS_KS_URL: Boolean(KS_URL) }}>
+  (function () {
+    // Pick the campaign state in the browser so the page flips on schedule
+    // without a redeploy. Without a referral link there is nowhere to send
+    // backers, so we hold on the pre-launch state and keep collecting emails.
+    var now = Date.now();
+    var state = 'pre';
+    if (now > Date.parse(END)) state = 'post';
+    else if (now >= Date.parse(LAUNCH) && HAS_KS_URL) state = 'live';
+
+    document.querySelectorAll('[data-ks-state]').forEach(function (el) {
+      el.classList.toggle('hidden', el.getAttribute('data-ks-state') !== state);
+    });
+    if (state === 'live') {
+      var signup = document.getElementById('ks-signup');
+      if (signup) signup.classList.add('hidden');
+    }
+  })();
+
+  (function () {
+    var form = document.getElementById('ks-form');
+    if (!form) return;
+    var msg = document.getElementById('ks-form-msg');
+    var button = form.querySelector('button[type="submit"]');
+
+    function say(text, ok) {
+      msg.textContent = text;
+      msg.className = 'mt-3 text-sm ' + (ok ? 'text-primary' : 'text-red-600');
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var email = form.querySelector('#ks-email').value.trim();
+      if (!email) return;
+      button.disabled = true;
+
+      fetch('/api/sanity', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'submitInquiry',
+          data: {
+            inquiryType: '기타',
+            name: 'Kickstarter early list',
+            email: email,
+            message: 'Kickstarter early list signup — Retro Picky 2 (/en/kickstarter)',
+            language: 'en',
+          },
+        }),
+      })
+        .then(function (res) {
+          if (!res.ok) throw new Error('request failed');
+          form.reset();
+          say("You're on the list. We'll email you when we launch.", true);
+        })
+        .catch(function () {
+          say('Something went wrong. Please email pickypic.photobooth@gmail.com instead.', false);
+        })
+        .finally(function () {
+          button.disabled = false;
+        });
+    });
+  })();
+</script>

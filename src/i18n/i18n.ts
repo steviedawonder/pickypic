@@ -2,6 +2,7 @@ import { translations, type Lang } from './translations';
 
 const STORAGE_KEY = 'pickypic-lang';
 const GEO_STORAGE_KEY = 'pickypic-geo';
+const EN_BANNER_KEY = 'pickypic-en-banner-dismissed';
 const VALID_LANGS: Lang[] = ['ko', 'en', 'jp'];
 const WHITELISTED_IPS = ['221.138.56.243'];
 let isOverseas: boolean | null = null;
@@ -95,6 +96,7 @@ async function detectGeoLocation(): Promise<void> {
       if (Date.now() - timestamp < ONE_HOUR && ip) {
         isOverseas = country !== 'KR' || WHITELISTED_IPS.includes(ip);
         updateShopVisibility();
+        updateEnglishBanner();
         return;
       }
     }
@@ -115,10 +117,40 @@ async function detectGeoLocation(): Promise<void> {
     isOverseas = false;
   }
   updateShopVisibility();
+  updateEnglishBanner();
+}
+
+// Suggest the English page to overseas visitors — never redirect them.
+// Googlebot crawls from US IPs, so auto-switching on geo would serve English
+// at Korean URLs and cost us the Korean rankings we already have.
+function updateEnglishBanner(): void {
+  if (!isOverseas) return;
+  if (localStorage.getItem(EN_BANNER_KEY)) return;
+
+  const banner = document.getElementById('en-suggest-banner');
+  if (!banner) return;
+  banner.classList.remove('hidden');
+
+  banner.querySelector('.en-banner-close')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    banner.classList.add('hidden');
+    localStorage.setItem(EN_BANNER_KEY, '1');
+  });
 }
 
 // Auto-initialize
 function init() {
+  // /en/ routes are served as English HTML, but the shared chrome (Navbar,
+  // Footer, contact button) is still data-i18n driven and ships with Korean
+  // fallback text. So force 'en' instead of reading localStorage — a stored
+  // 'ko' would actively overwrite the English page, and skipping the pass
+  // entirely would leave the chrome in Korean. No geo banner, no storage write.
+  if (window.location.pathname.startsWith('/en')) {
+    applyTranslations('en');
+    updateShopVisibility();
+    return;
+  }
+
   const lang = getCurrentLang();
   document.documentElement.lang = lang === 'jp' ? 'ja' : lang;
   applyTranslations(lang);

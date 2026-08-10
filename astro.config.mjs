@@ -38,7 +38,9 @@ export default defineConfig({
           'https://picky-pic.com/popup-photobooth',
           'https://picky-pic.com/corporate-event',
           'https://picky-pic.com/retro-photobooth',
-          'https://picky-pic.com/singapore-photobooth',
+          'https://picky-pic.com/en/singapore-photobooth',
+          'https://picky-pic.com/en',
+          'https://picky-pic.com/en/kickstarter',
         ];
         if (top.some((u) => url === u || url === u + '/')) {
           return { ...item, priority: 1.0, changefreq: 'weekly' };

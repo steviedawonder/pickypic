@@ -60,6 +60,16 @@
       "statusCode": 301
     },
     {
+      "source": "/singapore-photobooth",
+      "destination": "/en/singapore-photobooth",
+      "statusCode": 301
+    },
+    {
+      "source": "/singapore-photobooth/",
+      "destination": "/en/singapore-photobooth",
+      "statusCode": 301
+    },
+    {
       "source": "/bbs/board.php",
       "has": [
         {
