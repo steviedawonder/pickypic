@@ -1,5 +1,8 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
+import LogoWall from '@components/en/LogoWall.astro';
+import ProofBand from '@components/en/ProofBand.astro';
+import { products } from '@data/products';
 
 // Campaign window. These drive a CLIENT-side state switch on purpose: this page
 // is statically generated, so a build-time `new Date()` would freeze whatever
@@ -11,23 +14,46 @@ const END = '2026-10-28T23:59:59Z';
 // While this is empty the page stays on the pre-launch state and keeps collecting
 // emails, which is the right fallback — better than a button that goes nowhere.
 const KS_URL = '';
+
+// The model being relaunched. Specs come from products.ts so the page cannot
+// drift from the spec sheet the sales side quotes.
+const retro = products.find((p) => p.id === 'modern-retro-picky')!;
+const spec = (label: string) => retro.specs.find((s) => s.label === label)?.value ?? '';
+const specRows = [
+  'Camera',
+  'Display',
+  'Material',
+  'Print size',
+  'Power Consumption',
+  'Weight',
+].map((label) => ({ label, value: spec(label) }));
+
+// "L 290mm×W 290mm×H 310mm Wood" -> "290 × 290 × 310" for the caption plate.
+const dims = (spec('Material').match(/\d+/g) ?? []).slice(0, 3).join(' × ');
 ---
 
 <BaseLayout
   title="Retro Picky 2 on Kickstarter — Launching September 22 | PICKYPIC"
   description="Our newest receipt photo booth launches on Kickstarter on September 22, 2026. Limited first units. Join the list to get the link before anyone else."
 >
-  <section class="pt-28 pb-20 lg:pt-36 lg:pb-28 bg-white">
-    <div class="mx-auto max-w-3xl px-6 lg:px-8">
+  <!-- Hero — the one inverted ground on this page -->
+  <section class="section-dark flex min-h-[70vh] items-center pt-32 pb-20 lg:pt-40 lg:pb-28">
+    <div class="mx-auto w-full max-w-3xl px-6 lg:px-8">
 
       <!-- Before launch -->
       <div data-ks-state="pre">
-        <h1 class="text-3xl lg:text-[clamp(2.25rem,4vw,3.25rem)] font-bold tracking-tight text-primary leading-tight" style="font-family: 'Montserrat', sans-serif;">
-          Retro Picky 2 — launching on Kickstarter September 22
+        <p class="text-[11px] font-semibold uppercase tracking-[0.4em] text-white/40">
+          Retro Picky 2 &middot; Kickstarter
+        </p>
+        <h1 class="mt-6 font-display font-bold text-[clamp(2rem,5vw,3.75rem)] leading-[1.05] tracking-tight text-white">
+          Retro Picky 2
+          <span class="mt-4 block text-[clamp(1rem,2.5vw,1.875rem)] font-normal leading-[1.2] text-white/60">
+            Launching on Kickstarter September 22
+          </span>
         </h1>
-        <div class="mt-6 space-y-5 text-secondary leading-relaxed">
-          <p>The same booth people already know. Rebuilt inside.</p>
-          <p>
+        <div class="mt-8 space-y-5 text-white/70 leading-relaxed">
+          <p class="leading-relaxed">The same booth people already know. Rebuilt inside.</p>
+          <p class="leading-relaxed">
             Limited first units, and early bird pricing for backers. People on our
             list get the link before anyone else.
           </p>
@@ -43,17 +69,23 @@ const KS_URL = '';
       <>
       <!-- Live -->
       <div data-ks-state="live" class="hidden">
-        <h1 class="text-3xl lg:text-[clamp(2.25rem,4vw,3.25rem)] font-bold tracking-tight text-primary leading-tight" style="font-family: 'Montserrat', sans-serif;">
-          Live on Kickstarter now
+        <p class="text-[11px] font-semibold uppercase tracking-[0.4em] text-white/40">
+          Retro Picky 2 &middot; Kickstarter
+        </p>
+        <h1 class="mt-6 font-display font-bold text-[clamp(2rem,5vw,3.75rem)] leading-[1.05] tracking-tight text-white">
+          Retro Picky 2
+          <span class="mt-4 block text-[clamp(1rem,2.5vw,1.875rem)] font-normal leading-[1.2] text-white/60">
+            Live on Kickstarter now
+          </span>
         </h1>
-        <p class="mt-6 text-secondary leading-relaxed">
+        <p class="mt-8 text-white/70 leading-relaxed">
           Retro Picky 2 is funding on Kickstarter. Early bird units are limited.
         </p>
         {KS_URL && (
           <a
             href={KS_URL}
             rel="noopener"
-            class="mt-8 inline-flex items-center rounded-full bg-primary px-7 py-3 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
+            class="mt-8 inline-flex items-center rounded-full bg-white px-7 py-3 text-sm font-semibold text-primary hover:opacity-90 transition-opacity"
           >
             Back it on Kickstarter &rarr;
           </a>
@@ -62,16 +94,22 @@ const KS_URL = '';
 
       <!-- After -->
       <div data-ks-state="post" class="hidden">
-        <h1 class="text-3xl lg:text-[clamp(2.25rem,4vw,3.25rem)] font-bold tracking-tight text-primary leading-tight" style="font-family: 'Montserrat', sans-serif;">
-          The Kickstarter campaign has ended
+        <p class="text-[11px] font-semibold uppercase tracking-[0.4em] text-white/40">
+          Retro Picky 2 &middot; Kickstarter
+        </p>
+        <h1 class="mt-6 font-display font-bold text-[clamp(2rem,5vw,3.75rem)] leading-[1.05] tracking-tight text-white">
+          Retro Picky 2
+          <span class="mt-4 block text-[clamp(1rem,2.5vw,1.875rem)] font-normal leading-[1.2] text-white/60">
+            The Kickstarter campaign has ended
+          </span>
         </h1>
-        <div class="mt-6 space-y-5 text-secondary leading-relaxed">
-          <p>Thank you to everyone who backed Retro Picky 2.</p>
-          <p>Missed it? Tell us about your shop and we'll take it from there.</p>
+        <div class="mt-8 space-y-5 text-white/70 leading-relaxed">
+          <p class="leading-relaxed">Thank you to everyone who backed Retro Picky 2.</p>
+          <p class="leading-relaxed">Missed it? Tell us about your shop and we'll take it from there.</p>
         </div>
         <a
           href="/en/"
-          class="mt-8 inline-flex items-center rounded-full bg-primary px-7 py-3 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
+          class="mt-8 inline-flex items-center rounded-full bg-white px-7 py-3 text-sm font-semibold text-primary hover:opacity-90 transition-opacity"
         >
           Get a quote
         </a>
@@ -80,9 +118,9 @@ const KS_URL = '';
       )}
 
       <!-- Email capture: shown in the pre-launch and post-campaign states -->
-      <div id="ks-signup" class="mt-12 border-t border-border-default pt-10">
-        <h2 class="text-lg font-semibold text-primary mb-2">Get the link first</h2>
-        <p class="text-sm text-secondary mb-5">
+      <div id="ks-signup" class="mt-12 border-t border-white/15 pt-10">
+        <h2 class="text-lg font-semibold text-white mb-2">Get the link first</h2>
+        <p class="text-sm text-white/60 mb-5 leading-relaxed">
           One email when we launch. Nothing else.
         </p>
         <form id="ks-form" class="flex flex-col sm:flex-row gap-3 max-w-md">
@@ -94,11 +132,11 @@ const KS_URL = '';
             required
             autocomplete="email"
             placeholder="you@example.com"
-            class="flex-1 rounded-full border border-border-default px-5 py-3 text-sm focus:outline-none focus:border-primary"
+            class="flex-1 rounded-full border border-white/25 bg-transparent px-5 py-3 text-sm text-white placeholder:text-white/35 focus:outline-none focus:border-white"
           />
           <button
             type="submit"
-            class="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white hover:opacity-90 transition-opacity disabled:opacity-50"
+            class="rounded-full bg-white px-6 py-3 text-sm font-semibold text-primary hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             Notify me
           </button>
@@ -108,7 +146,140 @@ const KS_URL = '';
 
     </div>
   </section>
+
+  <!-- The object -->
+  <section class="bg-white py-20 lg:py-28">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <div class="max-w-2xl gs-fade-up">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.4em] text-secondary">
+          The machine
+        </p>
+        <h2 class="mt-4 font-display font-bold text-[clamp(1.5rem,2.5vw,2.25rem)] tracking-tight text-primary">
+          What you'd be backing
+        </h2>
+      </div>
+
+      <div class="mt-14 grid grid-cols-1 items-start gap-14 lg:grid-cols-2 lg:gap-20">
+        <figure class="gs-scale-in">
+          <img
+            src="/images/en/line/modern-retro-picky.webp"
+            alt="Technical line drawing of the Modern Retro Picky photo booth"
+            width="1162"
+            height="1775"
+            loading="lazy"
+            decoding="async"
+            class="mx-auto h-auto max-h-[560px] w-auto object-contain"
+          />
+          <figcaption class="mt-8 border-t border-border-light pt-5 text-center">
+            <span class="block font-stencil text-2xl leading-none tracking-wide text-primary">
+              {retro.name}
+            </span>
+            <span class="mt-2 block font-stencil text-lg leading-none tracking-wide text-secondary">
+              {dims} MM
+            </span>
+          </figcaption>
+        </figure>
+
+        <dl class="text-sm">
+          {specRows.map((row) => (
+            <div class="flex flex-col gap-1 border-b border-border-light py-4 sm:flex-row sm:gap-6">
+              <dt class="w-40 shrink-0 text-[11px] font-semibold uppercase tracking-[0.2em] text-secondary-light">
+                {row.label}
+              </dt>
+              <dd class="text-primary leading-relaxed">{row.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- Who makes it -->
+  <section class="bg-bg-light py-20 lg:py-28">
+    <div class="mx-auto grid max-w-7xl grid-cols-1 items-center gap-14 px-6 lg:grid-cols-2 lg:gap-20 lg:px-8">
+      <div class="gs-slide-left">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.4em] text-secondary">
+          The workshop
+        </p>
+        <h2 class="mt-4 font-display font-bold text-[clamp(1.5rem,2.5vw,2.25rem)] tracking-tight text-primary">
+          Every booth is made by hand
+        </h2>
+        <div class="mt-6 space-y-5 text-secondary">
+          <p class="leading-relaxed">
+            We are a manufacturer, not a reseller. Every PICKYPIC booth is built by
+            hand in our own workshop in Seoul — the enclosure, the software, the
+            templates.
+          </p>
+          <p class="leading-relaxed">
+            The solid wood models are cut, shaped, and finished by our carpenter. No
+            two booths share the same grain, even within the same model.
+          </p>
+          <p class="leading-relaxed">
+            That is also why we can customize them. Wrapping, lettering, frame
+            layout, on-screen UI — if we built it, we can change it.
+          </p>
+        </div>
+
+        <div class="mt-10 border-t border-border pt-6">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.4em] text-secondary">
+            Wood finishes
+          </p>
+          <ul class="mt-5 flex flex-wrap gap-6">
+            {retro.woodColors?.map((c) => (
+              <li class="flex items-center gap-3">
+                <span
+                  class="block h-8 w-8 border border-border"
+                  style={`background-color: ${c.hex}`}
+                  aria-hidden="true"
+                ></span>
+                <span class="text-sm text-secondary">{c.name}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <div class="gs-slide-right">
+        <img
+          src="/images/products/modern-retro-picky-photo.webp"
+          alt="Modern Retro Picky photo booth with a solid wood enclosure"
+          width="536"
+          height="605"
+          loading="lazy"
+          decoding="async"
+          class="h-auto w-full object-contain"
+        />
+      </div>
+    </div>
+  </section>
+
+  <ProofBand />
+
+  <LogoWall />
+
+  <!-- Close -->
+  <section class="border-t border-border-light bg-white py-20 lg:py-28">
+    <div class="mx-auto max-w-3xl px-6 lg:px-8 gs-fade-up">
+      <p class="text-secondary leading-relaxed">
+        Not waiting for the campaign?
+        <a
+          href="/en/#contact"
+          class="text-primary underline underline-offset-4 hover:opacity-70 transition-opacity"
+        >
+          Talk to us about your shop &rarr;
+        </a>
+      </p>
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  /* The form script hard-codes `text-primary` on success and `text-red-600` on
+     failure. Both sit on the dark hero now, where near-black is invisible.
+     Restyled here rather than by editing a script that is verified end-to-end. */
+  #ks-form-msg.text-primary { color: #ffffff; }
+  #ks-form-msg.text-red-600 { color: #ff9b9b; }
+</style>
 
 <script is:inline define:vars={{ LAUNCH, END, HAS_KS_URL: Boolean(KS_URL) }}>
   (function () {

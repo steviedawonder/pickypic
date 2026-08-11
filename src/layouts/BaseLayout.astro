@@ -175,7 +175,9 @@ const pair = getPair(Astro.url.pathname);
     <meta property="og:image:width" content="2000" />
     <meta property="og:image:height" content="1050" />
     <meta property="og:image:type" content="image/jpeg" />
-    <meta property="og:image:alt" content="피키픽 PICKYPIC 포토부스 - 포토부스 대여 · 렌탈 · 매매 전문" />
+    <meta property="og:image:alt" content={isEn
+      ? 'PICKYPIC — handmade photo booths from Seoul, Korea'
+      : '피키픽 PICKYPIC 포토부스 - 포토부스 대여 · 렌탈 · 매매 전문'} />
     <meta property="og:locale" content={isEn ? 'en_US' : 'ko_KR'} />
     <meta property="og:site_name" content="PICKYPIC" />
     {articleMeta?.publishedTime && <meta property="article:published_time" content={articleMeta.publishedTime} />}
@@ -489,7 +491,8 @@ const pair = getPair(Astro.url.pathname);
       document.addEventListener('astro:after-swap', initAnimations);
     </script>
 
-    <!-- 채널톡 위젯 강제 제거 (GTM에서 로드됨) -->
+    {/* Strips the Channel Talk widget that GTM injects. JSX comment — unlike an
+        HTML comment it stays in source and never ships to the browser. */}
     <script is:inline>
       (function removeChannelTalk() {
         var selectors = ['#ch-plugin', '#channel-io-plugin', '[id^="ch-plugin"]', '.ch-desk-messenger', '[class*="channel"]'];
