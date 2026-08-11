@@ -127,23 +127,106 @@ const benefits = [
         Tell us about your shop and we'll send specs, pricing, and template
         samples within one business day.
       </p>
-      <div class="flex flex-wrap justify-center gap-3">
-        <a
-          href={`mailto:${company.email}?subject=PICKYPIC%20enquiry`}
-          class="inline-flex items-center rounded-full bg-primary px-7 py-3 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
-        >
-          Get a quote
-        </a>
-        <a
-          href="/en/kickstarter"
-          class="inline-flex items-center rounded-full border border-primary px-7 py-3 text-sm font-semibold text-primary hover:bg-primary hover:text-white transition-colors"
-        >
-          See it on Kickstarter
-        </a>
-      </div>
+
+      <form id="quote-form" class="text-left space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="q-name" class="block text-sm text-secondary mb-1">Your name</label>
+            <input id="q-name" name="name" type="text" required autocomplete="name"
+              class="w-full rounded-lg border border-border-default px-4 py-3 text-sm focus:outline-none focus:border-primary" />
+          </div>
+          <div>
+            <label for="q-email" class="block text-sm text-secondary mb-1">Email</label>
+            <input id="q-email" name="email" type="email" required autocomplete="email"
+              class="w-full rounded-lg border border-border-default px-4 py-3 text-sm focus:outline-none focus:border-primary" />
+          </div>
+          <div>
+            <label for="q-company" class="block text-sm text-secondary mb-1">Shop or company</label>
+            <input id="q-company" name="company" type="text" autocomplete="organization"
+              class="w-full rounded-lg border border-border-default px-4 py-3 text-sm focus:outline-none focus:border-primary" />
+          </div>
+          <div>
+            <label for="q-country" class="block text-sm text-secondary mb-1">Country</label>
+            <input id="q-country" name="country" type="text" required autocomplete="country-name"
+              placeholder="Shipping and duties depend on this"
+              class="w-full rounded-lg border border-border-default px-4 py-3 text-sm focus:outline-none focus:border-primary" />
+          </div>
+        </div>
+        <div>
+          <label for="q-message" class="block text-sm text-secondary mb-1">What are you looking for?</label>
+          <textarea id="q-message" name="message" rows="4"
+            placeholder="Which model, how many units, when you need them."
+            class="w-full rounded-lg border border-border-default px-4 py-3 text-sm focus:outline-none focus:border-primary"></textarea>
+        </div>
+        <div class="flex flex-wrap items-center gap-3 pt-1">
+          <button type="submit"
+            class="rounded-full bg-primary px-7 py-3 text-sm font-semibold text-white hover:opacity-90 transition-opacity disabled:opacity-50">
+            Send
+          </button>
+          <a href="/en/kickstarter"
+            class="inline-flex items-center rounded-full border border-primary px-7 py-3 text-sm font-semibold text-primary hover:bg-primary hover:text-white transition-colors">
+            See it on Kickstarter
+          </a>
+        </div>
+        <p id="quote-form-msg" class="text-sm hidden"></p>
+      </form>
+
       <p class="mt-8 text-sm text-secondary">
-        We ship worldwide from Seoul, with full export documentation.
+        We ship worldwide from Seoul, with full export documentation. Prefer email?
+        <a href={`mailto:${company.email}?subject=PICKYPIC%20enquiry`} class="underline hover:no-underline">{company.email}</a>
       </p>
     </div>
   </section>
 </BaseLayout>
+
+<script is:inline>
+  (function () {
+    var form = document.getElementById('quote-form');
+    if (!form) return;
+    var msg = document.getElementById('quote-form-msg');
+    var button = form.querySelector('button[type="submit"]');
+
+    function say(text, ok) {
+      msg.textContent = text;
+      msg.className = 'text-sm ' + (ok ? 'text-primary' : 'text-red-600');
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var get = function (id) { return form.querySelector(id).value.trim(); };
+      var country = get('#q-country');
+      var body = get('#q-message');
+      button.disabled = true;
+
+      // Reuses the existing public inquiry endpoint — no new service, and these
+      // land in the same admin inbox as Korean enquiries. `country` is not in
+      // the field whitelist, so it goes into the message body.
+      fetch('/api/sanity', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'submitInquiry',
+          data: {
+            inquiryType: '일반문의',
+            name: get('#q-name'),
+            email: get('#q-email'),
+            company: get('#q-company'),
+            message: 'Country: ' + country + '\n\n' + body + '\n\n[from /en/ quote form]',
+            language: 'en',
+          },
+        }),
+      })
+        .then(function (res) {
+          if (!res.ok) throw new Error('request failed');
+          form.reset();
+          say("Thanks — we'll get back to you within one business day.", true);
+        })
+        .catch(function () {
+          say('Something went wrong. Please email pickypic.photobooth@gmail.com instead.', false);
+        })
+        .finally(function () {
+          button.disabled = false;
+        });
+    });
+  })();
+</script>

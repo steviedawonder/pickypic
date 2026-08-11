@@ -13,11 +13,34 @@ try {
   // Fallback to company.ts data
 }
 
+// These links all point at Korean pages, so on /en/ they would dump an English
+// visitor onto content they cannot read — the same failure the main nav avoids.
+// Add entries as English pages ship.
+const isEn = Astro.url.pathname.startsWith('/en');
+const serviceLinks = isEn
+  ? [
+      { href: '/en/', label: 'Home' },
+      { href: '/en/kickstarter', label: 'Kickstarter' },
+      { href: '/en/singapore-photobooth', label: 'Singapore Photobooth' },
+    ]
+  : [
+      { href: '/products', label: '제품소개', i18n: 'footer.link.products' },
+      { href: '/rental', label: '렌탈문의', i18n: 'footer.link.rental' },
+      { href: '/photobooth-rental', label: '포토부스 렌탈', i18n: 'footer.link.photobooth_rental' },
+      { href: '/photobooth-purchase', label: '포토부스 구매', i18n: 'footer.link.photobooth_purchase' },
+      { href: '/corporate-event', label: '기업행사 포토부스', i18n: 'footer.link.corporate_event' },
+      { href: '/popup-photobooth', label: '팝업 포토부스', i18n: 'footer.link.popup_photobooth' },
+      { href: '/retro-photobooth', label: '레트로 포토부스', i18n: 'footer.link.retro_photobooth' },
+      { href: '/photobooth-startup', label: '포토부스 창업', i18n: 'footer.link.photobooth_startup' },
+      { href: '/en/singapore-photobooth', label: 'Singapore Photobooth', i18n: 'footer.link.singapore' },
+      { href: '/portfolio', label: '포트폴리오', i18n: 'footer.link.portfolio' },
+    ];
+
 // Use Sanity data if available, otherwise fallback to company.ts
 const footer = {
-  name: footerData?.companyName || company.name,
+  name: isEn ? company.nameEn : (footerData?.companyName || company.name),
   businessNumber: footerData?.businessNumber || company.businessNumber,
-  address: footerData?.address || company.address,
+  address: isEn ? company.addressEn : (footerData?.address || company.address),
   phone: footerData?.phone || company.phone,
   phoneTel: `tel:${(footerData?.phone || company.phone).replace(/[^0-9+]/g, '')}`,
   email: footerData?.email || company.email,
@@ -59,7 +82,11 @@ const footer = {
         <div>
           <h3 class="text-xs lg:text-sm font-semibold tracking-wide mb-2 lg:mb-4">Follow us</h3>
           <div class="space-y-1 lg:space-y-2 text-xs lg:text-sm text-white/60 leading-relaxed">
-            <p><span data-i18n="footer.kakao">카카오톡 채널</span> <a href={footer.kakaoUrl} target="_blank" rel="noopener noreferrer" class="hover:text-white/80 transition-colors">{footer.kakaoChannel}</a></p>
+            {/* KakaoTalk is a Korean messenger and the channel handle is Hangul —
+                it is noise on /en/, where email and the quote form are the path. */}
+            {!isEn && (
+              <p><span data-i18n="footer.kakao">카카오톡 채널</span> <a href={footer.kakaoUrl} target="_blank" rel="noopener noreferrer" class="hover:text-white/80 transition-colors">{footer.kakaoChannel}</a></p>
+            )}
             <div>
               <p>Instagram  <a href={`https://www.instagram.com/${footer.instagram.official}/`} target="_blank" rel="noopener noreferrer" class="hover:text-white/80 transition-colors">{footer.instagram.official}</a></p>
               <p class="pl-[4.2rem] lg:pl-[5.5rem]"><a href={`https://www.instagram.com/${footer.instagram.global}/`} target="_blank" rel="noopener noreferrer" class="hover:text-white/80 transition-colors">{footer.instagram.global}</a></p>
@@ -81,17 +108,10 @@ const footer = {
     </div>
 
     <!-- Service Links for SEO -->
-    <nav class="mt-6 lg:mt-10 pt-4 lg:pt-6 border-t border-white/10 flex flex-wrap gap-x-5 gap-y-2 text-[10px] lg:text-xs text-white/40" aria-label="서비스 바로가기">
-      <a href="/products" class="hover:text-white/70 transition-colors" data-i18n="footer.link.products">제품소개</a>
-      <a href="/rental" class="hover:text-white/70 transition-colors" data-i18n="footer.link.rental">렌탈문의</a>
-      <a href="/photobooth-rental" class="hover:text-white/70 transition-colors" data-i18n="footer.link.photobooth_rental">포토부스 렌탈</a>
-      <a href="/photobooth-purchase" class="hover:text-white/70 transition-colors" data-i18n="footer.link.photobooth_purchase">포토부스 구매</a>
-      <a href="/corporate-event" class="hover:text-white/70 transition-colors" data-i18n="footer.link.corporate_event">기업행사 포토부스</a>
-      <a href="/popup-photobooth" class="hover:text-white/70 transition-colors" data-i18n="footer.link.popup_photobooth">팝업 포토부스</a>
-      <a href="/retro-photobooth" class="hover:text-white/70 transition-colors" data-i18n="footer.link.retro_photobooth">레트로 포토부스</a>
-      <a href="/photobooth-startup" class="hover:text-white/70 transition-colors" data-i18n="footer.link.photobooth_startup">포토부스 창업</a>
-      <a href="/en/singapore-photobooth" class="hover:text-white/70 transition-colors" data-i18n="footer.link.singapore">Singapore Photobooth</a>
-      <a href="/portfolio" class="hover:text-white/70 transition-colors" data-i18n="footer.link.portfolio">포트폴리오</a>
+    <nav class="mt-6 lg:mt-10 pt-4 lg:pt-6 border-t border-white/10 flex flex-wrap gap-x-5 gap-y-2 text-[10px] lg:text-xs text-white/40" aria-label={isEn ? 'Site links' : '서비스 바로가기'}>
+      {serviceLinks.map((l) => (
+        <a href={l.href} class="hover:text-white/70 transition-colors" data-i18n={l.i18n}>{l.label}</a>
+      ))}
     </nav>
   </div>
 </footer>
