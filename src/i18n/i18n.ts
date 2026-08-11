@@ -7,6 +7,13 @@ const VALID_LANGS: Lang[] = ['ko', 'en', 'jp'];
 const WHITELISTED_IPS = ['221.138.56.243'];
 let isOverseas: boolean | null = null;
 
+// Only these markets get sent to the /en/ route when EN is pressed. Everywhere
+// else — Korea included — EN keeps doing the in-page text swap it always did:
+// a Korean visitor pressing EN wants this page in English, not a different site
+// written for overseas equipment buyers.
+const EN_ROUTE_MARKETS = ['US', 'CA'];
+let enRouteMarket = false;
+
 export function getCurrentLang(): Lang {
   if (typeof window === 'undefined') return 'ko';
   const stored = localStorage.getItem(STORAGE_KEY) as Lang | null;
@@ -67,7 +74,9 @@ export function applyTranslations(lang?: Lang): void {
 }
 
 function updateLangSelector(lang: Lang): void {
-  document.querySelectorAll<HTMLElement>('.lang-btn').forEach((btn) => {
+  // .lang-en-link is the EN anchor: a real link for crawlers, but it still has
+  // to show as the active language when the in-page swap put us in English.
+  document.querySelectorAll<HTMLElement>('.lang-btn, .lang-en-link').forEach((btn) => {
     const btnLang = btn.getAttribute('data-lang');
     if (btnLang === lang) {
       btn.classList.add('text-black', 'font-bold');
@@ -95,6 +104,7 @@ async function detectGeoLocation(): Promise<void> {
       const ONE_HOUR = 60 * 60 * 1000;
       if (Date.now() - timestamp < ONE_HOUR && ip) {
         isOverseas = country !== 'KR' || WHITELISTED_IPS.includes(ip);
+        enRouteMarket = EN_ROUTE_MARKETS.includes(country);
         updateShopVisibility();
         updateEnglishBanner();
         return;
@@ -111,10 +121,12 @@ async function detectGeoLocation(): Promise<void> {
     const country = data.country || 'KR';
     const ip = data.ip || '';
     isOverseas = country !== 'KR' || WHITELISTED_IPS.includes(ip);
+    enRouteMarket = EN_ROUTE_MARKETS.includes(country);
     localStorage.setItem(GEO_STORAGE_KEY, JSON.stringify({ country, ip, timestamp: Date.now() }));
   } catch {
     // On error, default to hiding SHOP (assume Korea)
     isOverseas = false;
+    enRouteMarket = false;
   }
   updateShopVisibility();
   updateEnglishBanner();
@@ -141,6 +153,29 @@ function updateEnglishBanner(): void {
   });
 }
 
+/**
+ * The EN control ships as a real <a href="/en/"> so crawlers can follow it and
+ * so the page works without JS. For visitors outside the English-route markets
+ * we cancel that navigation and do the in-page text swap instead — /en/ is
+ * written for overseas equipment buyers and would only confuse someone in Korea
+ * who pressed EN while reading about rentals.
+ *
+ * Geo resolves asynchronously; until it does, enRouteMarket is false and the
+ * swap wins. That is the safe default here, since US and Canadian traffic
+ * arrives on /en/ directly from ads and search rather than via this button.
+ */
+function wireEnglishSwitch(): void {
+  document.querySelectorAll<HTMLAnchorElement>('a[data-en-switch]').forEach((a) => {
+    if (a.dataset.enWired) return;
+    a.dataset.enWired = '1';
+    a.addEventListener('click', (e) => {
+      if (enRouteMarket) return; // let the browser follow the link to /en/
+      e.preventDefault();
+      setLang('en');
+    });
+  });
+}
+
 // Auto-initialize
 function init() {
   // /en/ routes are served as English HTML, but the shared chrome (Navbar,
@@ -154,13 +189,7 @@ function init() {
     return;
   }
 
-  // 'en' used to be a client-side text swap on these same Korean URLs; it is a
-  // real /en/ route now. Returning visitors who clicked EN before the change
-  // still carry it in storage, and honouring it would render English at a
-  // Korean URL whose canonical and hreflang both say Korean. Drop it once.
-  if (localStorage.getItem(STORAGE_KEY) === 'en') {
-    localStorage.removeItem(STORAGE_KEY);
-  }
+  wireEnglishSwitch();
 
   const lang = getCurrentLang();
   document.documentElement.lang = lang === 'jp' ? 'ja' : lang;
