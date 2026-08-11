@@ -1,6 +1,7 @@
 ---
 import { navItems } from '@data/navigation';
 import { switchTarget } from '@data/i18nPairs';
+import { serverT } from '../../i18n/serverT';
 
 const currentPath = Astro.url.pathname;
 
@@ -8,6 +9,7 @@ const currentPath = Astro.url.pathname;
 // (there are no /jp/ routes), and it's hidden on English pages — pressing it
 // there would half-overwrite the English page with Japanese.
 const isEn = currentPath.startsWith('/en');
+const t = serverT(currentPath);
 const koHref = switchTarget(currentPath, 'ko');
 const enHref = switchTarget(currentPath, 'en');
 
@@ -124,7 +126,7 @@ const navI18nKeys = [
       <button
         id="mobile-menu-btn"
         class="flex flex-col gap-1.5"
-        aria-label="메뉴 열기"
+        aria-label={isEn ? "Open menu" : "메뉴 열기"}
       >
         <span class="hamburger-line block h-[2px] w-6 bg-gray-800 transition-all duration-300"></span>
         <span class="hamburger-line block h-[2px] w-6 bg-gray-800 transition-all duration-300"></span>
@@ -175,7 +177,7 @@ const navI18nKeys = [
       <a href={isEn ? "/en/" : "/"}>
         <span class="logo-text text-[20px] leading-none">PICKYPIC PHOTOBOOTH<span class="text-[10px] relative -top-[0.85em] ml-0.5">®</span></span>
       </a>
-      <button id="mobile-menu-close" class="p-2" aria-label="메뉴 닫기">
+      <button id="mobile-menu-close" class="p-2" aria-label={isEn ? "Close menu" : "메뉴 닫기"}>
         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
@@ -215,7 +217,7 @@ const navI18nKeys = [
 
     <!-- Contact Info -->
     <div class="absolute bottom-0 left-0 right-0 px-6 py-8 border-t border-gray-100">
-      <p class="text-xs text-gray-400" data-i18n="nav.contact_phone">문의전화</p>
+      <p class="text-xs text-gray-400" data-i18n="nav.contact_phone">{t("nav.contact_phone")}</p>
       <a href="tel:02-338-9181" class="text-sm font-semibold text-black">02-338-9181</a>
     </div>
   </div>

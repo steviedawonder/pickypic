@@ -130,10 +130,13 @@ function updateEnglishBanner(): void {
   const banner = document.getElementById('en-suggest-banner');
   if (!banner) return;
   banner.classList.remove('hidden');
+  // Lifts the floating buttons clear of the bar (see FloatingContactButton).
+  document.body.classList.add('has-en-banner');
 
   banner.querySelector('.en-banner-close')?.addEventListener('click', (e) => {
     e.preventDefault();
     banner.classList.add('hidden');
+    document.body.classList.remove('has-en-banner');
     localStorage.setItem(EN_BANNER_KEY, '1');
   });
 }

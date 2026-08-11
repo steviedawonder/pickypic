@@ -15,12 +15,6 @@ const nameToId: Record<string, string> = {
   'Modern Retro Picky': 'modern-retro-picky', 'Urban Retro Picky': 'urban-retro-picky',
   'Outdoor Picky': 'outdoor-picky', 'Air Picky': 'air-picky',
 };
-const idToKo: Record<string, string> = {
-  'modern-picky': '모던피키', 'classic-picky': '클래식피키', 'urban-picky': '어반피키',
-  'modern-mini-picky': '모던 미니피키', 'urban-mini-picky': '어반 미니피키',
-  'modern-retro-picky': '모던 레트로피키', 'urban-retro-picky': '어반 레트로피키',
-  'outdoor-picky': '아웃도어피키', 'air-picky': '에어피키',
-};
 
 const faqItems = [
   {
@@ -165,7 +159,7 @@ const processSteps = [
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
           {boothModels.stand.map((model) => (
             <div class="product-row border border-border-default rounded-lg p-5 cursor-pointer hover:border-primary hover:shadow-md transition-all duration-200" data-product-id={nameToId[model.name]}>
-              <h4 class="font-semibold text-primary mb-2">{idToKo[nameToId[model.name]]} ({model.name})</h4>
+              <h4 class="font-semibold text-primary mb-2">{model.name}</h4>
               <p class="text-sm text-secondary leading-relaxed">{model.desc}</p>
             </div>
           ))}
@@ -180,7 +174,7 @@ const processSteps = [
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
           {boothModels.table.map((model) => (
             <div class="product-row border border-border-default rounded-lg p-5 cursor-pointer hover:border-primary hover:shadow-md transition-all duration-200" data-product-id={nameToId[model.name]}>
-              <h4 class="font-semibold text-primary mb-2">{idToKo[nameToId[model.name]]} ({model.name})</h4>
+              <h4 class="font-semibold text-primary mb-2">{model.name}</h4>
               <p class="text-sm text-secondary leading-relaxed">{model.desc}</p>
             </div>
           ))}
@@ -195,7 +189,7 @@ const processSteps = [
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
           {boothModels.booth.map((model) => (
             <div class="product-row border border-border-default rounded-lg p-5 cursor-pointer hover:border-primary hover:shadow-md transition-all duration-200" data-product-id={nameToId[model.name]}>
-              <h4 class="font-semibold text-primary mb-2">{idToKo[nameToId[model.name]]} ({model.name})</h4>
+              <h4 class="font-semibold text-primary mb-2">{model.name}</h4>
               <p class="text-sm text-secondary leading-relaxed">{model.desc}</p>
             </div>
           ))}
@@ -322,11 +316,11 @@ const processSteps = [
     </div>
   </section>
   <!-- Product Spec Modal -->
-  <div id="product-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-label="제품 상세 정보">
+  <div id="product-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-label="Product details">
     <div id="modal-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
     <div class="absolute inset-0 flex items-center justify-center p-4 sm:p-6">
       <div class="relative bg-white rounded-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto shadow-2xl">
-        <button type="button" id="modal-close" class="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white border border-border-default hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 cursor-pointer" aria-label="닫기">
+        <button type="button" id="modal-close" class="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white border border-border-default hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 cursor-pointer" aria-label="Close">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
         <div class="pt-8 pb-4 px-8 border-b border-border-light">

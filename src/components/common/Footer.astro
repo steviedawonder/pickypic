@@ -1,6 +1,11 @@
 ---
 import { company } from '@data/company';
+import { serverT } from '../../i18n/serverT';
 import { sanityClient } from '../../sanity/client';
+
+// Resolve chrome labels at build time so /en/ ships English in the markup
+// itself; the data-i18n attributes stay for the client ko -> jp switch.
+const t = serverT(Astro.url.pathname);
 
 // Fetch footer data from Sanity siteSettings at build time
 let footerData: any = null;
@@ -62,14 +67,16 @@ const footer = {
       <div>
         <img
           src="/images/common/footer-logo.png"
-          alt="피키픽 포토부스 — 포토부스 대여 및 렌탈 전문 PICKYPIC PHOTOBOOTH®"
+          alt={isEn
+            ? 'PICKYPIC PHOTOBOOTH — handmade photo booths from Seoul, Korea'
+            : '피키픽 포토부스 — 포토부스 대여 및 렌탈 전문 PICKYPIC PHOTOBOOTH®'}
           class="h-6 lg:h-8 mb-4 lg:mb-6"
         />
         <address class="not-italic text-xs lg:text-sm text-white/60 leading-relaxed space-y-0.5 lg:space-y-1">
-          <p><span data-i18n="footer.company_label">상호</span> : <a href="/admin" style="color: inherit; text-decoration: none;">{footer.name}</a></p>
-          <p><span data-i18n="footer.business_number">사업자등록번호</span> : {footer.businessNumber}</p>
-          <p><span data-i18n="footer.address_label">주소</span> : {footer.address}</p>
-          <p><span data-i18n="footer.phone_label">전화번호</span> : <a href={footer.phoneTel} class="hover:text-white/80 transition-colors">{footer.phone}</a></p>
+          <p><span data-i18n="footer.company_label">{t("footer.company_label")}</span> : <a href="/admin" style="color: inherit; text-decoration: none;">{footer.name}</a></p>
+          <p><span data-i18n="footer.business_number">{t("footer.business_number")}</span> : {footer.businessNumber}</p>
+          <p><span data-i18n="footer.address_label">{t("footer.address_label")}</span> : {footer.address}</p>
+          <p><span data-i18n="footer.phone_label">{t("footer.phone_label")}</span> : <a href={footer.phoneTel} class="hover:text-white/80 transition-colors">{footer.phone}</a></p>
         </address>
         <p class="mt-3 lg:mt-6 text-[10px] lg:text-xs text-white/30">
           &copy; {new Date().getFullYear()} Picky Global Ltd. All rights reserved.
@@ -101,7 +108,7 @@ const footer = {
           <address class="not-italic space-y-1 lg:space-y-2 text-xs lg:text-sm text-white/60 leading-relaxed">
             <p>TEL <a href={footer.phoneTel} class="hover:text-white/80 transition-colors">{footer.phone}</a></p>
             <p>E-MAIL <a href={`mailto:${footer.email}`} class="hover:text-white/80 transition-colors">{footer.email}</a></p>
-            <p><span data-i18n="footer.partnership">협업제안</span> <a href={`mailto:${footer.partnerEmail}`} class="hover:text-white/80 transition-colors">{footer.partnerEmail}</a></p>
+            <p><span data-i18n="footer.partnership">{t("footer.partnership")}</span> <a href={`mailto:${footer.partnerEmail}`} class="hover:text-white/80 transition-colors">{footer.partnerEmail}</a></p>
           </address>
         </div>
       </div>
