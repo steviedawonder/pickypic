@@ -93,7 +93,7 @@ const navI18nKeys = [
         {isEn ? (
           <span class="text-black font-bold">EN</span>
         ) : (
-          <a href={enHref} class="text-gray-400 font-normal hover:text-black transition-colors">EN</a>
+          <a href={enHref} data-en-switch data-lang="en" class="lang-en-link text-gray-400 font-normal hover:text-black transition-colors">EN</a>
         )}
       </div>
     </div>
@@ -120,7 +120,7 @@ const navI18nKeys = [
         {isEn ? (
           <span class="text-black font-bold">EN</span>
         ) : (
-          <a href={enHref} class="text-gray-400 font-normal">EN</a>
+          <a href={enHref} data-en-switch data-lang="en" class="lang-en-link text-gray-400 font-normal">EN</a>
         )}
       </div>
       <button

@@ -8,7 +8,7 @@ interface Props {
 }
 
 // The catalog below was Korean-only, so an English page shipped Hangul inside
-// its own structured data. Split on the route: Korean output is unchanged.
+// its own structured data. Split on the route; Korean output is unchanged.
 const isEn = Astro.url.pathname.startsWith('/en');
 
 const {
@@ -17,24 +17,26 @@ const {
   description = isEn ? company.descriptionEn : company.description,
 } = Astro.props;
 
+// English markets sell the two Retro models as Receipt models — see
+// src/data/enProductNames.ts.
 const catalog = isEn
   ? {
       name: 'Photo Booth Rental Catalogue',
+      suffix: '',
       groups: [
         { name: 'Stand type', items: ['Modern Picky', 'Classic Picky', 'Urban Picky'] },
-        { name: 'Table type', items: ['Modern Mini Picky', 'Urban Mini Picky', 'Modern Retro Picky', 'Urban Retro Picky'] },
+        { name: 'Table type', items: ['Modern Mini Picky', 'Urban Mini Picky', 'Modern Receipt Picky', 'Urban Receipt Picky'] },
         { name: 'Booth type', items: ['Outdoor Picky', 'Air Picky'] },
       ],
-      suffix: '',
     }
   : {
       name: '포토부스 렌탈 카탈로그',
+      suffix: ' 렌탈',
       groups: [
         { name: '스탠드형 포토부스', items: ['Modern Picky', 'Classic Picky', 'Urban Picky'] },
         { name: '테이블형 포토부스', items: ['Modern Mini Picky', 'Urban Mini Picky', 'Modern Retro Picky', 'Urban Retro Picky'] },
         { name: '부스형 포토부스', items: ['Outdoor Picky', 'Air Picky'] },
       ],
-      suffix: ' 렌탈',
     };
 
 const serviceSchema = {

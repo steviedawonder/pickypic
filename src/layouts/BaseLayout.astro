@@ -40,10 +40,10 @@ const lang = isEn ? 'en' : 'ko';
 
 const {
   title = isEn
-    ? 'PICKYPIC | Korean Photo Booths, Handmade in Seoul'
+    ? 'PICKYPIC | Receipt Photo Booths, Handmade in Korea'
     : `포토부스 대여 · 렌탈 · 매매 전문 | 피키픽 PICKYPIC`,
   description = isEn
-    ? 'PICKYPIC builds photo booths by hand in Seoul — the wooden enclosures are cut and finished by our carpenter. 9+ models, 500+ booths in operation, 16,000+ brand events. Shipping worldwide.'
+    ? 'A receipt photo booth that prints on standard thermal paper — no ink, no cartridges, no subscription. Handmade in Korea, 500+ booths in operation, 16,000+ brand events. Ships worldwide.'
     : '포토부스 대여·렌탈·매매 전문 피키픽(PICKYPIC). 스탠드형·테이블형·부스형 9종 라인업, 브랜드 팝업·기업 행사·웨딩까지 맞춤형 포토부스를 제공합니다. 누적 16,000건+ 운영 경험. 무료 견적 문의.',
   ogImage = '/images/hero/main-1.jpg',
   ogType = 'website',
@@ -176,7 +176,7 @@ const pair = getPair(Astro.url.pathname);
     <meta property="og:image:height" content="1050" />
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:alt" content={isEn
-      ? 'PICKYPIC — handmade photo booths from Seoul, Korea'
+      ? 'PICKYPIC — receipt photo booths, handmade in Korea'
       : '피키픽 PICKYPIC 포토부스 - 포토부스 대여 · 렌탈 · 매매 전문'} />
     <meta property="og:locale" content={isEn ? 'en_US' : 'ko_KR'} />
     <meta property="og:site_name" content="PICKYPIC" />
@@ -251,7 +251,7 @@ const pair = getPair(Astro.url.pathname);
         { "@type": "Country", "name": "KR" },
         { "@type": "Country", "name": "SG" }
       ],
-      "serviceType": "포토부스 렌탈"
+      "serviceType": isEn ? 'Photo Booth Rental' : '포토부스 렌탈'
     })} />
 
     <!-- Structured Data: WebSite -->
@@ -491,8 +491,8 @@ const pair = getPair(Astro.url.pathname);
       document.addEventListener('astro:after-swap', initAnimations);
     </script>
 
-    {/* Strips the Channel Talk widget that GTM injects. JSX comment — unlike an
-        HTML comment it stays in source and never ships to the browser. */}
+    {/* Strips the Channel Talk widget GTM injects. JSX comment: stays in source,
+        never reaches the browser. */}
     <script is:inline>
       (function removeChannelTalk() {
         var selectors = ['#ch-plugin', '#channel-io-plugin', '[id^="ch-plugin"]', '.ch-desk-messenger', '[class*="channel"]'];

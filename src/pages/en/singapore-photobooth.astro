@@ -10,11 +10,12 @@ import FAQSchema from '@components/seo/FAQSchema.astro';
 import ProofBand from '@components/en/ProofBand.astro';
 import LogoWall from '@components/en/LogoWall.astro';
 import { products } from '@data/products';
+import { enProductName } from '@data/enProductNames';
 
 const nameToId: Record<string, string> = {
   'Modern Picky': 'modern-picky', 'Classic Picky': 'classic-picky', 'Urban Picky': 'urban-picky',
   'Modern Mini Picky': 'modern-mini-picky', 'Urban Mini Picky': 'urban-mini-picky',
-  'Modern Retro Picky': 'modern-retro-picky', 'Urban Retro Picky': 'urban-retro-picky',
+  'Modern Receipt Picky': 'modern-retro-picky', 'Urban Receipt Picky': 'urban-retro-picky',
   'Outdoor Picky': 'outdoor-picky', 'Air Picky': 'air-picky',
 };
 
@@ -58,8 +59,8 @@ const boothModels = {
   table: [
     { name: 'Modern Mini Picky', desc: 'Compact tabletop booth with modern aesthetics. Fits small venues and intimate events.' },
     { name: 'Urban Mini Picky', desc: 'Edgy tabletop design for casual and creative event spaces.' },
-    { name: 'Modern Retro Picky', desc: 'Receipt-style photo prints with a nostalgic twist. A guest favorite for unique keepsakes.' },
-    { name: 'Urban Retro Picky', desc: 'Urban-styled receipt photo booth combining retro charm with contemporary design.' },
+    { name: 'Modern Receipt Picky', desc: 'Receipt-style photo prints with a nostalgic twist. A guest favorite for unique keepsakes.' },
+    { name: 'Urban Receipt Picky', desc: 'Urban-styled receipt photo booth combining retro charm with contemporary design.' },
   ],
   booth: [
     { name: 'Outdoor Picky', desc: 'Weather-ready enclosed booth for outdoor festivals, rooftop parties, and open-air events.' },
@@ -385,9 +386,12 @@ const modelGroups = [
     // drawing, dimension callouts, a Korean model name and a "Wood Color" chip
     // block. Serve the cropped product-only derivative on /en/ instead — the
     // originals stay untouched for /support/[slug].
+    // enProductName keeps the modal in step with the rows: the two Retro models
+    // are sold as Receipt models in English. nameKo is dropped — it was leaking
+    // Hangul into the modal title on an English page.
     products.map(p => ({
       id: p.id,
-      name: p.name,
+      name: enProductName(p.id, p.name),
       type: p.type,
       imageLeft: `/images/en/line/${p.id === 'classic-picky' ? 'modern-picky' : p.id}.webp`,
       imageRight: p.imageRight,
