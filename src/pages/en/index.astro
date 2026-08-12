@@ -4,6 +4,7 @@ import LogoWall from '@components/en/LogoWall.astro';
 import ProofBand from '@components/en/ProofBand.astro';
 import { company } from '@data/company';
 import { products } from '@data/products';
+import { enProductName } from '@data/enProductNames';
 
 // Locale, hreflang, og:locale and the LocalBusiness description all switch on
 // the /en prefix inside BaseLayout — nothing to pass in here.
@@ -55,7 +56,7 @@ const scaleRow = products
     // scripts/build-en-assets.mjs — 163KB for all eight against ~700KB of the
     // source PNGs, which /support/[slug] still serves and so can't be re-encoded.
     src: `/images/en/line/${p.id}.webp`,
-    label: p.id === 'modern-picky' ? 'Modern / Classic Picky' : p.name.toLowerCase(),
+    label: p.id === 'modern-picky' ? 'Modern / Classic Picky' : enProductName(p.id, p.name).toLowerCase(),
     mm: heightMm(p),
   }));
 const tallest = Math.max(...scaleRow.map((s) => s.mm));
@@ -261,7 +262,7 @@ const woodColors = hero.woodColors!;
           <li class="bg-white p-5 lg:p-7">
             <img
               src={p.imageRight}
-              alt={p.name.toLowerCase()}
+              alt={enProductName(p.id, p.name).toLowerCase()}
               width="800"
               height="1000"
               loading="lazy"
@@ -269,8 +270,15 @@ const woodColors = hero.woodColors!;
               class="w-full aspect-[3/4] object-contain p-6 lg:p-8"
             />
             <p class="mt-5 text-[10px] font-semibold uppercase tracking-[0.3em] text-secondary">{p.type}</p>
-            <p class="mt-2 font-stencil text-2xl leading-none tracking-wide text-primary">{p.name}</p>
+            <p class="mt-2 font-stencil text-2xl leading-none tracking-wide text-primary">{enProductName(p.id, p.name)}</p>
+            {/* Print size, not weight. Modern and Classic share one enclosure —
+                from the front they are the same object — and the printer is the
+                only thing that separates them: 4x6 strips against A4/A5 sheets.
+                Showing weight here made two cards look like a duplicate. */}
             <p class="mt-2 text-sm text-secondary leading-relaxed">
+              {p.specs.find((s) => s.label === 'Print size')!.value}
+            </p>
+            <p class="mt-1 text-xs text-secondary-light">
               {p.specs.find((s) => s.label === 'Weight')!.value}
             </p>
           </li>

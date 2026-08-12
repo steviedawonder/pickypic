@@ -3,6 +3,7 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import LogoWall from '@components/en/LogoWall.astro';
 import ProofBand from '@components/en/ProofBand.astro';
 import { products } from '@data/products';
+import { enProductName } from '@data/enProductNames';
 
 // Campaign window. These drive a CLIENT-side state switch on purpose: this page
 // is statically generated, so a build-time `new Date()` would freeze whatever
@@ -172,7 +173,7 @@ const dims = (spec('Material').match(/\d+/g) ?? []).slice(0, 3).join(' × ');
           />
           <figcaption class="mt-8 border-t border-border-light pt-5 text-center">
             <span class="block font-stencil text-2xl leading-none tracking-wide text-primary">
-              {retro.name}
+              {enProductName(retro.id, retro.name)}
             </span>
             <span class="mt-2 block font-stencil text-lg leading-none tracking-wide text-secondary">
               {dims} MM

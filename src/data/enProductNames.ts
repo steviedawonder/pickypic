@@ -8,9 +8,11 @@
  * This deliberately does NOT live in src/data/products.ts: that file feeds the
  * Korean pages, where the models stay 레트로피키 / Retro Picky.
  */
+// Upper case to match `name` in products.ts — these values substitute for it,
+// so a title-case entry shows up as the one odd row in an all-caps lineup.
 export const EN_PRODUCT_NAMES: Record<string, string> = {
-  'modern-retro-picky': 'Modern Receipt Picky',
-  'urban-retro-picky': 'Urban Receipt Picky',
+  'modern-retro-picky': 'MODERN RECEIPT PICKY',
+  'urban-retro-picky': 'URBAN RECEIPT PICKY',
 };
 
 /** English display name for a product id, falling back to the shared name. */
