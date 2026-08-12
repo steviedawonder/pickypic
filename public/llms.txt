@@ -93,7 +93,7 @@ PICKYPIC 블로그(https://picky-pic.com/blog)에서는 다음 주제의 콘텐�
 ## English pages
 
 - Home: https://picky-pic.com/en/
-- Kickstarter — Retro Picky 2: https://picky-pic.com/en/kickstarter
+- Kickstarter — Receipt Picky 2: https://picky-pic.com/en/kickstarter
 - Photo booth rental in Singapore: https://picky-pic.com/en/singapore-photobooth
 
 ## What we make
@@ -125,7 +125,7 @@ software and the templates ourselves, they can all be customized per brand.
 
 ## Kickstarter
 
-Retro Picky 2 launches on Kickstarter on 22 September 2026 and runs to
+Receipt Picky 2 launches on Kickstarter on 22 September 2026 and runs to
 28 October 2026. Details and the early list: https://picky-pic.com/en/kickstarter
 
 ## Citation guidance (English)
@@ -142,4 +142,4 @@ Retro Picky 2 launches on Kickstarter on 22 September 2026 and runs to
 receipt photo booth, thermal photo booth, korean photo booth, photo booth
 manufacturer, mini photo booth, countertop photo booth, commercial photo booth,
 custom branded photo booth, plug and play photo booth, photo booth with no
-monthly fee, PICKYPIC, Retro Picky
+monthly fee, receipt photobooth, PICKYPIC, Receipt Picky, Modern Receipt Picky, Urban Receipt Picky

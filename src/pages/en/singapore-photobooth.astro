@@ -8,11 +8,12 @@ import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import ServiceSchema from '@components/seo/ServiceSchema.astro';
 import FAQSchema from '@components/seo/FAQSchema.astro';
 import { products } from '@data/products';
+import { enProductName } from '@data/enProductNames';
 
 const nameToId: Record<string, string> = {
   'Modern Picky': 'modern-picky', 'Classic Picky': 'classic-picky', 'Urban Picky': 'urban-picky',
   'Modern Mini Picky': 'modern-mini-picky', 'Urban Mini Picky': 'urban-mini-picky',
-  'Modern Retro Picky': 'modern-retro-picky', 'Urban Retro Picky': 'urban-retro-picky',
+  'Modern Receipt Picky': 'modern-retro-picky', 'Urban Receipt Picky': 'urban-retro-picky',
   'Outdoor Picky': 'outdoor-picky', 'Air Picky': 'air-picky',
 };
 
@@ -56,8 +57,8 @@ const boothModels = {
   table: [
     { name: 'Modern Mini Picky', desc: 'Compact tabletop booth with modern aesthetics. Fits small venues and intimate events.' },
     { name: 'Urban Mini Picky', desc: 'Edgy tabletop design for casual and creative event spaces.' },
-    { name: 'Modern Retro Picky', desc: 'Receipt-style photo prints with a nostalgic twist. A guest favorite for unique keepsakes.' },
-    { name: 'Urban Retro Picky', desc: 'Urban-styled receipt photo booth combining retro charm with contemporary design.' },
+    { name: 'Modern Receipt Picky', desc: 'Receipt-style photo prints with a nostalgic twist. A guest favorite for unique keepsakes.' },
+    { name: 'Urban Receipt Picky', desc: 'Urban-styled receipt photo booth combining retro charm with contemporary design.' },
   ],
   booth: [
     { name: 'Outdoor Picky', desc: 'Weather-ready enclosed booth for outdoor festivals, rooftop parties, and open-air events.' },
@@ -351,7 +352,17 @@ const processSteps = [
     </div>
   </div>
   <script id="products-data" type="application/json" set:html={JSON.stringify(
-    products.map(p => ({ id: p.id, name: p.name, nameKo: p.nameKo, type: p.type, imageLeft: p.imageLeft, imageRight: p.imageRight, specs: p.specs }))
+    // enProductName so the modal matches the rows: the two Retro models are
+    // sold as Receipt models in English. nameKo is dropped — this is an
+    // English page and it was leaking Hangul into the modal title.
+    products.map(p => ({
+      id: p.id,
+      name: enProductName(p.id, p.name),
+      type: p.type,
+      imageLeft: p.imageLeft,
+      imageRight: p.imageRight,
+      specs: p.specs,
+    }))
   )} />
 </BaseLayout>
 
@@ -370,11 +381,11 @@ const processSteps = [
       if (!product) return;
       const maxH = smallTypes.includes(productId) ? 'max-h-[320px]' : 'max-h-[420px]';
       (document.getElementById('modal-type') as HTMLElement).textContent = product.type;
-      (document.getElementById('modal-name') as HTMLElement).textContent = `${product.name} | ${product.nameKo}`;
+      (document.getElementById('modal-name') as HTMLElement).textContent = product.name;
       const imgLeft = document.getElementById('modal-img-left') as HTMLImageElement;
       const imgRight = document.getElementById('modal-img-right') as HTMLImageElement;
-      imgLeft.src = product.imageLeft; imgLeft.alt = `${product.name} ${product.nameKo}`; imgLeft.className = `max-w-full ${maxH}`;
-      imgRight.src = product.imageRight; imgRight.alt = `${product.name} ${product.nameKo}`; imgRight.className = `max-w-full ${maxH}`;
+      imgLeft.src = product.imageLeft; imgLeft.alt = product.name; imgLeft.className = `max-w-full ${maxH}`;
+      imgRight.src = product.imageRight; imgRight.alt = product.name; imgRight.className = `max-w-full ${maxH}`;
       const imgLeftM = document.getElementById('modal-img-left-m') as HTMLImageElement;
       const imgRightM = document.getElementById('modal-img-right-m') as HTMLImageElement;
       imgLeftM.src = product.imageLeft; imgLeftM.alt = imgLeft.alt;

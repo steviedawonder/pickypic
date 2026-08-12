@@ -7,11 +7,37 @@ interface Props {
   description?: string;
 }
 
+// The catalog below was Korean-only, so an English page shipped Hangul inside
+// its own structured data. Split on the route; Korean output is unchanged.
+const isEn = Astro.url.pathname.startsWith('/en');
+
 const {
-  serviceName = '포토부스 렌탈 서비스',
+  serviceName = isEn ? 'Photo Booth Rental' : '포토부스 렌탈 서비스',
   serviceType = 'Photo Booth Rental',
-  description = company.description,
+  description = isEn ? company.descriptionEn : company.description,
 } = Astro.props;
+
+// English markets sell the two Retro models as Receipt models — see
+// src/data/enProductNames.ts.
+const catalog = isEn
+  ? {
+      name: 'Photo Booth Rental Catalogue',
+      suffix: '',
+      groups: [
+        { name: 'Stand type', items: ['Modern Picky', 'Classic Picky', 'Urban Picky'] },
+        { name: 'Table type', items: ['Modern Mini Picky', 'Urban Mini Picky', 'Modern Receipt Picky', 'Urban Receipt Picky'] },
+        { name: 'Booth type', items: ['Outdoor Picky', 'Air Picky'] },
+      ],
+    }
+  : {
+      name: '포토부스 렌탈 카탈로그',
+      suffix: ' 렌탈',
+      groups: [
+        { name: '스탠드형 포토부스', items: ['Modern Picky', 'Classic Picky', 'Urban Picky'] },
+        { name: '테이블형 포토부스', items: ['Modern Mini Picky', 'Urban Mini Picky', 'Modern Retro Picky', 'Urban Retro Picky'] },
+        { name: '부스형 포토부스', items: ['Outdoor Picky', 'Air Picky'] },
+      ],
+    };
 
 const serviceSchema = {
   "@context": "https://schema.org",
@@ -31,36 +57,15 @@ const serviceSchema = {
   ],
   "hasOfferCatalog": {
     "@type": "OfferCatalog",
-    "name": "포토부스 렌탈 카탈로그",
-    "itemListElement": [
-      {
-        "@type": "OfferCatalog",
-        "name": "스탠드형 포토부스",
-        "itemListElement": [
-          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Modern Picky 렌탈" } },
-          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Classic Picky 렌탈" } },
-          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Urban Picky 렌탈" } },
-        ],
-      },
-      {
-        "@type": "OfferCatalog",
-        "name": "테이블형 포토부스",
-        "itemListElement": [
-          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Modern Mini Picky 렌탈" } },
-          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Urban Mini Picky 렌탈" } },
-          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Modern Retro Picky 렌탈" } },
-          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Urban Retro Picky 렌탈" } },
-        ],
-      },
-      {
-        "@type": "OfferCatalog",
-        "name": "부스형 포토부스",
-        "itemListElement": [
-          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Outdoor Picky 렌탈" } },
-          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Air Picky 렌탈" } },
-        ],
-      },
-    ],
+    "name": catalog.name,
+    "itemListElement": catalog.groups.map((g) => ({
+      "@type": "OfferCatalog",
+      "name": g.name,
+      "itemListElement": g.items.map((item) => ({
+        "@type": "Offer",
+        "itemOffered": { "@type": "Service", "name": `${item}${catalog.suffix}` },
+      })),
+    })),
   },
 };
 ---
