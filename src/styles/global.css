@@ -17,6 +17,10 @@
 /* Tailwind v4 Theme */
 @theme {
   --font-sans: 'Noto Sans KR', 'Montserrat', sans-serif;
+  /* Additive: creates font-display / font-stencil utilities. No existing page
+     uses a font-* utility, so nothing that renders today changes. */
+  --font-display: 'Montserrat', sans-serif;
+  --font-stencil: 'Bebas Neue', sans-serif;
 
   /* Black/White Monochrome Palette */
   --color-primary: #1d1d1f;

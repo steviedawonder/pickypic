@@ -1,11 +1,20 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
+import LogoWall from '@components/en/LogoWall.astro';
+import ProofBand from '@components/en/ProofBand.astro';
 import { company } from '@data/company';
+import { products } from '@data/products';
 
 // Locale, hreflang, og:locale and the LocalBusiness description all switch on
 // the /en prefix inside BaseLayout — nothing to pass in here.
 
+// "No consumable lock-in" leads: it is the only claim on this list a competitor
+// cannot copy in a week, and it is the objection that kills counter deals.
 const benefits = [
+  {
+    title: 'No consumable lock-in',
+    body: 'Standard thermal receipt paper. We don’t sell it to you — buy it anywhere. No cartridges, no subscription.',
+  },
   {
     title: 'Fits any counter',
     body: "Small enough for a corner that's doing nothing right now.",
@@ -19,14 +28,40 @@ const benefits = [
     body: 'Custom templates with your logo, colors, and message.',
   },
   {
-    title: 'No consumable lock-in',
-    body: 'Standard thermal receipt paper. We don’t sell it to you — buy it anywhere. No cartridges, no subscription.',
-  },
-  {
     title: 'QR photo download',
     body: 'Connect WiFi and guests scan to download the original file.',
   },
 ];
+
+const spec = (id: string, label: string) =>
+  products.find((p) => p.id === id)!.specs.find((s) => s.label === label)!.value;
+
+// Height in mm, read out of the Material spec rather than retyped — the scale
+// row is only honest if the numbers come from the same place the spec sheet does.
+const heightMm = (p: (typeof products)[number]) =>
+  Number(p.specs.find((s) => s.label === 'Material')!.value.match(/H\s*(\d+)mm/)![1]);
+
+// classic-picky-line.png is byte-identical to modern-picky-line.png, so the two
+// share one drawing and one label instead of shipping the same outline twice.
+// Outdoor and Air are walk-in booths at 2050mm and 2350mm. Including them makes
+// the range 7.6x, and at true scale the row then needs ~2050px — it will not fit
+// a laptop, and shrinking it to fit puts the 310mm Retro back under 45px. They
+// are in the lineup grid below with their dimensions; this row compares the six
+// units that actually go on a counter, which is what the page is selling.
+const scaleRow = products
+  .filter((p) => !['classic-picky', 'outdoor-picky', 'air-picky'].includes(p.id))
+  .map((p) => ({
+    // /images/en/line/*.webp are English-only derivatives from
+    // scripts/build-en-assets.mjs — 163KB for all eight against ~700KB of the
+    // source PNGs, which /support/[slug] still serves and so can't be re-encoded.
+    src: `/images/en/line/${p.id}.webp`,
+    label: p.id === 'modern-picky' ? 'Modern / Classic Picky' : p.name.toLowerCase(),
+    mm: heightMm(p),
+  }));
+const tallest = Math.max(...scaleRow.map((s) => s.mm));
+
+const hero = products.find((p) => p.id === 'modern-picky')!;
+const woodColors = hero.woodColors!;
 ---
 
 <BaseLayout
@@ -34,27 +69,59 @@ const benefits = [
   description="A receipt photo booth that prints on standard thermal paper — no ink, no cartridges, no subscription. Handmade in Korea, 500+ booths in operation, 16,000+ brand events. Ships worldwide."
   ogImage="/images/hero/main-1.jpg"
 >
-  <!-- Hero -->
-  <section class="pt-28 pb-16 lg:pt-36 lg:pb-24 bg-white">
-    <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <div class="max-w-3xl gs-fade-up">
-        <h1 class="text-3xl lg:text-[clamp(2.5rem,5vw,4rem)] font-bold tracking-tight text-primary leading-tight" style="font-family: 'Montserrat', sans-serif;">
+  <link
+    slot="head"
+    rel="preload"
+    as="image"
+    href="/images/hero/main-1.jpg"
+    media="(min-width: 768px)"
+  />
+  <link
+    slot="head"
+    rel="preload"
+    as="image"
+    href="/images/hero/main-mo1.webp"
+    media="(max-width: 767px)"
+  />
+
+  <!-- 1. Hero — no gs-* class: ScrollTrigger fires at load and would cost LCP -->
+  <section class="relative min-h-[78vh] lg:min-h-[86vh] flex items-end overflow-hidden bg-bg-light">
+    <picture>
+      <source media="(max-width: 767px)" srcset="/images/hero/main-mo1.webp" />
+      <img
+        src="/images/hero/main-1.jpg"
+        alt="A PICKYPIC photo booth on location"
+        width="2000"
+        height="1050"
+        fetchpriority="high"
+        loading="eager"
+        decoding="async"
+        class="absolute inset-0 h-full w-full object-cover"
+      />
+    </picture>
+    {/* No scrim. The Korean home sets its hero type in #1d1d1f straight on these
+        same photographs (HeroSection.astro) — a black wash over the product shot
+        is both off-brand and the first thing that made this page look generic. */}
+    <div class="relative mx-auto w-full max-w-7xl px-6 lg:px-8 pb-16 lg:pb-24 pt-40">
+      <div class="max-w-2xl">
+        <p class="font-stencil text-sm lg:text-base tracking-[0.35em] text-secondary">MADE IN SEOUL</p>
+        <h1 class="mt-4 font-display font-bold text-[clamp(2rem,5vw,3.75rem)] leading-[1.05] tracking-tight text-primary">
           The photo booth that fits anywhere
         </h1>
-        <p class="mt-6 text-base lg:text-lg text-secondary leading-relaxed">
+        <p class="mt-6 max-w-[46ch] text-base lg:text-lg leading-relaxed text-primary-light">
           Prints on receipt paper. Plugs into any outlet. Puts your logo on every
           photo your customers take home.
         </p>
-        <div class="mt-8 flex flex-wrap gap-3">
+        <div class="mt-9 flex flex-wrap gap-3">
           <a
             href="#contact"
-            class="inline-flex items-center rounded-full bg-primary px-7 py-3 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
+            class="inline-flex items-center rounded-none bg-primary px-8 py-3.5 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
           >
             Get a quote
           </a>
           <a
             href="/en/kickstarter"
-            class="inline-flex items-center rounded-full border border-primary px-7 py-3 text-sm font-semibold text-primary hover:bg-primary hover:text-white transition-colors"
+            class="inline-flex items-center rounded-none border border-primary px-8 py-3.5 text-sm font-semibold text-primary hover:bg-primary hover:text-white transition-colors"
           >
             Receipt Picky 2 on Kickstarter
           </a>
@@ -63,118 +130,259 @@ const benefits = [
     </div>
   </section>
 
-  <!-- Trust bar -->
-  <section class="border-y border-border-default bg-bg-light">
-    <div class="mx-auto max-w-7xl px-6 lg:px-8 py-6">
-      <ul class="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm text-secondary text-center">
-        <li><strong class="text-primary">500+</strong> booths in operation</li>
-        <li aria-hidden="true" class="hidden sm:block text-border-default">·</li>
-        <li><strong class="text-primary">16,000+</strong> brand events</li>
-        <li aria-hidden="true" class="hidden sm:block text-border-default">·</li>
-        <li>Built by hand in Seoul</li>
+  <!-- 2 + 3 -->
+  <ProofBand />
+  <LogoWall />
+
+  <!-- 4. The object -->
+  <section class="py-20 lg:py-30 bg-bg-light">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+        <div class="gs-slide-left">
+          <img
+            src={hero.imageRight}
+            alt="Modern Picky, a solid wood stand-type photo booth"
+            width="1243"
+            height="3616"
+            loading="lazy"
+            decoding="async"
+            class="w-full aspect-[3/4] object-contain bg-white p-8 lg:p-12"
+          />
+        </div>
+
+        <div class="gs-slide-right">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.4em] text-secondary">The object</p>
+          <h2 class="mt-4 font-display font-bold text-[clamp(1.5rem,2.5vw,2.25rem)] tracking-tight text-primary">
+            Every booth is made by hand
+          </h2>
+          <span class="accent-line mt-6"></span>
+          <div class="mt-6 space-y-5 text-secondary leading-relaxed max-w-[62ch]">
+            <p class="leading-relaxed">
+              We are a manufacturer, not a reseller. Every PICKYPIC booth is built by
+              hand in our own workshop in Seoul — the enclosure, the software, the
+              templates.
+            </p>
+            <p class="leading-relaxed">
+              The solid wood models are cut, shaped, and finished by our carpenter. No
+              two booths share the same grain, even within the same model.
+            </p>
+            <p class="leading-relaxed">
+              That is also why we can customize them. Wrapping, lettering, frame
+              layout, on-screen UI — if we built it, we can change it.
+            </p>
+          </div>
+
+          <dl class="mt-10 border-t border-border-light text-sm">
+            {[
+              { k: 'Enclosure', v: spec('modern-picky', 'Material') },
+              { k: 'Capture', v: spec('modern-picky', 'Camera') },
+              { k: 'Power', v: spec('modern-picky', 'Power Consumption') },
+            ].map((row) => (
+              <div class="grid grid-cols-[7rem_1fr] gap-4 border-b border-border-light py-3">
+                <dt class="text-[11px] font-semibold uppercase tracking-[0.2em] text-secondary pt-0.5">{row.k}</dt>
+                <dd class="text-primary leading-relaxed">{row.v}</dd>
+              </div>
+            ))}
+          </dl>
+
+          <div class="mt-10">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.4em] text-secondary">Wood finishes</p>
+            <ul class="mt-4 flex flex-wrap gap-6">
+              {woodColors.map((c) => (
+                <li class="flex items-center gap-3">
+                  <span
+                    class="block h-7 w-7 border border-border"
+                    style={`background-color:${c.hex}`}
+                    aria-hidden="true"
+                  ></span>
+                  <span class="text-sm text-secondary">{c.name}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Scale row. gs-fade-up on the wrapper, not gs-stagger on the row: the
+       row is inside an overflow-x scroller on mobile. -->
+  <section class="py-20 lg:py-30 bg-white gs-fade-up">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <p class="text-[11px] font-semibold uppercase tracking-[0.4em] text-secondary">Scale</p>
+      <h2 class="mt-4 font-display font-bold text-[clamp(1.5rem,2.5vw,2.25rem)] tracking-tight text-primary">
+        Six counter units, one baseline
+      </h2>
+      <p class="mt-4 text-secondary leading-relaxed max-w-[62ch]">
+        Drawn to true relative height, from the 310&nbsp;mm Retro that sits on a
+        table to the 1,570&nbsp;mm Modern on its own legs. The two walk-in booths
+        are in the lineup below.
+      </p>
+    </div>
+
+    {/* Full-bleed, not max-w-7xl: eight products spanning 310mm to 2350mm at
+        true scale need every pixel of width. It still scrolls below ~1600px,
+        which is honest — that range does not fit on a laptop and pretending it
+        does would mean faking the ratios again. */}
+    <div class="mt-14 overflow-x-auto snap-x snap-mandatory">
+      <ul class="flex items-end gap-4 px-6 lg:gap-5 lg:px-8">
+        {scaleRow.map((m) => (
+          <li class="snap-start shrink-0 min-w-[6.5rem] lg:min-w-[8rem]">
+            {/* Width is intrinsic on purpose: capping it would letterback the tall
+                models and the row would stop being a true size comparison. */}
+            <div class="flex h-[280px] lg:h-[470px] items-end justify-center border-b border-primary">
+              <img
+                src={m.src}
+                alt={`${m.label} outline`}
+                loading="lazy"
+                decoding="async"
+                style={`height:${((m.mm / tallest) * 100).toFixed(1)}%`}
+                class="w-auto"
+              />
+            </div>
+            <p class="mt-4 text-[11px] font-semibold uppercase tracking-[0.12em] text-primary">{m.label}</p>
+            <p class="mt-1 font-stencil text-lg leading-none text-secondary">{m.mm} MM</p>
+          </li>
+        ))}
       </ul>
     </div>
   </section>
 
-  <!-- Why -->
-  <section class="py-20 lg:py-28 bg-white">
+  <!-- 6. Lineup -->
+  <section class="py-20 lg:py-30 bg-white border-t border-border-light gs-fade-up">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <h2 class="text-[clamp(1.5rem,2.5vw,2.25rem)] font-bold tracking-tight text-primary mb-12 gs-fade-up">
+      <p class="text-[11px] font-semibold uppercase tracking-[0.4em] text-secondary">Lineup</p>
+      <h2 class="mt-4 font-display font-bold text-[clamp(1.5rem,2.5vw,2.25rem)] tracking-tight text-primary mb-12">
+        Nine models in production
+      </h2>
+
+      <ul class="grid grid-cols-2 lg:grid-cols-3 gap-px bg-border-light">
+        {products.map((p) => (
+          <li class="bg-white p-5 lg:p-7">
+            <img
+              src={p.imageRight}
+              alt={p.name.toLowerCase()}
+              width="800"
+              height="1000"
+              loading="lazy"
+              decoding="async"
+              class="w-full aspect-[3/4] object-contain p-6 lg:p-8"
+            />
+            <p class="mt-5 text-[10px] font-semibold uppercase tracking-[0.3em] text-secondary">{p.type}</p>
+            <p class="mt-2 font-stencil text-2xl leading-none tracking-wide text-primary">{p.name}</p>
+            <p class="mt-2 text-sm text-secondary leading-relaxed">
+              {p.specs.find((s) => s.label === 'Weight')!.value}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- 7. Why -->
+  <section class="py-20 lg:py-30 bg-bg-light gs-fade-up">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <h2 class="font-display font-bold text-[clamp(1.5rem,2.5vw,2.25rem)] tracking-tight text-primary mb-12">
         Why shops keep it on the counter
       </h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 gs-stagger">
-        {benefits.map((b) => (
-          <div>
-            <h3 class="font-semibold text-primary mb-2">{b.title}</h3>
-            <p class="text-sm text-secondary leading-relaxed">{b.body}</p>
-          </div>
+
+      <ul class="border-t border-border-light divide-y divide-border-light">
+        {benefits.map((b, i) => (
+          <li class="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-8 py-7">
+            <p class="md:col-span-1 font-stencil text-xl leading-none text-secondary-light pt-1">
+              {String(i + 1).padStart(2, '0')}
+            </p>
+            <h3 class="md:col-span-4 font-semibold text-primary">{b.title}</h3>
+            <p class="md:col-span-7 text-secondary leading-relaxed max-w-[62ch]">{b.body}</p>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   </section>
 
-  <!-- Made by hand -->
-  <section class="py-20 lg:py-28 bg-bg-light">
-    <div class="mx-auto max-w-3xl px-6 lg:px-8 gs-fade-up">
-      <h2 class="text-[clamp(1.5rem,2.5vw,2.25rem)] font-bold tracking-tight text-primary mb-6">
-        Every booth is made by hand
-      </h2>
-      <div class="space-y-5 text-secondary leading-relaxed">
-        <p>
-          We are a manufacturer, not a reseller. Every PICKYPIC booth is built by
-          hand in our own workshop in Seoul — the enclosure, the software, the
-          templates.
-        </p>
-        <p>
-          The solid wood models are cut, shaped, and finished by our carpenter. No
-          two booths share the same grain, even within the same model.
-        </p>
-        <p>
-          That is also why we can customize them. Wrapping, lettering, frame
-          layout, on-screen UI — if we built it, we can change it.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section id="contact" class="py-20 lg:py-28 bg-white">
-    <div class="mx-auto max-w-3xl px-6 lg:px-8 text-center gs-fade-up">
-      <h2 class="text-[clamp(1.5rem,2.5vw,2.25rem)] font-bold tracking-tight text-primary mb-4">
-        Ready to see it in your space?
-      </h2>
-      <p class="text-secondary mb-8">
-        Tell us about your shop and we'll send specs, pricing, and template
-        samples within one business day.
-      </p>
-
-      <form id="quote-form" class="text-left space-y-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label for="q-name" class="block text-sm text-secondary mb-1">Your name</label>
-            <input id="q-name" name="name" type="text" required autocomplete="name"
-              class="w-full rounded-lg border border-border-default px-4 py-3 text-sm focus:outline-none focus:border-primary" />
-          </div>
-          <div>
-            <label for="q-email" class="block text-sm text-secondary mb-1">Email</label>
-            <input id="q-email" name="email" type="email" required autocomplete="email"
-              class="w-full rounded-lg border border-border-default px-4 py-3 text-sm focus:outline-none focus:border-primary" />
-          </div>
-          <div>
-            <label for="q-company" class="block text-sm text-secondary mb-1">Shop or company</label>
-            <input id="q-company" name="company" type="text" autocomplete="organization"
-              class="w-full rounded-lg border border-border-default px-4 py-3 text-sm focus:outline-none focus:border-primary" />
-          </div>
-          <div>
-            <label for="q-country" class="block text-sm text-secondary mb-1">Country</label>
-            <input id="q-country" name="country" type="text" required autocomplete="country-name"
-              placeholder="Shipping and duties depend on this"
-              class="w-full rounded-lg border border-border-default px-4 py-3 text-sm focus:outline-none focus:border-primary" />
-          </div>
-        </div>
+  <!-- 8. CTA + quote form -->
+  <section id="contact" class="py-20 lg:py-30 bg-white border-t border-border-light gs-fade-up">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-[1fr_20rem] gap-14 lg:gap-20">
         <div>
-          <label for="q-message" class="block text-sm text-secondary mb-1">What are you looking for?</label>
-          <textarea id="q-message" name="message" rows="4"
-            placeholder="Which model, how many units, when you need them."
-            class="w-full rounded-lg border border-border-default px-4 py-3 text-sm focus:outline-none focus:border-primary"></textarea>
-        </div>
-        <div class="flex flex-wrap items-center gap-3 pt-1">
-          <button type="submit"
-            class="rounded-full bg-primary px-7 py-3 text-sm font-semibold text-white hover:opacity-90 transition-opacity disabled:opacity-50">
-            Send
-          </button>
-          <a href="/en/kickstarter"
-            class="inline-flex items-center rounded-full border border-primary px-7 py-3 text-sm font-semibold text-primary hover:bg-primary hover:text-white transition-colors">
-            See it on Kickstarter
-          </a>
-        </div>
-        <p id="quote-form-msg" class="text-sm hidden"></p>
-      </form>
+          <h2 class="font-display font-bold text-[clamp(1.5rem,2.5vw,2.25rem)] tracking-tight text-primary mb-4">
+            Ready to see it in your space?
+          </h2>
+          <p class="text-secondary leading-relaxed max-w-[62ch] mb-10">
+            Tell us about your shop and we'll send specs, pricing, and template
+            samples within one business day.
+          </p>
 
-      <p class="mt-8 text-sm text-secondary">
-        We ship worldwide from Seoul, with full export documentation. Prefer email?
-        <a href={`mailto:${company.email}?subject=PICKYPIC%20enquiry`} class="underline hover:no-underline">{company.email}</a>
-      </p>
+          <form id="quote-form" class="space-y-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label for="q-name" class="block text-[11px] font-semibold uppercase tracking-[0.2em] text-secondary mb-2">Your name</label>
+                <input id="q-name" name="name" type="text" required autocomplete="name"
+                  class="w-full rounded-none border border-border bg-white px-4 py-3 text-sm focus:outline-none focus:border-primary" />
+              </div>
+              <div>
+                <label for="q-email" class="block text-[11px] font-semibold uppercase tracking-[0.2em] text-secondary mb-2">Email</label>
+                <input id="q-email" name="email" type="email" required autocomplete="email"
+                  class="w-full rounded-none border border-border bg-white px-4 py-3 text-sm focus:outline-none focus:border-primary" />
+              </div>
+              <div>
+                <label for="q-company" class="block text-[11px] font-semibold uppercase tracking-[0.2em] text-secondary mb-2">Shop or company</label>
+                <input id="q-company" name="company" type="text" autocomplete="organization"
+                  class="w-full rounded-none border border-border bg-white px-4 py-3 text-sm focus:outline-none focus:border-primary" />
+              </div>
+              <div>
+                <label for="q-country" class="block text-[11px] font-semibold uppercase tracking-[0.2em] text-secondary mb-2">Country</label>
+                <input id="q-country" name="country" type="text" required autocomplete="country-name"
+                  aria-describedby="q-country-help"
+                  class="w-full rounded-none border border-border bg-white px-4 py-3 text-sm focus:outline-none focus:border-primary" />
+                <p id="q-country-help" class="mt-2 text-xs leading-relaxed text-secondary">
+                  Shipping and duties depend on this.
+                </p>
+              </div>
+            </div>
+            <div>
+              <label for="q-message" class="block text-[11px] font-semibold uppercase tracking-[0.2em] text-secondary mb-2">What are you looking for?</label>
+              <textarea id="q-message" name="message" rows="4"
+                placeholder="Which model, how many units, when you need them."
+                class="w-full rounded-none border border-border bg-white px-4 py-3 text-sm focus:outline-none focus:border-primary"></textarea>
+            </div>
+            <div class="flex flex-wrap items-center gap-3 pt-1">
+              <button type="submit"
+                class="rounded-none bg-primary px-8 py-3.5 text-sm font-semibold text-white hover:opacity-90 transition-opacity disabled:opacity-50">
+                Send
+              </button>
+            </div>
+            <p id="quote-form-msg" class="text-sm hidden"></p>
+          </form>
+
+          <p class="mt-8 text-sm text-secondary leading-relaxed max-w-[62ch]">
+            We ship worldwide from Seoul, with full export documentation. Prefer email?
+            <a href={`mailto:${company.email}?subject=PICKYPIC%20enquiry`} class="underline hover:no-underline">{company.email}</a>
+          </p>
+        </div>
+
+        <aside class="lg:border-l lg:border-border-light lg:pl-10">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.4em] text-secondary">Workshop</p>
+          <dl class="mt-6 space-y-6 text-sm">
+            <div>
+              <dt class="text-[11px] font-semibold uppercase tracking-[0.2em] text-secondary-light">Address</dt>
+              <dd class="mt-2 text-primary leading-relaxed">{company.addressEn}</dd>
+            </div>
+            <div>
+              <dt class="text-[11px] font-semibold uppercase tracking-[0.2em] text-secondary-light">Email</dt>
+              <dd class="mt-2">
+                <a href={`mailto:${company.email}`} class="text-primary underline hover:no-underline">{company.email}</a>
+              </dd>
+            </div>
+            <div>
+              <dt class="text-[11px] font-semibold uppercase tracking-[0.2em] text-secondary-light">Phone</dt>
+              <dd class="mt-2">
+                <a href={company.phoneTel} class="text-primary hover:underline">{company.phone}</a>
+              </dd>
+            </div>
+          </dl>
+        </aside>
+      </div>
     </div>
   </section>
 </BaseLayout>

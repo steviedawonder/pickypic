@@ -38,8 +38,8 @@ const faqSchema = {
   <h2 id="faq-heading" class="text-2xl font-bold text-primary mb-8 text-center" data-i18n={titleKey}>{title}</h2>
   <div class="space-y-3">
     {items.map((item) => (
-      <details class="group border border-border-default rounded-lg overflow-hidden">
-        <summary class="flex items-center justify-between cursor-pointer px-6 py-4 bg-bg-muted hover:bg-bg-subtle transition-colors">
+      <details class="group border border-border rounded-lg overflow-hidden">
+        <summary class="flex items-center justify-between cursor-pointer px-6 py-4 bg-bg-light hover:bg-accent-tint transition-colors">
           <span class="font-medium text-primary text-left pr-4">
             <span class="faq-question-ko">{item.question}</span>
             {item.questionEn && <span class="faq-question-en hidden">{item.questionEn}</span>}

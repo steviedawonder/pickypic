@@ -1,0 +1,66 @@
+---
+/**
+ * Client marks, English pages only.
+ *
+ * Sources from public/images/en/logos/ — ASCII-named WebP derivatives built by
+ * scripts/build-en-assets.mjs. The originals in public/images/logos/ keep their
+ * Korean filenames because src/pages/corporate-event.astro references them
+ * directly; renaming those would break the Korean page.
+ *
+ * Static grid, not a marquee: an infinite CSS animation runs for the whole
+ * session and reads as filler. Grayscale keeps it a reference list rather than
+ * a partner badge wall — which is also what makes the claim defensible.
+ */
+interface Props {
+  dark?: boolean;
+}
+const { dark = false } = Astro.props;
+
+const logos = [
+  { file: 'netflix.webp', name: 'Netflix' },
+  { file: 'google.webp', name: 'Google' },
+  { file: 'nike.webp', name: 'Nike' },
+  { file: 'adidas.webp', name: 'Adidas' },
+  { file: 'gucci.webp', name: 'Gucci' },
+  { file: 'hermes.webp', name: 'Hermès' },
+  { file: 'bmw.webp', name: 'BMW' },
+  { file: 'coach.webp', name: 'Coach' },
+  { file: 'swarovski.webp', name: 'Swarovski' },
+  { file: 'tiktok.webp', name: 'TikTok' },
+  { file: 'adobe.webp', name: 'Adobe' },
+  { file: 'samsung.webp', name: 'Samsung' },
+];
+---
+
+<section class:list={['py-20 lg:py-30', dark ? 'bg-primary' : 'bg-white']}>
+  <div class="mx-auto max-w-7xl px-6 lg:px-8">
+    <p class:list={['mb-3 text-[11px] font-semibold uppercase tracking-[0.4em]', dark ? 'text-white/40' : 'text-secondary']}>
+      Clients
+    </p>
+    <h2 class:list={['font-display font-bold text-[clamp(1.5rem,2.5vw,2.25rem)] tracking-tight mb-12', dark ? 'text-white' : 'text-primary']}>
+      Booths we have built and operated for
+    </h2>
+
+    <ul class:list={['grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-px gs-fade-in', dark ? 'bg-white/10' : 'bg-border-light']}>
+      {logos.map((l) => (
+        <li class:list={['flex items-center justify-center p-5 lg:p-6', dark ? 'bg-primary' : 'bg-white']}>
+          <img
+            src={`/images/en/logos/${l.file}`}
+            alt={l.name}
+            width="120"
+            height="60"
+            loading="lazy"
+            decoding="async"
+            class:list={['h-7 w-auto object-contain opacity-55 grayscale', dark && 'invert']}
+          />
+        </li>
+      ))}
+    </ul>
+
+    <p class:list={['mt-6 max-w-[58ch] text-[11px] leading-relaxed', dark ? 'text-white/35' : 'text-secondary-light']}>
+      Logos are trademarks of their respective owners, shown to identify events
+      PICKYPIC has supplied booths for. Their appearance does not indicate
+      endorsement, sponsorship, or partnership.
+    </p>
+  </div>
+</section>

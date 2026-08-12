@@ -7,6 +7,8 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import ServiceSchema from '@components/seo/ServiceSchema.astro';
 import FAQSchema from '@components/seo/FAQSchema.astro';
+import ProofBand from '@components/en/ProofBand.astro';
+import LogoWall from '@components/en/LogoWall.astro';
 import { products } from '@data/products';
 import { enProductName } from '@data/enProductNames';
 
@@ -73,6 +75,57 @@ const processSteps = [
   { step: '04', title: 'Event', desc: 'Sit back and enjoy. Our on-site staff operates the booth and assists your guests throughout.' },
   { step: '05', title: 'Teardown', desc: 'After the event, we handle complete teardown and removal — no hassle for you.' },
 ];
+
+// Reasons kept as prose. The figures that used to head these four cards (9+,
+// 16,000+, 100%, ∞) are gone — ProofBand carries the countable ones instead.
+const reasons = [
+  { title: 'Photo Booth Models', desc: 'Stand, table, and booth types — the widest selection of Korean-designed photo booths available in Singapore.' },
+  { title: 'Events Served', desc: 'Trusted by global brands like Netflix, Hyundai, Kia, New Balance, and Starbucks for premium activations.' },
+  { title: 'Full-Service', desc: 'End-to-end service from delivery and setup to on-site operation and teardown. We handle everything.' },
+  { title: 'Custom Branding', desc: 'Full customization of booth wraps, photo templates, start screens, and print layouts to match your brand.' },
+];
+
+const services = [
+  {
+    image: '/images/rental/rental-2.jpg',
+    alt: 'PICKYPIC photo booth at a corporate event',
+    title: 'Corporate Events',
+    desc: 'Company D&Ds, annual dinners, team-building events, product launches, and conferences with branded photo experiences.',
+  },
+  {
+    image: '/images/rental/rental-3.jpg',
+    alt: 'PICKYPIC photo booth at a brand pop-up',
+    title: 'Brand Pop-ups',
+    desc: 'Retail activations, pop-up stores, and brand experience zones with fully customized booth wrapping and photo templates.',
+  },
+  {
+    image: '/images/rental/rental-4.jpg',
+    alt: 'PICKYPIC photo booth at a wedding reception',
+    title: 'Weddings',
+    desc: 'Elegant photo booth setups for wedding receptions, solemnizations, and pre-wedding events. Create lasting memories for your guests.',
+  },
+  {
+    image: '/images/rental/rental-6.jpg',
+    alt: 'PICKYPIC photo booth at a private party',
+    title: 'Parties & Celebrations',
+    desc: 'Birthday parties, graduation celebrations, festive gatherings, and private events with fun, interactive photo booth experiences.',
+  },
+];
+
+const customization = [
+  { title: 'Booth Wrapping', desc: 'Full exterior wrapping with your brand colors, logos, and campaign artwork for maximum visual impact.' },
+  { title: 'Photo Frame Design', desc: 'Custom photo frame templates with your brand elements, event name, date, and hashtags printed on every photo.' },
+  { title: 'Start Screen UI', desc: 'Branded welcome screen with your logo, event message, and custom animations displayed before each photo session.' },
+  { title: 'Print Layouts', desc: 'Choose from strip photos, 4-cut grids, or single prints — all fully customizable with your branding.' },
+  { title: 'Digital Sharing', desc: 'QR code sharing, email delivery, and Airdrop support so guests can instantly post their photos to social media.' },
+  { title: 'Filter & Effects', desc: 'Custom photo filters, color grading presets, and AR effects tailored to your brand aesthetic and campaign theme.' },
+];
+
+const modelGroups = [
+  { label: 'Stand Type', items: boothModels.stand, cols: 'md:grid-cols-3' },
+  { label: 'Table Type', items: boothModels.table, cols: 'md:grid-cols-2 lg:grid-cols-4' },
+  { label: 'Booth Type', items: boothModels.booth, cols: 'md:grid-cols-2' },
+];
 ---
 
 <BaseLayout
@@ -81,7 +134,7 @@ const processSteps = [
 >
   <!-- Structured Data -->
   <BreadcrumbSchema items={[
-    { name: 'Home', href: '/' },
+    { name: 'Home', href: '/en/' },
     { name: 'Photo Booth Rental Singapore', href: '/en/singapore-photobooth' },
   ]} />
   <ServiceSchema
@@ -90,165 +143,146 @@ const processSteps = [
     description="Premium photo booth rental service in Singapore by PICKYPIC. Offering 9+ Korean-designed photo booth models for corporate events, brand pop-ups, weddings, and parties with full customization and on-site support."
   />
 
-  <!-- Hero Section -->
-  <section class="relative bg-white pt-14 pb-8 lg:pt-12 lg:pb-12 overflow-hidden">
-    <div class="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 gs-fade-up">
-      <h1 class="text-3xl lg:text-[clamp(2.5rem,5vw,4rem)] font-bold tracking-[0.02em] text-primary leading-tight" style="font-family: 'Montserrat', sans-serif;" data-i18n="singapore.hero.title">
-        Photo Booth Rental Singapore
-      </h1>
-      <p class="mt-4 text-sm lg:text-base text-secondary leading-relaxed max-w-3xl">
-        PICKYPIC Photobooth is a premium photo booth rental company headquartered in Seoul, South Korea, with operations in Singapore. With a lineup of 9+ photo booth models and experience serving over 16,000 brand events including Netflix, Hyundai, and Starbucks, PICKYPIC brings Korean-designed modern photo booth experiences to Singapore.
-      </p>
-      <div class="mt-6 flex flex-wrap gap-3">
-        <a href="/rental" class="inline-flex items-center px-6 py-3 bg-primary text-white text-sm font-semibold rounded-full hover:bg-gray-800 transition-colors">
-          Get a Free Quote
-        </a>
-        <a href="https://www.instagram.com/pickypic.sg/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-6 py-3 border border-gray-400 text-primary text-sm font-semibold rounded-full hover:bg-primary hover:text-white transition-colors">
-          @pickypic.sg
-          <svg class="ml-2 w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-        </a>
+  <!-- Hero -->
+  {/* The visual breadcrumb above already carries pt-18 (4.5rem) to clear the
+      fixed navbar, so pt-28 here would stack to ~11rem of dead space. pt-8
+      lands the H1 at roughly the same 7rem from the top of the viewport. */}
+  <section class="bg-white pt-8 pb-16 lg:pt-12 lg:pb-24">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-[0.4em] text-secondary">Singapore</p>
+          <div class="accent-line mt-4 mb-6"></div>
+          <h1 class="font-display font-bold text-[clamp(2rem,5vw,3.75rem)] leading-[1.05] tracking-tight text-primary">
+            Photo Booth Rental Singapore
+          </h1>
+          <p class="mt-6 text-sm lg:text-base text-secondary leading-relaxed">
+            PICKYPIC Photobooth is a premium photo booth rental company headquartered in Seoul, South Korea, with operations in Singapore. With a lineup of 9+ photo booth models and experience serving over 16,000 brand events including Netflix, Hyundai, and Starbucks, PICKYPIC brings Korean-designed modern photo booth experiences to Singapore.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a href="/en/#contact" class="inline-flex items-center px-7 py-3 bg-primary text-white text-sm font-semibold rounded-full hover:opacity-90 transition-opacity">
+              Get a Free Quote
+            </a>
+            <a href="https://www.instagram.com/pickypic.sg/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-7 py-3 border border-primary text-primary text-sm font-semibold rounded-full hover:bg-primary hover:text-white transition-colors">
+              @pickypic.sg
+              <svg class="ml-2 w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </a>
+          </div>
+        </div>
+        <img
+          src="/images/rental/rental-1.jpg"
+          alt="PICKYPIC photo booth set up at a brand event"
+          width="1200"
+          height="900"
+          fetchpriority="high"
+          decoding="async"
+          class="w-full aspect-[4/3] object-cover"
+        />
       </div>
     </div>
   </section>
 
+  <ProofBand />
+
+  <LogoWall />
+
   <!-- Why Choose PICKYPIC Singapore -->
-  <section class="bg-bg-muted py-16 lg:py-20">
+  <section class="bg-bg-light py-20 lg:py-28">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <h2 class="text-2xl lg:text-3xl font-bold text-primary text-center mb-12 gs-fade-up" style="font-family: 'Montserrat', sans-serif;">
+      <h2 class="font-display font-bold text-[clamp(1.5rem,2.5vw,2.25rem)] tracking-tight text-primary mb-12">
         Why Choose PICKYPIC Singapore
       </h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 gs-stagger">
-        <div class="bg-white rounded-lg p-6 text-center">
-          <div class="text-3xl font-bold text-primary mb-2" style="font-family: 'Montserrat', sans-serif;">9+</div>
-          <h3 class="font-semibold text-primary mb-2">Photo Booth Models</h3>
-          <p class="text-sm text-secondary">Stand, table, and booth types — the widest selection of Korean-designed photo booths available in Singapore.</p>
-        </div>
-        <div class="bg-white rounded-lg p-6 text-center">
-          <div class="text-3xl font-bold text-primary mb-2" style="font-family: 'Montserrat', sans-serif;">16,000+</div>
-          <h3 class="font-semibold text-primary mb-2">Events Served</h3>
-          <p class="text-sm text-secondary">Trusted by global brands like Netflix, Hyundai, Kia, New Balance, and Starbucks for premium activations.</p>
-        </div>
-        <div class="bg-white rounded-lg p-6 text-center">
-          <div class="text-3xl font-bold text-primary mb-2" style="font-family: 'Montserrat', sans-serif;">100%</div>
-          <h3 class="font-semibold text-primary mb-2">Full-Service</h3>
-          <p class="text-sm text-secondary">End-to-end service from delivery and setup to on-site operation and teardown. We handle everything.</p>
-        </div>
-        <div class="bg-white rounded-lg p-6 text-center">
-          <div class="text-3xl font-bold text-primary mb-2" style="font-family: 'Montserrat', sans-serif;">∞</div>
-          <h3 class="font-semibold text-primary mb-2">Custom Branding</h3>
-          <p class="text-sm text-secondary">Full customization of booth wraps, photo templates, start screens, and print layouts to match your brand.</p>
-        </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-border border-t border-border gs-stagger">
+        {reasons.map((r) => (
+          <div class="bg-bg-light p-6">
+            <h3 class="font-semibold text-primary mb-2">{r.title}</h3>
+            <p class="text-sm text-secondary leading-relaxed">{r.desc}</p>
+          </div>
+        ))}
       </div>
     </div>
   </section>
 
   <!-- Our Photo Booth Models -->
-  <section class="bg-white py-16 lg:py-20">
+  <section class="bg-white py-20 lg:py-28">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <h2 class="text-2xl lg:text-3xl font-bold text-primary text-center mb-4 gs-fade-up" style="font-family: 'Montserrat', sans-serif;" data-i18n="singapore.models.title">
+      <h2 class="font-display font-bold text-[clamp(1.5rem,2.5vw,2.25rem)] tracking-tight text-primary mb-4">
         Our Photo Booth Models
       </h2>
-      <p class="text-center text-secondary text-sm lg:text-base mb-12 gs-fade-up">
+      <p class="text-secondary text-sm lg:text-base leading-relaxed max-w-2xl mb-12">
         Choose from our diverse lineup of Korean-designed photo booths for your Singapore event.
       </p>
 
-      <!-- Stand Type -->
-      <div class="mb-12 gs-fade-up">
-        <h3 class="text-lg lg:text-xl font-bold text-primary mb-4 flex items-center gap-2" style="font-family: 'Montserrat', sans-serif;">
-          <span class="w-8 h-[2px] bg-primary inline-block"></span> Stand Type
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
-          {boothModels.stand.map((model) => (
-            <div class="product-row border border-border-default rounded-lg p-5 cursor-pointer hover:border-primary hover:shadow-md transition-all duration-200" data-product-id={nameToId[model.name]}>
-              <h4 class="font-semibold text-primary mb-2">{model.name}</h4>
-              <p class="text-sm text-secondary leading-relaxed">{model.desc}</p>
+      <div class="space-y-12 gs-fade-up">
+        {modelGroups.map((group) => (
+          <div>
+            <h3 class="text-[11px] font-semibold uppercase tracking-[0.4em] text-secondary mb-4">{group.label}</h3>
+            <div class:list={['grid grid-cols-1 gap-px bg-border-light border-t border-border-light', group.cols]}>
+              {group.items.map((model) => (
+                <button
+                  type="button"
+                  class="product-row bg-white text-left p-6 flex items-center gap-5 hover:bg-accent-tint transition-colors cursor-pointer"
+                  data-product-id={nameToId[model.name]}
+                >
+                  <img
+                    src={`/images/en/line/${nameToId[model.name] === "classic-picky" ? "modern-picky" : nameToId[model.name]}.webp`}
+                    alt={model.name}
+                    width="120"
+                    height="180"
+                    loading="lazy"
+                    decoding="async"
+                    class="w-14 lg:w-16 h-auto shrink-0 object-contain"
+                  />
+                  <span class="block">
+                    <span class="block font-semibold text-primary mb-2">{model.name}</span>
+                    <span class="block text-sm text-secondary leading-relaxed">{model.desc}</span>
+                  </span>
+                </button>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
-
-      <!-- Table Type -->
-      <div class="mb-12 gs-fade-up">
-        <h3 class="text-lg lg:text-xl font-bold text-primary mb-4 flex items-center gap-2" style="font-family: 'Montserrat', sans-serif;">
-          <span class="w-8 h-[2px] bg-primary inline-block"></span> Table Type
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-          {boothModels.table.map((model) => (
-            <div class="product-row border border-border-default rounded-lg p-5 cursor-pointer hover:border-primary hover:shadow-md transition-all duration-200" data-product-id={nameToId[model.name]}>
-              <h4 class="font-semibold text-primary mb-2">{model.name}</h4>
-              <p class="text-sm text-secondary leading-relaxed">{model.desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <!-- Booth Type -->
-      <div class="gs-fade-up">
-        <h3 class="text-lg lg:text-xl font-bold text-primary mb-4 flex items-center gap-2" style="font-family: 'Montserrat', sans-serif;">
-          <span class="w-8 h-[2px] bg-primary inline-block"></span> Booth Type
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
-          {boothModels.booth.map((model) => (
-            <div class="product-row border border-border-default rounded-lg p-5 cursor-pointer hover:border-primary hover:shadow-md transition-all duration-200" data-product-id={nameToId[model.name]}>
-              <h4 class="font-semibold text-primary mb-2">{model.name}</h4>
-              <p class="text-sm text-secondary leading-relaxed">{model.desc}</p>
-            </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </div>
   </section>
 
   <!-- Services -->
-  <section class="bg-bg-muted py-16 lg:py-20">
+  <section class="bg-bg-light py-20 lg:py-28">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <h2 class="text-2xl lg:text-3xl font-bold text-primary text-center mb-12 gs-fade-up" style="font-family: 'Montserrat', sans-serif;">
+      <h2 class="font-display font-bold text-[clamp(1.5rem,2.5vw,2.25rem)] tracking-tight text-primary mb-12">
         Photo Booth Services in Singapore
       </h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 gs-stagger">
-        <div class="bg-white rounded-lg p-6">
-          <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-            <svg class="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 gs-stagger">
+        {services.map((s) => (
+          <div>
+            <img
+              src={s.image}
+              alt={s.alt}
+              width="800"
+              height="600"
+              loading="lazy"
+              decoding="async"
+              class="w-full aspect-[4/3] object-cover mb-5"
+            />
+            <h3 class="font-semibold text-primary mb-2">{s.title}</h3>
+            <p class="text-sm text-secondary leading-relaxed">{s.desc}</p>
           </div>
-          <h3 class="font-semibold text-primary mb-2">Corporate Events</h3>
-          <p class="text-sm text-secondary leading-relaxed">Company D&Ds, annual dinners, team-building events, product launches, and conferences with branded photo experiences.</p>
-        </div>
-        <div class="bg-white rounded-lg p-6">
-          <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-            <svg class="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
-          </div>
-          <h3 class="font-semibold text-primary mb-2">Brand Pop-ups</h3>
-          <p class="text-sm text-secondary leading-relaxed">Retail activations, pop-up stores, and brand experience zones with fully customized booth wrapping and photo templates.</p>
-        </div>
-        <div class="bg-white rounded-lg p-6">
-          <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-            <svg class="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-          </div>
-          <h3 class="font-semibold text-primary mb-2">Weddings</h3>
-          <p class="text-sm text-secondary leading-relaxed">Elegant photo booth setups for wedding receptions, solemnizations, and pre-wedding events. Create lasting memories for your guests.</p>
-        </div>
-        <div class="bg-white rounded-lg p-6">
-          <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-            <svg class="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          </div>
-          <h3 class="font-semibold text-primary mb-2">Parties &amp; Celebrations</h3>
-          <p class="text-sm text-secondary leading-relaxed">Birthday parties, graduation celebrations, festive gatherings, and private events with fun, interactive photo booth experiences.</p>
-        </div>
+        ))}
       </div>
     </div>
   </section>
 
   <!-- How It Works -->
-  <section class="bg-white py-16 lg:py-20">
+  <section class="bg-white py-20 lg:py-28">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <h2 class="text-2xl lg:text-3xl font-bold text-primary text-center mb-12 gs-fade-up" style="font-family: 'Montserrat', sans-serif;" data-i18n="singapore.process.title">
+      <h2 class="font-display font-bold text-[clamp(1.5rem,2.5vw,2.25rem)] tracking-tight text-primary mb-12">
         How It Works
       </h2>
-      <div class="grid grid-cols-1 md:grid-cols-5 gap-6 lg:gap-4 gs-stagger">
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-8 lg:gap-6 gs-stagger">
         {processSteps.map((item) => (
-          <div class="text-center">
-            <div class="text-3xl font-bold text-primary/20 mb-2" style="font-family: 'Montserrat', sans-serif;">{item.step}</div>
-            <h3 class="font-semibold text-primary mb-2">{item.title}</h3>
+          <div class="border-t border-border pt-5">
+            <p class="font-stencil text-[2.5rem] leading-none text-border">{item.step}</p>
+            <h3 class="font-semibold text-primary mt-3 mb-2">{item.title}</h3>
             <p class="text-sm text-secondary leading-relaxed">{item.desc}</p>
           </div>
         ))}
@@ -256,40 +290,35 @@ const processSteps = [
     </div>
   </section>
 
+  <!-- Full-bleed installation photo -->
+  <section class="gs-fade-in">
+    <img
+      src="/images/rental/rental-8.jpg"
+      alt="A PICKYPIC photo booth installed and running at an event venue"
+      width="1600"
+      height="686"
+      loading="lazy"
+      decoding="async"
+      class="w-full aspect-[4/3] sm:aspect-[21/9] object-cover"
+    />
+  </section>
+
   <!-- Brand Customization Options -->
-  <section class="bg-bg-muted py-16 lg:py-20">
+  <section class="bg-bg-light py-20 lg:py-28">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <h2 class="text-2xl lg:text-3xl font-bold text-primary text-center mb-4 gs-fade-up" style="font-family: 'Montserrat', sans-serif;">
+      <h2 class="font-display font-bold text-[clamp(1.5rem,2.5vw,2.25rem)] tracking-tight text-primary mb-4">
         Brand Customization Options
       </h2>
-      <p class="text-center text-secondary text-sm lg:text-base mb-12 max-w-2xl mx-auto gs-fade-up">
+      <p class="text-secondary text-sm lg:text-base leading-relaxed max-w-2xl mb-12">
         Make the photo booth truly yours. Every element can be tailored to align with your brand identity and event theme.
       </p>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 gs-stagger">
-        <div class="bg-white rounded-lg p-6">
-          <h3 class="font-semibold text-primary mb-2">Booth Wrapping</h3>
-          <p class="text-sm text-secondary leading-relaxed">Full exterior wrapping with your brand colors, logos, and campaign artwork for maximum visual impact.</p>
-        </div>
-        <div class="bg-white rounded-lg p-6">
-          <h3 class="font-semibold text-primary mb-2">Photo Frame Design</h3>
-          <p class="text-sm text-secondary leading-relaxed">Custom photo frame templates with your brand elements, event name, date, and hashtags printed on every photo.</p>
-        </div>
-        <div class="bg-white rounded-lg p-6">
-          <h3 class="font-semibold text-primary mb-2">Start Screen UI</h3>
-          <p class="text-sm text-secondary leading-relaxed">Branded welcome screen with your logo, event message, and custom animations displayed before each photo session.</p>
-        </div>
-        <div class="bg-white rounded-lg p-6">
-          <h3 class="font-semibold text-primary mb-2">Print Layouts</h3>
-          <p class="text-sm text-secondary leading-relaxed">Choose from strip photos, 4-cut grids, or single prints — all fully customizable with your branding.</p>
-        </div>
-        <div class="bg-white rounded-lg p-6">
-          <h3 class="font-semibold text-primary mb-2">Digital Sharing</h3>
-          <p class="text-sm text-secondary leading-relaxed">QR code sharing, email delivery, and Airdrop support so guests can instantly post their photos to social media.</p>
-        </div>
-        <div class="bg-white rounded-lg p-6">
-          <h3 class="font-semibold text-primary mb-2">Filter &amp; Effects</h3>
-          <p class="text-sm text-secondary leading-relaxed">Custom photo filters, color grading presets, and AR effects tailored to your brand aesthetic and campaign theme.</p>
-        </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-border border-t border-border gs-stagger">
+        {customization.map((c) => (
+          <div class="bg-bg-light p-6">
+            <h3 class="font-semibold text-primary mb-2">{c.title}</h3>
+            <p class="text-sm text-secondary leading-relaxed">{c.desc}</p>
+          </div>
+        ))}
       </div>
     </div>
   </section>
@@ -298,40 +327,41 @@ const processSteps = [
   <FAQSchema items={faqItems} title="Frequently Asked Questions" />
 
   <!-- Final CTA -->
-  <section class="bg-primary py-16 lg:py-20">
-    <div class="mx-auto max-w-7xl px-6 lg:px-8 text-center gs-fade-up">
-      <h2 class="text-2xl lg:text-3xl font-bold text-white mb-4" style="font-family: 'Montserrat', sans-serif;" data-i18n="singapore.cta.title">
+  <section class="section-dark py-20 lg:py-28">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8 gs-fade-up">
+      <h2 class="font-display font-bold text-[clamp(1.5rem,2.5vw,2.25rem)] tracking-tight text-white mb-4">
         Ready to Book a Photo Booth in Singapore?
       </h2>
-      <p class="text-white/80 text-sm lg:text-base mb-8 max-w-2xl mx-auto">
+      <p class="text-white/70 text-sm lg:text-base leading-relaxed max-w-2xl mb-8">
         Whether it's a corporate event, brand activation, wedding, or party — PICKYPIC delivers premium photo booth experiences to Singapore. Get in touch today for a free quote.
       </p>
-      <div class="flex flex-wrap justify-center gap-4">
-        <a href="/rental" class="inline-flex items-center px-8 py-3 bg-white text-primary text-sm font-semibold rounded-full hover:bg-gray-100 transition-colors">
+      <div class="flex flex-wrap gap-3">
+        <a href="/en/#contact" class="inline-flex items-center px-7 py-3 bg-white text-primary text-sm font-semibold rounded-full hover:opacity-90 transition-opacity">
           Get a Free Quote
         </a>
-        <a href="https://www.instagram.com/pickypic.sg/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-8 py-3 border border-white text-white text-sm font-semibold rounded-full hover:bg-white hover:text-primary transition-colors">
+        <a href="https://www.instagram.com/pickypic.sg/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-7 py-3 border border-white/40 text-white text-sm font-semibold rounded-full hover:bg-white hover:text-primary transition-colors">
           Follow @pickypic.sg
         </a>
       </div>
     </div>
   </section>
+
   <!-- Product Spec Modal -->
   <div id="product-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-label="Product details">
-    <div id="modal-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+    <div id="modal-backdrop" class="absolute inset-0 bg-black/60"></div>
     <div class="absolute inset-0 flex items-center justify-center p-4 sm:p-6">
-      <div class="relative bg-white rounded-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto shadow-2xl">
-        <button type="button" id="modal-close" class="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white border border-border-default hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 cursor-pointer" aria-label="Close">
+      <div class="relative bg-white border border-border w-full max-w-5xl max-h-[90vh] overflow-y-auto">
+        <button type="button" id="modal-close" class="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center border border-border bg-white hover:bg-primary hover:text-white hover:border-primary transition-colors cursor-pointer" aria-label="Close">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
         <div class="pt-8 pb-4 px-8 border-b border-border-light">
-          <span id="modal-type" class="text-xl lg:text-2xl font-black tracking-[0.15em] text-primary uppercase block mb-1"></span>
-          <h3 id="modal-name" class="text-sm lg:text-base font-medium text-secondary tracking-tight"></h3>
+          <span id="modal-type" class="block mb-1 text-[11px] font-semibold uppercase tracking-[0.4em] text-secondary"></span>
+          <h3 id="modal-name" class="font-display font-bold text-[clamp(1.25rem,2.5vw,1.75rem)] tracking-tight text-primary"></h3>
         </div>
         <div class="hidden lg:grid lg:grid-cols-12 gap-0 p-8 items-center">
           <div class="lg:col-span-3 flex items-center justify-center"><img id="modal-img-left" src="" alt="" class="max-w-full max-h-[420px]" /></div>
           <div class="lg:col-span-6 px-6 flex flex-col justify-center">
-            <h4 class="text-sm font-bold tracking-[0.1em] text-primary uppercase mb-4 text-center">Photo booth specification</h4>
+            <h4 class="text-[11px] font-semibold uppercase tracking-[0.4em] text-secondary mb-4">Photo booth specification</h4>
             <table class="w-full text-sm border-collapse"><tbody id="modal-specs-desktop"></tbody></table>
           </div>
           <div class="lg:col-span-3 flex items-center justify-center"><img id="modal-img-right" src="" alt="" class="max-w-full max-h-[420px]" /></div>
@@ -341,25 +371,29 @@ const processSteps = [
             <div class="w-1/2 max-w-[180px] flex items-center justify-center"><img id="modal-img-left-m" src="" alt="" class="max-w-full max-h-[260px] object-contain" /></div>
             <div class="w-1/2 max-w-[180px] flex items-center justify-center"><img id="modal-img-right-m" src="" alt="" class="max-w-full max-h-[260px] object-contain" /></div>
           </div>
-          <h4 class="text-sm font-bold tracking-[0.1em] text-primary uppercase mb-4 text-center">Photo booth specification</h4>
+          <h4 class="text-[11px] font-semibold uppercase tracking-[0.4em] text-secondary mb-4">Photo booth specification</h4>
           <table class="w-full text-sm border-collapse"><tbody id="modal-specs-mobile"></tbody></table>
         </div>
-        <div class="px-8 pb-8 flex justify-center gap-3">
-          <a href="/products" class="inline-flex items-center justify-center px-6 py-3 bg-primary text-white font-semibold text-sm rounded-full hover:bg-primary/90 transition-colors duration-300">View All Products</a>
-          <a href="/rental" class="inline-flex items-center justify-center px-6 py-3 border border-primary text-primary font-semibold text-sm rounded-full hover:bg-primary hover:text-white transition-colors duration-300">Rental Inquiry</a>
+        <div class="px-8 pb-8 flex flex-wrap gap-3">
+          <a href="/en/" class="inline-flex items-center justify-center px-6 py-3 bg-primary text-white font-semibold text-sm rounded-full hover:opacity-90 transition-opacity">View All Products</a>
+          <a href="/en/#contact" class="inline-flex items-center justify-center px-6 py-3 border border-primary text-primary font-semibold text-sm rounded-full hover:bg-primary hover:text-white transition-colors">Rental Inquiry</a>
         </div>
       </div>
     </div>
   </div>
   <script id="products-data" type="application/json" set:html={JSON.stringify(
-    // enProductName so the modal matches the rows: the two Retro models are
-    // sold as Receipt models in English. nameKo is dropped — this is an
-    // English page and it was leaking Hangul into the modal title.
+    // imageLeft points at the source *-line.png, which is a full spec sheet:
+    // drawing, dimension callouts, a Korean model name and a "Wood Color" chip
+    // block. Serve the cropped product-only derivative on /en/ instead — the
+    // originals stay untouched for /support/[slug].
+    // enProductName keeps the modal in step with the rows: the two Retro models
+    // are sold as Receipt models in English. nameKo is dropped — it was leaking
+    // Hangul into the modal title on an English page.
     products.map(p => ({
       id: p.id,
       name: enProductName(p.id, p.name),
       type: p.type,
-      imageLeft: p.imageLeft,
+      imageLeft: `/images/en/line/${p.id === 'classic-picky' ? 'modern-picky' : p.id}.webp`,
       imageRight: p.imageRight,
       specs: p.specs,
     }))
