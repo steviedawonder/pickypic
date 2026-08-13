@@ -21,4 +21,4 @@ export function enProductName(id: string, fallback: string): string {
 }
 
 /** The Kickstarter product, English markets only. Korean pages say Retro Picky. */
-export const EN_KICKSTARTER_PRODUCT = 'Receipt Picky 2';
+export const EN_KICKSTARTER_PRODUCT = 'Receipt Photobooth';
