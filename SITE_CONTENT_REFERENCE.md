@@ -58,7 +58,7 @@ var g5_plugin_url = "https://picky-pic.com/plugin"
 Company Information:
 - 상호: 주식회사 피키글로벌 (Picky Global Ltd.)
 - 사업자등록번호: 772-86-02811
-- 주소: 서울시 성동구 성수이로18길 31, 602호
+- 주소: 서울특별시 성동구 성수이로18길 31, 풍림테크원 205,206호
 - 전화번호: (82) 02-338-9181
 - Copyright: © 2025 Picky Global Ltd. All rights reserved.
 

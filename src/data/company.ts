@@ -8,10 +8,10 @@ export const company = {
   phoneTel: 'tel:82023389181',
   email: 'pickypic.photobooth@gmail.com',
   partnerEmail: 'pickypic.marketing@gmail.com',
-  address: '서울시 성동구 성수이로18길 31, 602호',
+  address: '서울특별시 성동구 성수이로18길 31, 풍림테크원 205,206호',
   // Romanised for /en/ — a US B2B buyer checking a supplier should be able to
   // read the address rather than see Hangul they can't verify.
-  addressEn: '31 Seongsui-ro 18-gil, Seongdong-gu, Seoul 04790, Republic of Korea',
+  addressEn: 'Pungnim Techwon 205-206, 31 Seongsui-ro 18-gil, Seongdong-gu, Seoul 04790, Republic of Korea',
   kakaoChannel: '@피키픽 포토부스',
   kakaoUrl: 'https://pf.kakao.com/_pickypic',
   instagram: {
