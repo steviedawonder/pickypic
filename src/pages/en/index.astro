@@ -97,7 +97,7 @@ const woodColors = hero.woodColors!;
         fetchpriority="high"
         loading="eager"
         decoding="async"
-        class="absolute inset-0 h-full w-full object-cover"
+        class="absolute inset-0 h-full w-full object-cover object-top"
       />
     </picture>
     {/* No scrim. The Korean home sets its hero type in #1d1d1f straight on these
@@ -395,54 +395,68 @@ const woodColors = hero.woodColors!;
   </section>
 </BaseLayout>
 
-<script is:inline>
-  (function () {
-    var form = document.getElementById('quote-form');
-    if (!form) return;
-    var msg = document.getElementById('quote-form-msg');
-    var button = form.querySelector('button[type="submit"]');
+<script>
+  const form = document.getElementById('quote-form') as HTMLFormElement | null;
+  const msg = document.getElementById('quote-form-msg')!;
+  const button = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
 
-    function say(text, ok) {
-      msg.textContent = text;
-      msg.className = 'text-sm ' + (ok ? 'text-primary' : 'text-red-600');
-    }
+  function say(text: string, ok: boolean) {
+    msg.textContent = text;
+    msg.className = 'text-sm ' + (ok ? 'text-primary' : 'text-red-600');
+  }
 
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var get = function (id) { return form.querySelector(id).value.trim(); };
-      var country = get('#q-country');
-      var body = get('#q-message');
-      button.disabled = true;
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const get = (id: string) => (form.querySelector(id) as HTMLInputElement).value.trim();
+    const name = get('#q-name');
+    const email = get('#q-email');
+    const company = get('#q-company');
+    const country = get('#q-country');
+    const body = get('#q-message');
+    if (button) button.disabled = true;
 
-      // Reuses the existing public inquiry endpoint — no new service, and these
-      // land in the same admin inbox as Korean enquiries. `country` is not in
-      // the field whitelist, so it goes into the message body.
-      fetch('/api/sanity', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'submitInquiry',
-          data: {
-            inquiryType: '일반문의',
-            name: get('#q-name'),
-            email: get('#q-email'),
-            company: get('#q-company'),
-            message: 'Country: ' + country + '\n\n' + body + '\n\n[from /en/ quote form]',
-            language: 'en',
-          },
-        }),
-      })
-        .then(function (res) {
-          if (!res.ok) throw new Error('request failed');
-          form.reset();
-          say("Thanks — we'll get back to you within one business day.", true);
-        })
-        .catch(function () {
-          say('Something went wrong. Please email pickypic.photobooth@gmail.com instead.', false);
-        })
-        .finally(function () {
-          button.disabled = false;
+    try {
+      // Same EmailJS service/template as /rental (free plan = 2 templates max).
+      // `overseas: true` switches the template to its English layout and the
+      // "[Overseas Inquiry]" subject; rental never sends it, so it's unaffected.
+      const esc = (s: string) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]!);
+      const emailjs = await import('@emailjs/browser');
+      await emailjs.default.send('service_lo0iveb', 'template_zyud66s', {
+        overseas: true,
+        contact_name: name,
+        contact_email: email,
+        company_name: company || '-',
+        country,
+        message: esc(body || '-').replace(/\n/g, '<br>'),
+      }, 'DiKfjM0kSilVVTle_');
+
+      // Sanity save for the admin inbox; a failure here must not fail the user.
+      try {
+        await fetch('/api/sanity', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'submitInquiry',
+            data: {
+              inquiryType: '해외문의',
+              name,
+              email,
+              company,
+              message: 'Country: ' + country + '\n\n' + body + '\n\n[from /en/ quote form]',
+              language: 'en',
+            },
+          }),
         });
-    });
-  })();
+      } catch (err) {
+        console.error('Sanity save error:', err);
+      }
+
+      form.reset();
+      say("Thanks — we'll get back to you within one business day.", true);
+    } catch {
+      say('Something went wrong. Please email pickypic.photobooth@gmail.com instead.', false);
+    } finally {
+      if (button) button.disabled = false;
+    }
+  });
 </script>

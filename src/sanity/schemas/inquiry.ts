@@ -13,6 +13,7 @@ export const inquiry = defineType({
         list: [
           { title: '렌탈문의', value: '렌탈문의' },
           { title: '일반문의', value: '일반문의' },
+          { title: '해외문의', value: '해외문의' },
           { title: '기타', value: '기타' },
         ],
       },
