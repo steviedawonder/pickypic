@@ -166,26 +166,26 @@ const rentalProducts = [
   <section class="pt-6 pb-8 lg:pt-8 lg:pb-10 bg-bg-light" aria-labelledby="rental-form-heading">
     <div class="mx-auto max-w-3xl px-6 lg:px-8">
       <!-- Section Heading -->
-      <div class="mb-8">
+      <div class="mb-5">
         <h2 id="rental-form-heading" class="text-2xl lg:text-3xl font-bold text-primary tracking-tight" data-i18n="rental.inquiry_title">렌탈 문의</h2>
-        <p class="mt-4 text-sm lg:text-base text-secondary leading-relaxed" data-i18n="rental.inquiry_desc">
+        <p class="mt-2 text-sm lg:text-base text-secondary leading-relaxed" data-i18n="rental.inquiry_desc">
           희망하시는 렌탈 내용을 아래 양식에 맞춰 작성 부탁드립니다!<br />
           해당 부서에서 순차적으로 답변드릴 예정입니다. (영업 시간 기준 1시간 이내)
         </p>
       </div>
 
-      <form id="rental-form" class="space-y-10" novalidate
+      <form id="rental-form" class="space-y-4" novalidate
         data-emailjs-service={emailjsServiceId}
         data-emailjs-template={emailjsTemplateId}
         data-emailjs-key={emailjsPublicKey}
       >
         <!-- 포토부스 타입 -->
         <fieldset>
-          <legend class="text-lg font-bold text-primary mb-6 tracking-tight flex items-center gap-1">
+          <legend class="text-lg font-bold text-primary mb-3 tracking-tight flex items-center gap-1">
             <span data-i18n="rental.booth_type">포토부스 타입</span> <span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 ml-1" aria-label="필수"></span>
           </legend>
 
-          <div class="space-y-3">
+          <div class="space-y-1.5">
               <label class="booth-label flex w-fit items-start gap-3 cursor-pointer group" data-img-left="/images/products/urban-mini-picky-line.png" data-img-right="/images/products/urban-mini-picky-photo.webp">
                 <input type="checkbox" name="boothType" value="urban-mini" class="w-4 h-4 accent-primary mt-0.5 flex-shrink-0" />
                 <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold" data-i18n="rental.type_table">[테이블형]</span> 어반 미니 <span class="text-secondary">(W350 x L350 x H400)</span></span>
@@ -236,9 +236,9 @@ const rentalProducts = [
         <div class="h-px bg-border-light"></div>
 
         <!-- 행사 & 담당자 정보 -->
-        <div class="space-y-5">
+        <div class="space-y-3">
           <div>
-            <label for="event-name" class="block text-sm font-medium text-primary mb-2">
+            <label for="event-name" class="block text-sm font-medium text-primary mb-1">
               <span data-i18n="rental.event_name">행사명</span> <span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 ml-0.5 align-middle" aria-label="필수"></span>
             </label>
             <input
@@ -246,14 +246,14 @@ const rentalProducts = [
               id="event-name"
               name="eventName"
               required
-              class="w-full px-4 py-3 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors bg-white"
+              class="w-full px-4 py-2 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors bg-white"
               placeholder="행사명을 입력해주세요"
               data-i18n-placeholder="rental.event_name_placeholder"
             />
           </div>
 
           <div>
-            <label for="company-name" class="block text-sm font-medium text-primary mb-2">
+            <label for="company-name" class="block text-sm font-medium text-primary mb-1">
               <span data-i18n="rental.company_name">개인 or 사업자명</span> <span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 ml-0.5 align-middle" aria-label="필수"></span>
             </label>
             <input
@@ -261,14 +261,14 @@ const rentalProducts = [
               id="company-name"
               name="companyName"
               required
-              class="w-full px-4 py-3 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors bg-white"
+              class="w-full px-4 py-2 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors bg-white"
               placeholder="개인명 또는 사업자명을 입력해주세요"
               data-i18n-placeholder="rental.company_name_placeholder"
             />
           </div>
 
           <div>
-            <label for="contact-name" class="block text-sm font-medium text-primary mb-2">
+            <label for="contact-name" class="block text-sm font-medium text-primary mb-1">
               <span data-i18n="rental.contact_name">담당자 성함</span> <span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 ml-0.5 align-middle" aria-label="필수"></span>
             </label>
             <input
@@ -276,14 +276,14 @@ const rentalProducts = [
               id="contact-name"
               name="contactName"
               required
-              class="w-full px-4 py-3 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors bg-white"
+              class="w-full px-4 py-2 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors bg-white"
               placeholder="담당자 성함을 입력해주세요"
               data-i18n-placeholder="rental.contact_name_placeholder"
             />
           </div>
 
           <div>
-            <label for="contact-phone" class="block text-sm font-medium text-primary mb-2">
+            <label for="contact-phone" class="block text-sm font-medium text-primary mb-1">
               <span data-i18n="rental.contact_phone">담당자 연락처</span> <span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 ml-0.5 align-middle" aria-label="필수"></span>
             </label>
             <input
@@ -292,13 +292,13 @@ const rentalProducts = [
               name="contactPhone"
               required
               pattern="[0-9]{2,3}-?[0-9]{3,4}-?[0-9]{4}"
-              class="w-full px-4 py-3 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors bg-white"
+              class="w-full px-4 py-2 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors bg-white"
               placeholder="010-0000-0000"
             />
           </div>
 
           <div>
-            <label for="contact-email" class="block text-sm font-medium text-primary mb-2">
+            <label for="contact-email" class="block text-sm font-medium text-primary mb-1">
               <span data-i18n="rental.contact_email">담당자 이메일 주소</span> <span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 ml-0.5 align-middle" aria-label="필수"></span>
             </label>
             <input
@@ -306,13 +306,13 @@ const rentalProducts = [
               id="contact-email"
               name="contactEmail"
               required
-              class="w-full px-4 py-3 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors bg-white"
+              class="w-full px-4 py-2 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors bg-white"
               placeholder="email@example.com"
             />
           </div>
 
           <div>
-            <label for="install-location" class="block text-sm font-medium text-primary mb-2">
+            <label for="install-location" class="block text-sm font-medium text-primary mb-1">
               <span data-i18n="rental.install_location">설치 장소</span> <span class="text-xs text-secondary font-normal" data-i18n="rental.install_location_note">(*미정 시 대략적인 장소 작성 부탁드립니다.)</span> <span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 ml-0.5 align-middle" aria-label="필수"></span>
             </label>
             <input
@@ -320,14 +320,14 @@ const rentalProducts = [
               id="install-location"
               name="installLocation"
               required
-              class="w-full px-4 py-3 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors bg-white"
+              class="w-full px-4 py-2 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors bg-white"
               placeholder="EX) 더현대서울 00층 등"
               data-i18n-placeholder="rental.install_location_placeholder"
             />
           </div>
 
           <div>
-            <label for="event-schedule" class="block text-sm font-medium text-primary mb-2">
+            <label for="event-schedule" class="block text-sm font-medium text-primary mb-1">
               <span data-i18n="rental.event_schedule">행사 일정</span> <span class="text-xs text-secondary font-normal" data-i18n="rental.event_schedule_note">(*미정 시 대략적인 일정 작성 부탁드립니다.)</span> <span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 ml-0.5 align-middle" aria-label="필수"></span>
             </label>
             <input
@@ -335,14 +335,14 @@ const rentalProducts = [
               id="event-schedule"
               name="eventSchedule"
               required
-              class="w-full px-4 py-3 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors bg-white"
+              class="w-full px-4 py-2 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors bg-white"
               placeholder="EX) 2025년 1월 1일 ~ 7일 (7일 간)"
               data-i18n-placeholder="rental.event_schedule_placeholder"
             />
           </div>
 
           <div>
-            <label for="removal-schedule" class="block text-sm font-medium text-primary mb-2">
+            <label for="removal-schedule" class="block text-sm font-medium text-primary mb-1">
               <span data-i18n="rental.removal_schedule">철거 일정</span> <span class="text-xs text-secondary font-normal" data-i18n="rental.removal_schedule_note">(*미정 시 대략적인 일정 작성 부탁드립니다.)</span> <span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 ml-0.5 align-middle" aria-label="필수"></span>
             </label>
             <input
@@ -350,7 +350,7 @@ const rentalProducts = [
               id="removal-schedule"
               name="removalSchedule"
               required
-              class="w-full px-4 py-3 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors bg-white"
+              class="w-full px-4 py-2 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors bg-white"
               placeholder="EX) 2025년 1월 1일 ~ 7일 (7일 간)"
               data-i18n-placeholder="rental.removal_schedule_placeholder"
             />
@@ -361,10 +361,10 @@ const rentalProducts = [
 
         <!-- 래핑 진행 여부 -->
         <fieldset>
-          <legend class="text-sm font-medium text-primary mb-3 flex items-center gap-1">
+          <legend class="text-sm font-medium text-primary mb-2 flex items-center gap-1">
             <span data-i18n="rental.wrapping">래핑 진행 여부</span> <span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 ml-0.5" aria-label="필수"></span>
           </legend>
-          <div class="flex flex-wrap gap-4">
+          <div class="flex flex-wrap gap-x-4 gap-y-2">
             <label class="flex items-center gap-2 cursor-pointer">
               <input type="radio" name="wrapping" value="래핑 안함" required class="w-4 h-4 accent-primary" />
               <span class="text-sm text-primary" data-i18n="rental.wrapping_none">래핑 안함</span>
@@ -388,10 +388,10 @@ const rentalProducts = [
 
         <!-- 유료/무료 촬영 -->
         <fieldset>
-          <legend class="text-sm font-medium text-primary mb-3 flex items-center gap-1">
+          <legend class="text-sm font-medium text-primary mb-2 flex items-center gap-1">
             <span data-i18n="rental.shooting_type">유료/무료 촬영</span> <span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 ml-0.5" aria-label="필수"></span>
           </legend>
-          <div class="flex flex-wrap gap-4">
+          <div class="flex flex-wrap gap-x-4 gap-y-2">
             <label class="flex items-center gap-2 cursor-pointer">
               <input type="radio" name="shootingType" value="유료 촬영" required class="w-4 h-4 accent-primary" />
               <span class="text-sm text-primary" data-i18n="rental.shooting_paid">유료 촬영</span>
@@ -413,31 +413,16 @@ const rentalProducts = [
 
         <div class="h-px bg-border-light"></div>
 
-        <!-- 기타 문의 사항 -->
-        <div>
-          <label for="additional-message" class="block text-sm font-medium text-primary mb-2" data-i18n="rental.additional">기타 문의 사항</label>
-          <textarea
-            id="additional-message"
-            name="additionalMessage"
-            rows="5"
-            class="w-full px-4 py-3 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors resize-none bg-white"
-            placeholder="기타 문의 사항이 있으시면 자유롭게 작성해주세요."
-            data-i18n-placeholder="rental.additional_placeholder"
-          ></textarea>
-        </div>
-
-        <div class="h-px bg-border-light"></div>
-
         <!-- 방문 경로 -->
         <div>
-          <label for="visit-route" class="block text-sm font-medium text-primary mb-2">
+          <label for="visit-route" class="block text-sm font-medium text-primary mb-1">
             <span data-i18n="rental.visit_route">방문하시게 된 경로</span> <span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 ml-0.5 align-middle" aria-label="필수"></span>
           </label>
           <select
             id="visit-route"
             name="visitRoute"
             required
-            class="w-full px-4 py-3 border border-border-light text-sm text-primary focus:outline-none focus:border-primary transition-colors bg-white appearance-none"
+            class="w-full px-4 py-2 border border-border-light text-sm text-primary focus:outline-none focus:border-primary transition-colors bg-white appearance-none"
             style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E&quot;); background-repeat: no-repeat; background-position: right 16px center;"
           >
             <option value="" selected disabled data-i18n="rental.visit_route_placeholder">선택해주세요</option>
@@ -451,16 +436,31 @@ const rentalProducts = [
             <option value="재이용" data-i18n="rental.visit_route_reuse">재이용</option>
             <option value="기타" data-i18n="rental.visit_route_other">기타</option>
           </select>
-          <div id="visit-route-other-wrap" class="hidden mt-3">
+          <div id="visit-route-other-wrap" class="hidden mt-2">
             <input
               type="text"
               id="visit-route-other"
               name="visitRouteOther"
-              class="w-full px-4 py-3 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors bg-white"
+              class="w-full px-4 py-2 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors bg-white"
               placeholder="방문 경로를 직접 입력해주세요"
               data-i18n-placeholder="rental.visit_route_other_placeholder"
             />
           </div>
+        </div>
+
+        <div class="h-px bg-border-light"></div>
+
+        <!-- 기타 문의 사항 -->
+        <div>
+          <label for="additional-message" class="block text-sm font-medium text-primary mb-1" data-i18n="rental.additional">기타 문의 사항</label>
+          <textarea
+            id="additional-message"
+            name="additionalMessage"
+            rows="3"
+            class="w-full px-4 py-2 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors resize-none bg-white"
+            placeholder="기타 문의 사항이 있으시면 자유롭게 작성해주세요."
+            data-i18n-placeholder="rental.additional_placeholder"
+          ></textarea>
         </div>
 
         <div class="h-px bg-border-light"></div>
@@ -471,7 +471,7 @@ const rentalProducts = [
             <input type="checkbox" id="privacy-agree" name="privacyAgree" required class="w-4 h-4 accent-primary mt-0.5 flex-shrink-0" />
             <div class="text-sm text-secondary leading-relaxed">
               <span class="font-semibold text-primary" data-i18n="rental.privacy_title">[필수] 개인정보 수집 및 이용 동의</span>
-              <p class="mt-2 text-xs text-secondary leading-relaxed" data-i18n="rental.privacy_desc">
+              <p class="mt-1 text-xs text-secondary leading-relaxed" data-i18n="rental.privacy_desc">
                 수집 항목: 성함, 연락처, 이메일, 소속/회사명<br />
                 수집 목적: 렌탈 문의 상담 및 답변<br />
                 보유 기간: 문의 접수 후 상담 완료 시까지 (최대 1년)<br />
@@ -482,7 +482,7 @@ const rentalProducts = [
         </div>
 
         <!-- Submit -->
-        <div class="text-center pt-4">
+        <div class="text-center pt-2">
           <button
             type="submit"
             class="inline-block w-full sm:w-auto px-16 py-4 bg-primary text-white text-base font-semibold tracking-[0.08em] hover:bg-black transition-colors duration-300 cursor-pointer"
