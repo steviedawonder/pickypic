@@ -431,11 +431,12 @@ const rentalProducts = [
         <!-- 방문 경로 -->
         <div>
           <label for="visit-route" class="block text-sm font-medium text-primary mb-2">
-            <span data-i18n="rental.visit_route">방문하시게 된 경로</span>
+            <span data-i18n="rental.visit_route">방문하시게 된 경로</span> <span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 ml-0.5 align-middle" aria-label="필수"></span>
           </label>
           <select
             id="visit-route"
             name="visitRoute"
+            required
             class="w-full px-4 py-3 border border-border-light text-sm text-primary focus:outline-none focus:border-primary transition-colors bg-white appearance-none"
             style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E&quot;); background-repeat: no-repeat; background-position: right 16px center;"
           >
@@ -450,6 +451,16 @@ const rentalProducts = [
             <option value="재이용" data-i18n="rental.visit_route_reuse">재이용</option>
             <option value="기타" data-i18n="rental.visit_route_other">기타</option>
           </select>
+          <div id="visit-route-other-wrap" class="hidden mt-3">
+            <input
+              type="text"
+              id="visit-route-other"
+              name="visitRouteOther"
+              class="w-full px-4 py-3 border border-border-light text-sm text-primary placeholder:text-secondary/50 focus:outline-none focus:border-primary transition-colors bg-white"
+              placeholder="방문 경로를 직접 입력해주세요"
+              data-i18n-placeholder="rental.visit_route_other_placeholder"
+            />
+          </div>
         </div>
 
         <div class="h-px bg-border-light"></div>
@@ -609,6 +620,18 @@ const rentalProducts = [
       if (target) clearError(target);
     });
 
+    // 방문 경로 '기타' 선택 시 직접 입력칸 표시
+    const visitRouteSelect = form.querySelector<HTMLSelectElement>('#visit-route');
+    const visitRouteOther = form.querySelector<HTMLInputElement>('#visit-route-other');
+    function toggleVisitRouteOther() {
+      if (!visitRouteSelect || !visitRouteOther) return;
+      const isOther = visitRouteSelect.value === '기타';
+      visitRouteOther.closest('div')?.classList.toggle('hidden', !isOther);
+      visitRouteOther.required = isOther;
+      if (!isOther) clearError(visitRouteOther);
+    }
+    visitRouteSelect?.addEventListener('change', toggleVisitRouteOther);
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -669,6 +692,13 @@ const rentalProducts = [
         }
       });
 
+      // Validate visit route
+      if (visitRouteSelect && !visitRouteSelect.value) {
+        isValid = false;
+        showError(visitRouteSelect, getT('validation.select_required'));
+        if (!firstInvalid) firstInvalid = visitRouteSelect;
+      }
+
       // Validate privacy agreement
       const privacyCheck = form.querySelector<HTMLInputElement>('#privacy-agree');
       if (privacyCheck && !privacyCheck.checked) {
@@ -705,7 +735,10 @@ const rentalProducts = [
       const eventSchedule = (form.querySelector<HTMLInputElement>('#event-schedule')?.value || '').trim();
       const removalSchedule = (form.querySelector<HTMLInputElement>('#removal-schedule')?.value || '').trim();
       const additionalMessage = (form.querySelector<HTMLTextAreaElement>('#additional-message')?.value || '').trim();
-      const visitRoute = (form.querySelector<HTMLSelectElement>('#visit-route')?.value || '').trim();
+      const visitRouteValue = visitRouteSelect?.value || '';
+      const visitRoute = visitRouteValue === '기타'
+        ? `기타: ${(visitRouteOther?.value || '').trim()}`
+        : visitRouteValue;
 
       const templateParams = {
         event_name: eventName,
@@ -766,6 +799,7 @@ const rentalProducts = [
 
         showInquiryModal(getT('validation.success'));
         form.reset();
+        toggleVisitRouteOther();
       } catch (error) {
         console.error('EmailJS Error:', error);
         showInquiryModal(getT('validation.error'));
