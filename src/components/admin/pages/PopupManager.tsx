@@ -80,7 +80,6 @@ function PopupManager() {
               <option value="/blog">블로그</option>
               <option value="/shop">구매문의</option>
               <option value="/ai-photobooth">AI 포토부스</option>
-              <option value="/ai-personal-color">A.I 퍼스널컬러</option>
               <option value="/support">고객지원</option>
             </select>
           </div>
