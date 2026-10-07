@@ -186,6 +186,10 @@ const rentalProducts = [
           </legend>
 
           <div class="space-y-1.5">
+              <label class="booth-label flex w-fit items-start gap-3 cursor-pointer group" data-img-left="/images/ai-photobooth/hero-booth.jpg" data-img-right="/images/ai-photobooth/hero-scene.jpg">
+                <input type="checkbox" name="boothType" value="ai-photobooth" class="w-4 h-4 accent-primary mt-0.5 flex-shrink-0" />
+                <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold" data-i18n="rental.type_ai">[AI 촬영]</span> AI 포토부스 <span class="text-secondary" data-i18n="rental.ai_booth_desc">(옷·배경·분위기를 바꾸는 AI 연출)</span></span>
+              </label>
               <label class="booth-label flex w-fit items-start gap-3 cursor-pointer group" data-img-left="/images/products/urban-mini-picky-line.png" data-img-right="/images/products/urban-mini-picky-photo.webp">
                 <input type="checkbox" name="boothType" value="urban-mini" class="w-4 h-4 accent-primary mt-0.5 flex-shrink-0" />
                 <span class="text-sm text-primary group-hover:text-primary-light transition-colors"><span class="font-semibold" data-i18n="rental.type_table">[테이블형]</span> 어반 미니 <span class="text-secondary">(W350 x L350 x H400)</span></span>
@@ -861,4 +865,14 @@ const rentalProducts = [
 
   document.addEventListener('DOMContentLoaded', initBoothPreview);
   document.addEventListener('astro:after-swap', initBoothPreview);
+</script>
+
+<script>
+  // Pre-check a booth type when arriving from a product page, e.g. /rental?booth=ai-photobooth
+  const presetBooth = new URLSearchParams(location.search).get('booth');
+  if (presetBooth) {
+    document
+      .querySelectorAll<HTMLInputElement>('input[name="boothType"]')
+      .forEach((cb) => { if (cb.value === presetBooth) cb.checked = true; });
+  }
 </script>
