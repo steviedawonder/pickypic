@@ -359,6 +359,30 @@ const rentalProducts = [
 
         <div class="h-px bg-border-light"></div>
 
+        <!-- AI 촬영 기능 (기종과 별개인 소프트웨어 옵션) -->
+        <fieldset>
+          <legend class="text-sm font-medium text-primary mb-2 flex flex-wrap items-center gap-1">
+            <span data-i18n="rental.ai_shooting">AI 촬영 기능</span> <span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 ml-0.5" aria-label="필수"></span>
+            <a href="/ai-photobooth" target="_blank" rel="noopener" class="ml-2 text-xs text-secondary underline underline-offset-2 hover:text-primary" data-i18n="rental.ai_more">AI 포토부스 알아보기</a>
+          </legend>
+          <div class="flex flex-wrap gap-x-4 gap-y-2">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="aiShooting" value="AI 촬영 사용" required class="w-4 h-4 accent-primary" />
+              <span class="text-sm text-primary" data-i18n="rental.ai_use">AI 촬영 사용</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="aiShooting" value="사용 안함" class="w-4 h-4 accent-primary" />
+              <span class="text-sm text-primary" data-i18n="rental.ai_none">사용 안함</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="aiShooting" value="미정" class="w-4 h-4 accent-primary" />
+              <span class="text-sm text-primary" data-i18n="rental.ai_undecided">미정</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="h-px bg-border-light"></div>
+
         <!-- 래핑 진행 여부 -->
         <fieldset>
           <legend class="text-sm font-medium text-primary mb-2 flex items-center gap-1">
@@ -676,7 +700,7 @@ const rentalProducts = [
       });
 
       // Validate required radios
-      ['wrapping', 'shootingType'].forEach(name => {
+      ['aiShooting', 'wrapping', 'shootingType'].forEach(name => {
         const radios = form.querySelectorAll<HTMLInputElement>(`input[name="${name}"]`);
         const anyChecked = Array.from(radios).some(r => r.checked);
         if (!anyChecked) {
@@ -725,6 +749,7 @@ const rentalProducts = [
 
       const wrapping = form.querySelector<HTMLInputElement>('input[name="wrapping"]:checked')?.value || '';
       const shootingType = form.querySelector<HTMLInputElement>('input[name="shootingType"]:checked')?.value || '';
+      const aiShooting = form.querySelector<HTMLInputElement>('input[name="aiShooting"]:checked')?.value || '';
 
       const eventName = (form.querySelector<HTMLInputElement>('#event-name')?.value || '').trim();
       const companyName = (form.querySelector<HTMLInputElement>('#company-name')?.value || '').trim();
@@ -752,8 +777,11 @@ const rentalProducts = [
         booth_type: checkedBooths,
         wrapping: wrapping,
         shooting_type: shootingType,
+        ai_shooting: aiShooting,
+        // AI 촬영 rides in additional_message too, so it reaches the inbox before the EmailJS template gets its own {{ai_shooting}} slot.
         additional_message: [
           additionalMessage || '없음',
+          `AI 촬영: ${aiShooting}`,
           `방문경로: ${visitRoute || '없음'}`,
         ].join('\n'),
         visit_route: visitRoute || '없음',
@@ -788,7 +816,7 @@ const rentalProducts = [
                 company: templateParams.company_name,
                 eventName: templateParams.event_name,
                 eventDate: templateParams.event_schedule,
-                message: `설치장소: ${templateParams.install_location}\n부스타입: ${templateParams.booth_type}\n래핑: ${templateParams.wrapping}\n촬영: ${templateParams.shooting_type}\n철거: ${templateParams.removal_schedule}\n방문경로: ${templateParams.visit_route}\n추가메시지: ${templateParams.additional_message}`,
+                message: `설치장소: ${templateParams.install_location}\n부스타입: ${templateParams.booth_type}\nAI 촬영: ${templateParams.ai_shooting}\n래핑: ${templateParams.wrapping}\n촬영: ${templateParams.shooting_type}\n철거: ${templateParams.removal_schedule}\n방문경로: ${templateParams.visit_route}\n추가메시지: ${templateParams.additional_message}`,
                 language: document.documentElement.lang || 'ko',
               },
             }),
@@ -861,4 +889,12 @@ const rentalProducts = [
 
   document.addEventListener('DOMContentLoaded', initBoothPreview);
   document.addEventListener('astro:after-swap', initBoothPreview);
+</script>
+
+<script>
+  // Arriving from the AI 포토부스 page (/rental?ai=1) pre-selects "AI 촬영 사용".
+  if (new URLSearchParams(location.search).get('ai') === '1') {
+    const aiUse = document.querySelector<HTMLInputElement>('input[name="aiShooting"][value="AI 촬영 사용"]');
+    if (aiUse) aiUse.checked = true;
+  }
 </script>
