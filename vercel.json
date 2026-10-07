@@ -70,6 +70,21 @@
       "statusCode": 301
     },
     {
+      "source": "/ai-personal-color",
+      "destination": "/rental",
+      "statusCode": 301
+    },
+    {
+      "source": "/ai-personal-color/",
+      "destination": "/rental",
+      "statusCode": 301
+    },
+    {
+      "source": "/ai-personal-color/:path*",
+      "destination": "/rental",
+      "statusCode": 301
+    },
+    {
       "source": "/bbs/board.php",
       "has": [
         {
