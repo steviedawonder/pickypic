@@ -170,10 +170,10 @@ const faqItems = [
             <span class="lang lang--off">日本語</span><span class="lang lang--off">Español</span>
           </div>
           <p class="note" data-i18n="aipb.screen.note">4개 언어 기본 탑재. 이 외 희망 언어도 추가할 수 있습니다.</p>
+          <p class="note" data-i18n="aipb.screen.cap">AI 쪽 견본은 한복, N년 뒤의 나, 아이돌 데뷔 등으로 계속 바뀌며 고객에게 연출을 미리 보여 줍니다.</p>
         </div>
         <div class="screen"><img id="uiImg" src="/images/ai-photobooth/ui-ko.jpg" width="1400" height="788" alt="왼쪽은 BASIC, 오른쪽은 AI 모드를 고르는 포토부스 시작 화면. AI 쪽에는 커플 한복 견본이 보이고 아래에 언어 선택 버튼이 있다"></div>
       </div>
-      <figure class="screen2"><img loading="lazy" src="/images/ai-photobooth/ui-solo.jpg" width="1400" height="802" alt="AI 쪽에 20년 뒤의 나 견본이 표시된 포토부스 시작 화면"><figcaption data-i18n="aipb.screen.cap">AI 쪽 견본은 한복, N년 뒤의 나, 아이돌 데뷔 등으로 계속 바뀌며 고객에게 연출을 미리 보여 줍니다.</figcaption></figure>
     </div>
   </section>
   
@@ -469,7 +469,7 @@ dl{margin:0}
 .inset em{position:absolute;right:6px;bottom:5px;font-style:normal;font-size:12px;color:var(--sheet);text-shadow:0 0 4px rgba(0,0,0,.6)}
 /* 원본 한 장 */
 .one{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3.1fr);gap:clamp(20px,3vw,40px);align-items:start}
-.one figure,.grow figure,.seasons figure,.screen2{margin:0}
+.one figure,.grow figure,.seasons figure{margin:0}
 .one__src{position:sticky;top:calc(var(--hdr) + 16px)}
 .one__src img{width:100%;border:1.5px solid var(--ink)}
 .one__src figcaption{margin-top:-14px;margin-left:10px;position:relative}
@@ -491,16 +491,13 @@ button.lang{cursor:pointer}
 button.lang[aria-pressed="true"]{background:var(--lime);color:var(--ink);border-color:var(--lime);font-weight:800}
 button.lang:focus-visible{outline:3px solid var(--lime);outline-offset:3px}
 .lang--off{opacity:.55}
-.screen2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:clamp(20px,4vw,48px);align-items:center;margin-top:clamp(32px,5vw,56px);padding-top:clamp(24px,4vw,40px);border-top:1px solid var(--violet)}
-.screen2 img{width:100%;border:6px solid var(--violet);order:2}
-.screen2 figcaption{color:var(--on-violet-2);font-size:15px;max-width:26em}
 /* 시즌 */
 .seasons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 @media (max-width:860px){
   .one{grid-template-columns:minmax(0,1fr)}
   .one__src{position:static;max-width:220px}
   .one__grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .grow,.screen2,.split--screen{grid-template-columns:minmax(0,1fr)}
+  .grow,.split--screen{grid-template-columns:minmax(0,1fr)}
   .seasons{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
 @media (max-width:480px){
