@@ -26,6 +26,7 @@ const navI18nKeys = [
   'nav.portfolio',
   'nav.support',
   'nav.ai',
+  'nav.ai_pc',
   // 'nav.blog', // 메뉴에서 임시 숨김
 ];
 ---
@@ -42,13 +43,13 @@ const navI18nKeys = [
 
     <!-- Desktop Menu + Language Selector -->
     <div class="hidden items-center gap-8 lg:flex">
-      <ul class="flex items-center gap-8">
+      <ul class="flex items-center gap-5 xl:gap-8">
         {menuItems.map((item, i) => (
           <li>
             <a
               href={item.href}
               class:list={[
-                'relative text-base font-medium tracking-wide transition-colors duration-300 hover:text-black pb-1',
+                'relative whitespace-nowrap [html[lang=ja]_&]:whitespace-normal text-base font-medium tracking-wide transition-colors duration-300 hover:text-black pb-1',
                 currentPath === item.href || currentPath.startsWith(item.href + '/')
                   ? 'text-black after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-black'
                   : 'text-gray-600',
