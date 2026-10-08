@@ -54,6 +54,7 @@ export default defineConfig({
           'https://picky-pic.com/blog',
           'https://picky-pic.com/collaboration',
           'https://picky-pic.com/ai-photobooth',
+          'https://picky-pic.com/ai-personal-color',
         ];
         if (second.some((u) => url === u || url === u + '/' || url.startsWith(u + '/'))) {
           return { ...item, priority: 0.9, changefreq: 'weekly' };

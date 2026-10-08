@@ -1,0 +1,468 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+
+// Korean URL only — EN/JP are the in-page data-i18n swap, so it stays out of i18nPairs.
+const faqItems = [
+  { question: '직원이 옆에 있어야 하나요?', answer: '아니요. 손님이 화면 안내에 따라 스스로 촬영하고 진단을 받는 무인 키오스크입니다. 운영자는 영업 시작 전 5분 점검만 하면 됩니다.' },
+  { question: '어떤 결과가 나오나요?', answer: '웜·쿨과 봄·여름·가을·겨울을 조합한 네 가지 톤(봄웜, 여름쿨, 가을웜, 겨울쿨) 중 하나로 진단하고, 수치와 추천 컬러가 담긴 결과지를 인화합니다.' },
+  { question: '결과가 한 계절로 몰리면 어떻게 하나요?', answer: '세 단계의 판정 기준값을 0.5 단위로 조절해 설치 환경과 고객층에 맞는 분포로 보정할 수 있습니다.' },
+  { question: '우리 브랜드 디자인과 제품을 넣을 수 있나요?', answer: '네. 메인 화면, 결과지 템플릿, 추천 화장품 영역, 인화 대기 중 영상, 기기 외관 래핑까지 바꿀 수 있습니다. AI 진단 결과값만 고정입니다.' },
+  { question: '손님이 줄을 길게 서면요?', answer: '설문을 5문항으로 줄이거나 끄고, 촬영 카운트다운과 분석 화면 노출 시간을 줄여 1인당 소요 시간을 조절합니다.' },
+  { question: '비용은 어떻게 되나요?', answer: '기기 타입과 기간, 커스터마이징 범위에 따라 달라져 견적으로 안내합니다.' },
+];
+
+const swatches = [
+  ['#f1f1f1', 'White'], ['#f2c63c', 'Shine yellow'], ['#a8d898', 'Lime'], ['#4a1d7a', 'Violet'],
+  ['#1f7a3f', 'Leaf green'], ['#1f7f6e', 'Moss green'], ['#1f3a93', 'Royal blue'], ['#6b3f1d', 'Dark brown'],
+  ['#8f1d2c', 'Cranberry'], ['#f4b8bd', 'Peach'], ['#ee7d22', 'Fanta orange'], ['#6d5a63', 'Purple gray'], ['#d9b38c', 'Wood'],
+];
+---
+
+<BaseLayout
+  title="AI 퍼스널컬러 포토부스 | 피키픽 PICKYPIC"
+  description="카메라 촬영만으로 봄웜·여름쿨·가을웜·겨울쿨을 즉석 진단하는 피키픽 AI 퍼스널컬러 포토부스. 무인 촬영, 결과지 즉석 인화, QR 모바일 전송, 브랜드 맞춤 커스터마이징."
+  ogImage="/images/ai-personal-color/screen-main.jpg"
+>
+  <link slot="head" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112,800&family=Gothic+A1:wght@400;500;700;800;900&display=swap" />
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqItems.map((f) => ({
+      "@type": "Question",
+      "name": f.question,
+      "acceptedAnswer": { "@type": "Answer", "text": f.answer },
+    })),
+  })} />
+
+  <BreadcrumbSchema items={[
+    { name: '홈', href: '/' },
+    { name: 'AI 퍼스널컬러', href: '/ai-personal-color' },
+  ]} />
+
+  <div class="pc-page">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero__grid">
+        <div class="hero__copy">
+          <span class="tag" data-i18n="aipc.hero.tag">피키픽 AI 퍼스널컬러 포토부스</span>
+          <h1><span data-i18n="aipc.hero.h1a">카메라 앞에 서면,</span><br><span class="mark" data-i18n="aipc.hero.h1b">내 퍼스널컬러가</span><br><span data-i18n="aipc.hero.h1c">바로 나옵니다</span></h1>
+          <p class="lead" data-i18n="aipc.hero.lead">촬영만으로 웜·쿨과 사계절 톤을 즉석에서 진단하는 무인 키오스크입니다. 진단 결과지는 그 자리에서 인화되고, 브랜드 홍보 콘텐츠로도 쓸 수 있습니다.</p>
+          <div class="tones" aria-label="진단하는 네 가지 톤" data-i18n-aria="aipc.hero.tones"><span class="t-spring" data-i18n="aipc.tone.spring">봄 웜</span><span class="t-summer" data-i18n="aipc.tone.summer">여름 쿨</span><span class="t-autumn" data-i18n="aipc.tone.autumn">가을 웜</span><span class="t-winter" data-i18n="aipc.tone.winter">겨울 쿨</span></div>
+          <div class="btns">
+            <a class="btn btn--main" href="/rental" data-i18n="aipc.btn.inquiry">도입 문의하기</a>
+            <a class="btn btn--ghost" href="#flow" data-i18n="aipc.btn.flow">이용 흐름 보기</a>
+          </div>
+        </div>
+        <div class="hero__pic">
+          <img class="hero__main" src="/images/ai-personal-color/screen-main.jpg" width="1200" height="677" alt="FIND YOUR COLOR 문구와 진단 시작 버튼, 언어 선택 국기가 있는 퍼스널컬러 키오스크 메인 화면">
+          <img class="hero__sub" src="/images/ai-personal-color/kiosk-modern.jpg" width="526" height="492" alt="원목 외관의 Modern 퍼스널컬러 키오스크">
+        </div>
+      </div>
+      <div class="facts">
+        <div><b>4<span data-i18n="aipc.fact1.unit">가지 톤</span></b><small data-i18n="aipc.fact1.desc">봄웜·여름쿨·가을웜·겨울쿨을 얼굴 인식으로 분석</small></div>
+        <div><b>0<span data-i18n="aipc.fact2.unit">명</span></b><small data-i18n="aipc.fact2.desc">직원 개입 없이 손님 스스로 촬영하고 진단</small></div>
+        <div><b>150<span data-i18n="aipc.fact3.unit">장</span></b><small data-i18n="aipc.fact3.desc">용지 1롤 기준 결과지 출력 수량</small></div>
+        <div><b>7<span data-i18n="aipc.fact4.unit">일</span></b><small data-i18n="aipc.fact4.desc">QR로 받은 사진의 최대 보관 기간</small></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 이용 흐름 -->
+  <section class="band band--sheet" id="flow">
+    <div class="wrap">
+      <div class="head">
+        <span class="tag" data-i18n="aipc.flow.tag">이용 흐름</span>
+        <h2 data-i18n="aipc.flow.h2">설문부터 사진 수령까지 6단계</h2>
+        <p class="lead" data-i18n="aipc.flow.lead">단계를 눌러 손님이 실제로 보는 화면을 확인해 보세요.</p>
+      </div>
+      <div class="scenes">
+        <figure class="stage"><img id="stageImg" src="/images/ai-personal-color/step-survey.jpg" width="590" height="335" alt="가장 마음에 드는 피부 표현을 고르는 설문 화면"></figure>
+        <div class="picker" role="tablist" aria-label="이용 단계" data-i18n-aria="aipc.flow.picker">
+          <button class="pick" role="tab" aria-selected="true" data-img="step-survey" data-alt="가장 마음에 드는 피부 표현을 고르는 설문 화면"><strong data-i18n="aipc.step1.name">설문 (선택)</strong><span data-i18n="aipc.step1.desc">선호 피부 표현, 옷 색상, 오늘 알고 싶은 것을 묻습니다. 5·10·15문항 중 고르거나, 대기줄이 길면 끌 수 있습니다.</span></button>
+          <button class="pick" role="tab" aria-selected="false" data-img="step-shoot" data-alt="얼굴 윤곽 가이드에 맞춰 정면을 보는 TAKE 1 촬영 화면"><strong data-i18n="aipc.step2.name">촬영</strong><span data-i18n="aipc.step2.desc">안경·모자를 벗어 달라는 안내 뒤 두 번 찍습니다. TAKE 1은 정면 응시(분석용), TAKE 2는 자유 포즈(인쇄용)입니다.</span></button>
+          <button class="pick" role="tab" aria-selected="false" data-img="step-analysis" data-alt="봄 62%, 웜 46%, 채도 74%처럼 수치 막대가 표시되는 AI 분석 화면"><strong data-i18n="aipc.step3.name">분석</strong><span data-i18n="aipc.step3.desc">촬영 직후 웜톤·쿨톤·채도를 수치로 바꿔 실시간으로 분석합니다.</span></button>
+          <button class="pick" role="tab" aria-selected="false" data-img="result-summer" data-alt="여름 쿨 진단 결과지. 인물 사진, 톤별 수치, 추천 컬러와 추천 화장품"><strong data-i18n="aipc.step4.name">결과 확인</strong><span data-i18n="aipc.step4.desc">네 가지 톤 중 하나로 진단 결과지가 자동 생성됩니다. 추천 컬러와 추천 제품이 함께 실립니다.</span></button>
+          <button class="pick" role="tab" aria-selected="false" data-img="ad-video" data-alt="인화 대기 화면에 재생되는 화장품 브랜드 홍보 영상 예시"><strong data-i18n="aipc.step5.name">인쇄</strong><span data-i18n="aipc.step5.desc">결과지가 현장에서 바로 인화됩니다. 인화되는 동안 화면에는 브랜드가 원하는 영상을 재생할 수 있습니다.</span></button>
+          <button class="pick" role="tab" aria-selected="false" data-img="result-spring" data-alt="왼쪽 아래에 QR 코드가 인쇄된 봄 웜 진단 결과지"><strong data-i18n="aipc.step6.name">QR 전송</strong><span data-i18n="aipc.step6.desc">인쇄물의 QR 코드를 휴대폰으로 찍으면 사진을 받아 갑니다. 최대 7일간 보관되고 이후 링크는 만료됩니다.</span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 결과지 -->
+  <section class="band">
+    <div class="wrap">
+      <div class="head">
+        <span class="tag" data-i18n="aipc.result.tag">진단 결과지</span>
+        <h2 data-i18n="aipc.result.h2">톤마다 다른 결과지가<br>자동으로 만들어집니다</h2>
+        <p class="lead" data-i18n="aipc.result.lead">결과지 한 장이 세 영역으로 나뉩니다. AI 진단 결과만 고정이고, 나머지 디자인은 브랜드에 맞춰 바꿉니다.</p>
+      </div>
+      <div class="results">
+        <figure><img src="/images/ai-personal-color/result-spring.jpg" width="573" height="397" alt="봄 웜 진단 결과지 예시"><figcaption><b class="t-spring" data-i18n="aipc.tone.spring">봄 웜</b>SPRING WARM</figcaption></figure>
+        <figure><img src="/images/ai-personal-color/result-summer.jpg" width="573" height="397" alt="여름 쿨 진단 결과지 예시"><figcaption><b class="t-summer" data-i18n="aipc.tone.summer">여름 쿨</b>SUMMER COOL</figcaption></figure>
+        <figure><img loading="lazy" src="/images/ai-personal-color/result-autumn.jpg" width="573" height="397" alt="가을 웜 진단 결과지 예시"><figcaption><b class="t-autumn" data-i18n="aipc.tone.autumn">가을 웜</b>AUTUMN WARM</figcaption></figure>
+        <figure><img loading="lazy" src="/images/ai-personal-color/result-winter.jpg" width="573" height="397" alt="겨울 쿨 진단 결과지 예시"><figcaption><b class="t-winter" data-i18n="aipc.tone.winter">겨울 쿨</b>WINTER COOL</figcaption></figure>
+      </div>
+      <div class="zones">
+        <div><h3 data-i18n="aipc.zone1.name">포토 프레임 영역</h3><p data-i18n="aipc.zone1.desc">브랜드 로고와 원하는 디자인으로 바꿀 수 있습니다.</p></div>
+        <div><h3 data-i18n="aipc.zone2.name">퍼스널컬러 진단서</h3><p data-i18n="aipc.zone2.desc">AI 진단 결과는 고정값, 템플릿 배경 디자인은 변경 가능합니다.</p></div>
+        <div><h3 data-i18n="aipc.zone3.name">추천 화장품 영역</h3><p data-i18n="aipc.zone3.desc">제품과 디자인을 바꾸고, 제품 페이지·SNS로 연결되는 QR을 넣을 수 있습니다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 라인업 -->
+  <section class="band band--sheet">
+    <div class="wrap">
+      <div class="head">
+        <span class="tag" data-i18n="aipc.lineup.tag">제품 라인업</span>
+        <h2 data-i18n="aipc.lineup.h2">Urban과 Modern,<br>설치 환경에 맞게 고릅니다</h2>
+      </div>
+      <div class="lineup">
+        <div class="models">
+          <figure><img src="/images/ai-personal-color/kiosk-urban.jpg" width="526" height="492" alt="분홍색 아크릴 외관의 Urban 키오스크"><figcaption><b>Urban</b><span data-i18n="aipc.lineup.urban">아크릴 제품 · 22kg</span></figcaption></figure>
+          <figure><img src="/images/ai-personal-color/kiosk-modern.jpg" width="526" height="492" alt="원목 외관의 Modern 키오스크"><figcaption><b>Modern</b><span data-i18n="aipc.lineup.modern">원목 제품 · 15kg</span></figcaption></figure>
+        </div>
+        <dl class="spec">
+          <div><dt data-i18n="aipc.spec.camera">카메라</dt><dd>Webcam</dd></div>
+          <div><dt data-i18n="aipc.spec.screen">화면</dt><dd data-i18n="aipc.spec.screen_v">11.6형 모니터</dd></div>
+          <div><dt data-i18n="aipc.spec.weight">무게</dt><dd>Modern 15kg / Urban 22kg</dd></div>
+          <div><dt data-i18n="aipc.spec.output">출력 수량</dt><dd data-i18n="aipc.spec.output_v">1롤 기준 150장</dd></div>
+          <div><dt data-i18n="aipc.spec.exterior">외관</dt><dd data-i18n="aipc.spec.exterior_v">전면 래핑 커스터마이징 가능</dd></div>
+          <div><dt data-i18n="aipc.spec.setup">구성</dt><dd data-i18n="aipc.spec.setup_v">설치 즉시 운영하는 올인원</dd></div>
+        </dl>
+      </div>
+      <div class="swatches">
+        <h3 data-i18n="aipc.swatch.h3">컬러 옵션 13종</h3>
+        <ul>
+          {swatches.map(([color, name]) => <li><i style={`background:${color}`}></i>{name}</li>)}
+        </ul>
+        <p class="swatches__note" data-i18n="aipc.swatch.note">아크릴 소재 기본 컬러이며 전면 래핑도 가능합니다. 화면의 색은 실제와 다를 수 있습니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 정확도 -->
+  <section class="band band--deep">
+    <div class="wrap">
+      <div class="head">
+        <span class="tag" data-i18n="aipc.quality.tag">진단 품질</span>
+        <h2 data-i18n="aipc.quality.h2">조명부터 맞추고 진단합니다</h2>
+        <p class="lead" data-i18n="aipc.quality.lead">조명·화이트밸런스·노출을 맞춘 뒤 진단하므로 실제 피부톤에 가까운 결과를 얻습니다. 영업 시작 전 5분 점검으로 하루 동안 품질을 유지합니다.</p>
+      </div>
+      <div class="cols">
+        <div><h3 data-i18n="aipc.quality1.name">조명 고정</h3><p data-i18n="aipc.quality1.desc">조명을 켠 뒤 색이 안정되는 시간을 두고 촬영 환경을 고정합니다.</p></div>
+        <div><h3 data-i18n="aipc.quality2.name">자동 화이트밸런스</h3><p data-i18n="aipc.quality2.desc">흰 종이를 기준으로 색감을 자동 보정해 피부색 왜곡을 줄입니다.</p></div>
+        <div><h3 data-i18n="aipc.quality3.name">노출 · 역광 보정</h3><p data-i18n="aipc.quality3.desc">얼굴 밝기를 손님 위치에 맞춰 세밀하게 조정합니다.</p></div>
+      </div>
+      <div class="tune">
+        <div>
+          <h3 data-i18n="aipc.tune.h3">판정 기준 커스터마이징</h3>
+          <div class="sliders" role="img" aria-label="쿨톤과 웜톤, 가을톤과 봄톤, 겨울톤과 여름톤 사이의 기준값을 조절하는 세 개의 슬라이더" data-i18n-aria="aipc.tune.aria">
+            <div class="slider"><span data-i18n="aipc.tune.cool">쿨톤</span><i style="background:linear-gradient(90deg,var(--cool) 50%,var(--warm) 50%)"></i><span data-i18n="aipc.tune.warm">웜톤</span><small data-i18n="aipc.tune.s1">전체 판정을 가르는 기준</small></div>
+            <div class="slider"><span data-i18n="aipc.tune.autumn">가을톤</span><i style="background:linear-gradient(90deg,#b9413f 50%,var(--warm) 50%)"></i><span data-i18n="aipc.tune.spring">봄톤</span><small data-i18n="aipc.tune.s2">웜톤 손님 중 봄·가을 비중</small></div>
+            <div class="slider"><span data-i18n="aipc.tune.winter">겨울톤</span><i style="background:linear-gradient(90deg,#3d4fa8 50%,var(--cool) 50%)"></i><span data-i18n="aipc.tune.summer">여름톤</span><small data-i18n="aipc.tune.s3">쿨톤 손님 중 여름·겨울 비중</small></div>
+          </div>
+          <p class="fineprint" data-i18n="aipc.tune.note">0.5 단위로 미세 조정하고 바로 다시 확인할 수 있어, 결과가 특정 계절로 치우치는 현상을 보정합니다.</p>
+        </div>
+        <div>
+          <h3 data-i18n="aipc.survey.h3">설문 가산 옵션</h3>
+          <div class="mix" role="img" aria-label="예시: 카메라 분석 70%, 설문 응답 30%" data-i18n-aria="aipc.survey.aria"><span class="cam" data-i18n="aipc.survey.cam">카메라 분석 70%</span><span class="sur" data-i18n="aipc.survey.sur">설문 30%</span></div>
+          <ul>
+            <li><b data-i18n="aipc.survey.1n">문항 수</b><span data-i18n="aipc.survey.1d">5 · 10 · 15문항 중 선택</span></li>
+            <li><b data-i18n="aipc.survey.2n">가산 비율</b><span data-i18n="aipc.survey.2d">카메라 분석에 설문 답변을 반영하는 비율 조절</span></li>
+            <li><b data-i18n="aipc.survey.3n">설문 On/Off</b><span data-i18n="aipc.survey.3d">대기줄이 길 때는 촬영만으로 진행</span></li>
+          </ul>
+          <p class="fineprint" data-i18n="aipc.survey.note">위 비율은 예시입니다. 브랜드 특성에 맞게 설계합니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 커스터마이징 -->
+  <section class="band">
+    <div class="wrap">
+      <div class="head">
+        <span class="tag" data-i18n="aipc.custom.tag">브랜드 커스터마이징</span>
+        <h2 data-i18n="aipc.custom.h2">화면도, 결과지도, 기다리는 시간도<br>브랜드의 것으로</h2>
+      </div>
+      <div class="custom">
+        <figure><div class="shot"><img loading="lazy" src="/images/ai-personal-color/screen-main.jpg" width="1200" height="677" alt="퍼스널컬러 키오스크 메인 화면"></div><figcaption><h3 data-i18n="aipc.custom1.name">메인 화면</h3><p data-i18n="aipc.custom1.desc">배경과 톤을 브랜드 컬러로 구성하고 로고·제품 홍보 디자인을 넣습니다. 1920×1080px 기준. 언어 버튼(한/영/일/중)은 운영 국가에 맞춰 더하거나 뺍니다.</p></figcaption></figure>
+        <figure><div class="shot"><img loading="lazy" src="/images/ai-personal-color/template.jpg" width="487" height="338" alt="포토 프레임, 진단서, 추천 화장품 세 영역으로 나뉜 결과지 템플릿"></div><figcaption><h3 data-i18n="aipc.custom2.name">결과지 템플릿</h3><p data-i18n="aipc.custom2.desc">인쇄되는 사진 위 프레임 디자인을 바꿉니다. 상단·하단 영역에 이미지를 넣어 프로모션 레이아웃으로도 씁니다.</p></figcaption></figure>
+        <figure><div class="shot"><img loading="lazy" src="/images/ai-personal-color/ad-video.jpg" width="601" height="329" alt="화장품 브랜드 홍보 영상 예시 화면"></div><figcaption><h3 data-i18n="aipc.custom3.name">영상 광고 송출</h3><p data-i18n="aipc.custom3.desc">결과지가 인화되는 동안 브랜드 홍보 영상, 신제품 소개, 럭키드로우 같은 이벤트 안내를 자동 재생합니다.</p></figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 운영 -->
+  <section class="band band--sheet">
+    <div class="wrap">
+      <div class="head">
+        <span class="tag" data-i18n="aipc.ops.tag">현장 운영</span>
+        <h2 data-i18n="aipc.ops.h2">줄이 길어지면 짧게,<br>문제가 생기면 순서대로</h2>
+      </div>
+      <div class="ops">
+        <div>
+          <h3 data-i18n="aipc.ops.wait.h3">대기시간 관리</h3>
+          <dl>
+            <div><dt data-i18n="aipc.ops.wait.1n">설문 문항 수</dt><dd data-i18n="aipc.ops.wait.1d">대기줄이 길면 5문항으로 줄입니다.</dd></div>
+            <div><dt data-i18n="aipc.ops.wait.2n">촬영 카운트다운</dt><dd data-i18n="aipc.ops.wait.2d">촬영 전 대기 시간을 상황에 맞게 줄이거나 늘립니다.</dd></div>
+            <div><dt data-i18n="aipc.ops.wait.3n">자동 초기화 시간</dt><dd data-i18n="aipc.ops.wait.3d">손님이 조작하지 않을 때 처음 화면으로 돌아가는 시간을 정합니다.</dd></div>
+            <div><dt data-i18n="aipc.ops.wait.4n">분석 최소 대기 시간</dt><dd data-i18n="aipc.ops.wait.4d">분석 연출 화면의 최소 노출 시간을 조절합니다.</dd></div>
+          </dl>
+        </div>
+        <div>
+          <h3 data-i18n="aipc.ops.support.h3">운영 지원과 데이터</h3>
+          <dl>
+            <div><dt data-i18n="aipc.ops.support.1n">보안 접근</dt><dd data-i18n="aipc.ops.support.1d">숨겨진 5회 탭과 비밀번호로만 관리자 화면에 들어갑니다. 임의로 바꾸기 어려운 항목은 미리 잠겨 있습니다.</dd></div>
+            <div><dt data-i18n="aipc.ops.support.2n">증상별 대응 가이드</dt><dd data-i18n="aipc.ops.support.2d">화면 멈춤, 결과 편중 등 상황별 조치 순서를 안내합니다.</dd></div>
+            <div><dt data-i18n="aipc.ops.support.3n">신속한 지원 연계</dt><dd data-i18n="aipc.ops.support.3d">자체 조치로 해결되지 않으면 바로 연락할 수 있습니다.</dd></div>
+            <div><dt data-i18n="aipc.ops.support.4n">설문 데이터</dt><dd data-i18n="aipc.ops.support.4d">개인정보는 손님이 동의한 항목만 수집하며 관리자 페이지에서 일괄 내려받습니다. 이벤트 운영·개인화 마케팅·리워드 제공에 활용할 수 있습니다.</dd></div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="band">
+    <div class="wrap">
+      <div class="head">
+        <span class="tag" data-i18n="aipc.faq.tag">자주 묻는 질문</span>
+        <h2 data-i18n="aipc.faq.h2">도입 전에 많이 물어보시는 것</h2>
+      </div>
+      <div class="faq">
+        {faqItems.map((f, i) => (
+          <details open={i === 0}><summary data-i18n={`aipc.faq.${i + 1}q`}>{f.question}</summary><p data-i18n={`aipc.faq.${i + 1}a`}>{f.answer}</p></details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="wrap cta__in">
+      <div class="head" style="margin-bottom:0">
+        <h2 data-i18n="aipc.cta.h2">우리 매장과 행사에 맞는<br>퍼스널컬러 부스를 상담해 보세요</h2>
+        <p style="max-width:32em" data-i18n="aipc.cta.p">설치 장소와 기간, 넣고 싶은 브랜드 요소를 알려 주시면 맞는 구성을 안내해 드립니다.</p>
+        <div class="btns">
+          <a class="btn btn--main" href="/rental" data-i18n="aipc.btn.inquiry">도입 문의하기</a>
+          <a class="btn btn--ghost" href="http://pf.kakao.com/_qbEMb/chat" target="_blank" rel="noopener noreferrer" data-i18n="aipc.cta.kakao">카카오톡 상담</a>
+        </div>
+      </div>
+      <div class="contact">
+        <span data-i18n="aipc.cta.phone">문의전화</span>
+        <b><a href="tel:023389181">02-338-9181</a></b>
+        <a href="mailto:pickypic.photobooth@gmail.com">pickypic.photobooth@gmail.com</a>
+      </div>
+    </div>
+  </section>
+
+  </div>
+</BaseLayout>
+
+<style>
+/* Layout: AI 포토부스 페이지와 같은 종이 바탕 + 라임 라벨. 깊은 구간만 소개서의 파랑으로 바꾸고,
+   이 페이지 고유의 색은 사계절 톤 네 가지(결과지 색)에서 가져온다.
+   Scoped to .pc-page so the variables and element rules never reach the site header/footer. */
+.pc-page{
+  color-scheme:light;
+  --paper:#f3f2ee;
+  --sheet:#ffffff;
+  --ink:#111013;
+  --ink-2:#55525c;
+  --rule:#d9d6cf;
+  --lime:#c8ff2e;
+  --blue:#2f5bd8;        /* 소개서의 COLOR 파랑 */
+  --blue-deep:#101c44;
+  --on-blue:#eef2ff;
+  --on-blue-2:#a9b6e0;
+  --spring:#f6c9a8; --summer:#cfc3ea; --autumn:#d9b79c; --winter:#b9bfe8;
+  --warm:#ee7d55; --cool:#6eaee8;
+  --f-kr:"Gothic A1","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  --f-en:"Archivo","Gothic A1","Arial Black",sans-serif;
+  --gut:clamp(16px,4vw,40px);
+  --max:1120px;
+  --hdr:99px;           /* fixed site navbar (#navbar) height — for anchor offsets */
+  background:var(--paper);color:var(--ink);font-family:var(--f-kr);font-size:16px;line-height:1.7;word-break:keep-all;-webkit-font-smoothing:antialiased
+}
+.pc-page p,.pc-page li,.pc-page dd{line-height:inherit}
+/* keep-all only suits Korean; Japanese has no spaces to break at, so it would overflow */
+:global(html[lang="ja"]) .pc-page{
+  word-break:normal;line-break:strict;
+  /* Gothic A1 has no kana; use the visitor's Japanese system font instead of a Korean fallback */
+  --f-kr:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","YuGothic","Meiryo","Noto Sans JP","Noto Sans KR",sans-serif;
+}
+#flow{scroll-margin-top:var(--hdr)}
+.pc-page img{display:block;max-width:100%;height:auto}
+.pc-page a{color:inherit}
+.pc-page :focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+.wrap{max-width:var(--max);margin-inline:auto;padding-inline:var(--gut)}
+.band{padding-block:clamp(56px,9vw,112px)}
+.band--sheet{background:var(--sheet)}
+.band--deep{background:var(--blue-deep);color:var(--on-blue)}
+.band--deep :focus-visible{outline-color:var(--lime)}
+h1,h2,h3,p,figure,dl,dd{margin:0}
+h1,h2{font-weight:900;letter-spacing:-.03em;line-height:1.18;text-wrap:balance}
+h1{font-size:clamp(34px,6.2vw,66px)}
+h2{font-size:clamp(26px,4.2vw,44px)}
+h3{font-size:19px;font-weight:800;letter-spacing:-.02em;line-height:1.35}
+.lead{font-size:clamp(16px,1.6vw,18px);color:var(--ink-2);max-width:34em}
+.band--deep .lead{color:var(--on-blue-2)}
+.head{display:grid;gap:16px;margin-bottom:clamp(28px,4vw,48px)}
+.tag{display:inline-block;justify-self:start;background:var(--lime);color:var(--ink);border:1.5px solid var(--ink);padding:3px 10px 2px;font-weight:800;font-size:14px;letter-spacing:-.01em;line-height:1.5}
+.mark{background:linear-gradient(transparent 58%,var(--lime) 58%);padding-inline:.08em}
+.btns{display:flex;flex-wrap:wrap;gap:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 26px;border:1.5px solid var(--ink);font-weight:800;font-size:16px;text-decoration:none;transition:transform .15s,box-shadow .15s}
+.btn--main{background:var(--ink);color:var(--sheet) !important;box-shadow:5px 5px 0 var(--lime)}
+.btn--ghost{background:var(--sheet)}
+.btn:hover{transform:translate(-2px,-2px)}
+.btn--ghost:hover{box-shadow:4px 4px 0 var(--ink)}
+.btn--main:hover{box-shadow:7px 7px 0 var(--lime)}
+
+/* HERO */
+.hero{padding-block:clamp(36px,6vw,72px) clamp(48px,7vw,88px)}
+.hero__grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,5vw,64px);align-items:center}
+.hero__copy{display:grid;gap:22px;min-width:0}
+.hero__pic{position:relative;min-width:0;padding-bottom:10%;padding-left:9%}
+.hero__main{width:100%;border:1.5px solid var(--ink);background:var(--sheet)}
+.hero__sub{position:absolute;left:0;bottom:0;width:42%;border:1.5px solid var(--ink);box-shadow:6px 6px 0 var(--lime);background:var(--sheet)}
+.tones{display:flex;gap:0;border:1.5px solid var(--ink);justify-self:start}
+.tones span{padding:6px 14px 5px;font-weight:800;font-size:14px;border-right:1.5px solid var(--ink)}
+.tones span:last-child{border-right:0}
+.t-spring{background:var(--spring)}.t-summer{background:var(--summer)}.t-autumn{background:var(--autumn)}.t-winter{background:var(--winter)}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);margin-top:clamp(36px,5vw,64px);border-top:1.5px solid var(--ink)}
+.facts div{padding:18px 16px 0 0;min-width:0}
+.facts b{display:block;font-family:var(--f-en);font-stretch:112%;font-weight:800;font-size:clamp(24px,3.2vw,36px);letter-spacing:-.02em;line-height:1.15}
+.facts b span{font-family:var(--f-kr);font-weight:900;font-size:.62em;margin-left:2px}
+.facts small{display:block;color:var(--ink-2);font-size:14px;line-height:1.5;margin-top:6px}
+
+/* 이용 흐름 */
+.scenes{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(24px,4vw,56px);align-items:start}
+.stage{border:1.5px solid var(--ink);background:var(--paper);aspect-ratio:16/10;display:grid;place-items:center;max-width:100%;overflow:hidden}
+.stage img{width:100%;height:100%;object-fit:contain}
+.picker{display:grid;border-top:1.5px solid var(--ink);counter-reset:s}
+.pick{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:auto 1fr;column-gap:14px;padding:14px 12px 14px 8px;border-bottom:1px solid var(--rule);counter-increment:s}
+.pick::before{content:counter(s);grid-row:span 2;font-family:var(--f-en);font-weight:800;font-size:14px;width:26px;height:26px;display:grid;place-items:center;border:1.5px solid var(--ink);background:var(--sheet);margin-top:2px}
+.pick strong{font-size:18px;font-weight:800;letter-spacing:-.02em}
+.pick span{color:var(--ink-2);font-size:14.5px;line-height:1.55;display:none}
+.pick[aria-selected="true"]{background:var(--paper)}
+.pick[aria-selected="true"]::before{background:var(--lime)}
+.pick[aria-selected="true"] span{display:block}
+.pick:hover strong{text-decoration:underline;text-underline-offset:4px}
+
+/* 결과지 */
+.results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(16px,2.4vw,28px)}
+.results figure{display:grid;gap:10px}
+.results img{width:100%;border:1.5px solid var(--ink)}
+.results figcaption{display:flex;gap:10px;align-items:baseline;font-size:14.5px;color:var(--ink-2)}
+.results figcaption b{color:var(--ink);font-weight:800;font-size:15px;padding:1px 10px 0;border:1.5px solid var(--ink)}
+.zones{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin-top:clamp(32px,5vw,56px);padding-top:24px;border-top:1.5px solid var(--ink)}
+.zones p,.cols p{font-size:15px;color:var(--ink-2);margin-top:6px}
+
+/* 라인업 */
+.lineup{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(24px,4vw,56px);align-items:start}
+.models{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.models img{width:100%;border:1.5px solid var(--ink);background:var(--sheet)}
+.models figcaption{margin-top:10px;font-size:14px;color:var(--ink-2)}
+.models figcaption b{display:block;color:var(--ink);font-family:var(--f-en);font-stretch:112%;font-weight:800;font-size:20px}
+.spec{border-top:1.5px solid var(--ink)}
+.spec div{display:flex;justify-content:space-between;gap:16px;padding:13px 0;border-bottom:1px solid var(--rule)}
+.spec dt{color:var(--ink-2);font-size:15px}
+.spec dd{font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+.swatches{margin-top:clamp(28px,4vw,44px)}
+.swatches ul{list-style:none;margin:14px 0 0;padding:0;display:grid;grid-template-columns:repeat(13,minmax(0,1fr));gap:8px}
+.swatches li{font-size:11.5px;line-height:1.3;color:var(--ink-2);text-align:center}
+.swatches i{display:block;aspect-ratio:1;border:1px solid var(--ink);margin-bottom:6px}
+.swatches__note{font-size:13.5px;color:var(--ink-2);margin-top:12px}
+
+/* 정확도 (deep) */
+.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.band--deep .cols>div{border-top:1.5px solid var(--on-blue-2);padding-top:16px}
+.band--deep .cols p{color:var(--on-blue-2)}
+.tune{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(28px,5vw,64px);margin-top:clamp(40px,6vw,72px);padding-top:clamp(28px,4vw,48px);border-top:1px solid #2a3a78;align-items:start}
+.sliders{display:grid;gap:22px;margin-top:20px}
+.slider{display:grid;grid-template-columns:4.2em 1fr 4.2em;gap:12px;align-items:center;font-weight:800;font-size:14.5px}
+.slider span:last-of-type{text-align:right}
+.slider i{position:relative;height:10px;border-radius:9px;display:block}
+.slider i::after{content:"";position:absolute;left:50%;top:50%;width:20px;height:20px;border-radius:50%;background:var(--sheet);border:3px solid var(--lime);transform:translate(-50%,-50%)}
+.slider small{grid-column:2;font-weight:400;font-size:13.5px;color:var(--on-blue-2);margin-top:-6px}
+.mix{display:flex;height:44px;border:1.5px solid var(--on-blue);margin-top:20px;font-weight:800;font-size:14px}
+.mix span{display:grid;place-items:center}
+.mix .cam{flex:7;background:var(--lime);color:var(--ink)}
+.mix .sur{flex:3;background:transparent}
+.tune ul{margin:18px 0 0;padding:0;list-style:none;display:grid;gap:10px;font-size:15px;color:var(--on-blue-2)}
+.tune li b{color:var(--on-blue);font-weight:800;margin-right:8px}
+.fineprint{font-size:13.5px;color:var(--on-blue-2);margin-top:16px}
+
+/* 커스터마이징 */
+.custom{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,2.4vw,28px)}
+.custom figure{display:grid;gap:12px;align-content:start}
+.custom .shot{border:1.5px solid var(--ink);background:var(--sheet);aspect-ratio:16/10;overflow:hidden}
+.custom .shot img{width:100%;height:100%;object-fit:cover}
+.custom p{font-size:15px;color:var(--ink-2);margin-top:6px}
+
+/* 운영 */
+.ops{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(28px,5vw,64px)}
+.ops dl{border-top:1.5px solid var(--ink);margin-top:16px}
+.ops dl div{padding:14px 0;border-bottom:1px solid var(--rule)}
+.ops dt{font-weight:800;letter-spacing:-.02em}
+.ops dd{color:var(--ink-2);font-size:15px}
+
+/* FAQ / CTA */
+.faq{border-top:1.5px solid var(--ink);max-width:820px}
+.faq details{border-bottom:1px solid var(--rule)}
+.faq summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px;padding:18px 4px;font-weight:800;font-size:17px;letter-spacing:-.02em}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:var(--f-en);font-size:22px;line-height:1.1}
+.faq details[open] summary::after{content:"–"}
+.faq p{padding:0 4px 20px;color:var(--ink-2);max-width:40em}
+.cta{background:var(--lime);border-block:1.5px solid var(--ink);padding-block:clamp(48px,7vw,88px)}
+.cta__in{display:grid;grid-template-columns:1.2fr .8fr;gap:32px;align-items:end}
+.cta .btn--main{box-shadow:5px 5px 0 var(--sheet)}
+.cta .btn--main:hover{box-shadow:7px 7px 0 var(--sheet)}
+.contact{font-size:15px;display:grid;gap:4px}
+.contact b{font-family:var(--f-en);font-stretch:112%;font-size:24px;font-weight:800;user-select:all}
+
+@media (max-width:860px){
+  .hero__grid,.scenes,.lineup,.tune,.ops,.cta__in{grid-template-columns:minmax(0,1fr)}
+  .hero__pic{order:-1}
+  .facts{grid-template-columns:repeat(2,1fr);row-gap:8px}
+  .zones,.cols,.custom{grid-template-columns:minmax(0,1fr)}
+  .swatches ul{grid-template-columns:repeat(7,minmax(0,1fr))}
+}
+@media (max-width:480px){
+  .results{grid-template-columns:minmax(0,1fr)}
+  .swatches ul{grid-template-columns:repeat(5,minmax(0,1fr))}
+  .btn{flex:1 1 100%}
+  .tones span{padding-inline:9px;font-size:13px}
+}
+@media (prefers-reduced-motion:reduce){.btn{transition:none}}
+</style>
+
+<script>
+  const IMG = '/images/ai-personal-color/';
+
+  const stageImg = document.getElementById('stageImg') as HTMLImageElement | null;
+  const picks = Array.from(document.querySelectorAll<HTMLButtonElement>('.pc-page .pick'));
+  picks.forEach((b) => {
+    b.setAttribute('tabindex', '0');
+    const go = () => {
+      picks.forEach((p) => p.setAttribute('aria-selected', p === b ? 'true' : 'false'));
+      if (stageImg) {
+        stageImg.src = `${IMG}${b.dataset.img}.jpg`;
+        stageImg.alt = b.dataset.alt || '';
+      }
+    };
+    b.addEventListener('click', go);
+    b.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        go();
+      }
+    });
+  });
+</script>
