@@ -58,6 +58,8 @@ export const POST: APIRoute = async ({ request }) => {
       }
       const client = getClient();
       const result = await client.create({
+        // "private." ID: hidden from anonymous reads even though the dataset is public (Free plan)
+        _id: `private.${crypto.randomUUID()}`,
         _type: 'inquiry',
         ...sanitized,
         submittedAt: new Date().toISOString(),
@@ -77,6 +79,7 @@ export const POST: APIRoute = async ({ request }) => {
       }
       const client = getClient();
       const result = await client.create({
+        _id: `private.${crypto.randomUUID()}`,
         _type: 'collaborationRequest',
         ...sanitized,
         status: 'pending',
