@@ -4,7 +4,7 @@ export const sanityClient = createClient({
   projectId: '7b9lcco4',
   dataset: 'production',
   apiVersion: '2024-01-01',
-  token: import.meta.env.SANITY_READ_TOKEN,
+  token: import.meta.env.SANITY_READ_TOKEN || import.meta.env.SANITY_API_TOKEN,
   useCdn: true,
 });
 
