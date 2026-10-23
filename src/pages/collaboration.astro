@@ -34,13 +34,6 @@ const wrappingTypes = [
   { ko: '레터링 래핑', en: 'Lettering Wrapping', jp: 'レタリングラッピング', value: '레터링 래핑' },
   { ko: '전체 래핑', en: 'Full Wrapping', jp: '全面ラッピング', value: '전체 래핑' },
 ];
-
-const shootingTypes = [
-  { ko: '유료 촬영', en: 'Paid Shooting', jp: '有料撮影', value: '유료 촬영' },
-  { ko: '무료 촬영', en: 'Free Shooting', jp: '無料撮影', value: '무료 촬영' },
-  { ko: '쿠폰 촬영', en: 'Coupon Shooting', jp: 'クーポン撮影', value: '쿠폰 촬영' },
-  { ko: '미정', en: 'TBD', jp: '未定', value: '미정' },
-];
 ---
 
 <BaseLayout
@@ -193,23 +186,6 @@ const shootingTypes = [
             {wrappingTypes.map((opt) => (
               <label class="flex items-center gap-3 cursor-pointer">
                 <input type="radio" name="wrapping" value={opt.value} class="w-4 h-4 accent-primary" />
-                <span class="text-sm text-primary">
-                  <span class="collab-opt-ko">{opt.ko}</span>
-                  <span class="collab-opt-en hidden">{opt.en}</span>
-                  <span class="collab-opt-jp hidden">{opt.jp}</span>
-                </span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        <!-- 유료/무료 촬영 -->
-        <div class="mb-5">
-          <h3 class="text-sm font-bold text-primary mb-2"><span data-i18n="collab.shooting_heading">유료 촬영 / 무료 촬영 여부</span> <span class="text-red-500">*</span></h3>
-          <div class="flex flex-wrap gap-x-4 gap-y-2">
-            {shootingTypes.map((opt) => (
-              <label class="flex items-center gap-3 cursor-pointer">
-                <input type="radio" name="shootingType" value={opt.value} class="w-4 h-4 accent-primary" />
                 <span class="text-sm text-primary">
                   <span class="collab-opt-ko">{opt.ko}</span>
                   <span class="collab-opt-en hidden">{opt.en}</span>
@@ -388,7 +364,6 @@ const shootingTypes = [
       const checkedBooths = Array.from(form.querySelectorAll<HTMLInputElement>('input[name="boothType"]:checked'))
         .map(cb => cb.value).join(', ');
       const wrapping = form.querySelector<HTMLInputElement>('input[name="wrapping"]:checked')?.value || '';
-      const shootingType = form.querySelector<HTMLInputElement>('input[name="shootingType"]:checked')?.value || '';
       const visitRoute = visitRouteSelect?.value === '기타'
         ? `기타: ${(visitRouteOther?.value || '').trim()}`
         : visitRouteSelect?.value || '';
@@ -404,7 +379,6 @@ const shootingTypes = [
         removal_schedule: (form.querySelector<HTMLInputElement>('#removal-schedule')?.value || '').trim(),
         booth_type: checkedBooths,
         wrapping: wrapping,
-        shooting_type: shootingType,
         additional_message: [
           (form.querySelector<HTMLTextAreaElement>('#additional-message')?.value || '').trim() || '없음',
           `방문경로: ${visitRoute}`,
@@ -447,7 +421,6 @@ const shootingTypes = [
                 removalSchedule: templateParams.removal_schedule,
                 boothType: templateParams.booth_type,
                 wrapping: templateParams.wrapping,
-                shootingType: templateParams.shooting_type,
                 additionalMessage: templateParams.additional_message,
               },
             }),
