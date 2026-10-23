@@ -82,3 +82,4 @@ Dashboard, BlogList, BlogEditor, PortfolioManager, FAQManager, CategoryManager, 
 3. **Vercel 프로젝트 중복 금지** — `steviedawonder/pickypic` 레포는 picky-pic 프로젝트에만 연결
 4. **하드코딩 → Sanity 마이그레이션** — company.ts는 폴백용, 실제 데이터는 Sanity 관리
 5. **pickyglobal.com은 별도 사이트** — 그누보드 쇼핑몰. 이 프로젝트와 절대 연결/리다이렉트 금지
+6. **고객정보 문서는 `private.` ID 필수** — Sanity 데이터셋이 Public(Free 플랜은 Private 불가)이라 일반 ID 문서는 누구나 조회 가능. 문의·협업처럼 개인정보가 든 문서는 `_id: private.<uuid>`로 만들어야 토큰 없이는 안 보임
