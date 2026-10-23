@@ -8,7 +8,7 @@ const sanityClient = createClient({
   dataset: 'production',
   useCdn: true,
   apiVersion: '2024-01-01',
-  token: import.meta.env.SANITY_READ_TOKEN,
+  token: import.meta.env.SANITY_READ_TOKEN || import.meta.env.SANITY_API_TOKEN,
 });
 
 export const GET: APIRoute = async () => {

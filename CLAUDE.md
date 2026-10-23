@@ -19,7 +19,7 @@ Vercel 빌드에서 플레이스홀더 주입 문제 발생. 공개 키는 **반
 |---|---|---|
 | `ADMIN_PASSWORD` | 어드민 로그인 | All Environments 설정 필수 |
 | `SANITY_API_TOKEN` | Sanity 쓰기 토큰 | 값에 줄바꿈/공백 주의 |
-| `SANITY_READ_TOKEN` | Sanity 읽기 토큰 (Viewer) | 데이터셋 비공개라 없으면 사이트 데이터가 비어 보임. 빌드 시에도 필요 |
+| `SANITY_READ_TOKEN` | Sanity 읽기 토큰 (Viewer) | 선택 — 없으면 `SANITY_API_TOKEN`으로 읽음. 데이터셋 비공개라 둘 다 없으면 사이트 데이터가 비어 보임 |
 | `GOOGLE_INDEXING_SERVICE_ACCOUNT_EMAIL` | Google Indexing API | 선택 — 미설정 시 발행 후 Google 색인 요청만 스킵 |
 | `GOOGLE_INDEXING_PRIVATE_KEY` | Google Indexing API | 선택 — 줄바꿈은 `\n` 리터럴로 저장. Search Console에 서비스 계정을 OWNER로 추가 필수 |
 
