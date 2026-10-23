@@ -14,6 +14,7 @@ const sanityClient = createClient({
   dataset: 'production',
   useCdn: false,
   apiVersion: '2024-01-01',
+  token: import.meta.env.SANITY_READ_TOKEN,
 });
 
 const { slug } = Astro.params;
