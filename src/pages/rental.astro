@@ -410,33 +410,6 @@ const rentalProducts = [
 
         <div class="h-px bg-border-light"></div>
 
-        <!-- 유료/무료 촬영 -->
-        <fieldset>
-          <legend class="text-sm font-medium text-primary mb-2 flex items-center gap-1">
-            <span data-i18n="rental.shooting_type">유료/무료 촬영</span> <span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 ml-0.5" aria-label="필수"></span>
-          </legend>
-          <div class="flex flex-wrap gap-x-4 gap-y-2">
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input type="radio" name="shootingType" value="유료 촬영" required class="w-4 h-4 accent-primary" />
-              <span class="text-sm text-primary" data-i18n="rental.shooting_paid">유료 촬영</span>
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input type="radio" name="shootingType" value="무료 촬영" class="w-4 h-4 accent-primary" />
-              <span class="text-sm text-primary" data-i18n="rental.shooting_free">무료 촬영</span>
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input type="radio" name="shootingType" value="쿠폰 촬영" class="w-4 h-4 accent-primary" />
-              <span class="text-sm text-primary" data-i18n="rental.shooting_coupon">쿠폰 촬영</span>
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer">
-              <input type="radio" name="shootingType" value="미정" class="w-4 h-4 accent-primary" />
-              <span class="text-sm text-primary" data-i18n="rental.shooting_undecided">미정</span>
-            </label>
-          </div>
-        </fieldset>
-
-        <div class="h-px bg-border-light"></div>
-
         <!-- 방문 경로 -->
         <div>
           <label for="visit-route" class="block text-sm font-medium text-primary mb-1">
@@ -700,7 +673,7 @@ const rentalProducts = [
       });
 
       // Validate required radios
-      ['aiShooting', 'wrapping', 'shootingType'].forEach(name => {
+      ['aiShooting', 'wrapping'].forEach(name => {
         const radios = form.querySelectorAll<HTMLInputElement>(`input[name="${name}"]`);
         const anyChecked = Array.from(radios).some(r => r.checked);
         if (!anyChecked) {
@@ -748,7 +721,6 @@ const rentalProducts = [
         .join(', ');
 
       const wrapping = form.querySelector<HTMLInputElement>('input[name="wrapping"]:checked')?.value || '';
-      const shootingType = form.querySelector<HTMLInputElement>('input[name="shootingType"]:checked')?.value || '';
       const aiShooting = form.querySelector<HTMLInputElement>('input[name="aiShooting"]:checked')?.value || '';
 
       const eventName = (form.querySelector<HTMLInputElement>('#event-name')?.value || '').trim();
@@ -776,7 +748,6 @@ const rentalProducts = [
         removal_schedule: removalSchedule,
         booth_type: checkedBooths,
         wrapping: wrapping,
-        shooting_type: shootingType,
         ai_shooting: aiShooting,
         // AI 촬영 rides in additional_message too, so it reaches the inbox before the EmailJS template gets its own {{ai_shooting}} slot.
         additional_message: [
@@ -816,7 +787,7 @@ const rentalProducts = [
                 company: templateParams.company_name,
                 eventName: templateParams.event_name,
                 eventDate: templateParams.event_schedule,
-                message: `설치장소: ${templateParams.install_location}\n부스타입: ${templateParams.booth_type}\nAI 촬영: ${templateParams.ai_shooting}\n래핑: ${templateParams.wrapping}\n촬영: ${templateParams.shooting_type}\n철거: ${templateParams.removal_schedule}\n방문경로: ${templateParams.visit_route}\n추가메시지: ${templateParams.additional_message}`,
+                message: `설치장소: ${templateParams.install_location}\n부스타입: ${templateParams.booth_type}\nAI 촬영: ${templateParams.ai_shooting}\n래핑: ${templateParams.wrapping}\n철거: ${templateParams.removal_schedule}\n방문경로: ${templateParams.visit_route}\n추가메시지: ${templateParams.additional_message}`,
                 language: document.documentElement.lang || 'ko',
               },
             }),

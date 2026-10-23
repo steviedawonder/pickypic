@@ -55,7 +55,6 @@ export const products: Product[] = [
       { label: 'Disassembly', value: 'Legs: Detachable only during initial transportation, Body: Detachable, Printer: Detachable' },
       { label: 'Print size', value: '4×6 inches / 2×4 inches' },
       { label: 'Customization Options', value: 'UI screen design / Template design / Exterior wrapping' },
-      { label: 'Payment Methods', value: 'Card / Coin / Coupon / Free' },
       { label: 'Shipping Methods', value: 'Air Freight / Ocean Freight' },
     ],
     woodColors: [
@@ -88,7 +87,6 @@ export const products: Product[] = [
       { label: 'Disassembly', value: 'Legs: Detachable only during initial transportation, Body: Detachable, Printer: Detachable' },
       { label: 'Print size', value: 'A4 210×297mm / A5 148×210mm' },
       { label: 'Customization Options', value: 'UI screen design / Template design / Exterior wrapping' },
-      { label: 'Payment Methods', value: 'Card / Coin / Coupon / Free' },
       { label: 'Shipping Methods', value: 'Air Freight / Ocean Freight' },
     ],
     woodColors: [
@@ -121,7 +119,6 @@ export const products: Product[] = [
       { label: 'Disassembly', value: 'Legs: Detachable only during initial transportation, Body: Detachable, Printer: Detachable' },
       { label: 'Print size', value: '4×6 inches / 2×4 inches' },
       { label: 'Customization Options', value: 'UI screen design / Template design / Exterior wrapping' },
-      { label: 'Payment Methods', value: 'Card / Coin / Coupon / Free' },
       { label: 'Shipping Methods', value: 'Air Freight / Ocean Freight' },
     ],
     woodColors: [
@@ -154,7 +151,6 @@ export const products: Product[] = [
       { label: 'Weight', value: '15kg (33.07 lbs)' },
       { label: 'Print size', value: '4×6 inches / 2×4 inches' },
       { label: 'Customization Options', value: 'UI screen design / Template design / Exterior wrapping' },
-      { label: 'Payment Methods', value: 'Card / Coupon / Free' },
       { label: 'Shipping Methods', value: 'Air Freight / Ocean Freight' },
     ],
     woodColors: [
@@ -187,7 +183,6 @@ export const products: Product[] = [
       { label: 'Weight', value: '15kg (33.07 lbs)' },
       { label: 'Print size', value: '4×6 inches / 2×4 inches' },
       { label: 'Customization Options', value: 'UI screen design / Template design / Exterior wrapping' },
-      { label: 'Payment Methods', value: 'Card / Coupon / Free' },
       { label: 'Shipping Methods', value: 'Air Freight / Ocean Freight' },
     ],
     woodColors: [
@@ -220,7 +215,6 @@ export const products: Product[] = [
       { label: 'Weight', value: '5kg (11.02 lbs)' },
       { label: 'Print size', value: 'L 900px ×W Variable height' },
       { label: 'Customization Options', value: 'UI screen design / Template design / Exterior wrapping' },
-      { label: 'Payment Methods', value: 'Free' },
       { label: 'Shipping Methods', value: 'Air Freight / Ocean Freight' },
     ],
     woodColors: [
@@ -253,7 +247,6 @@ export const products: Product[] = [
       { label: 'Weight', value: '5kg (11.02 lbs)' },
       { label: 'Print size', value: 'L 900px ×W Variable height' },
       { label: 'Customization Options', value: 'UI screen design / Template design / Exterior wrapping' },
-      { label: 'Payment Methods', value: 'Free' },
       { label: 'Shipping Methods', value: 'Air Freight / Ocean Freight' },
     ],
     woodColors: [
@@ -285,7 +278,6 @@ export const products: Product[] = [
       { label: 'Weight', value: '300kg (661.39 lbs)' },
       { label: 'Print size', value: '4×6 inches / 2×4 inches / A4 210×297mm / A5 148×210mm' },
       { label: 'Customization Options', value: 'UI screen design / Template design / Exterior wrapping' },
-      { label: 'Payment Methods', value: 'Card / Coin / Coupon / Free' },
       { label: 'Shipping Methods', value: 'Air Freight / Ocean Freight' },
     ],
   },
@@ -311,7 +303,6 @@ export const products: Product[] = [
       { label: 'Weight', value: '130kg (287 lbs)' },
       { label: 'Print size', value: '4×6 inches / 2×4 inches / A4 210×297mm / A5 148×210mm' },
       { label: 'Customization Options', value: 'UI screen design / Template design / Exterior wrapping' },
-      { label: 'Payment Methods', value: 'Card / Coin / Coupon / Free' },
       { label: 'Shipping Methods', value: 'Air Freight / Ocean Freight' },
     ],
   },
