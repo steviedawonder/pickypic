@@ -402,6 +402,16 @@ const wrappingTypes = [
         const publicKey = form.dataset.emailjsKey!;
         await emailjs.default.send(serviceId, templateId, templateParams, publicKey);
 
+        // Conversion signal for GTM/GA4 — event metadata only, no form contents.
+        // lead_type is the chosen collaboration category (a fixed option value).
+        const dataLayer = ((window as any).dataLayer = (window as any).dataLayer || []);
+        dataLayer.push({
+          event: 'generate_lead',
+          form_id: 'collaboration_inquiry',
+          lead_type: templateParams.collaboration_type,
+          page_language: document.documentElement.lang || 'ko',
+        });
+
         // Sanity에도 저장 (서버 API 경유, 토큰 노출 없음)
         try {
           await fetch('/api/sanity', {
@@ -427,6 +437,8 @@ const wrappingTypes = [
           });
         } catch (sanityErr) {
           console.error('Sanity save error:', sanityErr);
+          // The inquiry email already went out, so the visitor still sees success.
+          dataLayer.push({ event: 'form_error', form_id: 'collaboration_inquiry', error_type: 'sanity_save' });
         }
 
         const lang = localStorage.getItem('pickypic-lang') || 'ko';
@@ -440,6 +452,8 @@ const wrappingTypes = [
         toggleVisitRouteOther();
       } catch (error) {
         console.error('EmailJS Error:', error);
+        const dataLayer = ((window as any).dataLayer = (window as any).dataLayer || []);
+        dataLayer.push({ event: 'form_error', form_id: 'collaboration_inquiry', error_type: 'emailjs' });
         const lang = localStorage.getItem('pickypic-lang') || 'ko';
         const errMsg = lang === 'en'
           ? 'Sending failed. Please try again later or email pickypic.marketing@gmail.com directly.'

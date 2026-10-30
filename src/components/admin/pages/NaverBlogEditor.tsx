@@ -5,7 +5,7 @@ import { htmlToPortableText, portableTextToHtml } from '../shared/portableText';
 import {
   fetchCategories, fetchBlogPost, fetchBlogTemplates,
   createBlogPost, updateBlogPost, createBlogTemplate, deleteBlogTemplate,
-  uploadImage, triggerRebuild, fetchTags, createTag,
+  uploadImage, triggerRebuild, fetchTags, createTag, requestSearchEngineIndexing,
 } from '../adminClient';
 import NaverRichTextEditor from './NaverRichTextEditor';
 import type { NaverEditorRef } from './NaverRichTextEditor';
@@ -39,6 +39,10 @@ export default function NaverBlogEditor({ postId, onNavigate }: Props) {
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [seoSidebarOpen, setSeoSidebarOpen] = useState(true);
   const [autoSaveCount, setAutoSaveCount] = useState(0);
+  // The slug actually stored on the post (indexing pings must use it, not the title)
+  // and whether the post is already live.
+  const [savedSlug, setSavedSlug] = useState('');
+  const [isPublished, setIsPublished] = useState(false);
   const editorRef = useRef<NaverEditorRef>(null);
 
   /* ── Dirty tracking ── */
@@ -85,6 +89,8 @@ export default function NaverBlogEditor({ postId, onNavigate }: Props) {
           });
           if (post.mainImage?.asset?.url) setMainImageUrl(post.mainImage.asset.url);
           if (post.mainImage?.asset?._id) setMainImageRefId(post.mainImage.asset._id);
+          setSavedSlug(post.slug?.current || '');
+          setIsPublished(!!post.publishedAt);
         }
       });
     }
@@ -143,22 +149,34 @@ export default function NaverBlogEditor({ postId, onNavigate }: Props) {
       if (mainImageRefId) {
         data.mainImage = { _type: 'image', asset: { _type: 'reference', _ref: mainImageRefId } };
       }
+      let storedSlug = savedSlug;
       if (currentPostId) {
         await updateBlogPost(currentPostId, data);
       } else {
         data.slug = { _type: 'slug', current: generateSlug(form.title) };
         const created = await createBlogPost(data);
         if (created?._id) setCurrentPostId(created._id);
+        storedSlug = created?.slug?.current || data.slug.current;
+        setSavedSlug(storedSlug);
       }
       triggerRebuild();
       setIsDirty(false);
 
-      if (publish) {
-        // Fire and forget indexing
-        const postUrl = `https://picky-pic.com/blog/${generateSlug(form.title)}`;
-        fetch('/api/indexnow', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url: postUrl }) }).catch(() => {});
-        fetch('/api/naver-indexing', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url: postUrl }) }).catch(() => {});
+      // Fire-and-forget indexing ping (IndexNow + Naver) with the stored slug's
+      // canonical URL — on publish, and on saves of an already-published post.
+      // Drafts and posts scheduled for later aren't live yet, so they're skipped.
+      const live = publish || isPublished;
+      if (publish) setIsPublished(true);
+      const goesLiveAt = Date.parse(publish ? (form.publishedAt || new Date().toISOString()) : form.publishedAt);
+      const scheduled = !Number.isNaN(goesLiveAt) && goesLiveAt > Date.now();
+      if (live && !scheduled && storedSlug) {
+        const postUrl = `https://picky-pic.com/blog/${encodeURIComponent(storedSlug)}`;
+        requestSearchEngineIndexing(postUrl)
+          .then((results) => console.info('[indexing]', postUrl, results))
+          .catch(() => {});
+      }
 
+      if (publish) {
         showToast('발행되었습니다!');
         setTimeout(() => onNavigate('blogs'), 1000);
       } else {

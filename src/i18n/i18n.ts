@@ -154,7 +154,7 @@ function updateEnglishBanner(): void {
 }
 
 /**
- * The EN control ships as a real <a href="/en/"> so crawlers can follow it and
+ * The EN control ships as a real <a href="/en"> so crawlers can follow it and
  * so the page works without JS. For visitors outside the English-route markets
  * we cancel that navigation and do the in-page text swap instead — /en/ is
  * written for overseas equipment buyers and would only confuse someone in Korea

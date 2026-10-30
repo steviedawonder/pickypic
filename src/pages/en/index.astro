@@ -70,27 +70,40 @@ const woodColors = hero.woodColors!;
   description="A receipt photo booth that prints on standard thermal paper — no ink, no cartridges, no subscription. Handmade in Korea, 500+ booths in operation, 16,000+ brand events. Ships worldwide."
   ogImage="/images/hero/main-1.jpg"
 >
+  {/* Display-sized WebP copies from scripts/build-web-images.mjs (the mobile
+      original is 2595x4096). Each preload repeats its <picture> candidate's
+      srcset/sizes exactly, so the preloaded file is the one the img then uses. */}
   <link
     slot="head"
     rel="preload"
     as="image"
-    href="/images/hero/main-1.jpg"
+    imagesrcset="/images/hero/web/main-1-1280.webp 1280w, /images/hero/web/main-1-1440.webp 1440w"
+    imagesizes="100vw"
     media="(min-width: 768px)"
+    fetchpriority="high"
   />
   <link
     slot="head"
     rel="preload"
     as="image"
-    href="/images/hero/main-mo1.webp"
+    imagesrcset="/images/hero/web/main-mo1-720.webp 720w, /images/hero/web/main-mo1-1080.webp 1080w, /images/hero/web/main-mo1-1440.webp 1440w"
+    imagesizes="100vw"
     media="(max-width: 767px)"
+    fetchpriority="high"
   />
 
   <!-- 1. Hero — no gs-* class: ScrollTrigger fires at load and would cost LCP -->
   <section class="relative min-h-[78vh] lg:min-h-[86vh] flex items-end overflow-hidden bg-bg-light">
     <picture>
-      <source media="(max-width: 767px)" srcset="/images/hero/main-mo1.webp" />
+      <source
+        media="(max-width: 767px)"
+        srcset="/images/hero/web/main-mo1-720.webp 720w, /images/hero/web/main-mo1-1080.webp 1080w, /images/hero/web/main-mo1-1440.webp 1440w"
+        sizes="100vw"
+      />
       <img
-        src="/images/hero/main-1.jpg"
+        src="/images/hero/web/main-1-1440.webp"
+        srcset="/images/hero/web/main-1-1280.webp 1280w, /images/hero/web/main-1-1440.webp 1440w"
+        sizes="100vw"
         alt="A PICKYPIC photo booth on location"
         width="2000"
         height="1050"
@@ -430,6 +443,15 @@ const woodColors = hero.woodColors!;
         message: esc(body || '-').replace(/\n/g, '<br>'),
       }, 'DiKfjM0kSilVVTle_');
 
+      // Conversion signal for GTM/GA4 — event metadata only, no form contents.
+      const dataLayer = ((window as any).dataLayer = (window as any).dataLayer || []);
+      dataLayer.push({
+        event: 'generate_lead',
+        form_id: 'overseas_quote',
+        lead_type: 'overseas',
+        page_language: document.documentElement.lang || 'ko',
+      });
+
       // Sanity save for the admin inbox; a failure here must not fail the user.
       try {
         await fetch('/api/sanity', {
@@ -449,11 +471,14 @@ const woodColors = hero.woodColors!;
         });
       } catch (err) {
         console.error('Sanity save error:', err);
+        dataLayer.push({ event: 'form_error', form_id: 'overseas_quote', error_type: 'sanity_save' });
       }
 
       form.reset();
       say("Thanks — we'll get back to you within one business day.", true);
     } catch {
+      const dataLayer = ((window as any).dataLayer = (window as any).dataLayer || []);
+      dataLayer.push({ event: 'form_error', form_id: 'overseas_quote', error_type: 'emailjs' });
       say('Something went wrong. Please email pickypic.photobooth@gmail.com instead.', false);
     } finally {
       if (button) button.disabled = false;

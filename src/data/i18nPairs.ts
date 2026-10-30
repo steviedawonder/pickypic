@@ -8,21 +8,29 @@
  * Both sides read this one table, so the annotations are symmetric by
  * construction. Google ignores one-way hreflang.
  *
- * Keys and values are the built paths, with trailing slash (Astro's output).
+ * ja is omitted: Japanese is a client-side text swap with no URL of its own,
+ * so there is nothing an hreflang annotation could point at.
+ *
+ * x-default points at English: a visitor whose language matches neither ko
+ * nor en reads English better than Korean, and Korean speakers always match
+ * `ko`, so they never fall through to x-default.
+ *
+ * Keys and values are canonical paths: no trailing slash, except the root
+ * (astro.config.mjs sets trailingSlash: 'never'; vercel.json 301s the slash form).
  */
 export const PAIRS: Record<string, string> = {
-  '/': '/en/',
+  '/': '/en',
   // Add a line here the moment the counterpart page actually exists — never before.
-  // '/about/': '/en/about/',
+  // '/about': '/en/about',
 };
 
 const EN_TO_KO: Record<string, string> = Object.fromEntries(
   Object.entries(PAIRS).map(([ko, en]) => [en, ko])
 );
 
-/** Normalize to the trailing-slash form used as table keys. */
+/** Normalize to the canonical form used as table keys: no trailing slash except the root. */
 function normalize(pathname: string): string {
-  return pathname.endsWith('/') ? pathname : `${pathname}/`;
+  return pathname.replace(/\/+$/, '') || '/';
 }
 
 /**
@@ -43,5 +51,5 @@ export function getPair(pathname: string): { ko: string; en: string } | null {
 export function switchTarget(pathname: string, to: 'ko' | 'en'): string {
   const pair = getPair(pathname);
   if (pair) return pair[to];
-  return to === 'en' ? '/en/' : '/';
+  return to === 'en' ? '/en' : '/';
 }

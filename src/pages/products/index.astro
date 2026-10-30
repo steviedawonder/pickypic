@@ -5,6 +5,7 @@ import FAQSchema from '@components/seo/FAQSchema.astro';
 import { products, productCategories } from '@data/products';
 import { createClient } from '@sanity/client';
 import { faqQueries } from '../../sanity/client';
+import { pageUrl, assetUrl } from '@data/structuredData';
 
 const sanityClient = createClient({
   projectId: '7b9lcco4',
@@ -35,11 +36,11 @@ const fallbackFAQ = [
   },
   {
     question: '피키픽 포토부스 제품 라인업에는 어떤 것이 있나요?',
-    answer: '피키픽은 모던 레트로 디자인의 스탠딩형과 컴팩트형 두 가지 라인업을 운영하고 있습니다. 스탠딩형은 매장 설치용으로 최적화되어 있으며, 컴팩트형은 이동과 설치가 간편하여 행사장에 적합합니다. 두 모델 모두 AI 퍼스널 컬러 분석, QR + 인화 하이브리드 출력, 3개 국어 지원 등 피키픽 핵심 기능을 동일하게 탑재하고 있습니다.',
+    answer: '피키픽은 9종의 포토부스를 직접 제작합니다. 스탠드형 3종(모던피키·클래식피키·어반피키), 테이블형 4종(모던 미니피키·어반 미니피키·모던 레트로피키·어반 레트로피키), 부스형 2종(아웃도어피키·에어피키)이며, 레트로피키 2종은 감열지(영수증) 사진기입니다. 행사 규모와 설치 공간에 맞춰 모델을 추천해 드립니다.',
     questionEn: 'What product lineup does PICKYPIC photo booth offer?',
-    answerEn: 'PICKYPIC offers two lineups in modern retro design: standing type and compact type. The standing type is optimized for permanent store installation, while the compact type is easy to move and set up, making it ideal for event venues. Both models feature AI personal color analysis, QR + print hybrid output, and trilingual support.',
+    answerEn: 'PICKYPIC builds nine photo booth models: three stand types (Modern Picky, Classic Picky, Urban Picky), four table types (Modern Mini Picky, Urban Mini Picky, Modern Retro Picky, Urban Retro Picky) and two booth types (Outdoor Picky, Air Picky). The two Retro Picky models are receipt photo booths that print on thermal paper. We recommend a model to fit your event size and space.',
     questionJp: 'ピキピック フォトブースの製品ラインナップには何がありますか？',
-    answerJp: 'ピキピックはモダンレトロデザインのスタンディング型とコンパクト型の2種類のラインナップを展開しています。スタンディング型は店舗設置用に最適化されており、コンパクト型は移動・設置が簡単でイベント会場に適しています。両モデルともAIパーソナルカラー分析、QR＋プリントハイブリッド出力、3言語対応などのコア機能を搭載しています。',
+    answerJp: 'ピキピックは9種類のフォトブースを自社製作しています。スタンド型3種（モダンピキ・クラシックピキ・アーバンピキ）、テーブル型4種（モダンミニピキ・アーバンミニピキ・モダンレトロピキ・アーバンレトロピキ）、ブース型2種（アウトドアピキ・エアピキ）で、レトロピキ2種は感熱紙（レシート）写真機です。イベントの規模や設置スペースに合わせてモデルをご提案します。',
   },
   {
     question: '피키픽 포토부스에 자체 필터나 프레임을 추가할 수 있나요?',
@@ -80,11 +81,41 @@ const productPdfMap = productSlugs.map(slug => {
   const match = downloadFiles.find((f: any) => f.linkedProducts?.includes(slug));
   return match?.fileUrl || '';
 });
+
+// Carousel images: the max-heights below mirror the max-h-[…] classes on the
+// img tags. imgBox() gives each image the width the browser settles on anyway
+// for that max-height (its aspect ratio comes from width/height), so the box is
+// reserved before the file arrives. Unsized, the first slide's images used to
+// push the spec table down ~300px when they loaded (CLS 0.16).
+const SMALL_MODELS = ['modern-mini-picky', 'urban-mini-picky', 'modern-retro-picky', 'urban-retro-picky'];
+const TALL_MODELS = ['modern-picky', 'classic-picky', 'urban-picky'];
+const desktopMaxH = (id: string) => (SMALL_MODELS.includes(id) ? 340 : TALL_MODELS.includes(id) ? 480 : 420);
+const imgBox = (size: [number, number] | undefined, maxH: number) =>
+  size ? `width:min(100%,${((maxH * size[0]) / size[1]).toFixed(2)}px)` : undefined;
+
+// The lineup as a plain list. These used to be Product items with price-less
+// Offers — invalid for Google (an Offer needs a price), and a page listing many
+// products is not eligible for product rich results anyway.
+const lineupNode = {
+  '@type': 'ItemList',
+  '@id': `${pageUrl('/products')}#lineup`,
+  name: '피키픽 포토부스 제품 라인업',
+  numberOfItems: products.length,
+  itemListElement: products.map((p, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: `${p.name} (${p.nameKo})`,
+    image: assetUrl(p.imageRight),
+    description: `${p.categoryLabel} 포토부스`,
+  })),
+};
 ---
 
 <BaseLayout
-  title="포토부스 제품 · 구매 · 판매 | 피키픽 PICKYPIC"
-  description="포토부스 구매 및 판매 전문 피키픽의 9종 이상 제품 라인업. 모던피키, 클래식피키, 어반피키, 미니피키 등 행사에 맞는 최적의 포토부스를 비교하고 선택하세요."
+  pageType="CollectionPage"
+  schema={[lineupNode]}
+  title="포토부스 종류 9종 · 제품 사양 | 피키픽 PICKYPIC"
+  description="모던피키·클래식피키·어반피키, 미니피키, 영수증 사진기 레트로피키, 아웃도어·에어피키까지 피키픽 포토부스 9종의 크기·카메라·인화 규격을 비교하세요."
 >
   <BreadcrumbSchema items={[
     { name: '홈', href: '/' },
@@ -94,8 +125,9 @@ const productPdfMap = productSlugs.map(slug => {
   <!-- Hero: PRODUCT TYPE -->
   <section class="pt-10 pb-5 lg:pt-14 lg:pb-8 bg-white">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <h1 class="text-center text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-black tracking-tight text-primary uppercase gs-fade-up">
-        PRODUCT TYPE
+      <h1 class="text-center text-primary gs-fade-up">
+        <span class="block text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-black tracking-tight uppercase">PRODUCT TYPE</span>
+        <span class="block mt-3 text-sm lg:text-lg font-semibold tracking-tight" data-i18n="products.h1">피키픽 포토부스 9종</span>
       </h1>
     </div>
   </section>
@@ -165,7 +197,7 @@ const productPdfMap = productSlugs.map(slug => {
       <!-- Carousel Container -->
       <div class="overflow-hidden mx-8 lg:mx-12" id="carousel-viewport">
         <div class="flex transition-transform duration-500 ease-in-out" id="carousel-track">
-          {products.map((product) => (
+          {products.map((product, pi) => (
             <article
               class="w-full flex-shrink-0 product-slide"
               data-product-id={product.id}
@@ -194,10 +226,15 @@ const productPdfMap = productSlugs.map(slug => {
                 <!-- Left: Line Image -->
                 <div class="lg:col-span-3 flex items-center justify-center">
                   <img
-                    src={product.imageLeft}
+                    src={product.imageLeftWeb ?? product.imageLeft}
                     alt={`${product.name} ${product.nameKo} 라인 이미지`}
                     class={`max-w-full ${['modern-mini-picky', 'urban-mini-picky', 'modern-retro-picky', 'urban-retro-picky'].includes(product.id) ? 'max-h-[340px]' : ['modern-picky', 'classic-picky', 'urban-picky'].includes(product.id) ? 'max-h-[480px]' : 'max-h-[420px]'}`}
-                    loading="lazy"
+                    width={product.imageLeftSize?.[0]}
+                    height={product.imageLeftSize?.[1]}
+                    style={imgBox(product.imageLeftSize, desktopMaxH(product.id))}
+                    loading={pi === 0 ? 'eager' : 'lazy'}
+                    fetchpriority={pi === 0 ? 'high' : undefined}
+                    decoding={pi === 0 ? undefined : 'async'}
                   />
                 </div>
 
@@ -225,10 +262,14 @@ const productPdfMap = productSlugs.map(slug => {
                 <!-- Right: Product Photo -->
                 <div class="lg:col-span-3 flex items-center justify-start">
                   <img
-                    src={product.imageRight}
+                    src={product.imageRightWeb ?? product.imageRight}
                     alt={`${product.name} ${product.nameKo} 제품 이미지`}
                     class={`max-w-full ${['modern-mini-picky', 'urban-mini-picky', 'modern-retro-picky', 'urban-retro-picky'].includes(product.id) ? 'max-h-[340px] scale-[0.85]' : ['modern-picky', 'classic-picky', 'urban-picky'].includes(product.id) ? 'max-h-[480px]' : 'max-h-[420px]'}`}
-                    loading="lazy"
+                    width={product.imageRightSize?.[0]}
+                    height={product.imageRightSize?.[1]}
+                    style={imgBox(product.imageRightSize, desktopMaxH(product.id))}
+                    loading={pi === 0 ? 'eager' : 'lazy'}
+                    decoding="async"
                     itemprop="image"
                   />
                 </div>
@@ -239,18 +280,27 @@ const productPdfMap = productSlugs.map(slug => {
                 <div class={`flex gap-4 justify-center mb-6 ${['modern-mini-picky', 'urban-mini-picky', 'modern-retro-picky', 'urban-retro-picky'].includes(product.id) ? 'items-center' : 'items-end'}`}>
                   <div class="w-1/2 max-w-[200px] flex items-center justify-center">
                     <img
-                      src={product.imageLeft}
+                      src={product.imageLeftWeb ?? product.imageLeft}
                       alt={`${product.name} ${product.nameKo} 라인 이미지`}
                       class="max-w-full max-h-[300px] object-contain"
-                      loading="lazy"
+                      width={product.imageLeftSize?.[0]}
+                      height={product.imageLeftSize?.[1]}
+                      style={imgBox(product.imageLeftSize, 300)}
+                      loading={pi === 0 ? 'eager' : 'lazy'}
+                      fetchpriority={pi === 0 ? 'high' : undefined}
+                      decoding={pi === 0 ? undefined : 'async'}
                     />
                   </div>
                   <div class="w-1/2 max-w-[200px] flex items-center justify-center">
                     <img
-                      src={product.imageRight}
+                      src={product.imageRightWeb ?? product.imageRight}
                       alt={`${product.name} ${product.nameKo} 제품 이미지`}
                       class={`max-w-full object-contain ${['modern-mini-picky', 'urban-mini-picky', 'modern-retro-picky', 'urban-retro-picky'].includes(product.id) ? 'max-h-[255px]' : 'max-h-[300px]'}`}
-                      loading="lazy"
+                      width={product.imageRightSize?.[0]}
+                      height={product.imageRightSize?.[1]}
+                      style={imgBox(product.imageRightSize, SMALL_MODELS.includes(product.id) ? 255 : 300)}
+                      loading={pi === 0 ? 'eager' : 'lazy'}
+                      decoding="async"
                     />
                   </div>
                 </div>
@@ -313,39 +363,6 @@ const productPdfMap = productSlugs.map(slug => {
   <script id="product-pdf-data" type="application/json" set:html={JSON.stringify(productPdfMap)} />
 
   <!-- Structured Data: Products -->
-  <script type="application/ld+json" set:html={JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    "name": "PICKYPIC 포토부스 제품 라인업",
-    "description": "피키픽 포토부스의 9종 포토부스 제품 소개. 스탠드형, 테이블형, 부스형 포토부스를 확인하세요.",
-    "numberOfItems": products.length,
-    "itemListElement": products.map((p, i) => ({
-      "@type": "ListItem",
-      "position": i + 1,
-      "item": {
-        "@type": "Product",
-        "name": `${p.name} | ${p.nameKo}`,
-        "image": `https://picky-pic.com${p.imageRight}`,
-        "description": `${p.nameKo} - ${p.type} 포토부스. 브랜드 팝업, 기업 행사, 파티 등에 적합한 PICKYPIC의 프리미엄 포토부스.`,
-        "category": p.type,
-        "brand": {
-          "@type": "Brand",
-          "name": "PICKYPIC"
-        },
-        "url": "https://picky-pic.com/products",
-        "offers": {
-          "@type": "Offer",
-          "availability": "https://schema.org/InStock",
-          "url": "https://picky-pic.com/rental",
-          "seller": {
-            "@type": "Organization",
-            "name": "PICKYPIC"
-          }
-        }
-      }
-    }))
-  })} />
-
   <!-- Products FAQ Section -->
   <FAQSchema items={productsFAQ} title="포토부스 제품 자주 묻는 질문" titleKey="faq.title_products" />
 </BaseLayout>

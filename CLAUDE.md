@@ -56,10 +56,11 @@ Dashboard, BlogList, BlogEditor, PortfolioManager, FAQManager, CategoryManager, 
 ### API
 - `/api/auth.ts` — login, verify, changePassword
 - `/api/sanity.ts` — Sanity CRUD 프록시 + submitInquiry (인증 불필요, 화이트리스트 적용)
-- `/api/google-indexing.ts` — Google Indexing API (JWT, 서비스 계정 키 미설정 시 no-op)
-- `/api/indexnow.ts` — IndexNow (Bing/Yandex)
-- `/api/naver-indexing.ts` — Naver IndexNow + 사이트맵/RSS ping
-- BlogEditor 발행 시 `requestSearchEngineIndexing(url)`이 위 3개 API를 병렬 호출
+- `/api/google-indexing.ts` — Google Indexing API (JWT, 서비스 계정 키 미설정 시 no-op). 관리자 인증 필요. Google 정책상 JobPosting/BroadcastEvent 전용이라 발행 흐름에서는 호출하지 않음
+- `/api/indexnow.ts` — IndexNow (Bing/Naver/Yandex 등 공유). 관리자 인증 필요
+- `/api/naver-indexing.ts` — Naver IndexNow 엔드포인트. 관리자 인증 필요
+- 실제 쓰는 블로그 에디터는 `NaverBlogEditor` — 발행·발행글 저장 시, `PortfolioEditor` 저장 시 `requestSearchEngineIndexing(url)`이 IndexNow + Naver를 호출
+- URL 규칙: canonical·사이트맵·내부 링크 모두 끝 슬래시 없음(루트 `/` 제외). 슬래시 붙은 주소는 vercel.json에서 301. canonical·JSON-LD URL은 `src/data/structuredData.ts`의 `pageUrl()`로 만든다
 
 ---
 

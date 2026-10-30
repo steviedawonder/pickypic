@@ -3,6 +3,9 @@ export const prerender = false;
 
 import BaseLayout from '@layouts/BaseLayout.astro';
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import NotFoundPage from '@components/common/NotFoundPage.astro';
+import { ORG_ID, pageUrl } from '@data/structuredData';
+import { sanityImg, sanitySrcset, sanityDims, sanityCrop } from '../../utils/sanityImage';
 import { createClient } from '@sanity/client';
 import { toHTML } from '@portabletext/to-html';
 
@@ -16,7 +19,7 @@ const sanityClient = createClient({
 
 const { slug } = Astro.params;
 
-const item = await sanityClient.fetch(`*[_type == "portfolio" && slug.current == $slug && isVisible == true][0] {
+const item = await sanityClient.fetch(`*[_type == "portfolio" && slug.current == $slug && isVisible == true && !(_id in path("drafts.**"))][0] {
   _id,
   title,
   slug,
@@ -47,8 +50,16 @@ const item = await sanityClient.fetch(`*[_type == "portfolio" && slug.current ==
   }
 }`, { slug });
 
+// Same contract as blog/[slug].astro: a missing case answers 404 with the
+// not-found page inline (never a redirect to the listing — a soft 404), and a
+// found one is cached at the edge (every admin save redeploys anyway).
+Astro.response.headers.set('Content-Type', 'text/html; charset=utf-8');
+Astro.response.headers.set('Cache-Control', 'public, max-age=0, must-revalidate');
 if (!item) {
-  return Astro.redirect('/portfolio');
+  Astro.response.status = 404;
+  Astro.response.headers.set('Vercel-CDN-Cache-Control', 'public, max-age=60');
+} else {
+  Astro.response.headers.set('Vercel-CDN-Cache-Control', 'public, max-age=300, stale-while-revalidate=86400');
 }
 
 // Category display names
@@ -64,12 +75,14 @@ const categoryMap: Record<string, { ko: string; en: string }> = {
   'air': { ko: '에어피키', en: 'Air Picky' },
 };
 
-const cat = categoryMap[item.category] || { ko: item.category, en: item.category };
+const catRaw = categoryMap[item?.category] || { ko: item?.category || '', en: item?.category || '' };
+// "모던_미니피키" is a filter-pill label; in prose it reads "모던 미니피키".
+const cat = { ko: catRaw.ko.replace(/_/g, ' '), en: catRaw.en };
 
 // Render Portable Text body
 let bodyHtml = '';
 try {
-  if (item.body && Array.isArray(item.body) && item.body.length > 0) {
+  if (item?.body && Array.isArray(item.body) && item.body.length > 0) {
     bodyHtml = toHTML(item.body, {
       components: {
         types: {
@@ -84,7 +97,11 @@ try {
             }
             if (!url) return '';
             const alt = value.alt || `피키픽 포토부스 포트폴리오 — ${item.title} 행사 현장`;
-            return `<img src="${url}" alt="${alt}" style="max-width:100%;height:auto;margin:16px 0;border-radius:8px;" loading="lazy" />`;
+            const dims = sanityDims(url);
+            const srcset = sanitySrcset(url, [480, 768, 1080, 1440]);
+            const sizeAttrs = dims ? ` width="${dims.width}" height="${dims.height}"` : '';
+            const srcsetAttrs = srcset ? ` srcset="${srcset}" sizes="(min-width: 768px) 720px, 100vw"` : '';
+            return `<img src="${sanityImg(url, 1080)}"${srcsetAttrs}${sizeAttrs} alt="${alt}" style="max-width:100%;height:auto;margin:16px 0;border-radius:8px;" loading="lazy" decoding="async" />`;
           },
         },
       },
@@ -94,14 +111,39 @@ try {
   bodyHtml = '';
 }
 
-const seoTitle = item.seoTitle || `${item.title} > 포트폴리오 | 피키픽 | 포토부스 대여 및 기업 행사 렌탈 전문`;
-const seoDescription = item.seoDescription || `${item.title} - ${cat.ko} ${cat.en}. 피키픽 포토부스 렌탈 포트폴리오.`;
-const ogImage = item.thumbnail?.asset?.url || item.images?.[0]?.asset?.url || '';
+// "피그마 x PICKYPIC" -> "피그마" for the generated title/description.
+const clientName = (item?.client || item?.title || '').replace(/\s*x\s*(PICKYPIC|피키픽)\s*$/i, '').trim();
+const seoTitle = item ? item.seoTitle?.trim() || `${clientName} 포토부스 대여 사례 · ${cat.ko} | 피키픽 PICKYPIC` : '';
+const seoDescription = item
+  ? item.seoDescription?.trim() || `${clientName} 현장에 설치한 피키픽 ${cat.ko}(${cat.en}) 포토부스 대여 사례입니다. 현장 사진과 사용 기기 정보를 확인하세요.`
+  : '';
+const ogSource = item?.thumbnail?.asset?.url || item?.images?.[0]?.asset?.url || '';
+const ogImage = ogSource ? sanityCrop(ogSource, 1200, 630) : undefined;
+
+const url = pageUrl(`/portfolio/${slug}`);
+const workNode = item
+  ? {
+      '@type': 'CreativeWork',
+      '@id': `${url}#work`,
+      name: item.title,
+      description: seoDescription,
+      image: item.images?.map((img: any) => img.asset?.url).filter(Boolean) || [],
+      creator: { '@id': ORG_ID },
+      mainEntityOfPage: { '@id': url },
+      inLanguage: 'ko',
+      ...(item.focusKeyword ? { keywords: item.focusKeyword } : {}),
+    }
+  : null;
 ---
 
+{!item ? <NotFoundPage /> : (
 <BaseLayout
   title={seoTitle}
   description={seoDescription}
+  ogImage={ogImage}
+  ogImageWidth={ogImage ? 1200 : undefined}
+  ogImageHeight={ogImage ? 630 : undefined}
+  schema={workNode ? [workNode] : []}
 >
   <BreadcrumbSchema items={[
     { name: '홈', href: '/' },
@@ -109,25 +151,15 @@ const ogImage = item.thumbnail?.asset?.url || item.images?.[0]?.asset?.url || ''
     { name: item.title, href: `/portfolio/${item.slug?.current}` },
   ]} />
 
-  {/* Open Graph image */}
-  {ogImage && (
-    <Fragment>
-      <meta slot="head" property="og:image" content={ogImage} />
-      <meta slot="head" name="twitter:image" content={ogImage} />
-    </Fragment>
-  )}
-
-  {/* Focus keyword meta */}
-  {item.focusKeyword && (
-    <meta slot="head" name="keywords" content={item.focusKeyword} />
-  )}
-
   <!-- Detail Content -->
   <section class="pt-14 pb-6 lg:pt-20 lg:pb-10 bg-white">
     <div class="mx-auto max-w-3xl px-6 lg:px-8">
       <!-- Title & Category Header -->
       <div class="text-center mb-8 lg:mb-12">
-        <h1 class="text-2xl lg:text-4xl font-bold text-primary">{item.title}</h1>
+        <h1 class="text-2xl lg:text-4xl font-bold text-primary">
+          {item.title}
+          <span class="block mt-2 text-base lg:text-lg font-medium text-secondary">{clientName} <span data-i18n="portfolio.case_suffix">포토부스 대여 사례</span></span>
+        </h1>
         <p class="text-lg lg:text-xl font-semibold text-secondary mt-2">{cat.ko} · {cat.en}</p>
       </div>
 
@@ -136,12 +168,16 @@ const ogImage = item.thumbnail?.asset?.url || item.images?.[0]?.asset?.url || ''
         {item.images && item.images.map((img: any, i: number) => (
           <figure class="m-0">
             <img
-              src={img.asset?.url}
+              src={sanityImg(img.asset?.url, 1080)}
+              srcset={sanitySrcset(img.asset?.url, [480, 768, 1080, 1440])}
+              sizes="(min-width: 768px) 720px, 100vw"
               alt={img.alt || `${item.title} 포토부스 렌탈 이미지 ${i + 1}`}
               class="w-full rounded-lg"
               loading={i === 0 ? 'eager' : 'lazy'}
-              width="800"
-              height="600"
+              fetchpriority={i === 0 ? 'high' : undefined}
+              decoding="async"
+              width={sanityDims(img.asset?.url)?.width ?? 800}
+              height={sanityDims(img.asset?.url)?.height ?? 600}
             />
             {img.caption && (
               <figcaption class="text-center text-sm text-secondary mt-2 italic">
@@ -181,7 +217,7 @@ const ogImage = item.thumbnail?.asset?.url || item.images?.[0]?.asset?.url || ''
             이 포트폴리오와 동일한 기기 렌탈 비용 문의하기
           </a>
           <a
-            href="https://pf.kakao.com/_pickypic"
+            href="https://pf.kakao.com/_qbEMb/chat"
             target="_blank"
             rel="noopener noreferrer"
             class="inline-flex items-center justify-center gap-2 px-8 py-3 lg:px-10 lg:py-4 bg-[#FEE500] text-[#3C1E1E] text-sm lg:text-base font-semibold rounded-lg hover:bg-[#FDD835] transition-colors duration-300"
@@ -201,7 +237,7 @@ const ogImage = item.thumbnail?.asset?.url || item.images?.[0]?.asset?.url || ''
               <a href={`/portfolio/${rel.slug?.current}`} class="group block">
                 {rel.thumbnail?.asset?.url ? (
                   <img
-                    src={rel.thumbnail.asset.url}
+                    src={sanityImg(rel.thumbnail.asset.url, 480)}
                     alt={rel.thumbnail?.alt || rel.title}
                     class="w-full aspect-[5/6] object-cover rounded-lg group-hover:opacity-80 transition-opacity"
                     loading="lazy"
@@ -228,23 +264,5 @@ const ogImage = item.thumbnail?.asset?.url || item.images?.[0]?.asset?.url || ''
     </div>
   </section>
 
-  <!-- Structured Data -->
-  <script type="application/ld+json" set:html={JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "CreativeWork",
-    "name": item.title,
-    "description": seoDescription,
-    "image": item.images?.map((img: any) => img.asset?.url).filter(Boolean) || [],
-    "author": {
-      "@type": "Organization",
-      "name": "PICKYPIC",
-      "url": "https://picky-pic.com"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "PICKYPIC"
-    },
-    "keywords": item.focusKeyword || `${cat.ko} 포토부스 렌탈`,
-    "url": `https://picky-pic.com/portfolio/${item.slug?.current}`
-  })} />
 </BaseLayout>
+)}

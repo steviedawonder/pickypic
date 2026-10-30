@@ -37,8 +37,8 @@ const faqItems = [
 ---
 
 <BaseLayout
-  title="포토부스 대여 · 포토부스 렌탈 가격 안내 | 피키픽 PICKYPIC"
-  description="포토부스 대여, 포토부스 렌탈, 인생네컷 대여 전문 피키픽(PICKYPIC). 스탠드형·테이블형·부스형 등 9종의 프리미엄 포토부스를 브랜드 팝업, 기업 행사, 웨딩에 제공합니다. 지금 견적을 요청하세요."
+  title="포토부스 렌탈 안내 · 종류·절차·포함 사항 | 피키픽 PICKYPIC"
+  description="포토부스 렌탈은 문의, 견적, 설치, 운영, 철거 순으로 진행됩니다. 스탠드형·테이블형·부스형 9종 중 행사에 맞는 기기와 맞춤 프레임, 운영 스태프 등 포함 사항을 확인하세요."
 >
   <!-- Structured data -->
   <BreadcrumbSchema items={[
@@ -181,7 +181,7 @@ const faqItems = [
       <h2 class="text-xl lg:text-2xl font-bold text-primary mb-8" data-i18n="rental_page.includes.title">포토부스 대여 포함 사항</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 gs-stagger">
         {[
-          { titleKey: 'rental_page.includes.item1.title', title: '포토부스 장비', descKey: 'rental_page.includes.item1.desc', desc: '선택하신 모델의 포토부스 본체, DSLR 카메라, 조명, 프린터 일체 제공' },
+          { titleKey: 'rental_page.includes.item1.title', title: '포토부스 장비', descKey: 'rental_page.includes.item1.desc', desc: '선택하신 모델의 포토부스 본체와 카메라, 조명, 프린터 일체 제공' },
           { titleKey: 'rental_page.includes.item2.title', title: '맞춤 프레임 디자인', descKey: 'rental_page.includes.item2.desc', desc: '브랜드 로고, 행사 테마를 반영한 맞춤 포토 프레임 제작' },
           { titleKey: 'rental_page.includes.item3.title', title: '현장 설치 · 철거', descKey: 'rental_page.includes.item3.desc', desc: '전문 팀의 현장 방문 설치 및 행사 종료 후 철거 서비스' },
           { titleKey: 'rental_page.includes.item4.title', title: '운영 스태프', descKey: 'rental_page.includes.item4.desc', desc: '행사 시간 동안 상주하며 촬영 안내 및 장비 운영 지원' },
@@ -198,7 +198,7 @@ const faqItems = [
   </section>
 
   <!-- FAQ Section -->
-  <FAQSchema items={faqItems} title="포토부스 대여 자주 묻는 질문" />
+  <FAQSchema items={faqItems} title="포토부스 대여 자주 묻는 질문" titleKey="faq.title_rental_page" />
 
   <!-- Bottom CTA -->
   <section class="bg-white py-12 lg:py-16">

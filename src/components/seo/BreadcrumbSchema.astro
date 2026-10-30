@@ -1,29 +1,19 @@
 ---
-interface BreadcrumbItem {
-  name: string;
-  href: string;
-}
+import { breadcrumbNode, jsonLd, pageUrl, type Crumb } from '@data/structuredData';
 
 interface Props {
-  items: BreadcrumbItem[];
+  items: Crumb[];
 }
 
 const { items } = Astro.props;
-const site = Astro.site?.toString() || 'https://picky-pic.com';
+const lang = Astro.url.pathname.startsWith('/en') ? 'en' : 'ko';
 
-const breadcrumbList = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": items.map((item, index) => ({
-    "@type": "ListItem",
-    "position": index + 1,
-    "name": item.name,
-    "item": `${site}${item.href}`.replace(/\/$/, ''),
-  })),
-};
+// Crumb URLs come from pageUrl(), the same function that builds the canonical
+// tag. Concatenating onto Astro.site used to yield "https://picky-pic.com//about".
+const breadcrumbList = breadcrumbNode(pageUrl(Astro.url.pathname), items, lang);
 ---
 
-<script type="application/ld+json" set:html={JSON.stringify(breadcrumbList)} />
+<script type="application/ld+json" set:html={jsonLd([breadcrumbList])} />
 
 <!-- Visual Breadcrumb -->
 <nav aria-label="Breadcrumb" class="mx-auto max-w-7xl px-6 lg:px-8 pt-18 pb-1">
@@ -36,7 +26,7 @@ const breadcrumbList = {
             <a href={item.href} class="hover:text-primary transition-colors">{item.name}</a>
           </li>
         ) : (
-          <li class="text-primary font-medium">{item.name}</li>
+          <li class="text-primary font-medium" aria-current="page">{item.name}</li>
         )}
       </>
     ))}

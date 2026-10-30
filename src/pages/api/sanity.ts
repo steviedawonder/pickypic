@@ -145,3 +145,13 @@ export const POST: APIRoute = async ({ request }) => {
     );
   }
 };
+
+// Every other method (crawlers send GET/HEAD) gets a real 405. Without this,
+// Astro answers with an empty-body 404 and then tries to fetch the prerendered
+// 404 page, which crashed on Vercel (500 FUNCTION_INVOCATION_FAILED).
+// POST still wins: Astro picks mod[method] before mod.ALL.
+export const ALL: APIRoute = () =>
+  new Response(JSON.stringify({ error: 'Method Not Allowed' }), {
+    status: 405,
+    headers: { 'Content-Type': 'application/json', Allow: 'POST' },
+  });

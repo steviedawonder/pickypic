@@ -144,20 +144,16 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
       triggerRebuild();
       setIsDirty(false);
       if (publish) {
-        // Fire and-summarise: ping Google Indexing API + IndexNow + Naver in parallel.
+        // Fire and-summarise: ping IndexNow + Naver in parallel.
         // We don't block the publish flow on this — failures are surfaced in the toast
         // but the post is already saved.
         if (finalSlug) {
-          const postUrl = `https://picky-pic.com/blog/${finalSlug}`;
+          // Canonical URL of the saved slug: no trailing slash, percent-encoded.
+          const postUrl = `https://picky-pic.com/blog/${encodeURIComponent(finalSlug)}`;
           showToast('발행 완료! 검색엔진에 색인 요청 중...');
           requestSearchEngineIndexing(postUrl).then((results) => {
-            const googleRes = results.find(r => r.target === 'google');
             const okCount = results.filter(r => r.success).length;
-            if (googleRes && googleRes.configured === false) {
-              showToast(`발행 완료 · 색인 요청 ${okCount}/3 (Google API 미설정)`);
-            } else {
-              showToast(`발행 완료 · 색인 요청 ${okCount}/3 성공`);
-            }
+            showToast(`발행 완료 · 색인 요청 ${okCount}/${results.length} 성공`);
             setTimeout(() => onNavigate('blogs'), 1500);
           }).catch(() => {
             setTimeout(() => onNavigate('blogs'), 1000);

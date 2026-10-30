@@ -5,7 +5,7 @@ import { compressImage } from './shared/imageUtils';
 
 const AUTH_STORAGE_KEY = 'pickypic-admin-auth';
 
-function getAuthHeaders(): Record<string, string> {
+export function getAuthHeaders(): Record<string, string> {
   const token = (typeof localStorage !== 'undefined' && localStorage.getItem(AUTH_STORAGE_KEY)) || '';
   return { 'x-admin-auth': token };
 }
@@ -337,10 +337,11 @@ export async function triggerRebuild() {
 }
 
 // ── Search engine indexing notifications ──
-// Fires Google Indexing API + IndexNow (Bing/Yandex) + Naver IndexNow in parallel
-// when a blog post is published or updated. All three calls are best-effort: the
-// caller doesn't await failures, since the sitemap will eventually be crawled
-// regardless. Used by BlogEditor on publish.
+// Fires IndexNow (api.indexnow.org, shared with Bing/Naver/Yandex) + Naver IndexNow
+// in parallel when a blog post or portfolio item goes live or is updated. Both calls
+// are best-effort: callers don't block on failures, since the sitemaps will be
+// crawled regardless. Both endpoints are admin-only, so the auth header is sent.
+// Used by NaverBlogEditor / BlogEditor on publish and PortfolioEditor on save.
 export type IndexingTarget = 'google' | 'indexnow' | 'naver';
 export interface IndexingResult {
   target: IndexingTarget;
@@ -355,7 +356,7 @@ export async function requestSearchEngineIndexing(url: string): Promise<Indexing
     try {
       const res = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify(payload),
       });
       const data = await res.json().catch(() => ({}));
@@ -371,13 +372,13 @@ export async function requestSearchEngineIndexing(url: string): Promise<Indexing
     }
   };
 
-  const [google, indexnow, naver] = await Promise.all([
-    callJson('google', '/api/google-indexing', { url, action: 'URL_UPDATED' }),
+  // No Google Indexing API call: Google supports it only for JobPosting/BroadcastEvent pages and revokes access for other use (sitemap lastmod + Search Console cover posts).
+  const [indexnow, naver] = await Promise.all([
     callJson('indexnow', '/api/indexnow', { url }),
     callJson('naver', '/api/naver-indexing', { url }),
   ]);
 
-  return [google, indexnow, naver];
+  return [indexnow, naver];
 }
 
 // ── Dashboard Stats ──

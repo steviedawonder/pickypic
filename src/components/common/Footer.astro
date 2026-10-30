@@ -24,7 +24,7 @@ try {
 const isEn = Astro.url.pathname.startsWith('/en');
 const serviceLinks = isEn
   ? [
-      { href: '/en/', label: 'Home' },
+      { href: '/en', label: 'Home' },
       { href: '/en/kickstarter', label: 'Kickstarter' },
       { href: '/en/singapore-photobooth', label: 'Singapore Photobooth' },
     ]
@@ -34,14 +34,30 @@ const serviceLinks = isEn
       { href: '/photobooth-rental', label: '포토부스 렌탈', i18n: 'footer.link.photobooth_rental' },
       { href: '/photobooth-purchase', label: '포토부스 구매', i18n: 'footer.link.photobooth_purchase' },
       { href: '/corporate-event', label: '기업행사 포토부스', i18n: 'footer.link.corporate_event' },
-      { href: '/popup-photobooth', label: '팝업 포토부스', i18n: 'footer.link.popup_photobooth' },
-      { href: '/retro-photobooth', label: '레트로 포토부스', i18n: 'footer.link.retro_photobooth' },
+      { href: '/popup-photobooth', label: '팝업스토어 포토부스', i18n: 'footer.link.popup_photobooth' },
+      { href: '/retro-photobooth', label: '영수증 사진기', i18n: 'footer.link.retro_photobooth' },
       { href: '/ai-photobooth', label: 'AI 포토부스', i18n: 'footer.link.ai_photobooth' },
       { href: '/ai-personal-color', label: 'AI 퍼스널컬러', i18n: 'footer.link.ai_personal_color' },
       { href: '/photobooth-startup', label: '포토부스 창업', i18n: 'footer.link.photobooth_startup' },
       { href: '/en/singapore-photobooth', label: 'Singapore Photobooth', i18n: 'footer.link.singapore' },
       { href: '/portfolio', label: '포트폴리오', i18n: 'footer.link.portfolio' },
+      // The blog is out of the main nav for now; without this link its posts
+      // were reachable only through the sitemap and RSS.
+      { href: '/blog', label: '블로그', i18n: 'footer.link.blog' },
     ];
+
+// tel: needs E.164 with the domestic trunk 0 dropped. Built from whatever the
+// display string is (Sanity holds "(82) 02-338-9181"), so a display format the
+// admin types can never again produce an undialable "tel:82023389181".
+function toTel(display: string): string {
+  const digits = display.replace(/\D/g, '');
+  const national = (digits.startsWith('82') ? digits.slice(2) : digits).replace(/^0/, '');
+  return `tel:+82${national}`;
+}
+
+// pf.kakao.com/_pickypic is an empty, unnamed channel that siteSettings still
+// points at. Fall back to the real one until the admin value is corrected.
+const sanityKakaoUrl = footerData?.kakaoUrl?.includes('/_pickypic') ? undefined : footerData?.kakaoUrl;
 
 // Use Sanity data if available, otherwise fallback to company.ts
 const footer = {
@@ -49,11 +65,11 @@ const footer = {
   businessNumber: footerData?.businessNumber || company.businessNumber,
   address: isEn ? company.addressEn : (footerData?.address || company.address),
   phone: footerData?.phone || company.phone,
-  phoneTel: `tel:${(footerData?.phone || company.phone).replace(/[^0-9+]/g, '')}`,
+  phoneTel: toTel(footerData?.phone || company.phone),
   email: footerData?.email || company.email,
   partnerEmail: footerData?.partnerEmail || company.partnerEmail,
   kakaoChannel: footerData?.kakaoChannel || company.kakaoChannel,
-  kakaoUrl: footerData?.kakaoUrl || company.kakaoUrl,
+  kakaoUrl: sanityKakaoUrl || company.kakaoUrl,
   instagram: {
     official: company.instagram.official,
     global: company.instagram.global,
@@ -75,7 +91,7 @@ const footer = {
           class="h-6 lg:h-8 mb-4 lg:mb-6"
         />
         <address class="not-italic text-xs lg:text-sm text-white/60 leading-relaxed space-y-0.5 lg:space-y-1">
-          <p><span data-i18n="footer.company_label">{t("footer.company_label")}</span> : <a href="/admin" style="color: inherit; text-decoration: none;">{footer.name}</a></p>
+          <p><span data-i18n="footer.company_label">{t("footer.company_label")}</span> : <a href="/admin" rel="nofollow" style="color: inherit; text-decoration: none;">{footer.name}</a></p>
           <p><span data-i18n="footer.business_number">{t("footer.business_number")}</span> : {footer.businessNumber}</p>
           <p><span data-i18n="footer.address_label">{t("footer.address_label")}</span> : {footer.address}</p>
           <p><span data-i18n="footer.phone_label">{t("footer.phone_label")}</span> : <a href={footer.phoneTel} class="hover:text-white/80 transition-colors">{footer.phone}</a></p>
@@ -117,9 +133,9 @@ const footer = {
     </div>
 
     <!-- Service Links for SEO -->
-    <nav class="mt-6 lg:mt-10 pt-4 lg:pt-6 border-t border-white/10 flex flex-wrap gap-x-5 gap-y-2 text-[10px] lg:text-xs text-white/40" aria-label={isEn ? 'Site links' : '서비스 바로가기'}>
+    <nav class="mt-6 lg:mt-10 pt-4 lg:pt-6 border-t border-white/10 flex flex-wrap gap-x-5 gap-y-2 text-xs text-white/60" aria-label={isEn ? 'Site links' : '서비스 바로가기'}>
       {serviceLinks.map((l) => (
-        <a href={l.href} class="hover:text-white/70 transition-colors" data-i18n={l.i18n}>{l.label}</a>
+        <a href={l.href} class="hover:text-white transition-colors" data-i18n={l.i18n}>{l.label}</a>
       ))}
     </nav>
   </div>

@@ -1,73 +1,40 @@
 ---
 import { company } from '@data/company';
+import { jsonLd, pageUrl, serviceNode } from '@data/structuredData';
 
 interface Props {
   serviceName?: string;
   serviceType?: string;
   description?: string;
+  /** Countries the page's service covers; defaults to Korea and Singapore. */
+  areaServed?: ('KR' | 'SG')[];
+  /** Limit the catalogue to the models the page is about (English model names). */
+  models?: string[];
 }
 
-// The catalog below was Korean-only, so an English page shipped Hangul inside
-// its own structured data. Split on the route; Korean output is unchanged.
+// The catalog was Korean-only once, so an English page shipped Hangul inside
+// its own structured data. Split on the route.
 const isEn = Astro.url.pathname.startsWith('/en');
 
 const {
   serviceName = isEn ? 'Photo Booth Rental' : '포토부스 렌탈 서비스',
   serviceType = 'Photo Booth Rental',
   description = isEn ? company.descriptionEn : company.description,
+  areaServed,
+  models,
 } = Astro.props;
 
-// English markets sell the two Retro models as Receipt models — see
-// src/data/enProductNames.ts.
-const catalog = isEn
-  ? {
-      name: 'Photo Booth Rental Catalogue',
-      suffix: '',
-      groups: [
-        { name: 'Stand type', items: ['Modern Picky', 'Classic Picky', 'Urban Picky'] },
-        { name: 'Table type', items: ['Modern Mini Picky', 'Urban Mini Picky', 'Modern Receipt Picky', 'Urban Receipt Picky'] },
-        { name: 'Booth type', items: ['Outdoor Picky', 'Air Picky'] },
-      ],
-    }
-  : {
-      name: '포토부스 렌탈 카탈로그',
-      suffix: ' 렌탈',
-      groups: [
-        { name: '스탠드형 포토부스', items: ['Modern Picky', 'Classic Picky', 'Urban Picky'] },
-        { name: '테이블형 포토부스', items: ['Modern Mini Picky', 'Urban Mini Picky', 'Modern Retro Picky', 'Urban Retro Picky'] },
-        { name: '부스형 포토부스', items: ['Outdoor Picky', 'Air Picky'] },
-      ],
-    };
-
-const serviceSchema = {
-  "@context": "https://schema.org",
-  "@type": "Service",
-  "name": serviceName,
-  "serviceType": serviceType,
-  "description": description,
-  "provider": {
-    "@type": "LocalBusiness",
-    "@id": "https://picky-pic.com/#organization",
-    "name": company.brand,
-    "url": company.url,
-  },
-  "areaServed": [
-    { "@type": "Country", "name": "KR" },
-    { "@type": "Country", "name": "SG" },
-  ],
-  "hasOfferCatalog": {
-    "@type": "OfferCatalog",
-    "name": catalog.name,
-    "itemListElement": catalog.groups.map((g) => ({
-      "@type": "OfferCatalog",
-      "name": g.name,
-      "itemListElement": g.items.map((item) => ({
-        "@type": "Offer",
-        "itemOffered": { "@type": "Service", "name": `${item}${catalog.suffix}` },
-      })),
-    })),
-  },
-};
+// The provider is referenced by @id rather than re-described, so it is the same
+// company node BaseLayout emits on every page.
+const service = serviceNode({
+  url: pageUrl(Astro.url.pathname),
+  lang: isEn ? 'en' : 'ko',
+  name: serviceName,
+  serviceType,
+  description,
+  areaServed,
+  models,
+});
 ---
 
-<script type="application/ld+json" set:html={JSON.stringify(serviceSchema)} />
+<script type="application/ld+json" set:html={jsonLd([service])} />

@@ -36,7 +36,7 @@ const faqItems = [
 ---
 
 <BaseLayout
-  title="영수증 사진기 · 감열지 사진기 대여 · 구매 | 피키픽 레트로 사진기 PICKYPIC"
+  title="영수증 사진기 · 감열지 사진기 대여·구매 | 피키픽 PICKYPIC"
   description="영수증 사진기, 감열지 사진기 대여 및 구매 전문 피키픽. 레트로 사진기 Modern Retro Picky, Urban Retro Picky로 브랜드 팝업, 카페, 파티에 뉴트로 감성을 더하세요."
 >
   <!-- Structured data -->
@@ -48,6 +48,7 @@ const faqItems = [
     serviceName="영수증 사진기 · 감열지 사진기"
     serviceType="Receipt Photo Printer / Thermal Photo Printer"
     description="피키픽의 영수증 사진기(레트로 사진기)는 감열지에 사진을 출력하는 뉴트로 스타일 포토 기기입니다. Modern Retro Picky와 Urban Retro Picky 두 가지 모델을 통해 브랜드 팝업, 카페, 파티 등에서 빈티지 감성의 포토 경험을 제공합니다."
+    models={['Modern Retro Picky', 'Urban Retro Picky']}
   />
 
   <!-- Hero Section -->
@@ -318,7 +319,7 @@ const faqItems = [
   </section>
 
   <!-- FAQ Section -->
-  <FAQSchema items={faqItems} title="영수증 사진기 · 감열지 사진기 자주 묻는 질문" />
+  <FAQSchema items={faqItems} title="영수증 사진기 · 감열지 사진기 자주 묻는 질문" titleKey="faq.title_retro" />
 
   <!-- CTA Section -->
   <section class="bg-primary py-16 lg:py-20" aria-labelledby="cta-heading">

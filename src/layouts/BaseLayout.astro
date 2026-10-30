@@ -3,8 +3,11 @@ import '../styles/global.css';
 import Navbar from '@components/common/Navbar.astro';
 import Footer from '@components/common/Footer.astro';
 import FloatingContactButton from '@components/common/FloatingContactButton.astro';
-import { company } from '@data/company';
 import { getPair, switchTarget } from '@data/i18nPairs';
+import {
+  ORG_ID, pageUrl, assetUrl, isoDate, orgNode, orgRef, websiteNode, webPageNode, jsonLd,
+  type Node,
+} from '@data/structuredData';
 import { sanityClient } from '../sanity/client';
 
 let siteSettings: any = null;
@@ -28,9 +31,16 @@ interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
+  /** Real pixel size of ogImage. Omitted from the tags when unknown rather than guessed. */
+  ogImageWidth?: number;
+  ogImageHeight?: number;
   ogType?: 'website' | 'article';
   noindex?: boolean;
   articleMeta?: ArticleMeta;
+  /** schema.org type of this page's WebPage node, e.g. 'AboutPage', 'CollectionPage'. */
+  pageType?: string;
+  /** Page-specific JSON-LD nodes, merged into the page's single @graph. */
+  schema?: Node[];
 }
 
 // Locale comes from the URL, not a prop. A prop can be forgotten on one page
@@ -45,16 +55,52 @@ const {
   description = isEn
     ? 'A receipt photo booth that prints on standard thermal paper — no ink, no cartridges, no subscription. Handmade in Korea, 500+ booths in operation, 16,000+ brand events. Ships worldwide.'
     : '포토부스 대여·렌탈·매매 전문 피키픽(PICKYPIC). 스탠드형·테이블형·부스형 9종 라인업, 브랜드 팝업·기업 행사·웨딩까지 맞춤형 포토부스를 제공합니다. 누적 16,000건+ 운영 경험. 무료 견적 문의.',
-  ogImage = '/images/hero/main-1.jpg',
+  ogImage,
+  ogImageWidth,
+  ogImageHeight,
   ogType = 'website',
   noindex = false,
   articleMeta,
+  pageType = 'WebPage',
+  schema = [],
 } = Astro.props;
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+// One canonical form everywhere: no trailing slash (vercel.json 301s the other
+// form). Built from the path, never the raw request, so /blog and /blog/ — both
+// reachable on SSR routes — can't each claim to be canonical.
+const canonicalURL = pageUrl(Astro.url.pathname);
 
 // hreflang is emitted only for pages that actually have a counterpart.
-const pair = getPair(Astro.url.pathname);
+const pair = noindex ? null : getPair(Astro.url.pathname);
+
+// The default share image is the 1440×930 home hero; a page that passes its own
+// image passes its size too, or the size tags are left out.
+const DEFAULT_OG_IMAGE = '/images/hero/main-1.jpg';
+const isDefaultOg = !ogImage || ogImage === DEFAULT_OG_IMAGE;
+const ogImageUrl = assetUrl(ogImage ?? DEFAULT_OG_IMAGE);
+const ogWidth = isDefaultOg ? 1440 : ogImageWidth;
+const ogHeight = isDefaultOg ? 930 : ogImageHeight;
+
+// One @graph per page. The full company node goes on the pages Google reads it
+// from (home and about); everywhere else a slim node keeps { "@id": ORG_ID }
+// references resolvable.
+const canonicalPathname = new URL(canonicalURL).pathname;
+const isCompanyPage = ['/', '/en', '/about'].includes(canonicalPathname);
+const graph: Node[] = [
+  isCompanyPage ? orgNode(lang) : orgRef(),
+  websiteNode(),
+  webPageNode({
+    url: canonicalURL,
+    type: pageType,
+    name: title,
+    description,
+    lang,
+    image: ogImage ? ogImageUrl : undefined,
+    about: isCompanyPage ? ORG_ID : undefined,
+    mainEntity: pageType === 'AboutPage' ? ORG_ID : undefined,
+  }),
+  ...schema,
+];
 ---
 
 <!doctype html>
@@ -63,19 +109,17 @@ const pair = getPair(Astro.url.pathname);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
-    {!isEn && (
-      <meta name="keywords" content="포토부스, 포토부스 대여, 포토부스 렌탈, 포토부스 매매, 포토부스 구매, 포토부스 판매, 인생네컷 대여, 브랜드 팝업 포토부스, 팝업스토어 포토부스, 기업행사 포토부스, 사내행사 포토부스, 웨딩 포토부스, 포토부스 창업, 무인사진관 창업, 셀프포토스튜디오, 영수증 사진기, 감열지 사진기, 레트로 포토부스, 피키픽, PICKYPIC, photo booth rental Korea, photo booth Singapore" />
-    )}
+    {/* No meta keywords: Google and Naver don't read it, and Bing treats a stuffed
+        list as a spam signal. Per-bot googlebot/bingbot/yeti tags are gone too —
+        "robots" covers every crawler, and those copies said "index" even on
+        noindex pages. */}
     <meta name="author" content={isEn ? 'PICKYPIC' : '피키픽 PICKYPIC'} />
     <meta name="generator" content={Astro.generator} />
     {noindex ? (
-      <meta name="robots" content="noindex, nofollow" />
+      <meta name="robots" content="noindex, follow" />
     ) : (
       <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     )}
-    <meta name="googlebot" content="index, follow" />
-    <meta name="bingbot" content="index, follow" />
-    <meta name="yeti" content="index, follow" />
     <meta name="theme-color" content="#ffffff" />
 
     <!-- Google Search Console -->
@@ -94,9 +138,9 @@ const pair = getPair(Astro.url.pathname);
         JSX-style comment: it stays in source and never reaches the browser. */}
     {pair && (
       <>
-        <link rel="alternate" hreflang="ko" href={new URL(pair.ko, Astro.site)} />
-        <link rel="alternate" hreflang="en" href={new URL(pair.en, Astro.site)} />
-        <link rel="alternate" hreflang="x-default" href={new URL(pair.en, Astro.site)} />
+        <link rel="alternate" hreflang="ko" href={pageUrl(pair.ko)} />
+        <link rel="alternate" hreflang="en" href={pageUrl(pair.en)} />
+        <link rel="alternate" hreflang="x-default" href={pageUrl(pair.en)} />
       </>
     )}
 
@@ -122,25 +166,13 @@ const pair = getPair(Astro.url.pathname);
       </script>
     )}
 
-    <!-- Naver Analytics -->
-    {siteSettings?.naverAnalyticsId && (
-      <script async src="https://wcs.naver.net/wcslog.js"></script>
-    )}
-    {siteSettings?.naverAnalyticsId && (
-      <script is:inline define:vars={{ naverId: siteSettings.naverAnalyticsId }}>
-        var wcs_add = wcs_add || {};wcs_add["wa"]=naverId;
-        if(window.wcs){wcs_do();}
-      </script>
-    )}
-
     <!-- Kakao Pixel -->
     {siteSettings?.kakaoPixelId && (
       <script is:inline define:vars={{ kakaoId: siteSettings.kakaoPixelId }}>
         !function(e,t,n,a,s,c){e.kakaoPixel||(s=e.kakaoPixel=function(){s.queue.push(arguments)},s.queue=[],
         c=t.createElement(n),c.async=1,c.src='https://t1.daumcdn.net/kas/static/kp.js',
         t.head.appendChild(c))}(window,document,'script');
-        kakaoPixel(kakaoId);
-        kakaoPixel('pageView');
+        kakaoPixel(kakaoId).pageView();
       </script>
     )}
 
@@ -171,17 +203,20 @@ const pair = getPair(Astro.url.pathname);
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={new URL(ogImage, Astro.site)} />
-    <meta property="og:image:width" content="2000" />
-    <meta property="og:image:height" content="1050" />
-    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image" content={ogImageUrl} />
+    {ogWidth && ogHeight && (
+      <>
+        <meta property="og:image:width" content={String(ogWidth)} />
+        <meta property="og:image:height" content={String(ogHeight)} />
+      </>
+    )}
     <meta property="og:image:alt" content={isEn
       ? 'PICKYPIC — receipt photo booths, handmade in Korea'
       : '피키픽 PICKYPIC 포토부스 - 포토부스 대여 · 렌탈 · 매매 전문'} />
     <meta property="og:locale" content={isEn ? 'en_US' : 'ko_KR'} />
     <meta property="og:site_name" content="PICKYPIC" />
-    {articleMeta?.publishedTime && <meta property="article:published_time" content={articleMeta.publishedTime} />}
-    {articleMeta?.modifiedTime && <meta property="article:modified_time" content={articleMeta.modifiedTime} />}
+    {articleMeta?.publishedTime && <meta property="article:published_time" content={isoDate(articleMeta.publishedTime)} />}
+    {articleMeta?.modifiedTime && <meta property="article:modified_time" content={isoDate(articleMeta.modifiedTime)} />}
     {articleMeta?.author && <meta property="article:author" content={articleMeta.author} />}
     {articleMeta?.section && <meta property="article:section" content={articleMeta.section} />}
     {articleMeta?.tags?.map(tag => <meta property="article:tag" content={tag} />)}
@@ -190,15 +225,19 @@ const pair = getPair(Astro.url.pathname);
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={new URL(ogImage, Astro.site)} />
+    <meta name="twitter:image" content={ogImageUrl} />
     <meta name="twitter:site" content="@pickypic_official" />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="/pickypic_logo.png" />
-    <link rel="apple-touch-icon" href="/pickypic_logo.png" />
+    {/* Square icons (Naver and Google ignore non-square favicons; the 337×312
+        logo was one). Absolute URLs per Naver's favicon guide. The
+        apple-touch tile is white because iOS paints transparency black. */}
+    <link rel="icon" type="image/png" sizes="192x192" href="https://picky-pic.com/images/common/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="https://picky-pic.com/images/common/apple-touch-icon-180.png" />
 
-    <!-- Canonical -->
-    <link rel="canonical" href={canonicalURL} />
+    {/* A noindex page gets no canonical: "don't index this, index that" is a
+        mixed signal, and a 404 has no URL worth pointing at. */}
+    {!noindex && <link rel="canonical" href={canonicalURL} />}
 
     <!-- RSS Feed -->
     {/* The blog is Korean-only, so /en/ does not advertise its feed. */}
@@ -206,71 +245,20 @@ const pair = getPair(Astro.url.pathname);
       <link rel="alternate" type="application/rss+xml" title="피키픽 포토부스 블로그" href="https://picky-pic.com/blog/rss.xml" />
     )}
 
-    <!-- Font Preload: Bebas Neue (local) -->
-    <link rel="preload" href="/fonts/BebasNeue-Regular.ttf" as="font" type="font/ttf" crossorigin />
+    <!-- Font Preload: Bebas Neue (local, Latin subset — every Bebas use is Latin) -->
+    <link rel="preload" href="/fonts/bebas-neue-latin-v1.woff2" as="font" type="font/woff2" crossorigin />
 
     <!-- Google Fonts: Noto Sans KR & Montserrat -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400..700&family=Noto+Sans+KR:wght@400..700&display=swap"
       rel="stylesheet"
     />
 
-    <!-- Structured Data: LocalBusiness -->
-    <script type="application/ld+json" set:html={JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "LocalBusiness",
-      "@id": "https://picky-pic.com/#organization",
-      "name": company.brand,
-      "legalName": company.name,
-      "alternateName": company.brandKo,
-      "url": company.url,
-      "logo": company.logo,
-      "image": company.logo,
-      "description": isEn ? company.descriptionEn : company.description,
-      "telephone": company.phone,
-      "email": company.email,
-      "foundingDate": company.foundingDate,
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "성수이로18길 31, 풍림테크원 205,206호",
-        "addressLocality": "성동구",
-        "addressRegion": "서울특별시",
-        "postalCode": "04790",
-        "addressCountry": "KR"
-      },
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": company.geo.lat,
-        "longitude": company.geo.lng
-      },
-      "sameAs": company.sameAs,
-      "knowsLanguage": ["ko", "en", "ja"],
-      "areaServed": [
-        { "@type": "Country", "name": "KR" },
-        { "@type": "Country", "name": "SG" }
-      ],
-      "serviceType": isEn ? 'Photo Booth Rental' : '포토부스 렌탈'
-    })} />
-
-    <!-- Structured Data: WebSite -->
-    <script type="application/ld+json" set:html={JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "PICKYPIC PHOTOBOOTH",
-      "alternateName": "피키픽 포토부스",
-      "url": company.url,
-      // Content languages that actually have URLs. Japanese is a client-side
-      // text swap with no /jp/ route, so no crawler can reach it — claiming it
-      // here would contradict the hreflang set, which deliberately omits ja.
-      "inLanguage": ["ko", "en"],
-      "publisher": {
-        "@type": "Organization",
-        "@id": "https://picky-pic.com/#organization",
-        "name": company.brand
-      }
-    })} />
+    {/* Structured data: company, site and page as one @graph (built in the
+        frontmatter from src/data/structuredData.ts). */}
+    <script type="application/ld+json" set:html={jsonLd(graph)} />
 
     <!-- Page-specific structured data slot -->
     <slot name="head" />
@@ -292,31 +280,6 @@ const pair = getPair(Astro.url.pathname);
         })();
       </script>
     )}
-    <!-- Hide page until fonts are loaded to prevent FOUT -->
-    <style>
-      .fonts-loading { opacity: 0; }
-      .fonts-loaded { opacity: 1; transition: opacity 0.1s ease-in; }
-    </style>
-    <script is:inline>
-      document.documentElement.classList.add('fonts-loading');
-      if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(function() {
-          document.documentElement.classList.remove('fonts-loading');
-          document.documentElement.classList.add('fonts-loaded');
-        });
-      } else {
-        // Fallback for browsers without Font Loading API
-        window.addEventListener('load', function() {
-          document.documentElement.classList.remove('fonts-loading');
-          document.documentElement.classList.add('fonts-loaded');
-        });
-      }
-      // Safety timeout: show page after 2s even if fonts fail
-      setTimeout(function() {
-        document.documentElement.classList.remove('fonts-loading');
-        document.documentElement.classList.add('fonts-loaded');
-      }, 2000);
-    </script>
   </head>
   <body class="bg-white text-primary antialiased">
     <!-- Google Tag Manager (noscript) -->
@@ -334,7 +297,7 @@ const pair = getPair(Astro.url.pathname);
         underneath it and shifts the page down when the geo fetch resolves.
         JSX-style comment: stays in source, never reaches the browser. */}
     {!isEn && (
-      <div id="en-suggest-banner" class="hidden fixed bottom-0 left-0 right-0 z-[60] bg-primary text-white text-sm shadow-[0_-2px_12px_rgba(0,0,0,0.15)]">
+      <div id="en-suggest-banner" data-nosnippet class="hidden fixed bottom-0 left-0 right-0 z-[60] bg-primary text-white text-sm shadow-[0_-2px_12px_rgba(0,0,0,0.15)]">
         <div class="mx-auto max-w-7xl px-6 lg:px-8 py-2.5 flex items-center justify-between gap-4">
           <a href={switchTarget(Astro.url.pathname, 'en')} class="hover:underline">
             View this page in English &rarr;
@@ -364,8 +327,20 @@ const pair = getPair(Astro.url.pathname);
       gsap.registerPlugin(ScrollTrigger);
 
       function initAnimations() {
+        // Only what starts below the fold is animated. A fromTo() on a visible
+        // heading or hero image set it to opacity 0 until this bundle ran, so
+        // the first thing on screen appeared late and LCP was timed from the
+        // end of the tween. Rects are all read up front, before any tween
+        // writes styles, so this costs one layout instead of one per element.
+        const vh = window.innerHeight;
+        const belowFold = (selector: string) =>
+          gsap.utils.toArray<HTMLElement>(selector).filter((el) => el.getBoundingClientRect().top >= vh);
+        const [fadeUp, fadeIn, slideLeft, slideRight, scaleIn, staggered] = [
+          '.gs-fade-up', '.gs-fade-in', '.gs-slide-left', '.gs-slide-right', '.gs-scale-in', '.gs-stagger',
+        ].map(belowFold);
+
         // Fade up
-        gsap.utils.toArray('.gs-fade-up').forEach((el) => {
+        fadeUp.forEach((el) => {
           const element = el as HTMLElement;
           gsap.fromTo(
             element,
@@ -385,7 +360,7 @@ const pair = getPair(Astro.url.pathname);
         });
 
         // Fade in
-        gsap.utils.toArray('.gs-fade-in').forEach((el) => {
+        fadeIn.forEach((el) => {
           const element = el as HTMLElement;
           gsap.fromTo(
             element,
@@ -404,7 +379,7 @@ const pair = getPair(Astro.url.pathname);
         });
 
         // Slide left
-        gsap.utils.toArray('.gs-slide-left').forEach((el) => {
+        slideLeft.forEach((el) => {
           const element = el as HTMLElement;
           const xOffset = window.innerWidth >= 768 ? -80 : -40;
           gsap.fromTo(
@@ -425,7 +400,7 @@ const pair = getPair(Astro.url.pathname);
         });
 
         // Slide right
-        gsap.utils.toArray('.gs-slide-right').forEach((el) => {
+        slideRight.forEach((el) => {
           const element = el as HTMLElement;
           gsap.fromTo(
             element,
@@ -445,7 +420,7 @@ const pair = getPair(Astro.url.pathname);
         });
 
         // Scale in
-        gsap.utils.toArray('.gs-scale-in').forEach((el) => {
+        scaleIn.forEach((el) => {
           const element = el as HTMLElement;
           gsap.fromTo(
             element,
@@ -465,7 +440,7 @@ const pair = getPair(Astro.url.pathname);
         });
 
         // Stagger children
-        gsap.utils.toArray('.gs-stagger').forEach((el) => {
+        staggered.forEach((el) => {
           const element = el as HTMLElement;
           const children = element.children;
           gsap.fromTo(
@@ -491,24 +466,47 @@ const pair = getPair(Astro.url.pathname);
       document.addEventListener('astro:after-swap', initAnimations);
     </script>
 
-    {/* Strips the Channel Talk widget GTM injects. JSX comment: stays in source,
-        never reaches the browser. */}
+    {/* The Channel Talk remover that used to sit here is gone: GTM no longer
+        injects Channel Talk, and its [class*="channel"] sweep (every second and
+        on every DOM change) would have deleted any future element whose class
+        merely contains "channel". If the widget ever comes back, pause its tag
+        in GTM instead.
+
+        Contact clicks go to the dataLayer so GTM can count phone / Kakao /
+        email / SmartStore leads, which no tag measured before. */}
     <script is:inline>
-      (function removeChannelTalk() {
-        var selectors = ['#ch-plugin', '#channel-io-plugin', '[id^="ch-plugin"]', '.ch-desk-messenger', '[class*="channel"]'];
-        function remove() {
-          selectors.forEach(function(sel) {
-            document.querySelectorAll(sel).forEach(function(el) { el.remove(); });
-          });
-          // Also remove channel talk script
-          if (window.ChannelIO) { try { window.ChannelIO('shutdown'); } catch(e) {} }
-        }
-        remove();
-        setInterval(remove, 1000);
-        var observer = new MutationObserver(remove);
-        observer.observe(document.body, { childList: true, subtree: true });
-      })();
+      document.addEventListener('click', function (e) {
+        var a = e.target instanceof Element ? e.target.closest('a[href]') : null;
+        if (!a) return;
+        var href = a.getAttribute('href') || '';
+        var method = href.indexOf('tel:') === 0 ? 'phone'
+          : href.indexOf('mailto:') === 0 ? 'email'
+          : href.indexOf('pf.kakao.com') !== -1 ? 'kakao_channel'
+          : href.indexOf('smartstore.naver.com') !== -1 ? 'smartstore'
+          : null;
+        if (!method) return;
+        var where = a.closest('#floating-btns') ? 'floating'
+          : a.closest('header') ? 'header'
+          : a.closest('footer') ? 'footer'
+          : 'content';
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({ event: 'contact_click', contact_method: method, link_location: where });
+      });
     </script>
+
+    {/* Naver Analytics, when an ID is set in admin. Naver's loader must have run
+        before wcs_do(), and wcs_add has to be a real global — the old async
+        version in <head> did neither, so a filled-in ID sent nothing. */}
+    {siteSettings?.naverAnalyticsId && (
+      <script is:inline src="https://wcs.naver.net/wcslog.js"></script>
+    )}
+    {siteSettings?.naverAnalyticsId && (
+      <script is:inline define:vars={{ naverId: siteSettings.naverAnalyticsId }}>
+        window.wcs_add = window.wcs_add || {};
+        window.wcs_add['wa'] = naverId;
+        if (window.wcs) { window.wcs_do(); }
+      </script>
+    )}
 
     <!-- Chat plugin from Sanity -->
     {siteSettings?.chatPluginCode && <Fragment set:html={siteSettings.chatPluginCode} />}

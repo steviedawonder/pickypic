@@ -1,9 +1,22 @@
 import type { APIRoute } from 'astro';
 import { JWT } from 'google-auth-library';
+import { validateToken } from './auth';
 
 export const prerender = false;
 
 const DOMAIN = 'picky-pic.com';
+
+const ADMIN_PASSWORD = import.meta.env.ADMIN_PASSWORD;
+// If no password configured, block all access
+
+// Admin-only, exactly like /api/sanity: the service account is a Search Console
+// Owner, so an anonymous caller could otherwise send URL_DELETED for our pages.
+async function isAuthorized(request: Request): Promise<boolean> {
+  if (!ADMIN_PASSWORD) return false;
+  const token = request.headers.get('x-admin-auth');
+  if (!token) return false;
+  return validateToken(token);
+}
 
 // Google Indexing API: nominally only for JobPosting and BroadcastEvent pages,
 // but in practice it works as a "please crawl this URL" hint for any page on
@@ -11,6 +24,10 @@ const DOMAIN = 'picky-pic.com';
 // not officially supported, so treat failures as soft.
 //
 // Daily quota: 200 publish requests by default. Plenty for blog cadence.
+//
+// No longer called on blog publish (adminClient.ts requestSearchEngineIndexing):
+// Google supports this API only for JobPosting / BroadcastEvent pages and may
+// revoke access for other use. Kept for manual use; admin auth required.
 //
 // Setup (one-time, in Google Cloud Console + Search Console):
 //   1) Create a GCP project, enable "Indexing API"
@@ -38,6 +55,13 @@ function getJwtClient(): JWT | null {
 }
 
 export const POST: APIRoute = async ({ request }) => {
+  if (!(await isAuthorized(request))) {
+    return new Response(
+      JSON.stringify({ success: false, error: 'Unauthorized' }),
+      { status: 401, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+
   try {
     const body = await request.json();
     const url: string | undefined = body.url;
@@ -109,3 +133,13 @@ export const POST: APIRoute = async ({ request }) => {
     );
   }
 };
+
+// Every other method (crawlers send GET/HEAD) gets a real 405. Without this,
+// Astro answers with an empty-body 404 and then tries to fetch the prerendered
+// 404 page, which crashed on Vercel (500 FUNCTION_INVOCATION_FAILED).
+// POST still wins: Astro picks mod[method] before mod.ALL.
+export const ALL: APIRoute = () =>
+  new Response(JSON.stringify({ success: false, error: 'Method Not Allowed' }), {
+    status: 405,
+    headers: { 'Content-Type': 'application/json', Allow: 'POST' },
+  });
