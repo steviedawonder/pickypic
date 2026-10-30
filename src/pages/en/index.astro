@@ -238,7 +238,10 @@ const woodColors = hero.woodColors!;
         true scale need every pixel of width. It still scrolls below ~1600px,
         which is honest — that range does not fit on a laptop and pretending it
         does would mean faking the ratios again. */}
-    <div class="mt-14 overflow-x-auto snap-x snap-mandatory">
+    {/* scroll-px-* matches the list's px-* gutter; without it the browser
+        re-snaps the row ~1s after load, and that scroll ends Chrome's LCP
+        measurement (the bug that left /rental with no LCP at all). */}
+    <div class="mt-14 overflow-x-auto snap-x snap-mandatory scroll-px-6 lg:scroll-px-8">
       <ul class="flex items-end gap-4 px-6 lg:gap-5 lg:px-8">
         {scaleRow.map((m) => (
           <li class="snap-start shrink-0 min-w-[6.5rem] lg:min-w-[8rem]">
