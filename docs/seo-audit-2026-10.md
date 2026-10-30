@@ -51,7 +51,7 @@
 - **URL**:
   - canonical·사이트맵·hreflang·내부 링크를 "끝 슬래시 없음"으로 통일했다(루트 `/` 제외). 슬래시 붙은 주소는 301로 이동한다.
   - 구 그누보드 `/bbs` 주소를 새 페이지에 1:1로 연결했다.
-  - `pickypic.co.kr`, `*.vercel.app`은 301로 넘긴다.
+  - `pickypic.co.kr`과 기본 주소 `picky-pic.vercel.app`·`pickypic.vercel.app`은 301로 넘긴다(미리보기 배포 주소는 그대로 둠).
 - **색인 신호**:
   - robots.txt를 한 그룹으로 정리했다.
   - 사이트맵 인덱스에 블로그·포트폴리오·이미지 사이트맵을 모두 넣었다.
