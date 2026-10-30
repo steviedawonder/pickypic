@@ -13,6 +13,7 @@ import NaverEditorToolbar from './NaverEditorToolbar';
 import NaverInsertBar from './NaverInsertBar';
 import NaverPublishModal from './NaverPublishModal';
 import NaverSeoSidebar from './NaverSeoSidebar';
+import { publishDateToIso, isoToPublishDateInput } from '../shared/publishDate';
 
 interface Props {
   postId?: string;
@@ -85,7 +86,7 @@ export default function NaverBlogEditor({ postId, onNavigate }: Props) {
             title: post.title || '', excerpt: post.excerpt || '', body: bodyHtml,
             focusKeyword: post.focusKeyword || '', seoTitle: post.seoTitle || '', seoDescription: post.seoDescription || '',
             categoryId: post.category?._id || '', tags: post.tags || [], tagInput: '',
-            publishedAt: post.publishedAt ? post.publishedAt.split('T')[0] : '',
+            publishedAt: isoToPublishDateInput(post.publishedAt),
           });
           if (post.mainImage?.asset?.url) setMainImageUrl(post.mainImage.asset.url);
           if (post.mainImage?.asset?._id) setMainImageRefId(post.mainImage.asset._id);
@@ -144,7 +145,7 @@ export default function NaverBlogEditor({ postId, onNavigate }: Props) {
         seoDescription: form.seoDescription,
         tags: form.tags,
         ...(form.categoryId && { category: { _type: 'reference', _ref: form.categoryId } }),
-        ...(publish && { publishedAt: form.publishedAt || new Date().toISOString() }),
+        ...(publish && { publishedAt: publishDateToIso(form.publishedAt) }),
       };
       if (mainImageRefId) {
         data.mainImage = { _type: 'image', asset: { _type: 'reference', _ref: mainImageRefId } };

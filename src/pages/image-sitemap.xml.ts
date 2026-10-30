@@ -2,6 +2,7 @@
 export const prerender = true;
 
 import { portfolioItems } from '@data/portfolio';
+import { products } from '@data/products';
 
 const siteUrl = 'https://picky-pic.com';
 
@@ -12,9 +13,10 @@ const pages = [
   {
     loc: '/',
     images: [
-      { loc: '/images/hero/main-1.jpg', title: '피키픽 포토부스 대여 — 모던 레트로 감성 포토부스 렌탈 서비스' },
-      { loc: '/images/hero/main-2.jpg', title: '피키픽 포토부스 렌탈 — 브랜드 팝업스토어 기업 행사 포토부스' },
-      { loc: '/images/hero/main-3.jpg', title: '피키픽 PICKYPIC 포토부스 — 프리미엄 포토부스 대여 전문' },
+      // The hero renders the display-sized copies made by scripts/build-web-images.mjs.
+      { loc: '/images/hero/web/main-1-1440.webp', title: '피키픽 포토부스 대여 — 모던 레트로 감성 포토부스 렌탈 서비스' },
+      { loc: '/images/hero/web/main-2-1920.webp', title: '피키픽 포토부스 렌탈 — 브랜드 팝업스토어 기업 행사 포토부스' },
+      { loc: '/images/hero/web/main-3-1920.webp', title: '피키픽 PICKYPIC 포토부스 — 프리미엄 포토부스 대여 전문' },
     ],
   },
   {
@@ -33,26 +35,11 @@ const pages = [
   },
   {
     loc: '/products',
-    images: [
-      { loc: '/images/products/modern-picky-photo.webp', title: '피키픽 모던피키 Modern Picky — 스탠드형 포토부스 제품' },
-      { loc: '/images/products/modern-picky-line.png', title: '피키픽 모던피키 Modern Picky — 스탠드형 포토부스 도면' },
-      { loc: '/images/products/classic-picky-photo.webp', title: '피키픽 클래식피키 Classic Picky — 스탠드형 포토부스 제품' },
-      { loc: '/images/products/classic-picky-line.png', title: '피키픽 클래식피키 Classic Picky — 스탠드형 포토부스 도면' },
-      { loc: '/images/products/urban-picky-photo.webp', title: '피키픽 어반피키 Urban Picky — 스탠드형 포토부스 제품' },
-      { loc: '/images/products/urban-picky-line.png', title: '피키픽 어반피키 Urban Picky — 스탠드형 포토부스 도면' },
-      { loc: '/images/products/modern-mini-picky-photo.webp', title: '피키픽 모던 미니피키 Modern Mini Picky — 테이블형 포토부스 제품' },
-      { loc: '/images/products/modern-mini-picky-line.png', title: '피키픽 모던 미니피키 Modern Mini Picky — 테이블형 포토부스 도면' },
-      { loc: '/images/products/urban-mini-picky-photo.webp', title: '피키픽 어반 미니피키 Urban Mini Picky — 테이블형 포토부스 제품' },
-      { loc: '/images/products/urban-mini-picky-line.png', title: '피키픽 어반 미니피키 Urban Mini Picky — 테이블형 포토부스 도면' },
-      { loc: '/images/products/modern-retro-picky-photo.webp', title: '피키픽 모던 레트로피키 Modern Retro Picky — 레트로 영수증 포토부스 제품' },
-      { loc: '/images/products/modern-retro-picky-line.png', title: '피키픽 모던 레트로피키 Modern Retro Picky — 레트로 영수증 포토부스 도면' },
-      { loc: '/images/products/urban-retro-picky-photo.webp', title: '피키픽 어반 레트로피키 Urban Retro Picky — 레트로 영수증 포토부스 제품' },
-      { loc: '/images/products/urban-retro-picky-line.png', title: '피키픽 어반 레트로피키 Urban Retro Picky — 레트로 영수증 포토부스 도면' },
-      { loc: '/images/products/outdoor-picky-photo.webp', title: '피키픽 아웃도어피키 Outdoor Picky — 부스형 포토부스 제품' },
-      { loc: '/images/products/outdoor-picky-line.png', title: '피키픽 아웃도어피키 Outdoor Picky — 부스형 포토부스 도면' },
-      { loc: '/images/products/air-picky-photo.webp', title: '피키픽 에어피키 Air Picky — 부스형 포토부스 제품' },
-      { loc: '/images/products/air-picky-line.png', title: '피키픽 에어피키 Air Picky — 부스형 포토부스 도면' },
-    ],
+    // Same files the products page renders (its display-sized copies where they exist).
+    images: products.flatMap((p) => [
+      { loc: p.imageRightWeb ?? p.imageRight, title: `피키픽 ${p.nameKo.replace(/_/g, ' ')} ${p.name} — ${p.categoryLabel} 포토부스 제품` },
+      { loc: p.imageLeftWeb ?? p.imageLeft, title: `피키픽 ${p.nameKo.replace(/_/g, ' ')} ${p.name} — ${p.categoryLabel} 포토부스 도면` },
+    ]),
   },
   {
     // Listing thumbnails (alt text as rendered by src/pages/portfolio/index.astro).

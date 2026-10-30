@@ -166,16 +166,6 @@ const graph: Node[] = [
       </script>
     )}
 
-    <!-- Kakao Pixel -->
-    {siteSettings?.kakaoPixelId && (
-      <script is:inline define:vars={{ kakaoId: siteSettings.kakaoPixelId }}>
-        !function(e,t,n,a,s,c){e.kakaoPixel||(s=e.kakaoPixel=function(){s.queue.push(arguments)},s.queue=[],
-        c=t.createElement(n),c.async=1,c.src='https://t1.daumcdn.net/kas/static/kp.js',
-        t.head.appendChild(c))}(window,document,'script');
-        kakaoPixel(kakaoId).pageView();
-      </script>
-    )}
-
     <!-- Meta (Facebook) Pixel -->
     {siteSettings?.metaPixelId && (
       <script is:inline define:vars={{ metaId: siteSettings.metaPixelId }}>
@@ -493,6 +483,20 @@ const graph: Node[] = [
         window.dataLayer.push({ event: 'contact_click', contact_method: method, link_location: where });
       });
     </script>
+
+    {/* Kakao Pixel, when an ID is set in admin. kp.js installs itself only if
+        window.kakaoPixel doesn't exist yet and has no queue, so the usual
+        async stub kept the real library out; it's loaded plainly, then called
+        (Kakao's documented form). Kept at the end of <body> so it doesn't
+        block rendering. */}
+    {siteSettings?.kakaoPixelId && (
+      <script is:inline src="https://t1.daumcdn.net/kas/static/kp.js"></script>
+    )}
+    {siteSettings?.kakaoPixelId && (
+      <script is:inline define:vars={{ kakaoId: siteSettings.kakaoPixelId }}>
+        if (window.kakaoPixel) { window.kakaoPixel(kakaoId).pageView(); }
+      </script>
+    )}
 
     {/* Naver Analytics, when an ID is set in admin. Naver's loader must have run
         before wcs_do(), and wcs_add has to be a real global — the old async

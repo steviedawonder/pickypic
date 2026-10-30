@@ -3,6 +3,7 @@ export const prerender = false;
 import type { APIRoute } from 'astro';
 import { createClient } from '@sanity/client';
 import { renderPostBody, POST_BODY_PROJECTION } from '../../utils/postBody';
+import { isoDate } from '../../data/structuredData';
 
 const sanityClient = createClient({
   projectId: '7b9lcco4',
@@ -27,6 +28,7 @@ const cdata = (str: string) => `<![CDATA[${str.replace(/]]>/g, ']]]]><![CDATA[>'
 
 export const GET: APIRoute = async () => {
   let posts: any[] = [];
+  let failed = false;
   try {
     // Only live posts: published, not scheduled for later, with a slug (a post
     // without one would throw below and take the whole feed down).
@@ -43,14 +45,15 @@ export const GET: APIRoute = async () => {
       }`
     );
   } catch {
-    // Sanity 접속 실패 시 빈 피드 반환
+    failed = true; // answered with 503 below
   }
 
   const items = posts
     .map((post: any) => {
       // Canonical form: no trailing slash, slug percent-encoded (RFC 3986).
       const url = `${SITE}/blog/${encodeURIComponent(post.slug)}`;
-      const published = Date.parse(post.publishedAt);
+      // Same zone rule as the post's JSON-LD: zone-less admin values are KST.
+      const published = Date.parse(isoDate(post.publishedAt) ?? '');
       const pubDate = Number.isNaN(published) ? '' : `<pubDate>${new Date(published).toUTCString()}</pubDate>`;
       const categoryTag = post.category?.title
         ? `<category>${escapeXml(post.category.title)}</category>`
@@ -95,7 +98,7 @@ export const GET: APIRoute = async () => {
 
   // The channel last changed when its newest item did, not when this ran.
   const newest = posts
-    .map((post: any) => Date.parse(post._updatedAt || post.publishedAt))
+    .map((post: any) => Date.parse(isoDate(post._updatedAt || post.publishedAt) ?? ''))
     .filter((t: number) => !Number.isNaN(t))
     .sort((a: number, b: number) => b - a)[0];
   const lastBuildDate = new Date(newest ?? Date.now()).toUTCString();
@@ -119,6 +122,15 @@ export const GET: APIRoute = async () => {
     </image>${items}
   </channel>
 </rss>`;
+
+  // An empty feed served (and cached for an hour) during a Sanity outage would
+  // tell crawlers every URL in it is gone. 503 says "try again later".
+  if (failed) {
+    return new Response('Sanity unavailable', {
+      status: 503,
+      headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store', 'Retry-After': '600' },
+    });
+  }
 
   return new Response(rss, {
     headers: {

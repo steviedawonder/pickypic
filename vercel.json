@@ -73,7 +73,7 @@
   ],
   "redirects": [
     {
-      "source": "/:path((?!api/).*)",
+      "source": "/:path((?!api/|\\.well-known/).*)",
       "has": [
         {
           "type": "host",
@@ -84,7 +84,7 @@
       "statusCode": 301
     },
     {
-      "source": "/:path((?!api/).*)",
+      "source": "/:path((?!api/|\\.well-known/).*)",
       "has": [
         {
           "type": "host",

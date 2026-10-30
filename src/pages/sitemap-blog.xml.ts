@@ -21,6 +21,7 @@ function toDate(value?: string): string {
 
 export const GET: APIRoute = async () => {
   let posts: { slug: string; publishedAt?: string; _updatedAt?: string }[] = [];
+  let failed = false;
   try {
     // Only live posts: published, not scheduled for later, with a slug.
     // drafts.* ids are excluded because the token's default perspective is raw.
@@ -33,7 +34,7 @@ export const GET: APIRoute = async () => {
       }`
     );
   } catch {
-    // Sanity 접속 실패 시 빈 사이트맵 반환
+    failed = true; // answered with 503 below
   }
 
   // The listing shows every post's title, excerpt and image, so it changes
@@ -70,6 +71,15 @@ export const GET: APIRoute = async () => {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${blogListEntry}${postEntries}
 </urlset>`;
+
+  // An empty feed served (and cached for an hour) during a Sanity outage would
+  // tell crawlers every URL in it is gone. 503 says "try again later".
+  if (failed) {
+    return new Response('Sanity unavailable', {
+      status: 503,
+      headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store', 'Retry-After': '600' },
+    });
+  }
 
   return new Response(xml, {
     headers: {

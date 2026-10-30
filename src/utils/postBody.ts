@@ -14,6 +14,11 @@ export interface Heading {
   id: string;
 }
 
+/** CMS text going into HTML attributes/text: a quote in an alt or caption must not end the attribute. */
+function esc(value: string): string {
+  return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 /** Image asset reference ("image-<id>-<ext>") -> CDN URL, for blocks fetched without asset-> expansion. */
 function refToUrl(ref?: string): string {
   const m = ref?.match(/^image-(.+)-(\w+)$/);
@@ -59,8 +64,8 @@ export function renderPostBody(
         image: ({ value }: { value: any }) => {
           const url = value.url || value.asset?.url || refToUrl(value.asset?._ref);
           if (!url) return '';
-          const alt = value.alt || `피키픽 포토부스 블로그 이미지 — ${title}`;
-          const caption = value.caption || '';
+          const alt = esc(value.alt || `피키픽 포토부스 블로그 이미지 — ${title}`);
+          const caption = esc(value.caption || '');
           // Resized by Sanity's CDN (originals were multi-MB); the intrinsic size
           // reserves the box so text below doesn't jump as images arrive.
           const dims = sanityDims(url);
@@ -108,10 +113,10 @@ export function renderPostBody(
           const imgTags = imgs
             .map((img, i) => {
               const style = items[i] || items[items.length - 1];
-              return `<img src="${sanityImg(img.url, 720)}" alt="${img.alt || `피키픽 포토부스 블로그 이미지 — ${title}`}" style="${style}" loading="lazy" decoding="async" />`;
+              return `<img src="${sanityImg(img.url, 720)}" alt="${esc(img.alt || `피키픽 포토부스 블로그 이미지 — ${title}`)}" style="${style}" loading="lazy" decoding="async" />`;
             })
             .join('');
-          const caption = value.caption || '';
+          const caption = esc(value.caption || '');
           const capHtml = caption
             ? `<figcaption style="text-align:center;font-size:13px;color:#888;padding-top:8px;">${caption}</figcaption>`
             : '';

@@ -24,6 +24,7 @@ function toDate(value?: string): string {
 // sitemap-0.xml by @astrojs/sitemap, in the same 0.9/weekly tier used here.
 export const GET: APIRoute = async () => {
   let items: { slug: string; _updatedAt?: string }[] = [];
+  let failed = false;
   try {
     items = await sanityClient.fetch(
       `*[_type == "portfolio" && isVisible == true && defined(slug.current)
@@ -33,7 +34,7 @@ export const GET: APIRoute = async () => {
       }`
     );
   } catch {
-    // Sanity 접속 실패 시 빈 사이트맵 반환
+    failed = true; // answered with 503 below
   }
 
   const entries = items
@@ -55,6 +56,15 @@ export const GET: APIRoute = async () => {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${entries}
 </urlset>`;
+
+  // An empty feed served (and cached for an hour) during a Sanity outage would
+  // tell crawlers every URL in it is gone. 503 says "try again later".
+  if (failed) {
+    return new Response('Sanity unavailable', {
+      status: 503,
+      headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store', 'Retry-After': '600' },
+    });
+  }
 
   return new Response(xml, {
     headers: {

@@ -21,7 +21,7 @@ let rawCategories: any[] = [];
 let fetched = false;
 try {
   // Future-dated and slug-less posts would otherwise be listed — and linked — early.
-  posts = await sanityClient.fetch(`*[_type == "blogPost" && publishedAt != null && publishedAt <= now() && defined(slug.current)] | order(publishedAt desc) {
+  posts = await sanityClient.fetch(`*[_type == "blogPost" && !(_id in path("drafts.**")) && publishedAt != null && publishedAt <= now() && defined(slug.current)] | order(publishedAt desc) {
     _id, title, slug, excerpt, publishedAt,
     mainImage { asset-> { _id, url } },
     category-> { title, slug },
@@ -30,7 +30,7 @@ try {
   }`);
   rawCategories = await sanityClient.fetch(`*[_type == "blogCategory"] {
     title, slug,
-    "postCount": count(*[_type == "blogPost" && publishedAt != null && references(^._id)])
+    "postCount": count(*[_type == "blogPost" && !(_id in path("drafts.**")) && publishedAt != null && publishedAt <= now() && defined(slug.current) && references(^._id)])
   }`);
   fetched = true;
 } catch (e) {

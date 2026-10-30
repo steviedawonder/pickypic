@@ -11,6 +11,7 @@ import {
 } from '../adminClient';
 import RichTextEditor from './RichTextEditor';
 import { suggestEnglishSlug, sanitizeSlug, isAsciiSlug } from '../../../utils/slug';
+import { publishDateToIso, isoToPublishDateInput } from '../shared/publishDate';
 
 function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page: string) => void }) {
   const [categories, setCategories] = useState<any[]>([]);
@@ -63,7 +64,7 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
             title: post.title || '', excerpt: post.excerpt || '', body: bodyHtml,
             focusKeyword: post.focusKeyword || '', seoTitle: post.seoTitle || '', seoDescription: post.seoDescription || '',
             categoryId: post.category?._id || '', tags: post.tags || [], tagInput: '',
-            publishedAt: post.publishedAt ? post.publishedAt.split('T')[0] : '',
+            publishedAt: isoToPublishDateInput(post.publishedAt),
             customSlug: post.slug?.current || '',
           });
           if (post.mainImage?.asset?.url) setMainImageUrl(post.mainImage.asset.url);
@@ -119,7 +120,7 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
         seoDescription: form.seoDescription,
         tags: form.tags,
         ...(form.categoryId && { category: { _type: 'reference', _ref: form.categoryId } }),
-        ...(publish && { publishedAt: form.publishedAt || new Date().toISOString() }),
+        ...(publish && { publishedAt: publishDateToIso(form.publishedAt) }),
       };
       if (mainImageRef_id) {
         data.mainImage = { _type: 'image', asset: { _type: 'reference', _ref: mainImageRef_id } };

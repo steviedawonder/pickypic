@@ -202,13 +202,11 @@ const lineupNode = {
               class="w-full flex-shrink-0 product-slide"
               data-product-id={product.id}
               data-product-index={product.index}
-              itemscope
-              itemtype="https://schema.org/Product"
             >
               <!-- Product Title -->
               <div class="hidden lg:block mb-6 pl-2">
                 <span class="text-2xl lg:text-3xl font-black tracking-[0.15em] text-primary uppercase block mb-1">{product.type}</span>
-                <h2 class="text-base lg:text-lg font-medium text-secondary tracking-tight leading-tight" itemprop="name">
+                <h2 class="text-base lg:text-lg font-medium text-secondary tracking-tight leading-tight">
                   {product.name} | {product.nameKo}
                 </h2>
               </div>
@@ -216,7 +214,7 @@ const lineupNode = {
               <!-- Mobile: Product Title -->
               <div class="flex flex-col items-center mb-4 lg:hidden">
                 <span class="text-xl font-black tracking-[0.15em] text-primary uppercase mb-1">{product.type}</span>
-                <h2 class="text-sm font-medium text-secondary tracking-tight leading-tight" itemprop="name">
+                <h2 class="text-sm font-medium text-secondary tracking-tight leading-tight">
                   {product.name} | {product.nameKo}
                 </h2>
               </div>
@@ -243,7 +241,7 @@ const lineupNode = {
                   <h3 class="text-sm font-bold tracking-[0.1em] text-primary uppercase mb-4 text-center">
                     Photo booth specification
                   </h3>
-                  <table class="w-full text-sm border-collapse" itemprop="additionalProperty">
+                  <table class="w-full text-sm border-collapse">
                     <tbody>
                       {product.specs.map((spec) => (
                         <tr class="border-b border-border-light">
@@ -270,7 +268,6 @@ const lineupNode = {
                     style={imgBox(product.imageRightSize, desktopMaxH(product.id))}
                     loading={pi === 0 ? 'eager' : 'lazy'}
                     decoding="async"
-                    itemprop="image"
                   />
                 </div>
               </div>
@@ -307,7 +304,7 @@ const lineupNode = {
                 <h3 class="text-sm font-bold tracking-[0.1em] text-primary uppercase mb-4 text-center">
                   Photo booth specification
                 </h3>
-                <table class="w-full text-sm border-collapse" itemprop="additionalProperty">
+                <table class="w-full text-sm border-collapse">
                   <tbody>
                     {product.specs.map((spec) => (
                       <tr class="border-b border-border-light">
