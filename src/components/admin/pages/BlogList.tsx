@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { colors, s } from '../shared/styles';
-import { fetchBlogPosts, deleteBlogPost, triggerRebuild } from '../adminClient';
+import { fetchBlogPosts, deleteBlogPost, unpublishBlogPost, triggerRebuild } from '../adminClient';
 
 export default function BlogList({ onNavigate }: { onNavigate: (page: string, id?: string) => void }) {
   const [posts, setPosts] = useState<any[]>([]);
@@ -21,6 +21,18 @@ export default function BlogList({ onNavigate }: { onNavigate: (page: string, id
         triggerRebuild();
       } catch (e) {
         alert('삭제에 실패했습니다.');
+      }
+    }
+  };
+
+  const handleUnpublish = async (id: string, title: string) => {
+    if (confirm(`"${title}" 글을 비공개로 돌릴까요?\n사이트와 검색엔진에서 내려가고, 내용은 남아 있어 언제든 다시 발행할 수 있습니다.`)) {
+      try {
+        await unpublishBlogPost(id);
+        load();
+        triggerRebuild();
+      } catch (e) {
+        alert('비공개 전환에 실패했습니다.');
       }
     }
   };
@@ -56,6 +68,9 @@ export default function BlogList({ onNavigate }: { onNavigate: (page: string, id
                   <td style={{ ...s.td, fontSize: 12, color: colors.textLight }}>{post.publishedAt ? new Date(post.publishedAt).toLocaleDateString('ko') : '-'}</td>
                   <td style={{ ...s.td, display: 'flex', gap: 4 }}>
                     <button onClick={(e) => { e.stopPropagation(); onNavigate('blog-edit', post._id); }} style={{ ...s.btn, ...s.btnOutline, padding: '4px 10px', fontSize: 11 }}>수정</button>
+                    {post.publishedAt && (
+                      <button onClick={(e) => { e.stopPropagation(); handleUnpublish(post._id, post.title); }} style={{ ...s.btn, ...s.btnOutline, padding: '4px 10px', fontSize: 11 }}>비공개</button>
+                    )}
                     <button onClick={(e) => { e.stopPropagation(); handleDelete(post._id, post.title); }} style={{ ...s.btn, ...s.btnDanger, padding: '4px 10px', fontSize: 11 }}>삭제</button>
                   </td>
                 </tr>

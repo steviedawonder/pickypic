@@ -185,12 +185,11 @@ function SettingsPage() {
         <div style={{ borderTop: `1px solid ${colors.border}`, margin: '24px 0' }} />
         <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 16 }}>보안 / 기타</h3>
         {renderInput('recaptchaSiteKey', 'reCAPTCHA Site Key', 'Google reCAPTCHA v3 사이트 키 (공개)')}
-        {renderInput('recaptchaSecretKey', 'reCAPTCHA Secret Key', 'Google reCAPTCHA v3 비밀 키 (서버에서만 사용)', { type: 'password' })}
         {renderTextarea('chatPluginCode', '채팅 플러그인 코드', '카카오톡 채널 채팅, 채널톡 등 실시간 채팅 플러그인 삽입 코드', true)}
         {renderSaveButton([
           'gtmContainerId', 'ga4MeasurementId', 'naverAnalyticsId', 'kakaoPixelId', 'metaPixelId',
           'googleSiteVerification', 'naverSiteVerification', 'naverSyndicationKey',
-          'recaptchaSiteKey', 'recaptchaSecretKey', 'chatPluginCode',
+          'recaptchaSiteKey', 'chatPluginCode',
         ])}
       </div>
     );
@@ -203,8 +202,7 @@ function SettingsPage() {
         {renderInput('adminEmailName', '관리자 이메일 발신자명', '이메일 발신 시 표시되는 이름')}
         {renderInput('rentalNotifyEmail', '렌탈 문의 알림 이메일', '렌탈 문의가 접수되면 알림을 받을 이메일')}
         {renderInput('collabNotifyEmail', '협업 문의 알림 이메일', '협업 문의가 접수되면 알림을 받을 이메일')}
-        {renderInput('slackWebhookUrl', 'Slack Webhook URL', '알림을 받을 Slack Incoming Webhook URL', { placeholder: 'https://hooks.slack.com/services/...' })}
-        {renderSaveButton(['adminEmail', 'adminEmailName', 'rentalNotifyEmail', 'collabNotifyEmail', 'slackWebhookUrl'])}
+        {renderSaveButton(['adminEmail', 'adminEmailName', 'rentalNotifyEmail', 'collabNotifyEmail'])}
       </div>
     );
   }

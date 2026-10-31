@@ -50,7 +50,7 @@ Dashboard, BlogList, BlogEditor, PortfolioManager, FAQManager, CategoryManager, 
 1. 기본 설정 (SEO, 비밀번호)
 2. 코드 삽입 (HEAD/BODY 스크립트, 메타태그, CSS)
 3. 외부 서비스 (GTM, GA4, 픽셀, Search Console, reCAPTCHA, 채팅)
-4. 이메일 설정 (알림 수신처, Slack 웹훅)
+4. 이메일 설정 (알림 수신처)
 5. 보안 설정 (IP 허용/차단, 로그인 실패 제한)
 6. 점검 모드 (사이트 점검 전환 + 예외 IP)
 
@@ -85,3 +85,4 @@ Dashboard, BlogList, BlogEditor, PortfolioManager, FAQManager, CategoryManager, 
 4. **하드코딩 → Sanity 마이그레이션** — company.ts는 폴백용, 실제 데이터는 Sanity 관리
 5. **pickyglobal.com은 별도 사이트** — 그누보드 쇼핑몰. 이 프로젝트와 절대 연결/리다이렉트 금지
 6. **고객정보 문서는 `private.` ID 필수** — Sanity 데이터셋이 Public(Free 플랜은 Private 불가)이라 일반 ID 문서는 누구나 조회 가능. 문의·협업처럼 개인정보가 든 문서는 `_id: private.<uuid>`로 만들어야 토큰 없이는 안 보임
+7. **siteSettings에 비밀값 저장 금지** — 같은 이유로 누구나 읽을 수 있음. 웹훅 URL·비밀키는 서버 환경변수로 (Slack 웹훅·reCAPTCHA 비밀키 칸은 그래서 관리자 화면에서 뺐음)

@@ -107,7 +107,11 @@ export const POST: APIRoute = async ({ request }) => {
       }
 
       case 'update': {
-        const result = await client.patch(params.id).set(params.data).commit();
+        // `unset` removes fields (e.g. publishedAt to unpublish a post), which set() can't.
+        let patch = client.patch(params.id);
+        if (params.data && Object.keys(params.data).length) patch = patch.set(params.data);
+        if (Array.isArray(params.unset) && params.unset.length) patch = patch.unset(params.unset);
+        const result = await patch.commit();
         return jsonResponse(result);
       }
 
