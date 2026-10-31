@@ -102,6 +102,12 @@ export async function deleteBlogPost(id: string) {
   return sanityDelete(id);
 }
 
+// The site only lists posts with a publishedAt, so clearing it hides the post
+// (and its URL answers 404) while keeping the content to publish again later.
+export async function unpublishBlogPost(id: string) {
+  return sanityAction({ action: 'update', id, unset: ['publishedAt'] });
+}
+
 // ── Tags ──
 export async function fetchTags() {
   return sanityFetch(`*[_type == "blogTag"] | order(title asc) { _id, title }`);
@@ -309,8 +315,8 @@ export async function fetchSiteSettings() {
     headScripts, headMeta, headCustomCss, bodyStartScripts, bodyEndScripts,
     gtmContainerId, ga4MeasurementId, naverAnalyticsId, kakaoPixelId, metaPixelId,
     googleSiteVerification, naverSiteVerification, naverSyndicationKey,
-    recaptchaSiteKey, recaptchaSecretKey, chatPluginCode,
-    adminEmail, adminEmailName, rentalNotifyEmail, collabNotifyEmail, slackWebhookUrl,
+    recaptchaSiteKey, chatPluginCode,
+    adminEmail, adminEmailName, rentalNotifyEmail, collabNotifyEmail,
     allowedIps, blockedIps, maxLoginAttempts,
     isMaintenanceMode, maintenanceMessage, maintenanceAllowedIps
   }`);
