@@ -87,8 +87,8 @@ const rentalProducts = [
 ---
 
 <BaseLayout
-  title="포토부스 대여 · 인생네컷 대여 문의 | 피키픽 PICKYPIC"
-  description="포토부스 대여, 인생네컷 대여 문의는 피키픽에서. 브랜드 팝업, 기업 행사, 웨딩, 파티 맞춤 렌탈 서비스. 영업시간 1시간 내 답변. 지금 견적을 요청하세요."
+  title="포토부스 대여 견적 문의 | 피키픽 PICKYPIC"
+  description="행사명·일정·설치 장소를 남겨 주시면 9종 중 행사에 맞는 포토부스와 견적을 영업시간 기준 1시간 안에 안내합니다. 래핑·AI 촬영 옵션도 함께 상담하세요."
 >
   <BreadcrumbSchema items={[
     { name: '홈', href: '/' },
@@ -99,8 +99,10 @@ const rentalProducts = [
   <section class="relative bg-white pt-14 pb-1 lg:pt-12 lg:pb-2 overflow-hidden">
     <div class="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 gs-fade-up">
       <div class="flex items-center justify-between">
-        <h1 class="text-2xl lg:text-[clamp(2.5rem,6vw,4.5rem)] font-bold tracking-[0.04em] text-primary leading-none" style="font-family: 'Montserrat', sans-serif;">
-          RENTAL
+        {/* The English word is the visual; the Korean line is what the heading says. */}
+        <h1 class="text-primary">
+          <span class="block text-2xl lg:text-[clamp(2.5rem,6vw,4.5rem)] font-bold tracking-[0.04em] leading-none" style="font-family: 'Montserrat', sans-serif;">RENTAL</span>
+          <span class="block mt-2 text-sm lg:text-lg font-semibold tracking-tight" data-i18n="rental.h1">포토부스 대여 · 렌탈 문의</span>
         </h1>
         <a href="/products" class="text-sm border border-gray-400 rounded-full px-5 py-2 text-primary hover:bg-primary hover:text-white transition-colors lg:hidden" data-i18n="rental.btn_products">제품소개</a>
       </div>
@@ -115,7 +117,12 @@ const rentalProducts = [
     <div class="relative mx-auto max-w-7xl px-6 lg:px-8 gs-fade-up">
       <div class="relative">
         <!-- Carousel Track -->
-        <div id="rental-carousel" class="flex gap-4 lg:gap-5 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-1 -mx-6 px-6 lg:-mx-8 lg:px-8" style="scrollbar-width: none; -ms-overflow-style: none;">
+        {/* scroll-px-* matches the px-* gutter. Without it the first snap point
+            sits 24px in, so ~1s after load the browser scrolled the track by
+            itself; Chrome stops measuring LCP at that scroll, and /rental
+            reported no LCP at all (Lighthouse NO_LCP/NO_FCP). Cards now rest
+            on the gutter instead of jumping flush to the screen edge. */}
+        <div id="rental-carousel" class="flex gap-4 lg:gap-5 overflow-x-auto scroll-smooth snap-x snap-mandatory scroll-px-6 lg:scroll-px-8 pb-1 -mx-6 px-6 lg:-mx-8 lg:px-8" style="scrollbar-width: none; -ms-overflow-style: none;">
           {rentalProducts.map((product, i) => (
             <article class="flex-shrink-0 w-[calc(50%-8px)] sm:w-[300px] lg:w-[320px] snap-start">
               <div class="overflow-hidden bg-bg-light mb-2 rounded-sm">
@@ -124,8 +131,8 @@ const rentalProducts = [
                   alt={`피키픽 포토부스 렌탈 ${product.labelKo} — ${product.labelEn}`}
                   class="w-full h-auto transition-transform duration-500 hover:scale-105"
                   loading={i < 4 ? 'eager' : 'lazy'}
-                  width="280"
-                  height="373"
+                  width="600"
+                  height="550"
                 />
               </div>
               <p class="text-[11px] lg:text-xs text-primary font-medium leading-snug">{product.labelKo}</p>
@@ -772,6 +779,15 @@ const rentalProducts = [
         const publicKey = form.dataset.emailjsKey!;
         await emailjs.default.send(serviceId, templateId, templateParams, publicKey);
 
+        // Conversion signal for GTM/GA4 — event metadata only, no form contents.
+        const dataLayer = ((window as any).dataLayer = (window as any).dataLayer || []);
+        dataLayer.push({
+          event: 'generate_lead',
+          form_id: 'rental_inquiry',
+          lead_type: 'rental',
+          page_language: document.documentElement.lang || 'ko',
+        });
+
         // Sanity에도 저장 (서버 API 경유, 토큰 노출 없음)
         try {
           await fetch('/api/sanity', {
@@ -794,6 +810,8 @@ const rentalProducts = [
           });
         } catch (sanityErr) {
           console.error('Sanity save error:', sanityErr);
+          // The inquiry email already went out, so the visitor still sees success.
+          dataLayer.push({ event: 'form_error', form_id: 'rental_inquiry', error_type: 'sanity_save' });
         }
 
         showInquiryModal(getT('validation.success'));
@@ -801,6 +819,8 @@ const rentalProducts = [
         toggleVisitRouteOther();
       } catch (error) {
         console.error('EmailJS Error:', error);
+        const dataLayer = ((window as any).dataLayer = (window as any).dataLayer || []);
+        dataLayer.push({ event: 'form_error', form_id: 'rental_inquiry', error_type: 'emailjs' });
         showInquiryModal(getT('validation.error'));
       } finally {
         if (submitBtn) {

@@ -2,6 +2,7 @@
 import BaseLayout from '@layouts/BaseLayout.astro';
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import { portfolioItems } from '@data/portfolio';
+import { ORG_ID, pageUrl, assetUrl } from '@data/structuredData';
 
 export function getStaticPaths() {
   return portfolioItems.map((item) => ({
@@ -16,11 +17,29 @@ const { item } = Astro.props;
 const currentIndex = portfolioItems.findIndex((p) => p.id === item.id);
 const prevItem = currentIndex < portfolioItems.length - 1 ? portfolioItems[currentIndex + 1] : null;
 const nextItem = currentIndex > 0 ? portfolioItems[currentIndex - 1] : null;
+
+// "설화수 x 피키픽" -> "설화수"; descriptions without the suffix are used as-is.
+const clientKo = item.description.replace(/\s*x\s*피키픽\s*$/i, '').trim() || item.title.replace(/\s*x\s*PICKYPIC\s*$/i, '').trim();
+const modelKo = item.categoryKo.replace(/_/g, ' ');
+
+const url = pageUrl(`/portfolio/${item.id}`);
+const workNode = {
+  '@type': 'CreativeWork',
+  '@id': `${url}#work`,
+  name: item.title,
+  description: `${item.description} - ${item.rentalDevice}`,
+  image: item.detailImages.map(assetUrl),
+  creator: { '@id': ORG_ID },
+  mainEntityOfPage: { '@id': url },
+  inLanguage: 'ko',
+};
 ---
 
 <BaseLayout
-  title={`${item.title} > 포트폴리오 | 피키픽 | 포토부스 대여 및 기업 행사 렌탈 전문`}
-  description={`${item.title} - ${item.categoryKo} ${item.categoryEn}. 피키픽 포토부스 렌탈 포트폴리오.`}
+  title={`${clientKo} 포토부스 대여 사례 · ${modelKo} | 피키픽 PICKYPIC`}
+  description={`${clientKo} 현장에 설치한 피키픽 ${modelKo}(${item.categoryEn}) 포토부스 대여 사례입니다. 현장 사진과 사용 기기 정보를 확인하세요.`}
+  ogImage={item.detailImages[0] ?? item.image}
+  schema={[workNode]}
 >
   <BreadcrumbSchema items={[
     { name: '홈', href: '/' },
@@ -33,8 +52,11 @@ const nextItem = currentIndex > 0 ? portfolioItems[currentIndex - 1] : null;
     <div class="mx-auto max-w-3xl px-6 lg:px-8">
       <!-- Category Header -->
       <div class="text-center mb-8 lg:mb-12">
-        <h2 class="text-lg lg:text-xl font-semibold text-primary">{item.categoryKo}</h2>
-        <h3 class="text-2xl lg:text-4xl font-bold text-primary mt-1">{item.categoryEn}</h3>
+        <p class="text-lg lg:text-xl font-semibold text-primary">{modelKo} · {item.categoryEn}</p>
+        <h1 class="text-2xl lg:text-4xl font-bold text-primary mt-1">
+          {item.title}
+          <span class="block mt-2 text-base lg:text-lg font-medium text-secondary">{clientKo} <span data-i18n="portfolio.case_suffix">포토부스 대여 사례</span></span>
+        </h1>
       </div>
 
       <!-- Detail Images -->
@@ -42,7 +64,7 @@ const nextItem = currentIndex > 0 ? portfolioItems[currentIndex - 1] : null;
         {item.detailImages.map((img: string, i: number) => (
           <img
             src={img}
-            alt={`${item.title} 포토부스 렌탈 이미지 ${i + 1}`}
+            alt={`${clientKo} 행사에 설치된 피키픽 ${modelKo} 포토부스 ${i + 1}`}
             class="w-full rounded-lg"
             loading={i === 0 ? 'eager' : 'lazy'}
           />
@@ -112,16 +134,4 @@ const nextItem = currentIndex > 0 ? portfolioItems[currentIndex - 1] : null;
     </div>
   </section>
 
-  <!-- Structured Data -->
-  <script type="application/ld+json" set:html={JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "CreativeWork",
-    "name": item.title,
-    "description": `${item.description} - ${item.rentalDevice}`,
-    "image": item.detailImages,
-    "author": {
-      "@type": "Organization",
-      "name": "PICKYPIC"
-    }
-  })} />
 </BaseLayout>

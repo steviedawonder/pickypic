@@ -1,57 +1,29 @@
 # PICKYPIC PHOTOBOOTH - https://picky-pic.com
 # 피키픽 포토부스 - 포토부스 대여 · 렌탈 · 매매 전문
 
+# One group on purpose. Under RFC 9309 a crawler obeys only the most specific
+# group that names it, so a "User-agent: Googlebot / Allow: /" block silently
+# drops every Disallow in the "*" group for Googlebot. That is how /api/ used
+# to look blocked here while Googlebot, Yeti and bingbot could still crawl it.
+#
+# Every crawler is welcome through "*": search engines (Googlebot, Yeti, Daum,
+# bingbot) and AI search/answer crawlers (OAI-SearchBot, ChatGPT-User, GPTBot,
+# Claude-SearchBot, Claude-User, ClaudeBot, PerplexityBot, Google-Extended,
+# Applebot-Extended, ...).
+# To opt one out, give it its own group. That group replaces this one for that
+# crawler, so repeat any Disallow lines it should still obey, e.g.:
+#   User-agent: GPTBot
+#   Disallow: /
+#
+# /admin and /shop are deliberately not disallowed: they carry noindex, and a
+# crawler has to be able to fetch a page to see its noindex.
+
 User-agent: *
 Allow: /
-Disallow: /admin
-Disallow: /admin/
 Disallow: /api/
-Disallow: /shop
 Disallow: /studio
 
-# Search engines: full crawl access
-User-agent: Googlebot
-Allow: /
-
-User-agent: Googlebot-Image
-Allow: /images/
-Allow: /
-
-User-agent: Yeti
-Allow: /
-
-User-agent: NaverBot
-Allow: /
-
-User-agent: Daum
-Allow: /
-
-User-agent: bingbot
-Allow: /
-
-# AI crawlers (citation/training opt-in)
-User-agent: GPTBot
-Allow: /
-
-User-agent: ChatGPT-User
-Allow: /
-
-User-agent: anthropic-ai
-Allow: /
-
-User-agent: ClaudeBot
-Allow: /
-
-User-agent: PerplexityBot
-Allow: /
-
-User-agent: Google-Extended
-Allow: /
-
-# Sitemaps
 Sitemap: https://picky-pic.com/sitemap-index.xml
 Sitemap: https://picky-pic.com/sitemap-blog.xml
+Sitemap: https://picky-pic.com/sitemap-portfolio.xml
 Sitemap: https://picky-pic.com/image-sitemap.xml
-
-# Host
-Host: https://picky-pic.com

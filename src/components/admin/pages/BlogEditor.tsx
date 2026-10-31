@@ -11,6 +11,7 @@ import {
 } from '../adminClient';
 import RichTextEditor from './RichTextEditor';
 import { suggestEnglishSlug, sanitizeSlug, isAsciiSlug } from '../../../utils/slug';
+import { publishDateToIso, isoToPublishDateInput } from '../shared/publishDate';
 
 function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page: string) => void }) {
   const [categories, setCategories] = useState<any[]>([]);
@@ -63,7 +64,7 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
             title: post.title || '', excerpt: post.excerpt || '', body: bodyHtml,
             focusKeyword: post.focusKeyword || '', seoTitle: post.seoTitle || '', seoDescription: post.seoDescription || '',
             categoryId: post.category?._id || '', tags: post.tags || [], tagInput: '',
-            publishedAt: post.publishedAt ? post.publishedAt.split('T')[0] : '',
+            publishedAt: isoToPublishDateInput(post.publishedAt),
             customSlug: post.slug?.current || '',
           });
           if (post.mainImage?.asset?.url) setMainImageUrl(post.mainImage.asset.url);
@@ -119,7 +120,7 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
         seoDescription: form.seoDescription,
         tags: form.tags,
         ...(form.categoryId && { category: { _type: 'reference', _ref: form.categoryId } }),
-        ...(publish && { publishedAt: form.publishedAt || new Date().toISOString() }),
+        ...(publish && { publishedAt: publishDateToIso(form.publishedAt) }),
       };
       if (mainImageRef_id) {
         data.mainImage = { _type: 'image', asset: { _type: 'reference', _ref: mainImageRef_id } };
@@ -144,20 +145,16 @@ function BlogEditor({ postId, onNavigate }: { postId?: string; onNavigate: (page
       triggerRebuild();
       setIsDirty(false);
       if (publish) {
-        // Fire and-summarise: ping Google Indexing API + IndexNow + Naver in parallel.
+        // Fire and-summarise: ping IndexNow + Naver in parallel.
         // We don't block the publish flow on this — failures are surfaced in the toast
         // but the post is already saved.
         if (finalSlug) {
-          const postUrl = `https://picky-pic.com/blog/${finalSlug}`;
+          // Canonical URL of the saved slug: no trailing slash, percent-encoded.
+          const postUrl = `https://picky-pic.com/blog/${encodeURIComponent(finalSlug)}`;
           showToast('발행 완료! 검색엔진에 색인 요청 중...');
           requestSearchEngineIndexing(postUrl).then((results) => {
-            const googleRes = results.find(r => r.target === 'google');
             const okCount = results.filter(r => r.success).length;
-            if (googleRes && googleRes.configured === false) {
-              showToast(`발행 완료 · 색인 요청 ${okCount}/3 (Google API 미설정)`);
-            } else {
-              showToast(`발행 완료 · 색인 요청 ${okCount}/3 성공`);
-            }
+            showToast(`발행 완료 · 색인 요청 ${okCount}/${results.length} 성공`);
             setTimeout(() => onNavigate('blogs'), 1500);
           }).catch(() => {
             setTimeout(() => onNavigate('blogs'), 1000);

@@ -2,6 +2,7 @@
 import BaseLayout from '@layouts/BaseLayout.astro';
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import { supportGuides } from '@data/support';
+import { ORG_ID, pageUrl } from '@data/structuredData';
 import type { GetStaticPaths } from 'astro';
 
 export const getStaticPaths: GetStaticPaths = () => {
@@ -13,24 +14,25 @@ export const getStaticPaths: GetStaticPaths = () => {
 
 const { guide } = Astro.props;
 const buildId = import.meta.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? String(Date.now());
+
+const url = pageUrl(`/support/${guide.slug}`);
+const techArticleNode = {
+  '@type': 'TechArticle',
+  '@id': `${url}#article`,
+  mainEntityOfPage: { '@id': url },
+  headline: `${guide.name} 포토부스 가이드`,
+  description: `${guide.name} (${guide.nameKo}) 포토부스 템플릿 가이드파일 다운로드`,
+  author: { '@id': ORG_ID },
+  publisher: { '@id': ORG_ID },
+  inLanguage: 'ko',
+};
 ---
 
 <BaseLayout
-  title={`${guide.name} 가이드 | 피키픽 | 포토부스 대여 및 기업 행사 렌탈 전문`}
-  description={`${guide.name} (${guide.nameKo}) 포토부스 템플릿 가이드파일 다운로드. ${guide.category} 포토부스.`}
+  title={`${guide.nameKo} 프레임 템플릿·가이드 | 피키픽 PICKYPIC`}
+  description={`${guide.nameKo}(${guide.name}) ${guide.category} 포토부스용 사진 프레임 템플릿과 화면 가이드 파일을 내려받으세요.`}
+  schema={[techArticleNode]}
 >
-  <!-- TechArticle Schema -->
-  <script slot="head" type="application/ld+json" set:html={JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "TechArticle",
-    "headline": `${guide.name} 포토부스 가이드`,
-    "description": `${guide.name} (${guide.nameKo}) 포토부스 템플릿 가이드파일 다운로드`,
-    "url": `https://picky-pic.com/support/${guide.slug}`,
-    "author": { "@type": "Organization", "@id": "https://picky-pic.com/#organization" },
-    "publisher": { "@type": "Organization", "@id": "https://picky-pic.com/#organization" },
-    "inLanguage": "ko"
-  })} />
-
   <BreadcrumbSchema items={[
     { name: '홈', href: '/' },
     { name: '고객지원', href: '/support' },

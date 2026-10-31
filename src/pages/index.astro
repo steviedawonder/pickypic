@@ -2,6 +2,16 @@
 import BaseLayout from '@layouts/BaseLayout.astro';
 import HeroSection from '@components/home/HeroSection.astro';
 import PopupBanner from '@components/home/PopupBanner.astro';
+
+const introLinks = [
+  { href: '/photobooth-rental', label: '포토부스 렌탈 안내', i18n: 'home.intro.link_rental' },
+  { href: '/photobooth-purchase', label: '포토부스 구매', i18n: 'home.intro.link_purchase' },
+  { href: '/popup-photobooth', label: '팝업스토어 포토부스', i18n: 'home.intro.link_popup' },
+  { href: '/corporate-event', label: '기업행사 포토부스', i18n: 'home.intro.link_corporate' },
+  { href: '/retro-photobooth', label: '영수증 사진기', i18n: 'home.intro.link_retro' },
+  { href: '/ai-photobooth', label: 'AI 포토부스', i18n: 'home.intro.link_ai' },
+  { href: '/portfolio', label: '대여 사례', i18n: 'home.intro.link_portfolio' },
+];
 ---
 
 <BaseLayout
@@ -10,15 +20,23 @@ import PopupBanner from '@components/home/PopupBanner.astro';
 >
   <HeroSection />
 
-  <!-- GEO: AI search engine citation-optimized intro -->
-  <section class="pt-10 pb-8 lg:pt-14 lg:pb-10" style="background-color: #262626;">
+  {/* The page's one H1 and its only body copy. It used to be 11px text at 30–40%
+      white — legible to crawlers, not to people, which is the pattern search
+      engines discount as hidden text. The links are the only in-content path
+      to the SEO landing pages, which otherwise hung off the footer alone. */}
+  <section class="py-12 lg:py-16" style="background-color: #262626;" aria-labelledby="home-intro-title">
     <div class="mx-auto max-w-3xl px-6 lg:px-8 text-center">
-      <h2 class="text-[11px] lg:text-xs font-medium uppercase tracking-[.25em] text-white/30 mb-3" data-i18n="home.geo.title">포토부스 대여 · 렌탈 · 매매 전문 피키픽</h2>
-      <p class="text-[11px] lg:text-xs text-white/40 leading-relaxed" data-i18n="home.geo.desc">
-        피키픽(PICKYPIC)은 "어디에나 어울리는 포토부스"를 만드는 프리미엄 포토부스 전문 기업입니다.
-        스탠드형·테이블형·부스형 등 9종 이상의 라인업을 대여·렌탈·매매로 제공하며, 누적 16,000건 이상의 브랜드 팝업과 기업 행사를 수행했습니다.
-        브랜드 맞춤 커스터마이징부터 AI 포토 솔루션까지, 한국과 싱가포르를 거점으로 글로벌 포토부스 경험을 선사합니다.
+      <h1 id="home-intro-title" class="text-xl lg:text-3xl font-bold tracking-tight text-white" data-i18n="home.intro.title">포토부스 대여부터 구매까지, 직접 만드는 피키픽</h1>
+      <p class="mt-4 text-sm lg:text-base text-white/75 leading-relaxed" data-i18n="home.intro.desc">
+        피키픽(PICKYPIC)은 서울 성수동 공방에서 포토부스를 직접 만드는 포토부스 제조·렌탈 기업입니다.
+        스탠드형·테이블형·부스형 9종을 브랜드 팝업과 기업 행사에 대여하고, 매장용으로 판매합니다.
+        누적 16,000건 이상의 행사 경험을 바탕으로 부스 래핑과 사진 프레임, 촬영 화면까지 브랜드에 맞춰 제작합니다.
       </p>
+      <nav class="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm" aria-label="서비스 바로가기">
+        {introLinks.map((l) => (
+          <a href={l.href} class="text-white underline underline-offset-4 decoration-white/30 hover:decoration-white transition-colors" data-i18n={l.i18n}>{l.label}</a>
+        ))}
+      </nav>
     </div>
   </section>
 

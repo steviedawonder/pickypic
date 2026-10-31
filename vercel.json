@@ -35,6 +35,15 @@
       ]
     },
     {
+      "source": "/images/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, s-maxage=604800, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
       "source": "/images/support/(.*)",
       "headers": [
         {
@@ -44,16 +53,47 @@
       ]
     },
     {
-      "source": "/images/(.*)",
+      "source": "/fonts/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=86400, s-maxage=604800"
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/admin(/.*)?",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
         }
       ]
     }
   ],
   "redirects": [
+    {
+      "source": "/:path((?!api/|\\.well-known/).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "^(?:www\\.)?pickypic\\.co\\.kr$"
+        }
+      ],
+      "destination": "https://picky-pic.com/:path",
+      "statusCode": 301
+    },
+    {
+      "source": "/:path((?!api/|\\.well-known/).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "^(?:picky-pic|pickypic)\\.vercel\\.app$"
+        }
+      ],
+      "destination": "https://picky-pic.com/:path",
+      "statusCode": 301
+    },
     {
       "source": "/home",
       "destination": "/",
@@ -70,15 +110,267 @@
       "statusCode": 301
     },
     {
+      "source": "/ai-personal-color/detail",
+      "destination": "/ai-personal-color",
+      "statusCode": 301
+    },
+    {
+      "source": "/ai-personal-color/detail/",
+      "destination": "/ai-personal-color",
+      "statusCode": 301
+    },
+    {
       "source": "/bbs/board.php",
       "has": [
         {
           "type": "query",
           "key": "bo_table",
-          "value": "portfolio"
+          "value": "^portfolio$"
+        },
+        {
+          "type": "query",
+          "key": "wr_id",
+          "value": "^(?<id>117|112|111|110|108|107|106|105|104|103|102|101|94|92|91|90|89|88|87|86|85|84|82|81|80|79|78|77|76|75|74|73|72|71|70|69|68|67|66|65|64|63|62|61|60|59|58|51|50|49|48|47|46|45|44|43|42|41|40|39|38|37|34|33|32|30|29|28|27|26|24|23|22|13|12|11|10|9|8)$"
+        }
+      ],
+      "destination": "/portfolio/:id",
+      "statusCode": 301
+    },
+    {
+      "source": "/bbs/board.php",
+      "has": [
+        {
+          "type": "query",
+          "key": "bo_table",
+          "value": "^support$"
+        },
+        {
+          "type": "query",
+          "key": "wr_id",
+          "value": "^41$"
+        }
+      ],
+      "destination": "/support/modern-picky",
+      "statusCode": 301
+    },
+    {
+      "source": "/bbs/board.php",
+      "has": [
+        {
+          "type": "query",
+          "key": "bo_table",
+          "value": "^support$"
+        },
+        {
+          "type": "query",
+          "key": "wr_id",
+          "value": "^39$"
+        }
+      ],
+      "destination": "/support/classic-picky",
+      "statusCode": 301
+    },
+    {
+      "source": "/bbs/board.php",
+      "has": [
+        {
+          "type": "query",
+          "key": "bo_table",
+          "value": "^support$"
+        },
+        {
+          "type": "query",
+          "key": "wr_id",
+          "value": "^38$"
+        }
+      ],
+      "destination": "/support/urban-picky",
+      "statusCode": 301
+    },
+    {
+      "source": "/bbs/board.php",
+      "has": [
+        {
+          "type": "query",
+          "key": "bo_table",
+          "value": "^support$"
+        },
+        {
+          "type": "query",
+          "key": "wr_id",
+          "value": "^37$"
+        }
+      ],
+      "destination": "/support/modern-mini-picky",
+      "statusCode": 301
+    },
+    {
+      "source": "/bbs/board.php",
+      "has": [
+        {
+          "type": "query",
+          "key": "bo_table",
+          "value": "^support$"
+        },
+        {
+          "type": "query",
+          "key": "wr_id",
+          "value": "^36$"
+        }
+      ],
+      "destination": "/support/urban-mini-picky",
+      "statusCode": 301
+    },
+    {
+      "source": "/bbs/board.php",
+      "has": [
+        {
+          "type": "query",
+          "key": "bo_table",
+          "value": "^support$"
+        },
+        {
+          "type": "query",
+          "key": "wr_id",
+          "value": "^35$"
+        }
+      ],
+      "destination": "/support/modern-retro-picky",
+      "statusCode": 301
+    },
+    {
+      "source": "/bbs/board.php",
+      "has": [
+        {
+          "type": "query",
+          "key": "bo_table",
+          "value": "^support$"
+        },
+        {
+          "type": "query",
+          "key": "wr_id",
+          "value": "^34$"
+        }
+      ],
+      "destination": "/support/urban-retro-picky",
+      "statusCode": 301
+    },
+    {
+      "source": "/bbs/board.php",
+      "has": [
+        {
+          "type": "query",
+          "key": "bo_table",
+          "value": "^support$"
+        },
+        {
+          "type": "query",
+          "key": "wr_id",
+          "value": "^33$"
+        }
+      ],
+      "destination": "/support/outdoor-picky",
+      "statusCode": 301
+    },
+    {
+      "source": "/bbs/board.php",
+      "has": [
+        {
+          "type": "query",
+          "key": "bo_table",
+          "value": "^support$"
+        },
+        {
+          "type": "query",
+          "key": "wr_id",
+          "value": "^32$"
+        }
+      ],
+      "destination": "/support/air-picky",
+      "statusCode": 301
+    },
+    {
+      "source": "/bbs/board.php",
+      "has": [
+        {
+          "type": "query",
+          "key": "bo_table",
+          "value": "^portfolio$"
         }
       ],
       "destination": "/portfolio",
+      "statusCode": 301
+    },
+    {
+      "source": "/bbs/board.php",
+      "has": [
+        {
+          "type": "query",
+          "key": "bo_table",
+          "value": "^support$"
+        }
+      ],
+      "destination": "/support",
+      "statusCode": 301
+    },
+    {
+      "source": "/bbs/board.php",
+      "has": [
+        {
+          "type": "query",
+          "key": "bo_table",
+          "value": "^company$"
+        }
+      ],
+      "destination": "/about",
+      "statusCode": 301
+    },
+    {
+      "source": "/bbs/board.php",
+      "has": [
+        {
+          "type": "query",
+          "key": "bo_table",
+          "value": "^products$"
+        }
+      ],
+      "destination": "/products",
+      "statusCode": 301
+    },
+    {
+      "source": "/bbs/board.php",
+      "has": [
+        {
+          "type": "query",
+          "key": "bo_table",
+          "value": "^rental$"
+        }
+      ],
+      "destination": "/rental",
+      "statusCode": 301
+    },
+    {
+      "source": "/bbs/board.php",
+      "has": [
+        {
+          "type": "query",
+          "key": "bo_table",
+          "value": "^New$"
+        }
+      ],
+      "destination": "/ai-personal-color",
+      "statusCode": 301
+    },
+    {
+      "source": "/bbs/board.php",
+      "has": [
+        {
+          "type": "query",
+          "key": "bo_table",
+          "value": "^collaboration$"
+        }
+      ],
+      "destination": "/collaboration",
       "statusCode": 301
     },
     {
@@ -104,6 +396,16 @@
     {
       "source": "/blog/%EC%8A%A4%ED%8F%AC%ED%8B%B0%ED%8C%8C%EC%9D%B4-%ED%96%89%EC%82%AC-%ED%8F%AC%ED%86%A0%EB%B6%80%EC%8A%A4%EB%8C%80%EC%97%AC-%ED%9B%84%EA%B8%B0-%EC%84%9C%EA%B0%95%EB%8C%80-%EC%97%B0%EC%84%B8%EB%8C%80-%EC%BA%A0%ED%8D%BC%EC%8A%A4-%EC%9D%B4%EB%B2%A4%ED%8A%B8-%ED%98%84%EC%9E%A5%EC%97%90-%EC%84%A4%EC%B9%98%EB%90%9C-%ED%94%BC%ED%82%A4%ED%94%BD-%EB%AA%A8%EB%8D%98%ED%94%BC%ED%82%A4-%EC%B6%94%EC%B2%9C",
       "destination": "/blog/spotify-photobooth-rental-sogang-yonsei-campus-event-2026",
+      "statusCode": 301
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/sitemap-index.xml",
+      "statusCode": 301
+    },
+    {
+      "source": "/:path((?!api/|_astro/|\\.well-known/)(?:[^/]+/)*[^/]+)/",
+      "destination": "/:path",
       "statusCode": 301
     }
   ]
