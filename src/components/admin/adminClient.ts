@@ -317,21 +317,16 @@ export async function fetchSiteSettings() {
 }
 export async function updateSiteSettings(id: string, data: any) { return sanityUpdate(id, data); }
 
-export async function changeAdminPassword(currentPassword: string, newPassword: string) {
-  const res = await fetch('/api/auth', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'changePassword', currentPassword, newPassword }),
-  });
-  return res.json();
-}
-
 // ── Vercel Rebuild Trigger (서버 API 경유, CORS 우회) ──
 export async function triggerRebuild() {
   try {
     await sanityAction({ action: 'triggerRebuild' });
     return true;
-  } catch {
+  } catch (e) {
+    // Callers don't wait for this, so the console is the only place a failed
+    // rebuild shows up (e.g. DEPLOY_HOOK_URL missing in Vercel): the change is
+    // saved in Sanity but stays off the static pages until the next build.
+    console.error('[rebuild]', e);
     return false;
   }
 }

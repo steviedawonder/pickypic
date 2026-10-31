@@ -128,9 +128,21 @@ export const POST: APIRoute = async ({ request }) => {
       }
 
       case 'triggerRebuild': {
-        const hook = 'https://api.vercel.com/v1/integrations/deploy/prj_O7XjLkUJGOEvYnDMuYAjD8y5L96J/i7uhy3EGoA';
+        // The hook URL is a credential (anyone holding it can start production
+        // builds), so it comes from the environment, not this public repo.
+        // Astro only reads it at runtime if it existed when the build ran:
+        // after adding or changing it in Vercel, redeploy.
+        const hook = (import.meta.env.DEPLOY_HOOK_URL || '').trim();
+        if (!hook) {
+          console.error('triggerRebuild: DEPLOY_HOOK_URL is not configured');
+          return jsonResponse({ error: 'DEPLOY_HOOK_URL is not configured' }, 500);
+        }
         const res = await fetch(hook, { method: 'POST' });
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          console.error('triggerRebuild: deploy hook responded', res.status, data);
+          return jsonResponse({ error: `Deploy hook failed (${res.status})` }, 502);
+        }
         return jsonResponse({ success: true, ...data });
       }
 

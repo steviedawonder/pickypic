@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { colors, s } from '../shared/styles';
-import { fetchSiteSettings, updateSiteSettings, changeAdminPassword, triggerRebuild } from '../adminClient';
+import { fetchSiteSettings, updateSiteSettings, triggerRebuild } from '../adminClient';
 import { useToast } from '../shared/Toast';
 
 const tabs = [
@@ -24,11 +24,6 @@ function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const { showToast, ToastContainer } = useToast();
-
-  // Password change state
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
 
   useEffect(() => {
     loadSettings();
@@ -66,37 +61,6 @@ function SettingsPage() {
       triggerRebuild();
     } catch (e: any) {
       showToast(e.message || '저장에 실패했습니다', 'error');
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function handleChangePassword() {
-    if (!newPassword || !currentPassword) {
-      showToast('현재 비밀번호와 새 비밀번호를 입력하세요', 'warning');
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      showToast('새 비밀번호가 일치하지 않습니다', 'error');
-      return;
-    }
-    if (newPassword.length < 6) {
-      showToast('비밀번호는 6자 이상이어야 합니다', 'warning');
-      return;
-    }
-    try {
-      setSaving(true);
-      const result = await changeAdminPassword(currentPassword, newPassword);
-      if (result.error) {
-        showToast(result.error, 'error');
-      } else {
-        showToast('비밀번호가 변경되었습니다', 'success');
-        setCurrentPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
-      }
-    } catch (e: any) {
-      showToast(e.message || '비밀번호 변경에 실패했습니다', 'error');
     } finally {
       setSaving(false);
     }
@@ -160,23 +124,18 @@ function SettingsPage() {
 
         <div style={{ borderTop: `1px solid ${colors.border}`, margin: '32px 0 24px' }} />
         <h3 style={{ fontSize: 15, fontWeight: 700, marginBottom: 16 }}>비밀번호 변경</h3>
-        <div style={fieldGroup}>
-          <label style={s.label}>현재 비밀번호</label>
-          <input style={s.input} type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} />
-        </div>
-        <div style={fieldGroup}>
-          <label style={s.label}>새 비밀번호</label>
-          <input style={s.input} type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
-          <div style={helperStyle}>6자 이상 입력하세요</div>
-        </div>
-        <div style={fieldGroup}>
-          <label style={s.label}>새 비밀번호 확인</label>
-          <input style={s.input} type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
-        </div>
-        <div style={{ marginTop: 24 }}>
-          <button style={{ ...s.btn, ...s.btnPrimary, opacity: saving ? 0.6 : 1 }} disabled={saving} onClick={handleChangePassword}>
-            {saving ? '변경 중...' : '비밀번호 변경'}
-          </button>
+        {/* The password is the ADMIN_PASSWORD env var, so it can't be changed from here. */}
+        <div style={{
+          background: '#eff6ff', border: `1px solid ${colors.blue}`, borderRadius: 8,
+          padding: '12px 16px', fontSize: 13, color: '#1e3a8a', lineHeight: 1.6,
+        }}>
+          관리자 비밀번호는 Vercel 환경변수 <code>ADMIN_PASSWORD</code>에 저장되어 있어 이 화면에서는 바꿀 수 없습니다.
+          <ol style={{ margin: '8px 0', paddingLeft: 20 }}>
+            <li>Vercel → picky-pic 프로젝트 → Settings → Environment Variables</li>
+            <li><code>ADMIN_PASSWORD</code> 값을 새 비밀번호로 수정 (Production·Preview·Development 모두)</li>
+            <li>Deployments에서 최신 배포를 Redeploy</li>
+          </ol>
+          재배포가 끝나면 기존 로그인이 모두 풀립니다. 새 비밀번호로 다시 로그인하세요.
         </div>
       </div>
     );

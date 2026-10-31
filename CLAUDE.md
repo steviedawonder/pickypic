@@ -20,6 +20,7 @@ Vercel 빌드에서 플레이스홀더 주입 문제 발생. 공개 키는 **반
 | `ADMIN_PASSWORD` | 어드민 로그인 | All Environments 설정 필수 |
 | `SANITY_API_TOKEN` | Sanity 쓰기 토큰 | 값에 줄바꿈/공백 주의 |
 | `SANITY_READ_TOKEN` | Sanity 읽기 토큰 (Viewer) | 선택 — 없으면 `SANITY_API_TOKEN`으로 읽음. 데이터셋 비공개라 둘 다 없으면 사이트 데이터가 비어 보임 |
+| `DEPLOY_HOOK_URL` | Vercel 배포 훅 (`triggerRebuild()` 재빌드) | Sensitive로 저장. 없으면 관리자 변경 사항이 사이트에 반영되지 않음. 넣거나 바꾼 뒤에는 재배포해야 적용 |
 | `GOOGLE_INDEXING_SERVICE_ACCOUNT_EMAIL` | Google Indexing API | 선택 — 미설정 시 발행 후 Google 색인 요청만 스킵 |
 | `GOOGLE_INDEXING_PRIVATE_KEY` | Google Indexing API | 선택 — 줄바꿈은 `\n` 리터럴로 저장. Search Console에 서비스 계정을 OWNER로 추가 필수 |
 
@@ -54,7 +55,7 @@ Dashboard, BlogList, BlogEditor, PortfolioManager, FAQManager, CategoryManager, 
 6. 점검 모드 (사이트 점검 전환 + 예외 IP)
 
 ### API
-- `/api/auth.ts` — login, verify, changePassword
+- `/api/auth.ts` — login, verify. 비밀번호 변경은 Vercel `ADMIN_PASSWORD` 수정 후 재배포(토큰 HMAC 키라 기존 로그인 만료)
 - `/api/sanity.ts` — Sanity CRUD 프록시 + submitInquiry (인증 불필요, 화이트리스트 적용)
 - `/api/google-indexing.ts` — Google Indexing API (JWT, 서비스 계정 키 미설정 시 no-op). 관리자 인증 필요. Google 정책상 JobPosting/BroadcastEvent 전용이라 발행 흐름에서는 호출하지 않음
 - `/api/indexnow.ts` — IndexNow (Bing/Naver/Yandex 등 공유). 관리자 인증 필요
