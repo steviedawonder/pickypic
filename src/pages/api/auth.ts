@@ -83,18 +83,6 @@ export const POST: APIRoute = async ({ request }) => {
       return jsonResponse({ valid });
     }
 
-    if (action === 'changePassword') {
-      // Require valid session first
-      if (!token || !(await validateToken(token))) {
-        return jsonResponse({ error: 'Unauthorized' }, 401);
-      }
-      // Then explain that password change requires Vercel env var
-      return jsonResponse({
-        error: '비밀번호 변경은 Vercel 환경변수(ADMIN_PASSWORD)에서 직접 변경해야 합니다.',
-        info: true
-      }, 200);
-    }
-
     return jsonResponse({ error: 'Unknown action' }, 400);
   } catch (err: any) {
     return jsonResponse({ error: err.message || 'Internal server error' }, 500);

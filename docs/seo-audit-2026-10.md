@@ -95,8 +95,14 @@
    - siteSettings에 Slack 웹훅 URL과 reCAPTCHA 비밀키가 들어 있는데, 데이터셋을 누구나 읽을 수 있다.
    - 두 값을 새로 발급해 교체하고, 데이터셋을 비공개로 전환한다(사이트는 #12·#13부터 토큰으로 읽음).
 2. **보안 — 배포 훅 주소 노출**
-   - 저장소가 공개 상태라 `src/pages/api/sanity.ts`에 적힌 Vercel 배포 훅 주소를 누구나 볼 수 있다.
-   - Vercel에서 훅을 새로 만들고, 옛 훅은 삭제한다. 새 주소를 환경변수로 옮기는 작업은 개발자에게 요청한다.
+   - 저장소가 공개 상태라, 예전 코드에 적혀 있던 Vercel 배포 훅 주소를 git 기록에서 누구나 볼 수 있다.
+   - 코드는 이제 환경변수 `DEPLOY_HOOK_URL`을 읽는다. 지금은 기존 훅 주소가 들어 있어 재빌드는 그대로 동작한다.
+   - 훅 교체 순서:
+     1. Vercel → picky-pic → Settings → Git → Deploy Hooks에서 새 훅(브랜치 `main`)을 만든다.
+     2. Settings → Environment Variables에서 `DEPLOY_HOOK_URL` 값을 새 주소로 바꾼다.
+     3. Deployments에서 최신 배포를 Redeploy한다.
+     4. 관리자에서 아무 항목이나 저장한 뒤 Deployments에 새 배포가 생기는지 확인한다.
+     5. 옛 훅을 삭제한다.
 3. **GTM — 잘못된 Lead 이벤트**
    - 현재 모든 페이지뷰에서 Meta "Lead" 이벤트가 발생한다(Lead 수 ≈ 페이지뷰 수). 해당 태그를 일시중지한다.
    - 배포 후에는 맞춤 이벤트 `generate_lead` 트리거에 Meta Lead, GA4, 네이버 전환 태그를 연결한다.
@@ -130,7 +136,7 @@
 9. **Bing 웹마스터 도구**: Search Console에서 가져오기로 등록하고, 사이트맵을 제출한다. Copilot·ChatGPT 검색이 Bing 색인을 참고한다.
 10. **다음 웹마스터도구**: 사이트를 등록한 뒤 발급된 PIN을 개발자에게 전달한다(robots.txt에 추가).
 11. **Google 비즈니스 프로필**: 성수 사무실을 등록하거나 소유권을 확인한다. 전화는 +82 2-338-9181이다.
-12. **Vercel**: 같은 저장소를 배포하는 중복 프로젝트 "pickypic"을 삭제하거나 Git 연결을 끊는다(CLAUDE.md 규칙 3). `pickypic.co.kr` 도메인은 "Redirect to picky-pic.com"으로 설정한다.
+12. **Vercel**: 같은 저장소를 배포하는 중복 프로젝트 "pickypic"을 삭제하거나 Git 연결을 끊는다(CLAUDE.md 규칙 3). `pickypic.co.kr`은 코드에서 이미 picky-pic.com으로 301하고 있어 따로 설정하지 않아도 된다.
 13. **Meta 픽셀**: 픽셀이 세 군데에서 설치돼 있다(Sanity 설정, headScripts, GTM). ID 하나와 설치 위치 하나만 남긴다.
 
 ### 확인이 필요한 사실 (사이트·llms.txt·구조화 데이터에 그대로 노출됨)
