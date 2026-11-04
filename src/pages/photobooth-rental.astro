@@ -15,7 +15,7 @@ const faqItems = [
   },
   {
     question: '포토부스 렌탈 절차는 어떻게 되나요?',
-    answer: '문의 접수 → 맞춤 견적 안내 → 계약 및 결제 → 현장 설치 → 운영 지원 → 철거의 순서로 진행됩니다. 문의 후 영업시간 기준 1시간 이내에 답변을 드리고 있습니다.',
+    answer: '문의 접수 → 맞춤 견적 안내 → 계약 및 결제 → 현장 설치 → 행사 진행 → 철거의 순서로 진행됩니다. 문의 후 영업시간 기준 1시간 이내에 답변을 드리고 있습니다.',
   },
   {
     question: '포토부스 대여 시 최소 운영 시간이 있나요?',
@@ -31,14 +31,14 @@ const faqItems = [
   },
   {
     question: '포토부스 대여 시 운영 인력도 지원되나요?',
-    answer: '네, 포토부스 대여 시 전문 운영 스태프가 현장에 상주하여 장비 운영 및 고객 안내를 도와드립니다. 설치부터 철거까지 원스톱으로 진행됩니다.',
+    answer: '아니요, 피키픽은 운영 인력을 별도로 지원하지 않습니다. 포토부스는 참여자가 화면 안내에 따라 직접 촬영하는 셀프 방식이라 운영 인력 없이 진행할 수 있으며, 설치와 철거는 피키픽이 진행합니다.',
   },
 ];
 ---
 
 <BaseLayout
   title="포토부스 렌탈 안내 · 종류·절차·포함 사항 | 피키픽 PICKYPIC"
-  description="포토부스 렌탈은 문의, 견적, 설치, 운영, 철거 순으로 진행됩니다. 스탠드형·테이블형·부스형 9종 중 행사에 맞는 기기와 맞춤 프레임, 운영 스태프 등 포함 사항을 확인하세요."
+  description="포토부스 렌탈은 문의, 견적, 설치, 셀프 촬영, 철거 순으로 진행됩니다. 스탠드형·테이블형·부스형 9종 중 행사에 맞는 기기와 맞춤 프레임 등 포함 사항을 확인하세요."
 >
   <!-- Structured data -->
   <BreadcrumbSchema items={[
@@ -78,7 +78,7 @@ const faqItems = [
       <h2 class="text-xl lg:text-2xl font-bold text-primary mb-6" data-i18n="rental_page.intro.title">포토부스 대여 서비스 소개</h2>
       <div class="text-sm lg:text-base text-secondary leading-relaxed space-y-4 max-w-3xl">
         <p data-i18n="rental_page.intro.p1">
-          피키픽은 브랜드 팝업, 기업 행사, 전시회, 웨딩, 파티 등 다양한 이벤트에 맞춤형 포토부스를 대여해 드리는 전문 렌탈 서비스입니다. 단순한 장비 대여를 넘어, 프레임 디자인 커스터마이징부터 현장 설치, 운영 스태프 지원, 철거까지 원스톱으로 제공합니다.
+          피키픽은 브랜드 팝업, 기업 행사, 전시회, 웨딩, 파티 등 다양한 이벤트에 맞춤형 포토부스를 대여해 드리는 전문 렌탈 서비스입니다. 단순한 장비 대여를 넘어, 프레임 디자인 커스터마이징부터 현장 설치, 철거까지 원스톱으로 제공합니다.
         </p>
         <p data-i18n="rental_page.intro.p2">
           인생네컷, 포토이즘과 같은 셀프 포토 촬영 경험을 행사 현장에서 구현할 수 있으며, 브랜드 아이덴티티를 반영한 맞춤 프레임으로 차별화된 고객 경험을 만들어 드립니다.
@@ -162,7 +162,7 @@ const faqItems = [
           { step: '01', titleKey: 'rental_page.process.step1.title', title: '문의', descKey: 'rental_page.process.step1.desc', desc: '전화, 카카오톡, 웹사이트를 통해 행사 일정과 요구사항을 알려주세요.' },
           { step: '02', titleKey: 'rental_page.process.step2.title', title: '견적', descKey: 'rental_page.process.step2.desc', desc: '행사 규모와 요구사항에 맞는 최적의 포토부스와 견적을 안내드립니다.' },
           { step: '03', titleKey: 'rental_page.process.step3.title', title: '설치', descKey: 'rental_page.process.step3.desc', desc: '행사 당일, 전문 팀이 현장에 포토부스를 설치하고 세팅합니다.' },
-          { step: '04', titleKey: 'rental_page.process.step4.title', title: '운영', descKey: 'rental_page.process.step4.desc', desc: '운영 스태프가 상주하여 촬영 안내 및 장비를 관리합니다.' },
+          { step: '04', titleKey: 'rental_page.process.step4.title', title: '셀프 촬영', descKey: 'rental_page.process.step4.desc', desc: '행사 중에는 참여자가 화면 안내에 따라 직접 촬영하고 인화하는 셀프 방식으로 진행됩니다.' },
           { step: '05', titleKey: 'rental_page.process.step5.title', title: '철거', descKey: 'rental_page.process.step5.desc', desc: '행사 종료 후 깔끔하게 철거하고, 촬영 데이터를 전달드립니다.' },
         ].map((item) => (
           <div class="text-center p-4">
@@ -184,7 +184,7 @@ const faqItems = [
           { titleKey: 'rental_page.includes.item1.title', title: '포토부스 장비', descKey: 'rental_page.includes.item1.desc', desc: '선택하신 모델의 포토부스 본체와 카메라, 조명, 프린터 일체 제공' },
           { titleKey: 'rental_page.includes.item2.title', title: '맞춤 프레임 디자인', descKey: 'rental_page.includes.item2.desc', desc: '브랜드 로고, 행사 테마를 반영한 맞춤 포토 프레임 제작' },
           { titleKey: 'rental_page.includes.item3.title', title: '현장 설치 · 철거', descKey: 'rental_page.includes.item3.desc', desc: '전문 팀의 현장 방문 설치 및 행사 종료 후 철거 서비스' },
-          { titleKey: 'rental_page.includes.item4.title', title: '운영 스태프', descKey: 'rental_page.includes.item4.desc', desc: '행사 시간 동안 상주하며 촬영 안내 및 장비 운영 지원' },
+          { titleKey: 'rental_page.includes.item4.title', title: '셀프 촬영 시스템', descKey: 'rental_page.includes.item4.desc', desc: '화면 안내에 따라 누구나 쉽게 직접 촬영하고 바로 인화' },
           { titleKey: 'rental_page.includes.item5.title', title: '무제한 인화', descKey: 'rental_page.includes.item5.desc', desc: '행사 시간 내 촬영 횟수 제한 없이 즉석 인화 제공' },
           { titleKey: 'rental_page.includes.item6.title', title: '디지털 데이터', descKey: 'rental_page.includes.item6.desc', desc: '촬영된 원본 사진 및 프레임 적용 사진 디지털 파일 제공' },
         ].map((item) => (
