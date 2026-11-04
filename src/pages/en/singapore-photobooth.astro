@@ -29,7 +29,7 @@ const faqItems = [
   },
   {
     question: 'Do you deliver and set up photo booths in Singapore?',
-    answer: 'Yes! PICKYPIC handles delivery, professional setup, and teardown in Singapore. During your event, guests use the booth on their own, so no booth attendant is needed.',
+    answer: 'Yes! PICKYPIC handles delivery, professional setup, and teardown in Singapore. During your event, guests use the booth on their own.',
   },
   {
     question: 'How far in advance should I book a photo booth?',
@@ -41,7 +41,7 @@ const faqItems = [
   },
   {
     question: 'What types of events are your photo booths suitable for?',
-    answer: 'Our photo booths are perfect for corporate events, brand pop-ups, product launches, weddings, birthday parties, gala dinners, trade shows, and festivals. We have served clients like Netflix, Hyundai, Starbucks, and New Balance across various event types.',
+    answer: 'Our photo booths are perfect for corporate events, brand pop-ups, product launches, birthday parties, gala dinners, trade shows, and festivals. We have served clients like Netflix, Hyundai, Starbucks, and New Balance across various event types.',
   },
   {
     question: 'Do your photo booths support instant printing and digital sharing?',
@@ -74,7 +74,7 @@ const processSteps = [
   { step: '01', title: 'Inquiry', desc: 'Tell us about your event — date, venue, guest count, and any branding needs.' },
   { step: '02', title: 'Quote', desc: 'We provide a detailed proposal with booth recommendations, pricing, and customization options.' },
   { step: '03', title: 'Setup', desc: 'Our team arrives early to deliver, install, and test the photo booth at your venue.' },
-  { step: '04', title: 'Event', desc: 'Guests follow the on-screen guide to take and print their own photos. No booth attendant is needed.' },
+  { step: '04', title: 'Event', desc: 'Guests follow the on-screen guide to take and print their own photos.' },
   { step: '05', title: 'Teardown', desc: 'After the event, we handle complete teardown and removal — no hassle for you.' },
 ];
 
@@ -99,12 +99,6 @@ const services = [
     alt: 'PICKYPIC photo booth at a brand pop-up',
     title: 'Brand Pop-ups',
     desc: 'Retail activations, pop-up stores, and brand experience zones with fully customized booth wrapping and photo templates.',
-  },
-  {
-    image: '/images/rental/rental-4.jpg',
-    alt: 'PICKYPIC photo booth at a wedding reception',
-    title: 'Weddings',
-    desc: 'Elegant photo booth setups for wedding receptions, solemnizations, and pre-wedding events. Create lasting memories for your guests.',
   },
   {
     image: '/images/rental/rental-6.jpg',
@@ -132,7 +126,7 @@ const modelGroups = [
 
 <BaseLayout
   title="Photo Booth Rental Singapore | PICKYPIC Photobooth"
-  description="Premium photo booth rental in Singapore for corporate events, brand pop-ups, weddings & parties. 9+ booth models, full brand customization, instant prints. Get a free quote from PICKYPIC."
+  description="Premium photo booth rental in Singapore for corporate events, brand pop-ups & parties. 9+ booth models, full brand customization, instant prints. Get a free quote from PICKYPIC."
 >
   <!-- Structured Data -->
   <BreadcrumbSchema items={[
@@ -142,7 +136,7 @@ const modelGroups = [
   <ServiceSchema
     serviceName="Photo Booth Rental Singapore"
     serviceType="Photo Booth Rental"
-    description="Premium photo booth rental service in Singapore by PICKYPIC. Offering 9+ Korean-designed photo booth models for corporate events, brand pop-ups, weddings, and parties with full customization and on-site setup."
+    description="Premium photo booth rental service in Singapore by PICKYPIC. Offering 9+ Korean-designed photo booth models for corporate events, brand pop-ups, and parties with full customization and on-site setup."
     areaServed={['SG']}
   />
 
@@ -255,7 +249,7 @@ const modelGroups = [
       <h2 class="font-display font-bold text-[clamp(1.5rem,2.5vw,2.25rem)] tracking-tight text-primary mb-12">
         Photo Booth Services in Singapore
       </h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 gs-stagger">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 gs-stagger">
         {services.map((s) => (
           <div>
             <img
@@ -336,7 +330,7 @@ const modelGroups = [
         Ready to Book a Photo Booth in Singapore?
       </h2>
       <p class="text-white/70 text-sm lg:text-base leading-relaxed max-w-2xl mb-8">
-        Whether it's a corporate event, brand activation, wedding, or party — PICKYPIC delivers premium photo booth experiences to Singapore. Get in touch today for a free quote.
+        Whether it's a corporate event, brand activation, or party — PICKYPIC delivers premium photo booth experiences to Singapore. Get in touch today for a free quote.
       </p>
       <div class="flex flex-wrap gap-3">
         <a href="/en#contact" class="inline-flex items-center px-7 py-3 bg-white text-primary text-sm font-semibold rounded-full hover:opacity-90 transition-opacity">
