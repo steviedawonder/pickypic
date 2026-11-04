@@ -42,16 +42,13 @@ const faqItems = [
 
 <BaseLayout
   title="포토부스 구매 · 포토부스 판매 | 9종 라인업 제조사 직접 판매 - PICKYPIC"
-  description="포토부스 구매를 고려하시나요? PICKYPIC은 스탠드형·테이블형·부스형 9종 이상의 포토부스를 자체 설계·제조·판매합니다. 무인사진관 창업, 카페, 이벤트업체를 위한 포토부스 기기 구매 가이드와 가격 정보를 확인하세요."
+  description="포토부스 기계를 제조사에서 직접 구매하세요. 스탠드형·테이블형·부스형 9종 사양 비교와 용도별 추천, 래핑·화면 맞춤 제작, 1년 무상 A/S까지 안내합니다."
 >
   <!-- Breadcrumb Schema -->
   <BreadcrumbSchema items={[
     { name: '홈', href: '/' },
     { name: '포토부스 구매', href: '/photobooth-purchase' },
   ]} />
-
-  <!-- FAQ Schema -->
-  <FAQSchema items={faqItems} title="포토부스 구매 자주 묻는 질문" />
 
   <!-- Hero Section -->
   <section class="pt-16 pb-10 lg:pt-20 lg:pb-14 bg-white">
@@ -317,15 +314,10 @@ const faqItems = [
               <td class="py-3 px-5 text-center text-secondary">자유롭게 가능</td>
               <td class="py-3 px-5 text-center text-secondary">제한적</td>
             </tr>
-            <tr class="border-b border-border-light">
+            <tr>
               <td class="py-3 px-5 font-medium text-primary">유지보수</td>
               <td class="py-3 px-5 text-center text-secondary">자체 관리 + A/S</td>
               <td class="py-3 px-5 text-center text-secondary">업체 관리</td>
-            </tr>
-            <tr>
-              <td class="py-3 px-5 font-medium text-primary">수익 구조</td>
-              <td class="py-3 px-5 text-center text-secondary">매출 100% 본인</td>
-              <td class="py-3 px-5 text-center text-secondary">렌탈비 차감</td>
             </tr>
           </tbody>
         </table>
@@ -429,6 +421,9 @@ const faqItems = [
     </div>
   </section>
 
+  {/* Below the content, not above the H1 where it used to render. */}
+  <FAQSchema items={faqItems} title="포토부스 구매 자주 묻는 질문" titleKey="faq.title_purchase" />
+
   <!-- CTA Section -->
   <section class="py-14 lg:py-20 bg-white" aria-labelledby="cta-heading">
     <div class="mx-auto max-w-3xl px-6 lg:px-8 text-center">
@@ -446,13 +441,6 @@ const faqItems = [
           class="inline-flex items-center justify-center px-8 py-3.5 bg-primary text-white font-semibold text-sm rounded-full hover:bg-primary/90 transition-colors duration-300 min-w-[200px]"
         >
           제품 상세보기
-        </a>
-        <!-- Online shop link -->
-        <a
-          href="/shop"
-          class="inline-flex items-center justify-center px-8 py-3.5 border border-primary text-primary font-semibold text-sm rounded-full hover:bg-primary hover:text-white transition-colors duration-300 min-w-[200px]"
-        >
-          온라인 구매하기
         </a>
         <!-- Naver SmartStore link -->
         <a

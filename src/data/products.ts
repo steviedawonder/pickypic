@@ -15,6 +15,17 @@ export interface Product {
   image: string;
   imageLeft: string;
   imageRight: string;
+  /**
+   * Display-sized WebP copies of imageLeft/imageRight for the /products
+   * carousel, made by scripts/build-web-images.mjs. The originals above stay
+   * for the other pages, JSON-LD and the image sitemap. A photo that was
+   * already a small WebP is used as-is.
+   */
+  imageLeftWeb?: string;
+  imageRightWeb?: string;
+  /** Pixel size of imageLeftWeb / imageRightWeb ([width, height]), for width/height attributes. */
+  imageLeftSize?: [number, number];
+  imageRightSize?: [number, number];
   specs: ProductSpec[];
   woodColors?: { name: string; hex: string }[];
 }
@@ -44,6 +55,10 @@ export const products: Product[] = [
     image: '/images/products/product-1.webp',
     imageLeft: '/images/products/modern-picky-line.png',
     imageRight: '/images/products/modern-picky-photo.webp',
+    imageLeftWeb: '/images/products/web/modern-picky-line.webp',
+    imageRightWeb: '/images/products/web/modern-picky-photo.webp',
+    imageLeftSize: [412, 960],
+    imageRightSize: [330, 960],
     specs: [
       { label: 'Camera', value: 'DSLR' },
       { label: 'Display', value: '13inches Monitor' },
@@ -76,6 +91,10 @@ export const products: Product[] = [
     image: '/images/products/product-2.webp',
     imageLeft: '/images/products/classic-picky-line.png',
     imageRight: '/images/products/classic-picky-photo.webp',
+    imageLeftWeb: '/images/products/web/classic-picky-line.webp',
+    imageRightWeb: '/images/products/web/classic-picky-photo.webp',
+    imageLeftSize: [412, 960],
+    imageRightSize: [330, 960],
     specs: [
       { label: 'Camera', value: 'DSLR' },
       { label: 'Display', value: '13inches Monitor' },
@@ -108,6 +127,10 @@ export const products: Product[] = [
     image: '/images/products/product-3.webp',
     imageLeft: '/images/products/urban-picky-line.png',
     imageRight: '/images/products/urban-picky-photo.webp',
+    imageLeftWeb: '/images/products/web/urban-picky-line.webp',
+    imageRightWeb: '/images/products/web/urban-picky-photo.webp',
+    imageLeftSize: [481, 960],
+    imageRightSize: [406, 960],
     specs: [
       { label: 'Camera', value: 'DSLR' },
       { label: 'Display', value: '13inches Monitor' },
@@ -140,6 +163,10 @@ export const products: Product[] = [
     image: '/images/products/product-4.webp',
     imageLeft: '/images/products/modern-mini-picky-line.png',
     imageRight: '/images/products/modern-mini-picky-photo.webp',
+    imageLeftWeb: '/images/products/web/modern-mini-picky-line.webp',
+    imageRightWeb: '/images/products/modern-mini-picky-photo.webp',
+    imageLeftSize: [573, 960],
+    imageRightSize: [453, 520],
     specs: [
       { label: 'Camera', value: 'Webcam' },
       { label: 'Display', value: '11.6 inches Monitor' },
@@ -172,6 +199,10 @@ export const products: Product[] = [
     image: '/images/products/product-5.webp',
     imageLeft: '/images/products/urban-mini-picky-line.png',
     imageRight: '/images/products/urban-mini-picky-photo.webp',
+    imageLeftWeb: '/images/products/web/urban-mini-picky-line.webp',
+    imageRightWeb: '/images/products/web/urban-mini-picky-photo.webp',
+    imageLeftSize: [572, 960],
+    imageRightSize: [846, 960],
     specs: [
       { label: 'Camera', value: 'Webcam' },
       { label: 'Display', value: '11.6 inches Monitor' },
@@ -204,6 +235,10 @@ export const products: Product[] = [
     image: '/images/products/product-6.webp',
     imageLeft: '/images/products/modern-retro-picky-line.png',
     imageRight: '/images/products/modern-retro-picky-photo.webp',
+    imageLeftWeb: '/images/products/web/modern-retro-picky-line.webp',
+    imageRightWeb: '/images/products/modern-retro-picky-photo.webp',
+    imageLeftSize: [628, 960],
+    imageRightSize: [536, 605],
     specs: [
       { label: 'Camera', value: 'Built-in Tablet Camera (2.0MP)' },
       { label: 'Display', value: '8.7 inches tablet' },
@@ -236,6 +271,10 @@ export const products: Product[] = [
     image: '/images/products/product-7.webp',
     imageLeft: '/images/products/urban-retro-picky-line.png',
     imageRight: '/images/products/urban-retro-picky-photo.webp',
+    imageLeftWeb: '/images/products/web/urban-retro-picky-line.webp',
+    imageRightWeb: '/images/products/urban-retro-picky-photo.webp',
+    imageLeftSize: [506, 960],
+    imageRightSize: [488, 556],
     specs: [
       { label: 'Camera', value: 'Built-in Tablet Camera (2.0MP)' },
       { label: 'Display', value: '8.7 inches tablet' },
@@ -268,6 +307,10 @@ export const products: Product[] = [
     image: '/images/products/product-8.webp',
     imageLeft: '/images/products/outdoor-picky-line.png',
     imageRight: '/images/products/outdoor-picky-photo.webp',
+    imageLeftWeb: '/images/products/web/outdoor-picky-line.webp',
+    imageRightWeb: '/images/products/web/outdoor-picky-photo.webp',
+    imageLeftSize: [622, 960],
+    imageRightSize: [662, 960],
     specs: [
       { label: 'Camera', value: 'DSLR' },
       { label: 'Display', value: '21inches Monitor' },
@@ -293,6 +336,10 @@ export const products: Product[] = [
     image: '/images/products/product-9.webp',
     imageLeft: '/images/products/air-picky-line.png',
     imageRight: '/images/products/air-picky-photo.webp',
+    imageLeftWeb: '/images/products/web/air-picky-line.webp',
+    imageRightWeb: '/images/products/web/air-picky-photo.webp',
+    imageLeftSize: [584, 960],
+    imageRightSize: [573, 960],
     specs: [
       { label: 'Camera', value: 'DSLR' },
       { label: 'Display', value: '21inches Monitor' },

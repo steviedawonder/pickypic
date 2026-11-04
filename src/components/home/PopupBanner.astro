@@ -5,6 +5,7 @@
  */
 import { createClient } from '@sanity/client';
 import imageUrlBuilder from '@sanity/image-url';
+import { sanityImg, sanitySrcset, sanityDims } from '../../utils/sanityImage';
 
 const client = createClient({
   projectId: '7b9lcco4',
@@ -29,6 +30,11 @@ try {
 } catch (e) {
   // Sanity 접속 실패 시 팝업 표시 안 함
 }
+
+// The upload's own size (encoded in its filename) sets the box before the image
+// arrives — without it the popup grew from its footer bar to full height once
+// the image loaded, a 0.22 layout shift on every first visit.
+const imageDims = sanityDims(imageUrl);
 ---
 
 {banner && (
@@ -36,10 +42,18 @@ try {
     <div class="popup-container relative w-[90vw] max-w-[500px] shadow-2xl">
       <!-- Popup Image -->
       <a href={banner.linkUrl || '/rental'}>
+        {/* Lazy: the overlay is display:none until the script below shows it,
+            so visitors who dismissed it for 24h never download the image. */}
         <img
-          src={imageUrl}
+          src={sanityImg(imageUrl, 600)}
+          srcset={sanitySrcset(imageUrl, [450, 600, 900, 1080])}
+          sizes="min(90vw, 500px)"
+          width={imageDims?.width}
+          height={imageDims?.height}
           alt={banner.altText || '피키픽 포토부스'}
-          class="w-full block"
+          class="w-full h-auto block"
+          loading="lazy"
+          decoding="async"
         />
       </a>
       <!-- Footer -->

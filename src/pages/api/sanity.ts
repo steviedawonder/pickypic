@@ -107,7 +107,11 @@ export const POST: APIRoute = async ({ request }) => {
       }
 
       case 'update': {
-        const result = await client.patch(params.id).set(params.data).commit();
+        // `unset` removes fields (e.g. publishedAt to unpublish a post), which set() can't.
+        let patch = client.patch(params.id);
+        if (params.data && Object.keys(params.data).length) patch = patch.set(params.data);
+        if (Array.isArray(params.unset) && params.unset.length) patch = patch.unset(params.unset);
+        const result = await patch.commit();
         return jsonResponse(result);
       }
 
@@ -128,9 +132,21 @@ export const POST: APIRoute = async ({ request }) => {
       }
 
       case 'triggerRebuild': {
-        const hook = 'https://api.vercel.com/v1/integrations/deploy/prj_O7XjLkUJGOEvYnDMuYAjD8y5L96J/i7uhy3EGoA';
+        // The hook URL is a credential (anyone holding it can start production
+        // builds), so it comes from the environment, not this public repo.
+        // Astro only reads it at runtime if it existed when the build ran:
+        // after adding or changing it in Vercel, redeploy.
+        const hook = (import.meta.env.DEPLOY_HOOK_URL || '').trim();
+        if (!hook) {
+          console.error('triggerRebuild: DEPLOY_HOOK_URL is not configured');
+          return jsonResponse({ error: 'DEPLOY_HOOK_URL is not configured' }, 500);
+        }
         const res = await fetch(hook, { method: 'POST' });
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          console.error('triggerRebuild: deploy hook responded', res.status, data);
+          return jsonResponse({ error: `Deploy hook failed (${res.status})` }, 502);
+        }
         return jsonResponse({ success: true, ...data });
       }
 
@@ -145,3 +161,13 @@ export const POST: APIRoute = async ({ request }) => {
     );
   }
 };
+
+// Every other method (crawlers send GET/HEAD) gets a real 405. Without this,
+// Astro answers with an empty-body 404 and then tries to fetch the prerendered
+// 404 page, which crashed on Vercel (500 FUNCTION_INVOCATION_FAILED).
+// POST still wins: Astro picks mod[method] before mod.ALL.
+export const ALL: APIRoute = () =>
+  new Response(JSON.stringify({ error: 'Method Not Allowed' }), {
+    status: 405,
+    headers: { 'Content-Type': 'application/json', Allow: 'POST' },
+  });

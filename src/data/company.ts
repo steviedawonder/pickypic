@@ -5,15 +5,21 @@ export const company = {
   brandKo: '피키픽 포토부스',
   businessNumber: '772-86-02811',
   phone: '(82) 02-338-9181',
-  phoneTel: 'tel:82023389181',
+  // E.164 for structured data and tel: links. The display string above keeps the
+  // domestic trunk 0, which must not be dialled after +82 — "tel:82023389181"
+  // (the old value) reached nobody from any phone.
+  phoneE164: '+82-2-338-9181',
+  phoneTel: 'tel:+82-2-338-9181',
   email: 'pickypic.photobooth@gmail.com',
   partnerEmail: 'pickypic.marketing@gmail.com',
   address: '서울특별시 성동구 성수이로18길 31, 풍림테크원 205,206호',
   // Romanised for /en/ — a US B2B buyer checking a supplier should be able to
   // read the address rather than see Hangul they can't verify.
-  addressEn: 'Pungnim Techwon 205-206, 31 Seongsui-ro 18-gil, Seongdong-gu, Seoul 04790, Republic of Korea',
+  addressEn: 'Pungnim Techwon 205-206, 31 Seongsui-ro 18-gil, Seongdong-gu, Seoul 04787, Republic of Korea',
   kakaoChannel: '@피키픽 포토부스',
-  kakaoUrl: 'https://pf.kakao.com/_pickypic',
+  // _pickypic resolves to an empty, unnamed channel; _qbEMb is "피키픽 포토부스",
+  // the one the floating chat button has always used.
+  kakaoUrl: 'https://pf.kakao.com/_qbEMb',
   instagram: {
     official: 'pickypic.official',
     global: 'pickypic.global',
@@ -24,13 +30,21 @@ export const company = {
   // SEO & GEO 확장 정보
   foundingDate: '2020',
   url: 'https://picky-pic.com',
-  logo: 'https://picky-pic.com/images/common/logo-top.png',
-  geo: { lat: 37.5447, lng: 127.0561 },
+  // Symbol mark (337×312). Google ignores organization logos under 112×112,
+  // which ruled out the 837×84 wordmark at /images/common/logo-top.png.
+  logo: 'https://picky-pic.com/pickypic_logo.png',
+  logoWidth: 337,
+  logoHeight: 312,
+  // 풍림테크원 (성수이로18길 31, 성수동2가 273-10) as Naver's address card pins it.
+  // The old 37.5447,127.0561 was Seongsu Station, ~450 m away. Postal code is
+  // 04787 for this address (Naver and OpenStreetMap agree), not 04790.
+  geo: { lat: 37.54192, lng: 127.06063 } as { lat: number; lng: number } | null,
   sameAs: [
     'https://www.instagram.com/pickypic.official/',
     'https://www.instagram.com/pickypic.global/',
     'https://www.instagram.com/pickypic_outlet/',
-    'https://pf.kakao.com/_pickypic',
+    'https://pf.kakao.com/_qbEMb',
+    'https://blog.naver.com/pickypicphotobooth',
     'https://smartstore.naver.com/pickypicphoto',
   ],
   description: '피키픽은 2020년 설립된 대한민국 서울 성수동 소재 프리미엄 포토부스 제조·렌탈 전문 기업입니다. 스탠드형, 테이블형, 부스형 등 9종 이상의 포토부스 라인업을 보유하고 있으며, 넷플릭스, 현대자동차, 기아, 뉴발란스, 스타벅스 등 16,000건 이상의 브랜드 팝업 및 기업 행사에 포토부스를 제공하고 현재 500대 이상의 기기가 현장에서 운영되고 있습니다. 모든 기기는 자체 공방에서 수작업으로 제작되며, 원목 부스는 목수가 직접 나무를 깎아 마감합니다.',

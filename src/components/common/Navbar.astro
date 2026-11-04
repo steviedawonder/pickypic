@@ -37,7 +37,7 @@ const navI18nKeys = [
 >
   <nav class="mx-auto flex max-w-[1440px] items-center justify-between px-[25px] pt-4 pb-4 lg:px-10 lg:pt-10 lg:pb-5">
     <!-- Logo -->
-    <a href={isEn ? "/en/" : "/"} class="flex items-center">
+    <a href={isEn ? "/en" : "/"} class="flex items-center">
       <span class="logo-text text-[24px] lg:text-[38px] leading-none">PICKYPIC PHOTOBOOTH<span class="text-[9px] lg:text-[12px] relative -top-[1.4em] ml-0.5">®</span></span>
     </a>
 
@@ -175,7 +175,7 @@ const navI18nKeys = [
   <div class="absolute right-0 top-0 bottom-0 w-full max-w-sm bg-white shadow-2xl">
     <!-- Close Button -->
     <div class="flex items-center justify-between px-6 py-4">
-      <a href={isEn ? "/en/" : "/"}>
+      <a href={isEn ? "/en" : "/"}>
         <span class="logo-text text-[20px] leading-none">PICKYPIC PHOTOBOOTH<span class="text-[10px] relative -top-[0.85em] ml-0.5">®</span></span>
       </a>
       <button id="mobile-menu-close" class="p-2" aria-label={isEn ? "Close menu" : "메뉴 닫기"}>
@@ -219,7 +219,7 @@ const navI18nKeys = [
     <!-- Contact Info -->
     <div class="absolute bottom-0 left-0 right-0 px-6 py-8 border-t border-gray-100">
       <p class="text-xs text-gray-400" data-i18n="nav.contact_phone">{t("nav.contact_phone")}</p>
-      <a href="tel:02-338-9181" class="text-sm font-semibold text-black">02-338-9181</a>
+      <a href="tel:+82-2-338-9181" class="text-sm font-semibold text-black">{isEn ? "+82 2-338-9181" : "02-338-9181"}</a>
     </div>
   </div>
 </div>

@@ -5,22 +5,10 @@ import CompanyInfo from '@components/about/CompanyInfo.astro';
 ---
 
 <BaseLayout
-  title="피키픽 회사소개 | 포토부스 렌탈 전문 기업 PICKYPIC"
-  description="2020년 설립된 피키픽은 넷플릭스·현대자동차·스타벅스 등 16,000건 이상의 브랜드 팝업 및 기업 행사에 포토부스를 제공하는 프리미엄 포토부스 렌탈 전문 기업입니다."
+  title="회사소개 · 성수동 포토부스 제조사 | 피키픽 PICKYPIC"
+  description="피키픽은 서울 성수동 공방에서 포토부스를 직접 만드는 제조사입니다. 원목 부스는 목수가 직접 깎아 마감하고, 9종 라인업을 렌탈·판매합니다. 회사소개서도 내려받을 수 있습니다."
+  pageType="AboutPage"
 >
-  <!-- About Page Schema -->
-  <script slot="head" type="application/ld+json" set:html={JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "AboutPage",
-    "name": "피키픽 회사소개",
-    "description": "피키픽 포토부스는 2020년 설립된 프리미엄 포토부스 렌탈 전문 기업입니다.",
-    "url": "https://picky-pic.com/about",
-    "mainEntity": {
-      "@type": "LocalBusiness",
-      "@id": "https://picky-pic.com/#organization"
-    }
-  })} />
-
   <BreadcrumbSchema items={[
     { name: '홈', href: '/' },
     { name: '회사소개', href: '/about' },

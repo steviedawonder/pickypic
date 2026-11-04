@@ -121,7 +121,8 @@ export const siteSettings = defineType({
     defineField({ name: 'naverSiteVerification', title: 'Naver Site Verification', type: 'string', fieldset: 'externalServices' }),
     defineField({ name: 'naverSyndicationKey', title: 'Naver Syndication Key', type: 'string', fieldset: 'externalServices' }),
     defineField({ name: 'recaptchaSiteKey', title: 'reCAPTCHA Site Key', type: 'string', fieldset: 'externalServices' }),
-    defineField({ name: 'recaptchaSecretKey', title: 'reCAPTCHA Secret Key', type: 'string', fieldset: 'externalServices' }),
+    // The dataset is public, so this document can't hold secrets. Nothing reads this field.
+    defineField({ name: 'recaptchaSecretKey', title: 'reCAPTCHA Secret Key', type: 'string', fieldset: 'externalServices', hidden: true }),
     defineField({ name: 'chatPluginCode', title: 'Chat Plugin Code', type: 'text', rows: 4, fieldset: 'externalServices' }),
 
     // === emailSettings fieldset ===
@@ -129,7 +130,8 @@ export const siteSettings = defineType({
     defineField({ name: 'adminEmailName', title: '관리자 이메일 이름', type: 'string', fieldset: 'emailSettings' }),
     defineField({ name: 'rentalNotifyEmail', title: '렌탈 알림 이메일', type: 'string', fieldset: 'emailSettings' }),
     defineField({ name: 'collabNotifyEmail', title: '협업 알림 이메일', type: 'string', fieldset: 'emailSettings' }),
-    defineField({ name: 'slackWebhookUrl', title: 'Slack Webhook URL', type: 'url', fieldset: 'emailSettings' }),
+    // Public dataset: a webhook URL stored here is readable by anyone. Nothing sends to it.
+    defineField({ name: 'slackWebhookUrl', title: 'Slack Webhook URL', type: 'url', fieldset: 'emailSettings', hidden: true }),
 
     // === securitySettings fieldset ===
     defineField({ name: 'allowedIps', title: '허용 IP 목록', type: 'text', rows: 4, fieldset: 'securitySettings', description: '줄바꿈으로 구분' }),

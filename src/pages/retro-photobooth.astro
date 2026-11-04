@@ -36,7 +36,7 @@ const faqItems = [
 ---
 
 <BaseLayout
-  title="영수증 사진기 · 감열지 사진기 대여 · 구매 | 피키픽 레트로 사진기 PICKYPIC"
+  title="영수증 사진기 · 감열지 사진기 대여·구매 | 피키픽 PICKYPIC"
   description="영수증 사진기, 감열지 사진기 대여 및 구매 전문 피키픽. 레트로 사진기 Modern Retro Picky, Urban Retro Picky로 브랜드 팝업, 카페, 파티에 뉴트로 감성을 더하세요."
 >
   <!-- Structured data -->
@@ -48,6 +48,7 @@ const faqItems = [
     serviceName="영수증 사진기 · 감열지 사진기"
     serviceType="Receipt Photo Printer / Thermal Photo Printer"
     description="피키픽의 영수증 사진기(레트로 사진기)는 감열지에 사진을 출력하는 뉴트로 스타일 포토 기기입니다. Modern Retro Picky와 Urban Retro Picky 두 가지 모델을 통해 브랜드 팝업, 카페, 파티 등에서 빈티지 감성의 포토 경험을 제공합니다."
+    models={['Modern Retro Picky', 'Urban Retro Picky']}
   />
 
   <!-- Hero Section -->
@@ -153,7 +154,7 @@ const faqItems = [
           <div class="p-6 lg:p-8">
             <span class="inline-block text-[11px] font-medium text-white bg-primary px-3 py-1 rounded-full mb-4">테이블형 · 영수증 사진기</span>
             <div class="product-row cursor-pointer group" data-product-id="modern-retro-picky">
-              <h3 class="text-lg lg:text-xl font-bold text-primary mb-1 group-hover:text-primary/70 transition-colors duration-200" data-i18n="retro.models.modern.name">모던 레트로피키 <span class="text-sm font-medium">(Modern Retro Picky)</span></h3>
+              <h3 class="text-lg lg:text-xl font-bold text-primary mb-1 group-hover:text-primary/70 transition-colors duration-200"><span data-i18n="retro.models.modern.name">모던 레트로피키</span> <span class="text-sm font-medium">(Modern Retro Picky)</span></h3>
             </div>
             <ul class="space-y-2 text-sm text-secondary">
               <li class="flex items-start gap-2">
@@ -183,7 +184,7 @@ const faqItems = [
           <div class="p-6 lg:p-8">
             <span class="inline-block text-[11px] font-medium text-white bg-primary px-3 py-1 rounded-full mb-4">테이블형 · 영수증 사진기</span>
             <div class="product-row cursor-pointer group" data-product-id="urban-retro-picky">
-              <h3 class="text-lg lg:text-xl font-bold text-primary mb-1 group-hover:text-primary/70 transition-colors duration-200" data-i18n="retro.models.urban.name">어반 레트로피키 <span class="text-sm font-medium">(Urban Retro Picky)</span></h3>
+              <h3 class="text-lg lg:text-xl font-bold text-primary mb-1 group-hover:text-primary/70 transition-colors duration-200"><span data-i18n="retro.models.urban.name">어반 레트로피키</span> <span class="text-sm font-medium">(Urban Retro Picky)</span></h3>
             </div>
             <ul class="space-y-2 text-sm text-secondary">
               <li class="flex items-start gap-2">
@@ -318,7 +319,7 @@ const faqItems = [
   </section>
 
   <!-- FAQ Section -->
-  <FAQSchema items={faqItems} title="영수증 사진기 · 감열지 사진기 자주 묻는 질문" />
+  <FAQSchema items={faqItems} title="영수증 사진기 · 감열지 사진기 자주 묻는 질문" titleKey="faq.title_retro" />
 
   <!-- CTA Section -->
   <section class="bg-primary py-16 lg:py-20" aria-labelledby="cta-heading">

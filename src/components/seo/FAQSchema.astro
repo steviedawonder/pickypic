@@ -14,7 +14,13 @@ interface Props {
   titleKey?: string;
 }
 
-const { items, title = '자주 묻는 질문', titleKey = 'faq.title' } = Astro.props;
+const { items, title, titleKey } = Astro.props;
+
+// A page-specific title must never inherit the generic key: the client i18n
+// pass would replace "포토부스 대여 자주 묻는 질문" with plain "자주 묻는 질문",
+// and that rewritten heading is what Google renders and indexes.
+const heading = title ?? '자주 묻는 질문';
+const headingKey = titleKey ?? (title ? undefined : 'faq.title');
 
 const faqSchema = {
   "@context": "https://schema.org",
@@ -30,20 +36,23 @@ const faqSchema = {
 };
 ---
 
-<!-- FAQ JSON-LD -->
-<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+{/* FAQ rich results stopped appearing in Google on 2026-05-07; the markup
+    stays because it costs nothing and other engines still read Q&A pairs.
+    The hidden EN/JP copies below carry lang + data-nosnippet so a Korean
+    search snippet never quotes them. */}
+<script type="application/ld+json" set:html={JSON.stringify(faqSchema).replace(/</g, '\\u003c')} />
 
 <!-- Visual FAQ Section -->
 <section class="mx-auto max-w-4xl px-6 lg:px-8 py-16" aria-labelledby="faq-heading">
-  <h2 id="faq-heading" class="text-2xl font-bold text-primary mb-8 text-center" data-i18n={titleKey}>{title}</h2>
+  <h2 id="faq-heading" class="text-2xl font-bold text-primary mb-8 text-center" data-i18n={headingKey}>{heading}</h2>
   <div class="space-y-3">
     {items.map((item) => (
       <details class="group border border-border rounded-lg overflow-hidden">
         <summary class="flex items-center justify-between cursor-pointer px-6 py-4 bg-bg-light hover:bg-accent-tint transition-colors">
           <span class="font-medium text-primary text-left pr-4">
             <span class="faq-question-ko">{item.question}</span>
-            {item.questionEn && <span class="faq-question-en hidden">{item.questionEn}</span>}
-            {item.questionJp && <span class="faq-question-jp hidden">{item.questionJp}</span>}
+            {item.questionEn && <span class="faq-question-en hidden" lang="en" data-nosnippet>{item.questionEn}</span>}
+            {item.questionJp && <span class="faq-question-jp hidden" lang="ja" data-nosnippet>{item.questionJp}</span>}
           </span>
           <svg class="w-5 h-5 text-secondary shrink-0 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -52,8 +61,8 @@ const faqSchema = {
         <div class="px-6 py-4 text-secondary leading-relaxed">
           <p>
             <span class="faq-answer-ko">{item.answer}</span>
-            {item.answerEn && <span class="faq-answer-en hidden">{item.answerEn}</span>}
-            {item.answerJp && <span class="faq-answer-jp hidden">{item.answerJp}</span>}
+            {item.answerEn && <span class="faq-answer-en hidden" lang="en" data-nosnippet>{item.answerEn}</span>}
+            {item.answerJp && <span class="faq-answer-jp hidden" lang="ja" data-nosnippet>{item.answerJp}</span>}
           </p>
         </div>
       </details>

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { colors, s } from '../shared/styles';
 import {
   fetchPortfolioItem, createPortfolioItem, updatePortfolioItem,
-  uploadImage, triggerRebuild,
+  uploadImage, triggerRebuild, requestSearchEngineIndexing,
 } from '../adminClient';
 
 const categoryOptions = [
@@ -60,6 +60,9 @@ function PortfolioEditor({ itemId, onNavigate }: { itemId?: string; onNavigate: 
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [seoManuallyEdited, setSeoManuallyEdited] = useState(false);
+  // The slug a saved item already has. Its page URL is public (and submitted to
+  // search engines), so editing the title must not move it.
+  const [savedSlug, setSavedSlug] = useState('');
 
   const [form, setForm] = useState({
     title: '', category: '', client: '', description: '',
@@ -71,6 +74,7 @@ function PortfolioEditor({ itemId, onNavigate }: { itemId?: string; onNavigate: 
     if (itemId) {
       fetchPortfolioItem(itemId).then((item: any) => {
         if (!item) return;
+        setSavedSlug(item.slug?.current || '');
         setForm({
           title: item.title || '', category: item.category || '',
           client: item.client || '', description: item.description || '',
@@ -173,7 +177,7 @@ function PortfolioEditor({ itemId, onNavigate }: { itemId?: string; onNavigate: 
     }
     setSaving(true);
     try {
-      const slug = form.title.toLowerCase()
+      const slug = savedSlug || form.title.toLowerCase()
         .replace(/[^a-z0-9가-힣\s-]/g, '')
         .replace(/\s+/g, '-')
         .replace(/-+/g, '-');
@@ -214,9 +218,22 @@ function PortfolioEditor({ itemId, onNavigate }: { itemId?: string; onNavigate: 
       } else {
         const created = await createPortfolioItem(data);
         if (created?._id) setCurrentItemId(created._id);
+        setSavedSlug(slug);
       }
 
       if (andRebuild) triggerRebuild();
+
+      // A visible item's page (/portfolio/<slug>) is rendered on demand from
+      // Sanity, so it is live as soon as it's saved: tell IndexNow + Naver.
+      // Fire-and-forget, like the blog flow. A purely numeric slug would be
+      // shadowed by a static portfolio/[id] page, so it isn't pinged.
+      if (form.isVisible && slug && !/^\d+$/.test(slug)) {
+        const itemUrl = `https://picky-pic.com/portfolio/${encodeURIComponent(slug)}`;
+        requestSearchEngineIndexing(itemUrl)
+          .then((results) => console.info('[indexing]', itemUrl, results))
+          .catch(() => {});
+      }
+
       showToast(andRebuild ? '저장 및 사이트 반영 완료!' : '저장 완료!');
       if (andRebuild) setTimeout(() => onNavigate('portfolio'), 1000);
     } catch (e: any) {
@@ -227,6 +244,7 @@ function PortfolioEditor({ itemId, onNavigate }: { itemId?: string; onNavigate: 
   };
 
   const generateAutoSlug = () => {
+    if (savedSlug) return savedSlug;
     return form.title ? form.title.toLowerCase().replace(/[^a-z0-9가-힣\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-') : '';
   };
 

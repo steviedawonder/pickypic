@@ -83,20 +83,18 @@ export const POST: APIRoute = async ({ request }) => {
       return jsonResponse({ valid });
     }
 
-    if (action === 'changePassword') {
-      // Require valid session first
-      if (!token || !(await validateToken(token))) {
-        return jsonResponse({ error: 'Unauthorized' }, 401);
-      }
-      // Then explain that password change requires Vercel env var
-      return jsonResponse({
-        error: '비밀번호 변경은 Vercel 환경변수(ADMIN_PASSWORD)에서 직접 변경해야 합니다.',
-        info: true
-      }, 200);
-    }
-
     return jsonResponse({ error: 'Unknown action' }, 400);
   } catch (err: any) {
     return jsonResponse({ error: err.message || 'Internal server error' }, 500);
   }
 };
+
+// Every other method (crawlers send GET/HEAD) gets a real 405. Without this,
+// Astro answers with an empty-body 404 and then tries to fetch the prerendered
+// 404 page, which crashed on Vercel (500 FUNCTION_INVOCATION_FAILED).
+// POST still wins: Astro picks mod[method] before mod.ALL.
+export const ALL: APIRoute = () =>
+  new Response(JSON.stringify({ error: 'Method Not Allowed' }), {
+    status: 405,
+    headers: { 'Content-Type': 'application/json', Allow: 'POST' },
+  });

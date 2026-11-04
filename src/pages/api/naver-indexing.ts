@@ -1,39 +1,60 @@
 import type { APIRoute } from 'astro';
+import { validateToken } from './auth';
+import { siteUrlsFromBody, submitIndexNow } from './indexnow';
 
 // SSR endpoint — without this Astro prerenders the route at build time,
 // which silently breaks POST and returns the static 404 HTML.
 export const prerender = false;
 
 const DOMAIN = 'picky-pic.com';
-const SITEMAP_URL = `https://${DOMAIN}/sitemap-index.xml`;
-const RSS_URL = `https://${DOMAIN}/blog/rss.xml`;
-const INDEXNOW_KEY = 'pickypic2024indexnow';
 
+function jsonResponse(data: unknown, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
+
+const ADMIN_PASSWORD = import.meta.env.ADMIN_PASSWORD;
+// If no password configured, block all access
+
+// Admin-only, exactly like /api/sanity.
+async function isAuthorized(request: Request): Promise<boolean> {
+  if (!ADMIN_PASSWORD) return false;
+  const token = request.headers.get('x-admin-auth');
+  if (!token) return false;
+  return validateToken(token);
+}
+
+// A thin, direct submission to Naver's IndexNow endpoint, so the admin sees
+// Naver's own status code. (/api/indexnow already reaches Naver through the
+// shared api.indexnow.org.) Same validation as /api/indexnow: https URLs on
+// picky-pic.com, percent-encoded, capped at 100.
+//
+// Not done here any more: apis.naver.com/crawl/... is not a public Naver API
+// (crawl requests are partner-only), and submitting sitemap-index.xml or
+// rss.xml as IndexNow URLs is not a ping — those are read from robots.txt and
+// Search Advisor instead.
 export const POST: APIRoute = async ({ request }) => {
+  if (!(await isAuthorized(request))) {
+    return jsonResponse({ success: false, error: 'Unauthorized' }, 401);
+  }
+
   try {
     const body = await request.json();
-    const url: string | undefined = body.url;
+    const urls = siteUrlsFromBody(body);
 
-    if (!url) {
-      return new Response(
-        JSON.stringify({ success: false, error: 'No URL provided. Send { url: string }' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-
-    if (!url.startsWith(`https://${DOMAIN}/`)) {
-      return new Response(
-        JSON.stringify({ success: false, error: `Invalid URL: ${url}. Must start with https://${DOMAIN}/` }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+    if (urls.length === 0) {
+      return jsonResponse(
+        { success: false, error: `No valid URL. Send { url: string } or { urls: string[] } with https://${DOMAIN}/ URLs` },
+        400
       );
     }
 
     const results: { target: string; status: string; statusCode?: number; error?: string }[] = [];
 
-    // 1. Naver IndexNow ping
     try {
-      const naverIndexNowUrl = `https://searchadvisor.naver.com/indexnow?url=${encodeURIComponent(url)}&key=${INDEXNOW_KEY}`;
-      const res = await fetch(naverIndexNowUrl);
+      const res = await submitIndexNow('https://searchadvisor.naver.com/indexnow', urls);
       results.push({
         target: 'Naver IndexNow',
         status: res.ok ? 'ok' : 'failed',
@@ -43,55 +64,20 @@ export const POST: APIRoute = async ({ request }) => {
       results.push({ target: 'Naver IndexNow', status: 'error', error: err.message });
     }
 
-    // 2. Naver crawl request
-    try {
-      const crawlUrl = `https://apis.naver.com/crawl/naver_crawl/request?url=${encodeURIComponent(url)}`;
-      const res = await fetch(crawlUrl);
-      results.push({
-        target: 'Naver Crawl Request',
-        status: res.ok ? 'ok' : 'failed',
-        statusCode: res.status,
-      });
-    } catch (err: any) {
-      // Naver crawl API may not be publicly available; treat as non-critical
-      results.push({ target: 'Naver Crawl Request', status: 'error', error: err.message });
-    }
-
-    // 3. Naver sitemap ping
-    try {
-      const sitemapPingUrl = `https://searchadvisor.naver.com/indexnow?url=${encodeURIComponent(SITEMAP_URL)}&key=${INDEXNOW_KEY}`;
-      const res = await fetch(sitemapPingUrl);
-      results.push({
-        target: 'Naver Sitemap Ping',
-        status: res.ok ? 'ok' : 'failed',
-        statusCode: res.status,
-      });
-    } catch (err: any) {
-      results.push({ target: 'Naver Sitemap Ping', status: 'error', error: err.message });
-    }
-
-    // 4. Naver RSS ping
-    try {
-      const rssPingUrl = `https://searchadvisor.naver.com/indexnow?url=${encodeURIComponent(RSS_URL)}&key=${INDEXNOW_KEY}`;
-      const res = await fetch(rssPingUrl);
-      results.push({
-        target: 'Naver RSS Ping',
-        status: res.ok ? 'ok' : 'failed',
-        statusCode: res.status,
-      });
-    } catch (err: any) {
-      results.push({ target: 'Naver RSS Ping', status: 'error', error: err.message });
-    }
-
-    // Even if some pings fail, return success — sitemap will be crawled eventually
-    return new Response(
-      JSON.stringify({ success: true, results }),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
-    );
+    // Best-effort like before: the sitemap is crawled regardless, so a failed
+    // submission is reported in `results` without failing the request.
+    return jsonResponse({ success: true, submitted: urls, results });
   } catch (err: any) {
-    return new Response(
-      JSON.stringify({ success: false, error: err.message || 'Unknown error' }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    );
+    return jsonResponse({ success: false, error: err.message || 'Unknown error' }, 500);
   }
 };
+
+// Every other method (crawlers send GET/HEAD) gets a real 405. Without this,
+// Astro answers with an empty-body 404 and then tries to fetch the prerendered
+// 404 page, which crashed on Vercel (500 FUNCTION_INVOCATION_FAILED).
+// POST still wins: Astro picks mod[method] before mod.ALL.
+export const ALL: APIRoute = () =>
+  new Response(JSON.stringify({ success: false, error: 'Method Not Allowed' }), {
+    status: 405,
+    headers: { 'Content-Type': 'application/json', Allow: 'POST' },
+  });

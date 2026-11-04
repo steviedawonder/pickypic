@@ -5,7 +5,7 @@ import { compressImage } from './shared/imageUtils';
 
 const AUTH_STORAGE_KEY = 'pickypic-admin-auth';
 
-function getAuthHeaders(): Record<string, string> {
+export function getAuthHeaders(): Record<string, string> {
   const token = (typeof localStorage !== 'undefined' && localStorage.getItem(AUTH_STORAGE_KEY)) || '';
   return { 'x-admin-auth': token };
 }
@@ -100,6 +100,12 @@ export async function updateBlogPost(id: string, data: any) {
 
 export async function deleteBlogPost(id: string) {
   return sanityDelete(id);
+}
+
+// The site only lists posts with a publishedAt, so clearing it hides the post
+// (and its URL answers 404) while keeping the content to publish again later.
+export async function unpublishBlogPost(id: string) {
+  return sanityAction({ action: 'update', id, unset: ['publishedAt'] });
 }
 
 // ── Tags ──
@@ -309,38 +315,34 @@ export async function fetchSiteSettings() {
     headScripts, headMeta, headCustomCss, bodyStartScripts, bodyEndScripts,
     gtmContainerId, ga4MeasurementId, naverAnalyticsId, kakaoPixelId, metaPixelId,
     googleSiteVerification, naverSiteVerification, naverSyndicationKey,
-    recaptchaSiteKey, recaptchaSecretKey, chatPluginCode,
-    adminEmail, adminEmailName, rentalNotifyEmail, collabNotifyEmail, slackWebhookUrl,
+    recaptchaSiteKey, chatPluginCode,
+    adminEmail, adminEmailName, rentalNotifyEmail, collabNotifyEmail,
     allowedIps, blockedIps, maxLoginAttempts,
     isMaintenanceMode, maintenanceMessage, maintenanceAllowedIps
   }`);
 }
 export async function updateSiteSettings(id: string, data: any) { return sanityUpdate(id, data); }
 
-export async function changeAdminPassword(currentPassword: string, newPassword: string) {
-  const res = await fetch('/api/auth', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'changePassword', currentPassword, newPassword }),
-  });
-  return res.json();
-}
-
 // ── Vercel Rebuild Trigger (서버 API 경유, CORS 우회) ──
 export async function triggerRebuild() {
   try {
     await sanityAction({ action: 'triggerRebuild' });
     return true;
-  } catch {
+  } catch (e) {
+    // Callers don't wait for this, so the console is the only place a failed
+    // rebuild shows up (e.g. DEPLOY_HOOK_URL missing in Vercel): the change is
+    // saved in Sanity but stays off the static pages until the next build.
+    console.error('[rebuild]', e);
     return false;
   }
 }
 
 // ── Search engine indexing notifications ──
-// Fires Google Indexing API + IndexNow (Bing/Yandex) + Naver IndexNow in parallel
-// when a blog post is published or updated. All three calls are best-effort: the
-// caller doesn't await failures, since the sitemap will eventually be crawled
-// regardless. Used by BlogEditor on publish.
+// Fires IndexNow (api.indexnow.org, shared with Bing/Naver/Yandex) + Naver IndexNow
+// in parallel when a blog post or portfolio item goes live or is updated. Both calls
+// are best-effort: callers don't block on failures, since the sitemaps will be
+// crawled regardless. Both endpoints are admin-only, so the auth header is sent.
+// Used by NaverBlogEditor / BlogEditor on publish and PortfolioEditor on save.
 export type IndexingTarget = 'google' | 'indexnow' | 'naver';
 export interface IndexingResult {
   target: IndexingTarget;
@@ -355,7 +357,7 @@ export async function requestSearchEngineIndexing(url: string): Promise<Indexing
     try {
       const res = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify(payload),
       });
       const data = await res.json().catch(() => ({}));
@@ -371,13 +373,13 @@ export async function requestSearchEngineIndexing(url: string): Promise<Indexing
     }
   };
 
-  const [google, indexnow, naver] = await Promise.all([
-    callJson('google', '/api/google-indexing', { url, action: 'URL_UPDATED' }),
+  // No Google Indexing API call: Google supports it only for JobPosting/BroadcastEvent pages and revokes access for other use (sitemap lastmod + Search Console cover posts).
+  const [indexnow, naver] = await Promise.all([
     callJson('indexnow', '/api/indexnow', { url }),
     callJson('naver', '/api/naver-indexing', { url }),
   ]);
 
-  return [google, indexnow, naver];
+  return [indexnow, naver];
 }
 
 // ── Dashboard Stats ──

@@ -5,10 +5,14 @@
   display: none !important;
 }
 
-/* Bebas Neue Font */
+/* Bebas Neue Font
+   Latin-1 subset of BebasNeue-Regular.ttf as WOFF2 (13 KB vs 28 KB brotli'd TTF);
+   every Bebas use on the site is Latin, and ® is included. The version in the
+   filename lets /fonts/ be cached as immutable — ship a changed font under a
+   new name. BaseLayout preloads this exact URL. */
 @font-face {
   font-family: 'Bebas Neue';
-  src: url('/fonts/BebasNeue-Regular.ttf') format('truetype');
+  src: url('/fonts/bebas-neue-latin-v1.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: block;

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { colors, s } from '../shared/styles';
 import { ScoreCategoryPanel, ScoreCircle } from '../shared/SeoComponents';
 
@@ -98,7 +98,6 @@ export default function NaverPublishModal({
   slug,
 }: NaverPublishModalProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [visibility, setVisibility] = useState<'public' | 'private'>('public');
 
   if (!open) return null;
 
@@ -334,33 +333,8 @@ export default function NaverPublishModal({
             )}
           </div>
 
-          <div style={divider} />
-
-          {/* 4. 공개 설정 */}
-          <div>
-            <div style={sectionTitle}>공개 설정</div>
-            <div style={{ display: 'flex', gap: 20 }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 13 }}>
-                <input
-                  type="radio"
-                  name="visibility"
-                  checked={visibility === 'public'}
-                  onChange={() => setVisibility('public')}
-                />
-                공개
-              </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 13 }}>
-                <input
-                  type="radio"
-                  name="visibility"
-                  checked={visibility === 'private'}
-                  onChange={() => setVisibility('private')}
-                />
-                비공개
-              </label>
-            </div>
-          </div>
-
+          {/* The old 공개/비공개 radio here was never saved, so 비공개 still published
+              the post. Hiding a post is the 비공개 button in 글 관리. */}
           <div style={divider} />
 
           {/* 5. 예약 발행 */}

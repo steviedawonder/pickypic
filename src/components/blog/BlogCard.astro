@@ -1,4 +1,6 @@
 ---
+import { sanityImg, sanitySrcset } from '../../utils/sanityImage';
+
 interface Props {
   post: {
     title: string;
@@ -17,9 +19,15 @@ interface Props {
     };
     estimatedReadingTime?: number;
   };
+  /** The first card is above the fold on phones and is the page's LCP image: load it eagerly, at high priority. */
+  eager?: boolean;
 }
 
-const { post } = Astro.props;
+const { post, eager = false } = Astro.props;
+
+// mainImage is the original upload (up to 1920x2400, ~0.5-0.8 MB) shown in a
+// 16:10 card at most ~380px wide; ask the Sanity CDN for card-sized WebP instead.
+const imageUrl = post.mainImage?.asset?.url;
 
 const formattedDate = post.publishedAt
   ? new Date(post.publishedAt).toLocaleDateString('ko-KR', {
@@ -34,12 +42,18 @@ const formattedDate = post.publishedAt
   <a href={`/blog/${post.slug.current}`} class="block">
     <!-- Image -->
     <div class="relative aspect-[16/10] bg-bg-light overflow-hidden mb-4">
-      {post.mainImage?.asset?.url ? (
+      {imageUrl ? (
         <img
-          src={post.mainImage.asset.url}
-          alt={post.mainImage.alt || post.title}
+          src={sanityImg(imageUrl, 640)}
+          srcset={sanitySrcset(imageUrl, [320, 480, 640, 960])}
+          sizes="(min-width: 1024px) 380px, (min-width: 640px) calc(50vw - 40px), calc(100vw - 48px)"
+          width="640"
+          height="400"
+          alt={post.mainImage?.alt || post.title}
           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          loading="lazy"
+          loading={eager ? 'eager' : 'lazy'}
+          fetchpriority={eager ? 'high' : undefined}
+          decoding="async"
         />
       ) : (
         <div class="absolute inset-0 flex items-center justify-center text-secondary/20">

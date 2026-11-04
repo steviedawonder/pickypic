@@ -1,5 +1,6 @@
 ---
 import { sanityClient, bannerQueries } from '../../sanity/client';
+import { sanityImg, sanitySrcset } from '../../utils/sanityImage';
 
 // Fetch active banners from Sanity at build time
 let sanityBanners: any[] = [];
@@ -9,35 +10,59 @@ try {
   // Fallback to hardcoded if Sanity fetch fails
 }
 
+// Display-sized WebP copies of the hero art, made by scripts/build-web-images.mjs.
+// The originals in /images/hero/ stay put (og:image and the image sitemap use
+// them). The mobile LCP image used to be a 2595x4096 file for a ~412px screen.
+const heroWeb = (name: string, widths: number[]) => ({
+  src: `/images/hero/web/${name}-${widths[widths.length - 1]}.webp`,
+  srcset: widths.map((w) => `/images/hero/web/${name}-${w}.webp ${w}w`).join(', '),
+});
+
 const fallbackDesktop = [
-  '/images/hero/main-1.jpg',
-  '/images/hero/main-2.jpg',
-  '/images/hero/main-3.jpg',
+  heroWeb('main-1', [1280, 1440]), // source is only 1440px wide
+  heroWeb('main-2', [1280, 1920]),
+  heroWeb('main-3', [1280, 1920]),
 ];
 
 const fallbackMobile = [
-  '/images/hero/main-mo1.webp',
-  '/images/hero/main-mo2.webp',
-  '/images/hero/main-mo3.webp',
+  heroWeb('main-mo1', [720, 1080, 1440]),
+  heroWeb('main-mo2', [720, 1080, 1440]),
+  heroWeb('main-mo3', [720, 1080, 1440]),
 ];
 
 const hasSanityBanners = sanityBanners && sanityBanners.length > 0;
 
 const desktopSlides = hasSanityBanners
   ? sanityBanners.map((b: any) => ({
-      src: b.desktopImage?.asset?.url,
+      src: sanityImg(b.desktopImage?.asset?.url, 1920),
+      srcset: sanitySrcset(b.desktopImage?.asset?.url, [1280, 1920, 2560]),
       alt: b.altText || '피키픽 포토부스',
       linkUrl: b.linkUrl || null,
     }))
-  : fallbackDesktop.map((src, i) => ({ src, alt: `피키픽 포토부스 대여 — 모던 레트로 감성 포토부스 렌탈 서비스 ${i + 1}`, linkUrl: null }));
+  : fallbackDesktop.map((img, i) => ({ ...img, alt: `피키픽 포토부스 대여 — 모던 레트로 감성 포토부스 렌탈 서비스 ${i + 1}`, linkUrl: null }));
 
 const mobileSlides = hasSanityBanners
-  ? sanityBanners.map((b: any) => ({
-      src: b.mobileImage?.asset?.url || b.desktopImage?.asset?.url,
-      alt: b.altText || '피키픽 포토부스 모바일',
-      linkUrl: b.linkUrl || null,
-    }))
-  : fallbackMobile.map((src, i) => ({ src, alt: `피키픽 포토부스 렌탈 — 기업행사 팝업스토어 포토부스 대여 ${i + 1}`, linkUrl: null }));
+  ? sanityBanners.map((b: any) => {
+      const url = b.mobileImage?.asset?.url || b.desktopImage?.asset?.url;
+      return {
+        src: sanityImg(url, 1080),
+        srcset: sanitySrcset(url, [720, 1080, 1440]),
+        alt: b.altText || '피키픽 포토부스 모바일',
+        linkUrl: b.linkUrl || null,
+      };
+    })
+  : fallbackMobile.map((img, i) => ({ ...img, alt: `피키픽 포토부스 렌탈 — 기업행사 팝업스토어 포토부스 대여 ${i + 1}`, linkUrl: null }));
+
+// Both carousels are in the HTML and CSS hides one, but a hidden <img> still
+// downloads. Each image therefore sits in a <picture> whose first <source>
+// matches only the *other* layout and points at this inline 1x1 GIF, so a
+// phone never fetches desktop art and vice versa.
+const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
+// Slide 0 is the LCP element: it ships with src, fetchpriority=high and the
+// .active class already set (it used to wait for this component's script and
+// then a 1s fade). Later slides ship with data-src/data-srcset and are loaded
+// by the script after the page's load event, so they no longer compete with it.
 ---
 
 <section class="hero-section" style="background-color: #f7f7f5;">
@@ -46,22 +71,47 @@ const mobileSlides = hasSanityBanners
     <div class="hero-carousel" id="desktop-carousel">
       <div class="carousel-track" id="desktop-track">
         {desktopSlides.map((slide, i) => (
-          <div class="carousel-slide" data-index={i}>
+          <div class:list={['carousel-slide', { active: i === 0 }]} data-index={i}>
             {slide.linkUrl ? (
               <a href={slide.linkUrl}>
-                <img src={slide.src} alt={slide.alt} loading={i === 0 ? 'eager' : 'lazy'} />
+                <picture>
+                  <source media="(max-width: 768px)" srcset={BLANK} />
+                  <img
+                    src={i === 0 ? slide.src : undefined}
+                    srcset={i === 0 ? slide.srcset : undefined}
+                    data-src={i === 0 ? undefined : slide.src}
+                    data-srcset={i === 0 ? undefined : slide.srcset}
+                    sizes="100vw"
+                    alt={slide.alt}
+                    fetchpriority={i === 0 ? 'high' : undefined}
+                  />
+                </picture>
               </a>
             ) : (
-              <img src={slide.src} alt={slide.alt} loading={i === 0 ? 'eager' : 'lazy'} />
+              <picture>
+                <source media="(max-width: 768px)" srcset={BLANK} />
+                <img
+                  src={i === 0 ? slide.src : undefined}
+                  srcset={i === 0 ? slide.srcset : undefined}
+                  data-src={i === 0 ? undefined : slide.src}
+                  data-srcset={i === 0 ? undefined : slide.srcset}
+                  sizes="100vw"
+                  alt={slide.alt}
+                  fetchpriority={i === 0 ? 'high' : undefined}
+                />
+              </picture>
             )}
           </div>
         ))}
       </div>
 
+      {/* The wordmark is decoration, not the page heading: the home page's single
+          H1 is the keyword intro right under the hero (index.astro). Two H1s
+          that both read "PICKYPIC PHOTOBOOTH" told search engines nothing. */}
       <!-- Overlay Content -->
       <div class="hero-overlay-desktop">
         <div class="hero-title-desktop">
-          <h1 class="hero-heading-desktop">PICKYPIC PHOTOBOOTH<span class="hero-reg-desktop">®</span></h1>
+          <p class="hero-heading-desktop">PICKYPIC PHOTOBOOTH<span class="hero-reg-desktop">®</span></p>
           <p class="hero-sub-desktop">PICK YOUR MOMENT!</p>
         </div>
         <div class="hero-buttons">
@@ -86,13 +136,35 @@ const mobileSlides = hasSanityBanners
     <div class="hero-carousel" id="mobile-carousel">
       <div class="carousel-track" id="mobile-track">
         {mobileSlides.map((slide, i) => (
-          <div class="carousel-slide" data-index={i}>
+          <div class:list={['carousel-slide', { active: i === 0 }]} data-index={i}>
             {slide.linkUrl ? (
               <a href={slide.linkUrl}>
-                <img src={slide.src} alt={slide.alt} loading={i === 0 ? 'eager' : 'lazy'} />
+                <picture>
+                  <source media="(min-width: 769px)" srcset={BLANK} />
+                  <img
+                    src={i === 0 ? slide.src : undefined}
+                    srcset={i === 0 ? slide.srcset : undefined}
+                    data-src={i === 0 ? undefined : slide.src}
+                    data-srcset={i === 0 ? undefined : slide.srcset}
+                    sizes="100vw"
+                    alt={slide.alt}
+                    fetchpriority={i === 0 ? 'high' : undefined}
+                  />
+                </picture>
               </a>
             ) : (
-              <img src={slide.src} alt={slide.alt} loading={i === 0 ? 'eager' : 'lazy'} />
+              <picture>
+                <source media="(min-width: 769px)" srcset={BLANK} />
+                <img
+                  src={i === 0 ? slide.src : undefined}
+                  srcset={i === 0 ? slide.srcset : undefined}
+                  data-src={i === 0 ? undefined : slide.src}
+                  data-srcset={i === 0 ? undefined : slide.srcset}
+                  sizes="100vw"
+                  alt={slide.alt}
+                  fetchpriority={i === 0 ? 'high' : undefined}
+                />
+              </picture>
             )}
           </div>
         ))}
@@ -101,7 +173,7 @@ const mobileSlides = hasSanityBanners
       <!-- Overlay Content -->
       <div class="hero-overlay-mobile">
         <div class="hero-title-mobile">
-          <h1 class="hero-heading-mobile">PICKYPIC PHOTOBOOTH<span class="hero-reg-mobile">®</span></h1>
+          <p class="hero-heading-mobile">PICKYPIC PHOTOBOOTH<span class="hero-reg-mobile">®</span></p>
           <p class="hero-sub-mobile">PICK YOUR MOMENT!</p>
         </div>
         <div class="hero-buttons hero-buttons-mobile">
@@ -195,6 +267,11 @@ const mobileSlides = hasSanityBanners
 
   .carousel-slide.active {
     opacity: 1;
+  }
+
+  /* <picture> only chooses the source; the img still sizes against the slide. */
+  .carousel-slide picture {
+    display: contents;
   }
 
   .carousel-slide img {
@@ -388,12 +465,28 @@ const mobileSlides = hasSanityBanners
     let current = 0;
     let autoplayTimer: ReturnType<typeof setInterval>;
 
-    // Initialize: show first slide
+    // Slides after the first ship without a src so they don't compete with the
+    // LCP image. Give them their image once the page has loaded (well before
+    // autoplay reaches them), or as soon as one is navigated to.
+    function hydrate(slide: Element | undefined) {
+      const img = slide?.querySelector<HTMLImageElement>('img[data-src]');
+      if (!img) return;
+      if (img.dataset.srcset) img.srcset = img.dataset.srcset;
+      img.src = img.dataset.src || '';
+      img.removeAttribute('data-src');
+      img.removeAttribute('data-srcset');
+    }
+    const hydrateAll = () => slides.forEach((slide) => hydrate(slide));
+    if (document.readyState === 'complete') hydrateAll();
+    else window.addEventListener('load', hydrateAll, { once: true });
+
+    // Initialize: show first slide (the HTML already marks it active)
     slides[0]?.classList.add('active');
 
     function goTo(index: number) {
       slides[current]?.classList.remove('active');
       current = ((index % slideCount) + slideCount) % slideCount;
+      hydrate(slides[current]);
       slides[current]?.classList.add('active');
     }
 

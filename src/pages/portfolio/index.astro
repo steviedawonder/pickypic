@@ -3,6 +3,8 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
 import { portfolioItems as localItems, portfolioCategories } from '@data/portfolio';
 import { sanityClient, portfolioQueries } from '../../sanity/client';
+import { pageUrl } from '@data/structuredData';
+import { sanityImg, sanitySrcset } from '../../utils/sanityImage';
 
 // Fetch from Sanity
 let sanityItems: any[] = [];
@@ -14,14 +16,16 @@ try {
 
 // Merge: Sanity items first, then local items as fallback
 // Once migration is complete, local items can be removed
+// Items without a slug are skipped: their _id fallback URL can't be resolved by
+// portfolio/[slug].astro, so the card would lead to a 404.
 const allItems = [
-  ...sanityItems.map((item: any) => ({
-    id: item.slug?.current || item._id,
+  ...sanityItems.filter((item: any) => item.slug?.current).map((item: any) => ({
+    id: item.slug.current,
     title: item.title,
     image: item.thumbnail?.asset?.url || '',
     imageAlt: item.thumbnail?.alt || `${item.title} | 포토부스 렌탈`,
     category: item.category,
-    href: `/portfolio/${item.slug?.current || item._id}`,
+    href: `/portfolio/${item.slug.current}`,
     source: 'sanity' as const,
   })),
   ...localItems.map((item) => ({
@@ -34,11 +38,25 @@ const allItems = [
     source: 'local' as const,
   })),
 ];
+
+const casesNode = {
+  '@type': 'ItemList',
+  '@id': `${pageUrl('/portfolio')}#cases`,
+  numberOfItems: allItems.length,
+  itemListElement: allItems.map((item, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    url: pageUrl(item.href),
+    name: item.title,
+  })),
+};
 ---
 
 <BaseLayout
-  title="포토부스 렌탈 포트폴리오 | 피키픽 PICKYPIC"
-  description="넷플릭스, 현대자동차, 뉴발란스 등 유수 브랜드와 함께한 피키픽 포토부스 렌탈 사례를 확인하세요. 브랜드 팝업부터 기업 행사까지, 성공적인 이벤트를 만들어 드립니다."
+  pageType="CollectionPage"
+  schema={[casesNode]}
+  title="포토부스 대여 사례 · 포트폴리오 | 피키픽 PICKYPIC"
+  description="넷플릭스, 올리브영, 피그마, 케이스위스 등 브랜드 팝업과 기업 행사에 설치한 피키픽 포토부스 대여 사례를 기기별 현장 사진으로 확인하세요."
 >
   <BreadcrumbSchema items={[
     { name: '홈', href: '/' },
@@ -48,8 +66,9 @@ const allItems = [
   <!-- Hero: PORTFOLIO -->
   <section class="pt-10 pb-5 lg:pt-14 lg:pb-8 bg-white">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <h1 class="text-left lg:text-center text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-black tracking-tight text-primary uppercase gs-fade-up">
-        PORTFOLIO
+      <h1 class="text-left lg:text-center text-primary gs-fade-up">
+        <span class="block text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-black tracking-tight uppercase">PORTFOLIO</span>
+        <span class="block mt-3 text-sm lg:text-lg font-semibold tracking-tight" data-i18n="portfolio.h1">포토부스 대여 · 설치 사례</span>
       </h1>
     </div>
   </section>
@@ -116,9 +135,14 @@ const allItems = [
   <section class="pb-16 lg:pb-24 bg-white" aria-label="포트폴리오 갤러리">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
       <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-8" id="portfolio-grid">
-        {allItems.map((item) => (
+        {/* No per-card gs-fade-up: it created 145 ScrollTriggers (one per card,
+            most of them hidden by the pagination) and ~0.5s of forced layout on
+            phones. Sanity thumbnails are 1920x2400 originals (~0.4-0.7 MB) shown
+            ~180-384px wide, so they are requested at card size; local
+            /images/portfolio files pass through sanityImg unchanged. */}
+        {allItems.map((item, idx) => (
           <article
-            class="portfolio-item gs-fade-up"
+            class="portfolio-item"
             data-title={item.title.toLowerCase()}
             data-category={item.category}
             data-id={item.id}
@@ -128,10 +152,16 @@ const allItems = [
             <a href={item.href} class="block">
               <div class="overflow-hidden rounded-lg">
                 <img
-                  src={item.image}
+                  src={sanityImg(item.image, 480)}
+                  srcset={sanitySrcset(item.image, [240, 360, 480, 720])}
+                  sizes="(min-width: 1024px) 384px, calc(50vw - 30px)"
+                  width="480"
+                  height="576"
                   alt={item.imageAlt}
                   class="w-full aspect-[5/6] object-cover transition-transform duration-500 hover:scale-105"
-                  loading="lazy"
+                  loading={idx < 4 ? 'eager' : 'lazy'}
+                  fetchpriority={idx < 2 ? 'high' : undefined}
+                  decoding={idx < 2 ? undefined : 'async'}
                   itemprop="image"
                 />
               </div>
@@ -154,26 +184,6 @@ const allItems = [
     </div>
   </section>
 
-  <!-- Structured Data: Portfolio -->
-  <script type="application/ld+json" set:html={JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    "name": "PICKYPIC 포트폴리오",
-    "description": "피키픽 포토부스의 브랜드 협업 포트폴리오",
-    "mainEntity": {
-      "@type": "ItemList",
-      "numberOfItems": allItems.length,
-      "itemListElement": allItems.slice(0, 15).map((item, i) => ({
-        "@type": "ListItem",
-        "position": i + 1,
-        "item": {
-          "@type": "CreativeWork",
-          "name": item.title,
-          "image": item.image,
-        }
-      }))
-    }
-  })} />
 </BaseLayout>
 
 <style>

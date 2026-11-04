@@ -20,6 +20,7 @@ Vercel 빌드에서 플레이스홀더 주입 문제 발생. 공개 키는 **반
 | `ADMIN_PASSWORD` | 어드민 로그인 | All Environments 설정 필수 |
 | `SANITY_API_TOKEN` | Sanity 쓰기 토큰 | 값에 줄바꿈/공백 주의 |
 | `SANITY_READ_TOKEN` | Sanity 읽기 토큰 (Viewer) | 선택 — 없으면 `SANITY_API_TOKEN`으로 읽음. 데이터셋 비공개라 둘 다 없으면 사이트 데이터가 비어 보임 |
+| `DEPLOY_HOOK_URL` | Vercel 배포 훅 (`triggerRebuild()` 재빌드) | Sensitive로 저장. 없으면 관리자 변경 사항이 사이트에 반영되지 않음. 넣거나 바꾼 뒤에는 재배포해야 적용 |
 | `GOOGLE_INDEXING_SERVICE_ACCOUNT_EMAIL` | Google Indexing API | 선택 — 미설정 시 발행 후 Google 색인 요청만 스킵 |
 | `GOOGLE_INDEXING_PRIVATE_KEY` | Google Indexing API | 선택 — 줄바꿈은 `\n` 리터럴로 저장. Search Console에 서비스 계정을 OWNER로 추가 필수 |
 
@@ -49,17 +50,18 @@ Dashboard, BlogList, BlogEditor, PortfolioManager, FAQManager, CategoryManager, 
 1. 기본 설정 (SEO, 비밀번호)
 2. 코드 삽입 (HEAD/BODY 스크립트, 메타태그, CSS)
 3. 외부 서비스 (GTM, GA4, 픽셀, Search Console, reCAPTCHA, 채팅)
-4. 이메일 설정 (알림 수신처, Slack 웹훅)
+4. 이메일 설정 (알림 수신처)
 5. 보안 설정 (IP 허용/차단, 로그인 실패 제한)
 6. 점검 모드 (사이트 점검 전환 + 예외 IP)
 
 ### API
-- `/api/auth.ts` — login, verify, changePassword
+- `/api/auth.ts` — login, verify. 비밀번호 변경은 Vercel `ADMIN_PASSWORD` 수정 후 재배포(토큰 HMAC 키라 기존 로그인 만료)
 - `/api/sanity.ts` — Sanity CRUD 프록시 + submitInquiry (인증 불필요, 화이트리스트 적용)
-- `/api/google-indexing.ts` — Google Indexing API (JWT, 서비스 계정 키 미설정 시 no-op)
-- `/api/indexnow.ts` — IndexNow (Bing/Yandex)
-- `/api/naver-indexing.ts` — Naver IndexNow + 사이트맵/RSS ping
-- BlogEditor 발행 시 `requestSearchEngineIndexing(url)`이 위 3개 API를 병렬 호출
+- `/api/google-indexing.ts` — Google Indexing API (JWT, 서비스 계정 키 미설정 시 no-op). 관리자 인증 필요. Google 정책상 JobPosting/BroadcastEvent 전용이라 발행 흐름에서는 호출하지 않음
+- `/api/indexnow.ts` — IndexNow (Bing/Naver/Yandex 등 공유). 관리자 인증 필요
+- `/api/naver-indexing.ts` — Naver IndexNow 엔드포인트. 관리자 인증 필요
+- 실제 쓰는 블로그 에디터는 `NaverBlogEditor` — 발행·발행글 저장 시, `PortfolioEditor` 저장 시 `requestSearchEngineIndexing(url)`이 IndexNow + Naver를 호출
+- URL 규칙: canonical·사이트맵·내부 링크 모두 끝 슬래시 없음(루트 `/` 제외). 슬래시 붙은 주소는 vercel.json에서 301. canonical·JSON-LD URL은 `src/data/structuredData.ts`의 `pageUrl()`로 만든다
 
 ---
 
@@ -83,3 +85,4 @@ Dashboard, BlogList, BlogEditor, PortfolioManager, FAQManager, CategoryManager, 
 4. **하드코딩 → Sanity 마이그레이션** — company.ts는 폴백용, 실제 데이터는 Sanity 관리
 5. **pickyglobal.com은 별도 사이트** — 그누보드 쇼핑몰. 이 프로젝트와 절대 연결/리다이렉트 금지
 6. **고객정보 문서는 `private.` ID 필수** — Sanity 데이터셋이 Public(Free 플랜은 Private 불가)이라 일반 ID 문서는 누구나 조회 가능. 문의·협업처럼 개인정보가 든 문서는 `_id: private.<uuid>`로 만들어야 토큰 없이는 안 보임
+7. **siteSettings에 비밀값 저장 금지** — 같은 이유로 누구나 읽을 수 있음. 웹훅 URL·비밀키는 서버 환경변수로 (Slack 웹훅·reCAPTCHA 비밀키 칸은 그래서 관리자 화면에서 뺐음)

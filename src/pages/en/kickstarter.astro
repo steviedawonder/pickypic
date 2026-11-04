@@ -8,13 +8,19 @@ import { enProductName } from '@data/enProductNames';
 // Campaign window. These drive a CLIENT-side state switch on purpose: this page
 // is statically generated, so a build-time `new Date()` would freeze whatever
 // day the last deploy happened on and the page would never flip to "live".
+// END is when the campaign actually closed (Kicktraq: 22 Sep – 22 Oct 2026).
 const LAUNCH = '2026-09-22T00:00:00Z';
-const END = '2026-10-28T23:59:59Z';
+const END = '2026-10-22T23:59:59Z';
 
-// TODO: paste the Kickstarter referral link once the campaign page is created.
-// While this is empty the page stays on the pre-launch state and keeps collecting
-// emails, which is the right fallback — better than a button that goes nowhere.
-const KS_URL = '';
+// The live campaign. It was never pasted in while the campaign ran, so the page
+// kept announcing a September launch weeks after it had closed.
+const KS_URL = 'https://www.kickstarter.com/projects/352542653/receipt-photobooth-the-worlds-smallest-photo-booth';
+
+// Once a build happens after the end date the outcome can't change, so the
+// ended state is rendered on its own: shipping the pre-launch and live copies
+// as hidden markup would let text extractors (LLM fetchers, link previews)
+// report "Launching September 22" for a campaign that is over.
+const CAMPAIGN_OVER = Boolean(KS_URL) && Date.now() > Date.parse(END);
 
 // The model being relaunched. Specs come from products.ts so the page cannot
 // drift from the spec sheet the sales side quotes.
@@ -34,13 +40,18 @@ const dims = (spec('Material').match(/\d+/g) ?? []).slice(0, 3).join(' × ');
 ---
 
 <BaseLayout
-  title="Receipt Photobooth on Kickstarter — Launching September 22 | PICKYPIC"
-  description="Our newest receipt photo booth launches on Kickstarter on September 22, 2026. Limited first units. Join the list to get the link before anyone else."
+  title={CAMPAIGN_OVER
+    ? 'Receipt Photobooth — Funded on Kickstarter | PICKYPIC'
+    : 'Receipt Photobooth on Kickstarter — Launching September 22 | PICKYPIC'}
+  description={CAMPAIGN_OVER
+    ? "PICKYPIC's Receipt Photobooth, a countertop photo booth that prints on standard thermal receipt paper, was funded on Kickstarter (22 Sep – 22 Oct 2026). Thank you, backers. Missed it? Get a quote for your shop."
+    : 'Our newest receipt photo booth launches on Kickstarter on September 22, 2026. Limited first units. Join the list to get the link before anyone else.'}
 >
   <!-- Hero — the one inverted ground on this page -->
   <section class="section-dark flex min-h-[70vh] items-center pt-32 pb-20 lg:pt-40 lg:pb-28">
     <div class="mx-auto w-full max-w-3xl px-6 lg:px-8">
 
+      {!CAMPAIGN_OVER && (
       <!-- Before launch -->
       <div data-ks-state="pre">
         <p class="text-[11px] font-semibold uppercase tracking-[0.4em] text-white/40">
@@ -61,6 +72,8 @@ const dims = (spec('Material').match(/\d+/g) ?? []).slice(0, 3).join(' × ');
         </div>
       </div>
 
+      )}
+
       {/* The later states are only rendered once a referral link exists. Until
           then they would ship as hidden markup that text extractors still read
           — LLM fetchers and link-preview scrapers pull raw HTML and cannot see
@@ -68,6 +81,7 @@ const dims = (spec('Material').match(/\d+/g) ?? []).slice(0, 3).join(' × ');
           would be what they report about a campaign that has not started. */}
       {KS_URL && (
       <>
+      {!CAMPAIGN_OVER && (
       <!-- Live -->
       <div data-ks-state="live" class="hidden">
         <p class="text-[11px] font-semibold uppercase tracking-[0.4em] text-white/40">
@@ -92,9 +106,10 @@ const dims = (spec('Material').match(/\d+/g) ?? []).slice(0, 3).join(' × ');
           </a>
         )}
       </div>
+      )}
 
       <!-- After -->
-      <div data-ks-state="post" class="hidden">
+      <div data-ks-state="post" class:list={[{ hidden: !CAMPAIGN_OVER }]}>
         <p class="text-[11px] font-semibold uppercase tracking-[0.4em] text-white/40">
           Receipt Photobooth &middot; Kickstarter
         </p>
@@ -108,17 +123,25 @@ const dims = (spec('Material').match(/\d+/g) ?? []).slice(0, 3).join(' × ');
           <p class="leading-relaxed">Thank you to everyone who backed Receipt Photobooth.</p>
           <p class="leading-relaxed">Missed it? Tell us about your shop and we'll take it from there.</p>
         </div>
-        <a
-          href="/en/"
-          class="mt-8 inline-flex items-center rounded-full bg-white px-7 py-3 text-sm font-semibold text-primary hover:opacity-90 transition-opacity"
-        >
-          Get a quote
-        </a>
+        <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+          <a
+            href="/en#contact"
+            class="inline-flex items-center rounded-full bg-white px-7 py-3 text-sm font-semibold text-primary hover:opacity-90 transition-opacity"
+          >
+            Get a quote
+          </a>
+          <a href={KS_URL} rel="noopener" class="text-sm text-white/70 underline underline-offset-4 hover:text-white transition-colors">
+            See the campaign on Kickstarter &rarr;
+          </a>
+        </div>
       </div>
       </>
       )}
 
-      <!-- Email capture: shown in the pre-launch and post-campaign states -->
+      {/* The launch-list signup ("One email when we launch") has nothing left to
+          promise once the campaign is over. */}
+      {!CAMPAIGN_OVER && (
+      <!-- Email capture: shown before and during the campaign -->
       <div id="ks-signup" class="mt-12 border-t border-white/15 pt-10">
         <h2 class="text-lg font-semibold text-white mb-2">Get the link first</h2>
         <p class="text-sm text-white/60 mb-5 leading-relaxed">
@@ -144,6 +167,7 @@ const dims = (spec('Material').match(/\d+/g) ?? []).slice(0, 3).join(' × ');
         </form>
         <p id="ks-form-msg" class="mt-3 text-sm hidden"></p>
       </div>
+      )}
 
     </div>
   </section>
@@ -156,7 +180,7 @@ const dims = (spec('Material').match(/\d+/g) ?? []).slice(0, 3).join(' × ');
           The machine
         </p>
         <h2 class="mt-4 font-display font-bold text-[clamp(1.5rem,2.5vw,2.25rem)] tracking-tight text-primary">
-          What you'd be backing
+          {CAMPAIGN_OVER ? 'What you get' : "What you'd be backing"}
         </h2>
       </div>
 
@@ -262,9 +286,9 @@ const dims = (spec('Material').match(/\d+/g) ?? []).slice(0, 3).join(' × ');
   <section class="border-t border-border-light bg-white py-20 lg:py-28">
     <div class="mx-auto max-w-3xl px-6 lg:px-8 gs-fade-up">
       <p class="text-secondary leading-relaxed">
-        Not waiting for the campaign?
+        {CAMPAIGN_OVER ? 'Want one for your shop?' : 'Not waiting for the campaign?'}
         <a
-          href="/en/#contact"
+          href="/en#contact"
           class="text-primary underline underline-offset-4 hover:opacity-70 transition-opacity"
         >
           Talk to us about your shop &rarr;
