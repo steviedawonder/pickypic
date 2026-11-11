@@ -57,7 +57,7 @@ export const translations: Record<Lang, Record<string, string>> = {
 
     // Home intro (H1 + body copy under the hero)
     'home.intro.title': '포토부스 대여부터 구매까지, 직접 만드는 피키픽',
-    'home.intro.desc': '피키픽(PICKYPIC)은 서울 성수동 공방에서 포토부스를 직접 만드는 포토부스 제조·렌탈 기업입니다. 스탠드형·테이블형·부스형 9종을 브랜드 팝업과 기업 행사에 대여하고, 매장용으로 판매합니다. 누적 16,000건 이상의 행사 경험을 바탕으로 부스 래핑과 사진 프레임, 촬영 화면까지 브랜드에 맞춰 제작합니다.',
+    'home.intro.desc': '피키픽(PICKYPIC)은 서울 성수동에 소재한 포토키오스크 전문 제작·렌탈 기업입니다. 스탠드형·테이블형·부스형 9종 라인업을 브랜드 팝업과 기업 행사에 렌탈하고, 매장 운영용으로 판매합니다. 누적 16,000건 이상의 행사 운영 경험을 바탕으로 부스 래핑부터 사진 프레임, 촬영 화면까지 브랜드에 맞춰 제작합니다.',
     'home.intro.link_rental': '포토부스 렌탈 안내',
     'home.intro.link_purchase': '포토부스 구매',
     'home.intro.link_popup': '팝업스토어 포토부스',
@@ -844,7 +844,7 @@ export const translations: Record<Lang, Record<string, string>> = {
 
     // Home intro (H1 + body copy under the hero)
     'home.intro.title': 'Photo booth rental and sales, built by us',
-    'home.intro.desc': 'PICKYPIC builds its own photo booths in a workshop in Seongsu, Seoul. We rent our nine stand, table and booth models to brand pop-ups and corporate events, and sell them for use in shops. Drawing on 16,000+ events, we tailor the wrapping, print frames and on-screen UI to your brand.',
+    'home.intro.desc': 'PICKYPIC is a photo kiosk manufacturer and rental company based in Seongsu, Seoul. We rent our lineup of nine stand, table and booth models to brand pop-ups and corporate events, and sell them for in-store use. Drawing on more than 16,000 events, we tailor booth wraps, photo frames and on-screen designs to each brand.',
     'home.intro.link_rental': 'Rental guide',
     'home.intro.link_purchase': 'Buy a booth',
     'home.intro.link_popup': 'Pop-up stores',
@@ -1631,7 +1631,7 @@ export const translations: Record<Lang, Record<string, string>> = {
 
     // Home intro (H1 + body copy under the hero)
     'home.intro.title': 'フォトブースのレンタルから購入まで、自社製造のピキピック',
-    'home.intro.desc': 'ピキピック(PICKYPIC)はソウル・聖水洞の自社工房でフォトブースを製作するメーカーです。スタンド型・テーブル型・ブース型の9モデルをブランドのポップアップや企業イベントにレンタルし、店舗向けに販売もしています。累計16,000件以上のイベント経験をもとに、ラッピング、フォトフレーム、撮影画面までブランドに合わせて制作します。',
+    'home.intro.desc': 'ピキピック(PICKYPIC)は、ソウル・聖水洞に拠点を置くフォトキオスクの専門製作・レンタル企業です。スタンド型・テーブル型・ブース型の9機種をブランドのポップアップや企業イベントにレンタルし、店舗運営向けに販売しています。累計16,000件以上のイベント運営実績をもとに、ブースのラッピングから写真フレーム、撮影画面までブランドに合わせて制作します。',
     'home.intro.link_rental': 'レンタル案内',
     'home.intro.link_purchase': '購入',
     'home.intro.link_popup': 'ポップアップストア',
