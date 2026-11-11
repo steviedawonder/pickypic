@@ -313,7 +313,7 @@ export const translations: Record<Lang, Record<string, string>> = {
     'about.company_subtitle': '대한민국 대표 오픈형 프리미엄 포토부스 전문 기업 | 2020년 설립',
     'about.company_p1': '"어디에나 어울리는 포토부스"를 슬로건으로, 장소와 상황에 구애받지 않는 새로운 포토부스 경험을 만듭니다.',
     'about.company_p2': '스탠드형·테이블형·부스형 등 9종 이상의 라인업을 렌탈과 매매 모두 제공하며, 누적 16,000건 이상의 브랜드 팝업·기업 행사에 포토부스를 공급해 왔습니다. 현재 500대 이상의 기기가 현장에서 운영되고 있습니다.',
-    'about.company_p4': '피키픽의 모든 기기는 자체 공방에서 수작업으로 제작됩니다. 특히 원목 부스는 목수가 직접 나무를 깎고 다듬어 마감하기 때문에, 같은 모델이라도 나뭇결이 하나도 같지 않습니다.',
+    'about.company_p4': '피키픽은 모든 기기를 직접 설계하고 제작합니다. 원목 부스의 감성 위에 AI 기술을 더해, 사진 한 장을 20초 안팎에 전혀 다른 연출로 바꿔 주는 AI 포토부스까지 선보이고 있습니다.',
     'about.company_p3': '브랜드 맞춤 커스터마이징, AI 퍼스널 컬러 분석 등 차별화된 포토 솔루션을 한국과 싱가포르에서 운영하고 있으며, 글로벌 파트너십을 통해 전 세계로 포토부스를 수출하고 있습니다.',
 
     // Products Page
@@ -1109,7 +1109,7 @@ export const translations: Record<Lang, Record<string, string>> = {
     'about.company_subtitle': "Korea's Leading Open-Style Premium Photo Booth Company | Est. 2020",
     'about.company_p1': 'With the slogan "A photo booth that fits anywhere," we create new photo booth experiences unconstrained by place or occasion.',
     'about.company_p2': 'We offer 9+ lineup models including stand, table, and booth types for both rental and purchase, having supplied photo booths to over 16,000 brand pop-ups and corporate events. More than 500 booths are in operation today.',
-    'about.company_p4': 'Every PICKYPIC booth is built by hand in our own workshop. The solid wood enclosures are cut, shaped, and finished by our carpenter — so no two booths share the same grain, even within the same model.',
+    'about.company_p4': 'Every PICKYPIC booth is designed and built in-house. On top of the warmth of our solid-wood hardware, we have added AI: our AI photo booth turns a single shot into a completely different look in about 20 seconds.',
     'about.company_p3': 'We operate differentiated photo solutions including brand-custom design and AI personal color analysis in Korea and Singapore, and export photo booths worldwide through global partnerships.',
 
     // Products Page
@@ -1905,7 +1905,7 @@ export const translations: Record<Lang, Record<string, string>> = {
     'about.company_subtitle': '韓国を代表するオープン型プレミアムフォトブース専門企業 | 2020年設立',
     'about.company_p1': '「どこにでも似合うフォトブース」をスローガンに、場所や状況を問わない新しいフォトブース体験を生み出します。',
     'about.company_p2': 'スタンド型・テーブル型・ブース型など9種類以上のラインナップをレンタルと販売の両方でご提供しており、累計16,000件以上のブランドポップアップ・企業イベントにフォトブースを提供してきました。現在500台以上の機体が現場で稼働しています。',
-    'about.company_p4': 'PICKYPICのすべての機体は自社工房で手作業により製作されます。特に無垢材のブースは職人が木を直接削り、仕上げるため、同じモデルであっても木目が一つとして同じものはありません。',
+    'about.company_p4': 'PICKYPICはすべての機体を自社で設計・製作しています。無垢材ハードウェアのぬくもりにAI技術を加え、1枚の写真を約20秒でまったく違う演出に変えるAIフォトブースも展開しています。',
     'about.company_p3': 'ブランドカスタマイズやAIパーソナルカラー分析など差別化されたフォトソリューションを韓国とシンガポールで展開しており、グローバルパートナーシップを通じて世界中にフォトブースを輸出しています。',
 
     // Products Page
