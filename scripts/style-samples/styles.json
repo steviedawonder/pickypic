@@ -1,5 +1,56 @@
 [
   {
+    "id": "brand-beauty-serum",
+    "category": "brand",
+    "subject": "F01",
+    "order": 1,
+    "name": {
+      "ko": "뷰티 브랜드 콜라보",
+      "en": "Beauty brand collab",
+      "jp": "ビューティーブランドのコラボ"
+    },
+    "desc": {
+      "ko": "화장품 팝업·브랜드 협업",
+      "en": "Cosmetics pop-ups and collabs",
+      "jp": "コスメのポップアップ・コラボ"
+    },
+    "prompt": "A high-end skincare advertisement photograph for a brand collaboration: she holds a frosted-glass serum bottle with a dropper near her cheek, glowing dewy skin, soft smile. The bottle label shows a clean minimal logo reading exactly \"PICKYPIC × DEWLIA\", and the same logo lockup appears large and elegant on the soft blush-pink backdrop behind her, with water-droplet and petal accents. Soft butterfly beauty lighting, sharp focus on her face, the bottle and the logo. Spell the logo text exactly as written; no other text."
+  },
+  {
+    "id": "brand-beauty-device",
+    "category": "brand",
+    "subject": "F01",
+    "order": 2,
+    "name": {
+      "ko": "뷰티기기 체험",
+      "en": "Beauty device experience",
+      "jp": "美容機器の体験"
+    },
+    "desc": {
+      "ko": "뷰티기기 런칭·체험 팝업",
+      "en": "Beauty device launches and trials",
+      "jp": "美容機器のローンチ・体験ポップアップ"
+    },
+    "prompt": "A bright commercial photograph at a beauty-tech pop-up: she gently holds a sleek white handheld LED facial beauty device against her cheek, the device glowing soft pink light, relaxed happy expression. Behind her is a clean white-and-lilac pop-up display with the device boxes on shelves and a large logo sign reading exactly \"PICKYPIC × DEWLIA\"; the same small logo is on the device box she holds in her other hand. Clean modern lighting, sharp focus on her face, the device and the logo. Spell the logo text exactly as written; no other text."
+  },
+  {
+    "id": "brand-beauty-photowall",
+    "category": "brand",
+    "subject": "COUPLE",
+    "order": 3,
+    "name": {
+      "ko": "뷰티 팝업 포토월",
+      "en": "Beauty pop-up photo wall",
+      "jp": "ビューティーポップアップのフォトウォール"
+    },
+    "desc": {
+      "ko": "브랜드 팝업스토어 기념사진",
+      "en": "Brand pop-up store keepsakes",
+      "jp": "ブランドポップアップの記念写真"
+    },
+    "prompt": "A real photograph of the two of them posing happily in front of a beauty brand pop-up store photo wall made of soft pink and cream panels with a repeating pattern of the logo reading exactly \"PICKYPIC × DEWLIA\", each holding a small branded shopping bag and a cosmetics gift box with the same logo, cheek to cheek, bright even lighting, both faces clearly visible. Spell the logo text exactly as written; no other text."
+  },
+  {
     "id": "job-pilot",
     "category": "job",
     "subject": "M01",

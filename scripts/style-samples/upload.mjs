@@ -47,7 +47,7 @@ for (const [i, s] of styles.entries()) {
   items.push({
     id: s.id, name: s.name, desc: s.desc, category: s.category,
     people: s.subject === 'COUPLE' ? 'duo' : s.subject === 'FAM01' ? 'group' : 'solo',
-    image: file, order: (i + 1) * 10, isNew: true,
+    image: file, order: s.order ?? (i + 1) * 10, isNew: true,
   });
 }
 if (withSamples) {
