@@ -31,7 +31,7 @@
 - **스타일 0개 카테고리**: 필터 칩에 표시하지 않음.
 
 ## 4. Acceptance criteria
-- [ ] AC-1: `/ai-photobooth/gallery`가 200으로 열리고, 노출 상태인 스타일만 어드민 순서대로 카드로 보인다. 첫 화면 24개, "더보기"마다 24개 추가.
+- [x] AC-1: `/ai-photobooth/gallery`가 200으로 열리고, 노출 상태인 스타일만 어드민 순서대로 카드로 보인다. 첫 화면 24개, "더보기"마다 24개 추가.
 - [x] AC-2: 카테고리 칩을 누르면 해당 카테고리만 보이고 주소에 `?cat=<slug>`가 붙어 새로고침·공유 시 유지된다. 스타일이 없는 카테고리는 칩이 없다.
 - [x] AC-3: 카드 클릭 시 크게 보기가 열리고, 원본 이미지가 있으면 원본/결과를 전환할 수 있다. Esc·바깥 클릭·닫기 버튼으로 닫힌다.
 - [x] AC-4: 하트를 누르면 찜이 저장되고 새로고침 후에도 유지된다. 찜 개수가 화면에 보이고, "찜한 스타일로 문의하기"가 `/rental`로 이동한다.
@@ -65,7 +65,7 @@
 ## 8. Implementation notes (filled during/after build)
 - Key files touched: `src/pages/ai-photobooth/gallery.astro`(신규), `src/data/aiStyles.ts`(카테고리 19개·기본 견본 12종·찜 키), `src/sanity/schemas/aiStyle.ts`, `src/components/admin/pages/AiStyleManager.tsx`, `adminClient.ts`·`AdminApp.tsx`·`shared/styles.ts`(어드민 메뉴), `src/sanity/client.ts`(조회 쿼리), `src/pages/rental.astro`(관심 AI 스타일 칸), `src/pages/ai-photobooth.astro`(링크 2곳), `src/i18n/translations.ts`, `scripts/style-samples/`
 - 기본 견본: Sanity에 aiStyle 문서가 하나도 없으면 `/ai-photobooth`의 견본 12종(`fallbackAiStyles`)을 보여 준다. 첫 스타일을 어드민에 등록하면 Sanity 목록으로 바뀌므로, 12종도 계속 보이게 하려면 어드민에 함께 등록해야 한다.
-- 검증 메모: AC-1은 12개(24개 미만)라 "더 보기" 숨김만 확인, 24개 넘는 페이징은 실제 데이터로 재확인 필요. AC-5는 폼 자동 입력까지 확인, 실제 제출(메일 발송)은 대표님 확인 후 1건. AC-6 어드민은 로컬에 ADMIN_PASSWORD·SANITY_API_TOKEN이 없어 타입 검사·빌드만 통과, 배포 후 실제 로그인 확인 필요.
+- 검증 메모: AC-1은 등록 후 52개로 24→48→52 페이징까지 확인. AC-5는 폼 자동 입력까지 확인, 실제 제출(메일 발송)은 대표님 확인 후 1건. AC-6 어드민은 로컬에 ADMIN_PASSWORD·SANITY_API_TOKEN이 없어 타입 검사·빌드만 통과, 배포 후 실제 로그인 확인 필요.
 - 상단 메뉴 높이에 맞춰 필터 막대 위치를 계산하고, 찜 막대가 보일 때 상담 버튼·영어 안내 띠를 위로 비켜 세운다(`body.has-wishbar`).
 - Migration / rollback plan: 새 문서 종류(aiStyle)만 추가, 기존 데이터 변경 없음. 되돌리면 PR revert.
 - Follow-ups: 샘플 이미지 제작(부스 모델 이름 확인 후 스크립트 실행), 12종 기본 견본 어드민 등록, 24개 이상일 때 페이징 재확인.
@@ -76,3 +76,4 @@
 - **아이 사진 규칙**: FAM01(아이 포함)은 가족·시즌·전통·애니·반려동물·여행 카테고리에만 쓴다. 다른 카테고리에 지정하면 스크립트가 거부한다(가상 모델 README의 사용 제한).
 - **제외**: 검수 시트, 어드민 일괄 등록, 기준 사진 늘리기(이번에 선택하지 않음). 모델 사진은 저장소에 올리지 않고 PC의 압축 해제 폴더를 `MODELS_DIR`로 가리킨다.
 - **확인**: `--dry-run`으로 40종 전부 인물·참조 사진·프롬프트가 맞게 조합되는지, 아이 규칙 위반 0건인지. 실제 생성은 API 키가 있어야 하므로 대표님 PC에서 실행.
+- **결과 (2026-11-11)**: 40종 생성, 검수에서 3종(마라톤·무대 위 아이돌·대형 광고판) 프롬프트 수정 후 재생성해 통과. 새 샘플 40종(NEW)과 기본 견본 12종(원본 포함)을 Sanity에 `aiStyle-<id>`로 등록, 총 52종. 로컬 갤러리에서 52종·카테고리 19개·NEW 40개·600px webp 확인.
