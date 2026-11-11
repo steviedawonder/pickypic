@@ -1,0 +1,242 @@
+[
+  {
+    "id": "job-pilot", "category": "job", "subject": "M01",
+    "name": { "ko": "전투기 조종사", "en": "Fighter pilot", "jp": "戦闘機パイロット" },
+    "desc": { "ko": "에어쇼·항공 행사", "en": "Air shows and aviation events", "jp": "航空ショー・航空イベント" },
+    "prompt": "A real photograph. He is a fighter pilot in an olive-green flight suit with a red scarf and a Korean flag patch, holding a white flight helmet under one arm, standing on an airbase runway with a modern grey jet fighter behind him. Bright natural daylight, crisp detail, confident gentle smile."
+  },
+  {
+    "id": "job-chef", "category": "job", "subject": "F01",
+    "name": { "ko": "호텔 셰프", "en": "Hotel chef", "jp": "ホテルシェフ" },
+    "desc": { "ko": "푸드·호텔 행사", "en": "Food and hotel events", "jp": "フード・ホテルイベント" },
+    "prompt": "A real photograph. She is a head chef in a crisp white double-breasted chef jacket and a tall white toque, arms crossed, smiling proudly in a gleaming stainless-steel hotel kitchen with soft warm light and blurred cooks in the background."
+  },
+  {
+    "id": "trad-palace-hanbok", "category": "traditional", "subject": "COUPLE",
+    "name": { "ko": "궁궐 한복", "en": "Palace hanbok", "jp": "宮殿の韓服" },
+    "desc": { "ko": "외국인 관광·전통 행사", "en": "Tourism and heritage events", "jp": "観光・伝統イベント" },
+    "prompt": "A real photograph. Both are wearing elegant traditional Korean hanbok in soft pastel silk, standing side by side in a Korean royal palace courtyard with painted wooden eaves behind them, warm golden-hour light, gentle smiles, full upper body."
+  },
+  {
+    "id": "trad-joseon-scholar", "category": "traditional", "subject": "M01",
+    "name": { "ko": "조선 선비", "en": "Joseon scholar", "jp": "朝鮮の学者" },
+    "desc": { "ko": "역사·문화 행사", "en": "History and culture events", "jp": "歴史・文化イベント" },
+    "prompt": "A real photograph. He is a Joseon-era Korean scholar wearing a white dopo robe and a black horsehair gat hat, seated at a low wooden desk in a hanok study holding a calligraphy brush over hanji paper, soft window light through paper doors."
+  },
+  {
+    "id": "trad-family-hanbok", "category": "traditional", "subject": "FAM01",
+    "name": { "ko": "가족 한복", "en": "Family hanbok", "jp": "家族の韓服" },
+    "desc": { "ko": "명절·가족 행사", "en": "Holidays and family events", "jp": "祝日・家族イベント" },
+    "prompt": "A real photograph. The whole family is wearing colorful traditional Korean hanbok for the Lunar New Year, standing together on the wooden porch of a traditional hanok house, the children holding small silk lucky pouches, warm daylight, everyone smiling."
+  },
+  {
+    "id": "time-1970s-studio", "category": "timemachine", "subject": "F01",
+    "name": { "ko": "70년대 사진관", "en": "1970s photo studio", "jp": "70年代の写真館" },
+    "desc": { "ko": "레트로 팝업", "en": "Retro pop-ups", "jp": "レトロなポップアップ" },
+    "prompt": "A real photograph that looks like a 1970s Korean photo-studio portrait: faded warm color film, soft grain, a painted cloudy studio backdrop, she wears a 1970s-style patterned blouse and a neat retro hairstyle while keeping her face, seated with hands folded, slight vignette."
+  },
+  {
+    "id": "time-y2k-sticker", "category": "timemachine", "subject": "COUPLE",
+    "name": { "ko": "Y2K 스티커 사진", "en": "Y2K sticker photo", "jp": "Y2Kプリクラ風" },
+    "desc": { "ko": "Y2K 팝업", "en": "Y2K pop-ups", "jp": "Y2Kポップアップ" },
+    "prompt": "An early-2000s Korean sticker photo booth picture of the two of them: bright flash, slightly washed-out colors, cheek-to-cheek poses with V signs, wearing early-2000s fashion, decorated with glittery hearts, stars and doodle frames around the edges, no readable text."
+  },
+  {
+    "id": "time-50-years", "category": "timemachine", "subject": "M01",
+    "name": { "ko": "50년 뒤의 나", "en": "Me in 50 years", "jp": "50年後の私" },
+    "desc": { "ko": "체험형 이벤트", "en": "Hands-on events", "jp": "体験型イベント" },
+    "prompt": "A real photograph of the same man aged naturally to about 73 years old - same face structure and features, silver-grey hair in the same style, gentle wrinkles, kind warm smile - wearing a cream cardigan, sitting in a sunlit living room. Respectful, realistic ageing."
+  },
+  {
+    "id": "art-oil-portrait", "category": "art", "subject": "F01",
+    "name": { "ko": "유화 초상화", "en": "Oil portrait", "jp": "油絵の肖像画" },
+    "desc": { "ko": "전시·갤러리 행사", "en": "Exhibitions and galleries", "jp": "展示・ギャラリー" },
+    "prompt": "A classical oil painting portrait of her in the style of an 18th-century European court painter: rich brush strokes, visible canvas texture, deep velvet background, she wears an elegant dark-blue gown, displayed in an ornate gilded frame."
+  },
+  {
+    "id": "art-pop-art", "category": "art", "subject": "M01",
+    "name": { "ko": "팝아트", "en": "Pop art", "jp": "ポップアート" },
+    "desc": { "ko": "브랜드 팝업", "en": "Brand pop-ups", "jp": "ブランドポップアップ" },
+    "prompt": "A bold 1960s pop-art comic illustration of him: thick black outlines, halftone Ben-Day dots, flat saturated red, yellow and blue, dramatic comic-book lighting, an empty speech bubble with no text."
+  },
+  {
+    "id": "anim-3d-family", "category": "animation", "subject": "FAM01",
+    "name": { "ko": "3D 애니메이션 가족", "en": "3D animated family", "jp": "3Dアニメの家族" },
+    "desc": { "ko": "가족·키즈 행사", "en": "Family and kids events", "jp": "ファミリー・キッズイベント" },
+    "prompt": "The family as characters in a modern 3D animated feature film: stylized but clearly recognizable faces, big expressive eyes, soft subsurface skin, cozy colorful living room, warm cinematic lighting, everyone smiling. Original characters, not from any existing film."
+  },
+  {
+    "id": "anim-webtoon", "category": "animation", "subject": "F01",
+    "name": { "ko": "웹툰 주인공", "en": "Webtoon lead", "jp": "ウェブトゥーンの主人公" },
+    "desc": { "ko": "콘텐츠·IP 행사", "en": "Content and IP events", "jp": "コンテンツ・IPイベント" },
+    "prompt": "A Korean webtoon illustration of her as the lead character: clean digital line art, soft cel shading, pastel colors, sparkling eyes, school campus with cherry trees behind her, vertical webtoon panel composition, no text or speech bubbles."
+  },
+  {
+    "id": "char-figure-box", "category": "character", "subject": "M01",
+    "name": { "ko": "피규어 상자", "en": "Action figure box", "jp": "フィギュアの箱" },
+    "desc": { "ko": "포장 상자처럼 보이는 인화물", "en": "A print that looks like toy packaging", "jp": "パッケージ箱のようなプリント" },
+    "prompt": "A product photo of a collectible action figure of him sealed in a toy blister pack: the figure is a realistic miniature of him in a casual outfit, small accessories (sneakers, headphones, camera) in separate plastic slots, bright cardboard backing in pastel colors, no brand logos or readable text."
+  },
+  {
+    "id": "char-clay", "category": "character", "subject": "F01",
+    "name": { "ko": "클레이 인형", "en": "Clay doll", "jp": "クレイ人形" },
+    "desc": { "ko": "키즈·애니 행사", "en": "Kids and animation events", "jp": "キッズ・アニメイベント" },
+    "prompt": "A stop-motion claymation figure of her: soft plasticine texture with tiny fingerprint marks, rounded proportions, recognizable face and bangs, standing in a handmade miniature clay cafe set, warm studio light, shallow depth of field."
+  },
+  {
+    "id": "kpop-stage", "category": "kpop", "subject": "F01",
+    "name": { "ko": "무대 위 아이돌", "en": "Idol on stage", "jp": "ステージのアイドル" },
+    "desc": { "ko": "팬덤·음악 행사", "en": "Fan and music events", "jp": "ファン・音楽イベント" },
+    "prompt": "A real concert photograph of her performing as a K-pop idol on a big stage: sparkling stage outfit, headset microphone, colorful laser and spotlight beams, haze, a sea of light sticks in the blurred crowd, dynamic pose, confident smile."
+  },
+  {
+    "id": "kpop-album", "category": "kpop", "subject": "M01",
+    "name": { "ko": "앨범 재킷 화보", "en": "Album concept photo", "jp": "アルバムのコンセプト写真" },
+    "desc": { "ko": "음악·팬 이벤트", "en": "Music and fan events", "jp": "音楽・ファンイベント" },
+    "prompt": "A moody K-pop album concept photograph of him: styled hair, oversized tailored black blazer, soft dreamy lighting with lens flare and floating flower petals, muted pastel color grade, editorial composition, no text."
+  },
+  {
+    "id": "cine-noir", "category": "cinematic", "subject": "M01",
+    "name": { "ko": "누아르 영화", "en": "Film noir", "jp": "フィルムノワール" },
+    "desc": { "ko": "영화·OTT 프로모션", "en": "Film and streaming promos", "jp": "映画・配信プロモーション" },
+    "prompt": "A black-and-white film noir still of him: fedora and trench coat, standing under a streetlight on a rain-wet night street, venetian-blind shadows, strong contrast, cinematic 35mm grain, serious expression."
+  },
+  {
+    "id": "cine-romance", "category": "cinematic", "subject": "COUPLE",
+    "name": { "ko": "로맨스 영화 한 장면", "en": "Romance film scene", "jp": "恋愛映画のワンシーン" },
+    "desc": { "ko": "영화·드라마 행사", "en": "Film and drama events", "jp": "映画・ドラマイベント" },
+    "prompt": "A cinematic film still of the two of them sharing one transparent umbrella on a rainy Seoul street at night, warm shop lights reflecting on the wet pavement, soft bokeh, anamorphic widescreen feel, tender smiles, no text."
+  },
+  {
+    "id": "sport-baseball", "category": "sports", "subject": "M01",
+    "name": { "ko": "야구 선수", "en": "Baseball player", "jp": "野球選手" },
+    "desc": { "ko": "경기장·스포츠 행사", "en": "Stadiums and sports events", "jp": "スタジアム・スポーツイベント" },
+    "prompt": "A real sports photograph of him as a professional baseball player in a plain white home uniform with navy pinstripes and no team logo, holding a bat over his shoulder on a stadium field under bright floodlights, blurred crowd behind."
+  },
+  {
+    "id": "sport-marathon", "category": "sports", "subject": "F01",
+    "name": { "ko": "마라톤 결승선", "en": "Marathon finish", "jp": "マラソンのゴール" },
+    "desc": { "ko": "러닝·스포츠 행사", "en": "Running and sports events", "jp": "ランニング・スポーツイベント" },
+    "prompt": "A real sports photograph of her crossing a city marathon finish line with arms raised in joy, running outfit with a race bib showing only the number 2026, confetti in the air, cheering crowd blurred, bright morning light."
+  },
+  {
+    "id": "beauty-editorial", "category": "beauty", "subject": "F01",
+    "name": { "ko": "뷰티 화보", "en": "Beauty editorial", "jp": "ビューティーグラビア" },
+    "desc": { "ko": "화장품·뷰티 팝업", "en": "Cosmetics and beauty pop-ups", "jp": "コスメ・ビューティーポップアップ" },
+    "prompt": "A high-end beauty magazine close-up photograph of her: glowing dewy skin, soft coral lip, delicate highlighter, holding a plain unbranded glass skincare bottle near her cheek, clean pastel pink backdrop, soft butterfly lighting."
+  },
+  {
+    "id": "beauty-grooming", "category": "beauty", "subject": "M01",
+    "name": { "ko": "그루밍 화보", "en": "Grooming editorial", "jp": "メンズグルーミング" },
+    "desc": { "ko": "남성 뷰티·패션 행사", "en": "Men's beauty and fashion", "jp": "メンズビューティー・ファッション" },
+    "prompt": "A clean men's grooming advertisement photograph of him: fresh healthy skin, neatly styled hair, white crew-neck T-shirt, holding a plain unbranded matte skincare tube, minimalist light-grey studio with soft directional light."
+  },
+  {
+    "id": "season-cherry", "category": "season", "subject": "COUPLE",
+    "name": { "ko": "벚꽃 나들이", "en": "Cherry blossom day", "jp": "桜のお出かけ" },
+    "desc": { "ko": "봄 시즌", "en": "Spring season", "jp": "春シーズン" },
+    "prompt": "A real photograph of the two of them walking under a tunnel of full-bloom cherry blossom trees in spring, petals falling, soft pink light, light spring outfits, laughing together, shallow depth of field."
+  },
+  {
+    "id": "season-christmas", "category": "season", "subject": "FAM01",
+    "name": { "ko": "크리스마스 가족사진", "en": "Christmas family photo", "jp": "クリスマスの家族写真" },
+    "desc": { "ko": "겨울 시즌", "en": "Winter season", "jp": "冬シーズン" },
+    "prompt": "A real photograph of the family in matching red-and-white knit Christmas sweaters in front of a decorated Christmas tree with warm fairy lights, the children holding wrapped presents, cozy living room, everyone smiling."
+  },
+  {
+    "id": "season-halloween", "category": "season", "subject": "F01",
+    "name": { "ko": "핼러윈 마녀", "en": "Halloween witch", "jp": "ハロウィンの魔女" },
+    "desc": { "ko": "핼러윈 시즌", "en": "Halloween season", "jp": "ハロウィンシーズン" },
+    "prompt": "A real photograph of her as a cute, friendly Halloween witch: black pointed hat, velvet cape, holding a glowing jack-o'-lantern, cozy autumn porch with candles and pumpkins, warm orange light, playful smile, not scary."
+  },
+  {
+    "id": "couple-sunset-beach", "category": "couple", "subject": "COUPLE",
+    "name": { "ko": "노을 해변", "en": "Sunset beach", "jp": "夕焼けのビーチ" },
+    "desc": { "ko": "커플 이벤트", "en": "Couple events", "jp": "カップルイベント" },
+    "prompt": "A real photograph of the two of them on a quiet beach at sunset, sitting close on the sand facing the camera, golden backlight, gentle waves behind, linen summer outfits, warm relaxed smiles."
+  },
+  {
+    "id": "couple-polaroid", "category": "couple", "subject": "COUPLE",
+    "name": { "ko": "커플 폴라로이드", "en": "Couple polaroid", "jp": "カップルのポラロイド" },
+    "desc": { "ko": "기념일 이벤트", "en": "Anniversary events", "jp": "記念日イベント" },
+    "prompt": "An instant-film polaroid photo of the two of them taking a playful close-up together in a cozy cafe, slight flash, soft vintage colors, the white polaroid border visible around the picture, no handwriting or text."
+  },
+  {
+    "id": "family-studio", "category": "family", "subject": "FAM01",
+    "name": { "ko": "가족 사진관", "en": "Family studio portrait", "jp": "写真館の家族写真" },
+    "desc": { "ko": "가족 행사", "en": "Family events", "jp": "家族イベント" },
+    "prompt": "A real classic family studio portrait: the parents seated, the children standing in front, all in coordinated navy and white outfits, plain warm-grey studio backdrop, soft professional lighting, everyone smiling at the camera."
+  },
+  {
+    "id": "family-camping", "category": "family", "subject": "FAM01",
+    "name": { "ko": "가족 캠핑", "en": "Family camping", "jp": "家族キャンプ" },
+    "desc": { "ko": "아웃도어·가족 행사", "en": "Outdoor and family events", "jp": "アウトドア・家族イベント" },
+    "prompt": "A real photograph of the family at a forest campsite at dusk, sitting around a small campfire by a tent with string lights, the children holding marshmallows on sticks, cozy outdoor jackets, warm glow on their faces."
+  },
+  {
+    "id": "pet-puppy", "category": "pet", "subject": "F01",
+    "name": { "ko": "강아지와 함께", "en": "With a puppy", "jp": "子犬と一緒に" },
+    "desc": { "ko": "반려동물 동반 행사", "en": "Pet-friendly events", "jp": "ペット同伴イベント" },
+    "prompt": "A real photograph of her sitting on a sunny grass lawn hugging a fluffy golden retriever puppy, both looking at the camera, soft afternoon light, cream knit sweater, joyful smile."
+  },
+  {
+    "id": "pet-cat", "category": "pet", "subject": "M01",
+    "name": { "ko": "고양이와 함께", "en": "With a cat", "jp": "猫と一緒に" },
+    "desc": { "ko": "반려동물 행사", "en": "Pet events", "jp": "ペットイベント" },
+    "prompt": "A real photograph of him relaxing on a sofa by a bright window with a fluffy grey cat on his lap, gently petting it, cozy knit sweater, calm warm smile, soft natural light."
+  },
+  {
+    "id": "travel-jeju", "category": "travel", "subject": "F01",
+    "name": { "ko": "제주 감귤밭", "en": "Jeju tangerine farm", "jp": "済州のみかん畑" },
+    "desc": { "ko": "지역 축제·관광", "en": "Local festivals and tourism", "jp": "地域祭り・観光" },
+    "prompt": "A real travel photograph of her in a Jeju Island tangerine orchard, holding a basket of fresh tangerines, black volcanic stone wall and green trees behind her, bright sunny day, sun hat, cheerful smile."
+  },
+  {
+    "id": "travel-paris", "category": "travel", "subject": "COUPLE",
+    "name": { "ko": "파리 여행", "en": "Trip to Paris", "jp": "パリ旅行" },
+    "desc": { "ko": "여행·항공 프로모션", "en": "Travel and airline promos", "jp": "旅行・航空プロモーション" },
+    "prompt": "A real travel photograph of the two of them on a Paris street cafe terrace with the Eiffel Tower in the soft-focus background, coffee cups on a small round table, stylish autumn outfits, warm morning light."
+  },
+  {
+    "id": "brand-billboard", "category": "brand", "subject": "F01",
+    "name": { "ko": "대형 광고판 모델", "en": "Billboard model", "jp": "巨大広告のモデル" },
+    "desc": { "ko": "브랜드 팝업·광고", "en": "Brand pop-ups and ads", "jp": "ブランドポップアップ・広告" },
+    "prompt": "A real photograph of a huge digital billboard on a busy Seoul building at dusk showing her as the campaign model in a clean fashion advertisement, pedestrians and city lights below, the billboard has no logos or readable text."
+  },
+  {
+    "id": "brand-coffee", "category": "brand", "subject": "M01",
+    "name": { "ko": "커피 광고 모델", "en": "Coffee ad model", "jp": "コーヒー広告のモデル" },
+    "desc": { "ko": "식음료 브랜드 행사", "en": "Food and beverage brands", "jp": "飲食ブランドイベント" },
+    "prompt": "A polished coffee commercial photograph of him holding a plain unbranded ceramic cup with rising steam, cozy cafe counter with an espresso machine blurred behind, warm morning light, relaxed smile, advertising quality."
+  },
+  {
+    "id": "card-trading", "category": "card", "subject": "F01",
+    "name": { "ko": "트레이딩 카드", "en": "Trading card", "jp": "トレーディングカード" },
+    "desc": { "ko": "카드처럼 보이는 인화물", "en": "A print styled as a collectible card", "jp": "カードのようなプリント" },
+    "prompt": "A collectible trading card design featuring her portrait: shiny holographic rainbow foil border, decorative star accents, glossy finish, the card fills the frame on a plain dark background, no names, numbers or readable text."
+  },
+  {
+    "id": "card-photocard", "category": "card", "subject": "M01",
+    "name": { "ko": "아이돌 포토카드", "en": "Idol photo card", "jp": "アイドルのフォトカード" },
+    "desc": { "ko": "팬덤 이벤트", "en": "Fan events", "jp": "ファンイベント" },
+    "prompt": "A K-pop style photo card of him: rounded corners, soft pastel gradient background, dreamy soft-focus selfie-style portrait with a gentle smile and a small heart gesture, the card shown flat on a plain white surface, no text."
+  },
+  {
+    "id": "mini-diorama", "category": "miniature", "subject": "COUPLE",
+    "name": { "ko": "미니어처 세상", "en": "Miniature world", "jp": "ミニチュアの世界" },
+    "desc": { "ko": "전시·체험 행사", "en": "Exhibitions and hands-on events", "jp": "展示・体験イベント" },
+    "prompt": "A tilt-shift macro photograph of the two of them as tiny miniature figurines standing in a detailed diorama of a Seoul street corner on a wooden desk, a giant coffee cup and pencil nearby for scale, shallow depth of field."
+  },
+  {
+    "id": "sf-astronaut", "category": "sf", "subject": "M01",
+    "name": { "ko": "우주 비행사", "en": "Astronaut", "jp": "宇宙飛行士" },
+    "desc": { "ko": "과학·항공우주 행사", "en": "Science and aerospace events", "jp": "科学・航空宇宙イベント" },
+    "prompt": "A real photograph of him as an astronaut in a white spacesuit with a Korean flag patch, holding his helmet, floating inside a space station module with Earth visible through the round window behind him, soft cool light."
+  },
+  {
+    "id": "sf-cyberpunk", "category": "sf", "subject": "F01",
+    "name": { "ko": "사이버펑크", "en": "Cyberpunk", "jp": "サイバーパンク" },
+    "desc": { "ko": "게임·테크 행사", "en": "Gaming and tech events", "jp": "ゲーム・テックイベント" },
+    "prompt": "A cinematic cyberpunk photograph of her on a rainy futuristic city street at night: glowing pink and cyan neon reflections, a sleek reflective jacket with subtle light accents, holographic signs with no readable text, moody atmosphere."
+  }
+]
