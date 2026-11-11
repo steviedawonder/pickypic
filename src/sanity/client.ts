@@ -220,3 +220,14 @@ export const eventQueries = {
     image { asset-> { _id, url } }
   }`,
 };
+
+// AI 스타일 갤러리 (/ai-photobooth/gallery)
+export const aiStyleQueries = {
+  active: `*[_type == "aiStyle" && isActive != false] | order(order asc, _createdAt desc) {
+    _id, nameKo, nameEn, nameJp, descKo, descEn, descJp, category, people, isNew,
+    "image": image.asset->url,
+    "imageWidth": image.asset->metadata.dimensions.width,
+    "imageHeight": image.asset->metadata.dimensions.height,
+    "before": beforeImage.asset->url
+  }`,
+};

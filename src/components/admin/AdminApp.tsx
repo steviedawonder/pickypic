@@ -18,6 +18,7 @@ import PopupManager from './pages/PopupManager';
 import BannerManager from './pages/BannerManager';
 import EventManager from './pages/EventManager';
 import DownloadManager from './pages/DownloadManager';
+import AiStyleManager from './pages/AiStyleManager';
 import FooterManager from './pages/FooterManager';
 import SettingsPage from './pages/SettingsPage';
 
@@ -47,6 +48,7 @@ export default function AdminApp() {
       case 'banner': return <BannerManager />;
       case 'event': return <EventManager />;
       case 'downloads': return <DownloadManager />;
+      case 'ai-styles': return <AiStyleManager />;
       case 'footer': return <FooterManager />;
       case 'categories': return <CategoryManager />;
       case 'settings': return <SettingsPage />;

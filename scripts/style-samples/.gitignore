@@ -1,0 +1,6 @@
+node_modules/
+.env
+# 기준 인물 사진과 생성 결과는 저장소에 올리지 않고, 검수 후 어드민으로 업로드한다
+base/
+out/
+styles.json

@@ -1,0 +1,23 @@
+[
+  {
+    "id": "job-pilot",
+    "name": "전투기 조종사",
+    "category": "job",
+    "base": "solo-male.jpg",
+    "prompt": "Turn the person into a fighter pilot in an olive flight suit with a red scarf, holding a white flight helmet under one arm, standing on an airbase runway with a modern jet behind, bright natural daylight, photorealistic."
+  },
+  {
+    "id": "trad-hanbok-palace",
+    "name": "궁궐 한복",
+    "category": "traditional",
+    "base": "couple.jpg",
+    "prompt": "Dress both people in elegant traditional Korean hanbok and place them in a Korean royal palace courtyard at golden hour, photorealistic."
+  },
+  {
+    "id": "art-crayon",
+    "name": "크레용 그림",
+    "category": "art",
+    "base": "solo-female.jpg",
+    "prompt": "Redraw the whole photo as a warm children's crayon drawing on textured paper, keeping the person recognisable."
+  }
+]

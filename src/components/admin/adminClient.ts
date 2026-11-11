@@ -273,6 +273,18 @@ export async function uploadFile(file: File) {
   return sanityUpload('uploadFile', file);
 }
 
+// ── AI Style Gallery ──
+export async function fetchAiStyles() {
+  return sanityFetch(`*[_type == "aiStyle"] | order(order asc, _createdAt desc) {
+    _id, nameKo, nameEn, nameJp, descKo, descEn, descJp, category, people, isNew, isActive, order,
+    image { asset-> { _id, url } },
+    beforeImage { asset-> { _id, url } }
+  }`);
+}
+export async function createAiStyle(data: any) { return sanityCreate({ _type: 'aiStyle', ...data }); }
+export async function updateAiStyle(id: string, data: any) { return sanityUpdate(id, data); }
+export async function deleteAiStyle(id: string) { return sanityDelete(id); }
+
 // ── Banner ──
 export async function fetchBanners() {
   return sanityFetch(`*[_type == "banner"] | order(order asc) {
