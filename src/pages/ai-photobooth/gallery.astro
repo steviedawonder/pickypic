@@ -195,6 +195,16 @@ h2{font-size:clamp(22px,3vw,32px);font-weight:900;letter-spacing:-.03em;line-hei
 .filters{position:sticky;top:var(--hdr,64px);z-index:5;background:var(--paper);border-block:1px solid var(--rule)}
 .chips{display:flex;gap:8px;overflow-x:auto;padding-block:12px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
+/* Wider screens: wrap every category into view. A row with a hidden scrollbar
+   can't be scrolled with a mouse, and several wrapped rows are too tall to pin. */
+@media (min-width:601px){
+  .filters{position:static}
+  .chips{flex-wrap:wrap;overflow:visible}
+}
+/* Phones keep one swipeable row; the fade shows there is more to the right. */
+@media (max-width:600px){
+  .filters::after{content:"";position:absolute;top:0;right:0;bottom:0;width:36px;background:linear-gradient(90deg,rgba(243,242,238,0),var(--paper));pointer-events:none}
+}
 .chip{flex:0 0 auto;border:1.5px solid var(--ink);background:var(--sheet);color:var(--ink);font:inherit;font-size:14px;font-weight:700;padding:5px 14px;border-radius:99px;cursor:pointer;white-space:nowrap}
 .chip em{font-style:normal;font-family:var(--f-en);font-size:12px;color:var(--ink-2);margin-left:2px}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--sheet)}
