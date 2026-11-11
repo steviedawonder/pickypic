@@ -71,17 +71,17 @@ const faqItems = [
       <div class="head">
         <span class="tag" data-i18n="aipb.samples.tag">연출 견본</span>
         <h2 data-i18n="aipb.samples.h2">이렇게 찍으면, 이렇게 나옵니다</h2>
-        <p class="lead" data-i18n="aipb.samples.lead">왼쪽 위 작은 사진이 현장에서 찍은 촬영본입니다. 연출을 눌러 결과를 비교해 보세요.</p>
+        <p class="lead" data-i18n="aipb.samples.lead">작은 사진이 현장에서 찍은 촬영본입니다. 연출을 눌러 결과를 비교해 보세요.</p>
       </div>
       <div class="scenes">
-        <figure class="stage" style="margin:0">
-          <img id="stageImg" src="/images/ai-photobooth/scene-beauty.jpg" width="1000" height="1241" alt="가상의 뷰티 브랜드 로고 앞에서 세럼 병을 들고 있는 광고 화보로 바뀐 AI 적용 사진">
+        <figure class="stage stage--inset-low" id="stage" style="margin:0">
+          <img id="stageImg" src="/images/ai-photobooth/scene-beauty.jpg" width="1000" height="1500" alt="가상의 뷰티 브랜드 로고 앞에서 세럼 병을 들고 있는 광고 화보로 바뀐 AI 적용 사진">
           <span class="inset"><img id="stageBefore" src="/images/ai-photobooth/before-beauty.jpg" width="420" height="521" alt="포토부스에서 찍은 촬영 원본"><em data-i18n="aipb.samples.original">촬영본</em></span>
           <figcaption data-i18n="aipb.samples.result">AI 기능 적용본</figcaption>
         </figure>
         <div>
           <div class="picker" role="tablist" aria-label="연출 선택" data-i18n-aria="aipb.samples.picker">
-            <button class="pick" role="tab" aria-selected="true" data-img="scene-beauty" data-alt="가상의 뷰티 브랜드 로고 앞에서 세럼 병을 들고 있는 광고 화보로 바뀐 AI 적용 사진"><i></i><strong data-i18n="aipb.pick1.name">뷰티 브랜드 콜라보</strong><span data-i18n="aipb.pick1.desc">화장품·뷰티기기 팝업에 좋습니다. 브랜드 로고와 제품이 들어간 광고 한 장이 됩니다. 예시는 가상의 브랜드입니다.</span></button>
+            <button class="pick" role="tab" aria-selected="true" data-img="scene-beauty" data-inset="low" data-alt="가상의 뷰티 브랜드 로고 앞에서 세럼 병을 들고 있는 광고 화보로 바뀐 AI 적용 사진"><i></i><strong data-i18n="aipb.pick1.name">뷰티 브랜드 콜라보</strong><span data-i18n="aipb.pick1.desc">화장품·뷰티기기 팝업에 좋습니다. 브랜드 로고와 제품이 들어간 광고 한 장이 됩니다. 예시는 가상의 브랜드입니다.</span></button>
             <button class="pick" role="tab" aria-selected="false" data-img="scene-scholar" data-alt="한옥에서 갓과 도포를 갖춘 조선 선비의 모습으로 바뀐 AI 적용 사진"><i></i><strong data-i18n="aipb.pick2.name">조선 선비</strong><span data-i18n="aipb.pick2.desc">해외 여행자가 많이 찾는 고궁·관광지에 좋습니다. 한국 여행을 기념하는 한 장이 됩니다.</span></button>
             <button class="pick" role="tab" aria-selected="false" data-img="scene-baseball" data-alt="야구장에서 유니폼을 입은 야구 선수의 모습으로 바뀐 AI 적용 사진"><i></i><strong data-i18n="aipb.pick3.name">야구 선수</strong><span data-i18n="aipb.pick3.desc">스포츠 행사나 관중이 많이 모이는 경기장에 좋습니다. 구단·대회 유니폼에 맞춰 제작합니다.</span></button>
             <button class="pick" role="tab" aria-selected="false" data-img="scene-pilot" data-alt="활주로의 전투기 앞에서 비행복을 입은 조종사의 모습으로 바뀐 AI 적용 사진"><i></i><strong data-i18n="aipb.pick4.name">전투기 조종사</strong><span data-i18n="aipb.pick4.desc">에어쇼·항공 행사나 직업 체험 행사에 좋습니다. 꿈꾸던 직업의 모습이 됩니다.</span></button>
@@ -96,12 +96,12 @@ const faqItems = [
   <section class="band">
     <div class="wrap">
       <div class="head">
-        <span class="tag" data-i18n="aipb.one.tag">원본 한 장에서</span>
-        <h2 data-i18n="aipb.one.h2">같은 한 장이<br>열두 가지로 바뀝니다</h2>
-        <p class="lead" data-i18n="aipb.one.lead">아래 열두 장은 모두 왼쪽 원본 한 장에서 만든 시안입니다. 카드형 연출은 인화물 자체가 한 장의 카드가 됩니다.</p>
+        <span class="tag" data-i18n="aipb.one.tag">한 사람으로</span>
+        <h2 data-i18n="aipb.one.h2">같은 얼굴이<br>열여섯 가지로 바뀝니다</h2>
+        <p class="lead" data-i18n="aipb.one.lead">아래 열여섯 장은 모두 왼쪽 인물 한 사람으로 만든 시안입니다. 얼굴은 그대로 두고 옷·배경·화풍만 바꿉니다.</p>
       </div>
       <div class="one">
-        <figure class="one__src"><img src="/images/ai-photobooth/one-person.jpg" width="640" height="954" alt="흰 배경 포토부스에서 브이를 하며 찍은 촬영본"><figcaption><span class="tag" data-i18n="aipb.one.src">현장에서 찍은 한 장</span></figcaption></figure>
+        <figure class="one__src"><img src="/images/ai-photobooth/one-person.jpg" width="640" height="954" alt="흰 배경 포토부스에서 브이를 하며 찍은 촬영본"><figcaption><span class="tag" data-i18n="aipb.one.src">촬영본</span></figcaption></figure>
         <div class="one__grid">
           <figure><img loading="lazy" src="/images/ai-photobooth/one-brand-beauty-serum.jpg" width="560" height="835" alt="같은 인물이 뷰티 브랜드 콜라보 연출로 바뀐 사진"><figcaption><b data-i18n="aipb.one.1n">뷰티 브랜드 콜라보</b><span data-i18n="aipb.one.1d">가상 브랜드 · 화장품 팝업</span></figcaption></figure>
           <figure><img loading="lazy" src="/images/ai-photobooth/one-brand-beauty-device.jpg" width="560" height="835" alt="같은 인물이 뷰티기기 체험 연출로 바뀐 사진"><figcaption><b data-i18n="aipb.one.2n">뷰티기기 체험</b><span data-i18n="aipb.one.2d">가상 브랜드 · 런칭 팝업</span></figcaption></figure>
@@ -214,7 +214,7 @@ const faqItems = [
       </div>
       <dl class="uses">
         <div class="use"><dt data-i18n="aipb.uses.1n">브랜드 팝업</dt><dd data-i18n="aipb.uses.1d">그 브랜드의 제품과 색을 살린 사진, 브랜드 전용 인화 틀.</dd></div>
-        <div class="use"><dt data-i18n="aipb.one.9d">외국인 고객</dt><dd data-i18n="aipb.uses.2d">한국 여행을 기념하는 한복·한옥 연출. 화면은 4개 언어로 안내합니다.</dd></div>
+        <div class="use"><dt data-i18n="aipb.uses.2n">외국인 고객</dt><dd data-i18n="aipb.uses.2d">한국 여행을 기념하는 한복·한옥 연출. 화면은 4개 언어로 안내합니다.</dd></div>
         <div class="use"><dt data-i18n="aipb.uses.3n">가족 단위</dt><dd data-i18n="aipb.uses.3d">아이와 함께 찍는 연출, 기념 카드 형태의 인화물.</dd></div>
         <div class="use"><dt data-i18n="aipb.uses.4n">캐릭터 IP</dt><dd data-i18n="aipb.uses.4d">주신 원본을 인화 틀에 그대로 넣습니다. 캐릭터를 AI로 다시 그리지 않습니다.</dd></div>
         <div class="use"><dt data-i18n="aipb.uses.5n">SNS 확산</dt><dd data-i18n="aipb.uses.5d">세로 화보형 구성. QR 페이지도 로고와 브랜드 색으로 맞춥니다.</dd></div>
@@ -472,9 +472,10 @@ dl{margin:0}
 @media (prefers-reduced-motion:reduce){.btn{transition:none}}
 
 /* 촬영본 인셋 */
-.stage img#stageImg{aspect-ratio:1000/1241}
+.stage img#stageImg{aspect-ratio:2/3}
 .inset{position:absolute;left:4%;top:3.5%;width:34%;border:1.5px solid var(--ink);background:var(--sheet);display:block}
 .inset img{width:100%;aspect-ratio:420/521;object-fit:cover}
+.stage--inset-low .inset{top:auto;bottom:3.5%}
 .inset em{position:absolute;right:6px;bottom:5px;font-style:normal;font-size:12px;color:var(--sheet);text-shadow:0 0 4px rgba(0,0,0,.6)}
 /* 원본 한 장 */
 .one{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3.1fr);gap:clamp(20px,3vw,40px);align-items:start}
@@ -526,6 +527,7 @@ button.lang:focus-visible{outline:3px solid var(--lime);outline-offset:3px}
 <script>
   const IMG = '/images/ai-photobooth/';
 
+  const stage = document.getElementById('stage');
   const stageImg = document.getElementById('stageImg') as HTMLImageElement | null;
   const stageBefore = document.getElementById('stageBefore') as HTMLImageElement | null;
   const picks = Array.from(document.querySelectorAll<HTMLButtonElement>('.ai-page .pick'));
@@ -538,6 +540,7 @@ button.lang:focus-visible{outline:3px solid var(--lime);outline-offset:3px}
         stageImg.src = `${IMG}${name}.jpg`;
         stageImg.alt = b.dataset.alt || '';
       }
+      stage?.classList.toggle('stage--inset-low', b.dataset.inset === 'low');
       if (stageBefore) stageBefore.src = `${IMG}${name.replace('scene-', 'before-')}.jpg`;
     };
     b.addEventListener('click', go);
