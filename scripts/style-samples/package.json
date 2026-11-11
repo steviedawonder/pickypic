@@ -1,0 +1,12 @@
+{
+  "name": "pickypic-style-samples",
+  "private": true,
+  "type": "module",
+  "description": "AI 스타일 갤러리 샘플 이미지 생성 (사이트 빌드와 별개)",
+  "scripts": {
+    "generate": "node --env-file=.env generate.mjs"
+  },
+  "dependencies": {
+    "@google/genai": "^1.0.0"
+  }
+}

@@ -10,6 +10,7 @@ import { downloadFile } from './downloadFile';
 import { banner } from './banner';
 import { inquiry } from './inquiry';
 import { event } from './event';
+import { aiStyle } from './aiStyle';
 
 export const schemaTypes = [
   blogPost,
@@ -24,4 +25,5 @@ export const schemaTypes = [
   banner,
   inquiry,
   event,
+  aiStyle,
 ];

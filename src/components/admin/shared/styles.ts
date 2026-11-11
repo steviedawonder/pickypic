@@ -37,6 +37,7 @@ export const navItems = [
   { id: 'blogs', icon: '📝', label: '글 관리' },
   { id: 'categories', icon: '📁', label: '카테고리' },
   { id: 'portfolio', icon: '📸', label: '포트폴리오' },
+  { id: 'ai-styles', icon: '✨', label: 'AI 스타일' },
   { id: 'faq', icon: '❓', label: 'FAQ 관리' },
   { id: 'popup', icon: '🖼️', label: '팝업 관리' },
   { id: 'banner', icon: '🎨', label: '배너 관리' },

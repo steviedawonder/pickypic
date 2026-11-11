@@ -1,0 +1,417 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import BreadcrumbSchema from '@components/seo/BreadcrumbSchema.astro';
+import { sanityClient, aiStyleQueries } from '../../sanity/client';
+import { aiStyleCategories, fallbackAiStyles, type AiStyle } from '../../data/aiStyles';
+
+// Styles come from the admin ("AI 스타일"). Until the first one is saved there,
+// the twelve samples already shown on /ai-photobooth stand in.
+type GalleryStyle = AiStyle & { fromSanity?: boolean };
+let fromSanity: GalleryStyle[] = [];
+try {
+  const raw: any[] = await sanityClient.fetch(aiStyleQueries.active);
+  fromSanity = raw
+    .filter((r) => r.image && r.nameKo && r.category)
+    .map((r) => ({
+      id: r._id,
+      name: { ko: r.nameKo, en: r.nameEn || r.nameKo, jp: r.nameJp || r.nameKo },
+      desc: r.descKo ? { ko: r.descKo, en: r.descEn || r.descKo, jp: r.descJp || r.descKo } : undefined,
+      category: r.category,
+      image: r.image,
+      imageWidth: r.imageWidth || 800,
+      imageHeight: r.imageHeight || 1200,
+      before: r.before || undefined,
+      people: r.people,
+      isNew: !!r.isNew,
+      fromSanity: true,
+    }));
+} catch {
+  // Sanity unreachable at build time: fall back to the built-in samples
+}
+const styles: GalleryStyle[] = fromSanity.length > 0 ? fromSanity : fallbackAiStyles;
+
+// Sanity's image CDN resizes and converts on the fly; local samples are already small.
+const imgSrc = (s: GalleryStyle, w: number) => (s.fromSanity ? `${s.image}?w=${w}&fm=webp&q=80` : s.image);
+const beforeSrc = (s: GalleryStyle) => (s.before && s.fromSanity ? `${s.before}?w=1200&fm=webp&q=80` : s.before);
+
+const categories = aiStyleCategories
+  .map((c) => ({ ...c, count: styles.filter((s) => s.category === c.id).length }))
+  .filter((c) => c.count > 0);
+const categoryOf = (id: string) => aiStyleCategories.find((c) => c.id === id)?.label;
+---
+
+<BaseLayout
+  title="AI 포토부스 스타일 갤러리 | 피키픽 PICKYPIC"
+  description="피키픽 AI 포토부스로 만들 수 있는 연출을 한곳에 모았습니다. 직업·한복·타임머신·화풍·캐릭터·시즌 등 카테고리별로 보고, 마음에 드는 스타일을 찜해 렌탈 문의에 바로 담을 수 있습니다."
+  ogImage={fromSanity.length ? undefined : '/images/ai-photobooth/one-hanbok.jpg'}
+  ogImageWidth={fromSanity.length ? undefined : 560}
+  ogImageHeight={fromSanity.length ? undefined : 835}
+>
+  <link slot="head" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112,800&family=Gothic+A1:wght@400;500;700;800;900&display=swap" />
+
+  <BreadcrumbSchema items={[
+    { name: '홈', href: '/' },
+    { name: 'AI 포토부스', href: '/ai-photobooth' },
+    { name: '스타일 갤러리', href: '/ai-photobooth/gallery' },
+  ]} />
+
+  <div class="gl-page">
+    <section class="hero">
+      <div class="wrap">
+        <a class="back" href="/ai-photobooth" data-i18n="aigl.back">← AI 포토부스</a>
+        <span class="tag" data-i18n="aigl.hero.tag">AI 스타일 갤러리</span>
+        <h1 data-i18n="aigl.hero.h1">행사에 맞는 연출을<br>골라 보세요</h1>
+        <p class="lead" data-i18n="aigl.hero.lead">피키픽 AI 포토부스로 만들 수 있는 연출을 모았습니다. 마음에 드는 스타일에 하트를 눌러 두면, 렌탈 문의할 때 그대로 담아 보낼 수 있습니다.</p>
+        <p class="count"><b>{styles.length}</b><span data-i18n="aigl.count">가지 스타일</span></p>
+      </div>
+    </section>
+
+    <div class="filters" role="toolbar" aria-label="카테고리" data-i18n-aria="aigl.filter.aria">
+      <div class="wrap chips">
+        <button type="button" class="chip" data-cat="all" aria-pressed="true"><span data-i18n="aigl.filter.all">전체</span> <em>{styles.length}</em></button>
+        <button type="button" class="chip chip--wish" data-cat="wish" aria-pressed="false"><span data-i18n="aigl.filter.wish">♥ 찜한 스타일</span> <em class="js-wish-count">0</em></button>
+        {categories.map((c) => (
+          <button type="button" class="chip" data-cat={c.id} aria-pressed="false">
+            <span class="js-i18n" data-ko={c.label.ko} data-en={c.label.en} data-jp={c.label.jp}>{c.label.ko}</span> <em>{c.count}</em>
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <section class="band">
+      <div class="wrap">
+        <ul class="grid" id="styleGrid">
+          {styles.map((s, i) => {
+            const cat = categoryOf(s.category);
+            return (
+              <li class="card" data-id={s.id} data-cat={s.category}
+                data-img={imgSrc(s, 1200)} data-before={beforeSrc(s)}
+                data-name-ko={s.name.ko} data-name-en={s.name.en} data-name-jp={s.name.jp}
+                data-desc-ko={s.desc?.ko} data-desc-en={s.desc?.en} data-desc-jp={s.desc?.jp}
+                data-cat-ko={cat?.ko} data-cat-en={cat?.en} data-cat-jp={cat?.jp}>
+                <button type="button" class="card__open" aria-label={s.name.ko}>
+                  <img
+                    src={imgSrc(s, 600)}
+                    srcset={s.fromSanity ? `${imgSrc(s, 400)} 400w, ${imgSrc(s, 600)} 600w` : undefined}
+                    sizes={s.fromSanity ? '(max-width: 600px) 50vw, (max-width: 1000px) 33vw, 260px' : undefined}
+                    width={s.imageWidth} height={s.imageHeight}
+                    loading={i < 8 ? 'eager' : 'lazy'} decoding="async" alt={s.name.ko} />
+                  {s.isNew && <span class="new">NEW</span>}
+                </button>
+                <div class="card__meta">
+                  <span class="card__name js-name">{s.name.ko}</span>
+                  <button type="button" class="heart" aria-pressed="false" aria-label="찜하기" data-i18n-aria="aigl.heart">♥</button>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+        <p class="empty" id="wishEmpty" hidden data-i18n="aigl.wish.empty">아직 찜한 스타일이 없습니다. 마음에 드는 스타일의 하트를 눌러 보세요.</p>
+        <div class="more"><button type="button" class="btn btn--ghost" id="loadMore" hidden data-i18n="aigl.more">더 보기</button></div>
+        <p class="fine" data-i18n="aigl.fine">갤러리의 견본 인물은 AI로 만든 가상 인물이며 실존 인물이 아닙니다. 실제 결과는 촬영 조건에 따라 조금씩 다를 수 있습니다.</p>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="wrap cta__in">
+        <div>
+          <h2 data-i18n="aigl.cta.h2">찾는 스타일이 없나요?<br>행사 컨셉에 맞춰 새로 만듭니다</h2>
+          <p data-i18n="aigl.cta.p">원하는 느낌만 알려 주시면 그 컨셉으로 만든 사진을 먼저 보여 드립니다.</p>
+        </div>
+        <div class="btns">
+          <a class="btn btn--main" href="/rental?ai=1" data-i18n="aipb.btn.rental">렌탈 문의하기</a>
+          <a class="btn btn--ghost" href="http://pf.kakao.com/_qbEMb/chat" target="_blank" rel="noopener noreferrer" data-i18n="aipb.cta.kakao">카카오톡 상담</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="wishbar" id="wishBar" hidden>
+      <div class="wrap wishbar__in">
+        <span>♥ <span data-i18n="aigl.bar.label">찜한 스타일</span> <b class="js-wish-count">0</b></span>
+        <a class="btn btn--main" href="/rental?ai=1" data-i18n="aigl.bar.cta">찜한 스타일로 문의하기</a>
+      </div>
+    </div>
+
+    <dialog class="viewer" id="viewer" aria-labelledby="viewerName">
+      <button type="button" class="viewer__close" aria-label="닫기" data-i18n-aria="aigl.close">✕</button>
+      <div class="viewer__body">
+        <div class="viewer__pic">
+          <img id="viewerImg" src="" alt="" />
+          <div class="viewer__toggle" id="viewerToggle" role="group" aria-label="원본과 결과 비교" data-i18n-aria="aigl.viewer.compare">
+            <button type="button" data-show="after" aria-pressed="true" data-i18n="aigl.viewer.after">AI 결과</button>
+            <button type="button" data-show="before" aria-pressed="false" data-i18n="aigl.viewer.before">촬영 원본</button>
+          </div>
+        </div>
+        <div class="viewer__info">
+          <span class="tag" id="viewerCat"></span>
+          <h2 id="viewerName"></h2>
+          <p id="viewerDesc"></p>
+          <div class="btns">
+            <button type="button" class="btn btn--ghost heart-btn" id="viewerHeart" aria-pressed="false"><span aria-hidden="true">♥</span> <span data-i18n="aigl.viewer.wish">찜하기</span></button>
+            <a class="btn btn--main" id="viewerInquire" href="/rental?ai=1" data-i18n="aigl.viewer.inquire">이 스타일로 문의하기</a>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  </div>
+</BaseLayout>
+
+<style>
+/* Same paper + lime-label system as /ai-photobooth, scoped to this page. */
+.gl-page{
+  color-scheme:light;
+  --paper:#f3f2ee; --sheet:#ffffff; --ink:#111013; --ink-2:#55525c; --rule:#d9d6cf; --lime:#c8ff2e;
+  --f-kr:"Gothic A1","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  --f-en:"Archivo","Gothic A1","Arial Black",sans-serif;
+  --gut:clamp(16px,4vw,40px); --max:1120px;
+  background:var(--paper);color:var(--ink);font-family:var(--f-kr);font-size:16px;line-height:1.7;word-break:keep-all;-webkit-font-smoothing:antialiased
+}
+:global(html[lang="ja"]) .gl-page{
+  word-break:normal;line-break:strict;
+  --f-kr:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic","YuGothic","Meiryo","Noto Sans JP","Noto Sans KR",sans-serif;
+}
+.gl-page img{display:block;max-width:100%;height:auto}
+.gl-page a{color:inherit}
+.gl-page :focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.wrap{max-width:var(--max);margin-inline:auto;padding-inline:var(--gut)}
+h1,h2,p{margin:0}
+h1{font-size:clamp(32px,5.6vw,58px);font-weight:900;letter-spacing:-.03em;line-height:1.18;text-wrap:balance}
+h2{font-size:clamp(22px,3vw,32px);font-weight:900;letter-spacing:-.03em;line-height:1.25;text-wrap:balance}
+.lead{font-size:clamp(15px,1.6vw,18px);color:var(--ink-2);max-width:36em}
+.tag{display:inline-block;justify-self:start;background:var(--lime);color:var(--ink);border:1.5px solid var(--ink);padding:3px 10px 2px;font-weight:800;font-size:14px;line-height:1.5}
+.btns{display:flex;flex-wrap:wrap;gap:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:48px;padding:0 22px;border:1.5px solid var(--ink);font-weight:800;font-size:15px;text-decoration:none;cursor:pointer;font-family:inherit;transition:transform .15s,box-shadow .15s}
+.btn--main{background:var(--ink);color:var(--sheet) !important;box-shadow:4px 4px 0 var(--lime)}
+.btn--ghost{background:var(--sheet);color:var(--ink)}
+.btn:hover{transform:translate(-2px,-2px)}
+
+.hero{padding-block:clamp(28px,5vw,64px) clamp(20px,3vw,32px)}
+.hero .wrap{display:grid;gap:16px}
+.back{font-size:14px;color:var(--ink-2);text-decoration:none;justify-self:start}
+.back:hover{text-decoration:underline}
+.count{font-size:15px;color:var(--ink-2)}
+.count b{font-family:var(--f-en);font-stretch:112%;font-size:22px;color:var(--ink);margin-right:3px}
+
+.filters{position:sticky;top:var(--hdr,64px);z-index:5;background:var(--paper);border-block:1px solid var(--rule)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-block:12px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border:1.5px solid var(--ink);background:var(--sheet);color:var(--ink);font:inherit;font-size:14px;font-weight:700;padding:5px 14px;border-radius:99px;cursor:pointer;white-space:nowrap}
+.chip em{font-style:normal;font-family:var(--f-en);font-size:12px;color:var(--ink-2);margin-left:2px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--sheet)}
+.chip[aria-pressed="true"] em{color:var(--lime)}
+.chip--wish{border-color:#e0245e;color:#e0245e}
+
+.band{padding-block:clamp(24px,4vw,48px) clamp(48px,7vw,88px)}
+.grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:28px 16px}
+.card[hidden]{display:none}
+.card__open{all:unset;box-sizing:border-box;position:relative;display:block;width:100%;cursor:pointer;border:1.5px solid var(--ink);background:var(--sheet);overflow:hidden}
+.card__open img{width:100%;aspect-ratio:2/3;object-fit:cover;transition:transform .3s}
+.card__open:hover img{transform:scale(1.03)}
+.card__open:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.new{position:absolute;top:8px;left:8px;background:var(--lime);border:1.5px solid var(--ink);font-family:var(--f-en);font-stretch:112%;font-weight:800;font-size:11px;padding:1px 7px}
+.card__meta{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px}
+.card__name{font-weight:800;font-size:15px;letter-spacing:-.02em;line-height:1.35}
+.heart{all:unset;cursor:pointer;flex:0 0 auto;width:34px;height:34px;display:grid;place-items:center;border-radius:50%;font-size:18px;color:#c9c4bb;transition:color .15s,transform .15s}
+.heart:hover{color:#e0245e}
+.heart[aria-pressed="true"]{color:#e0245e;transform:scale(1.1)}
+.heart:focus-visible{outline:3px solid var(--ink);outline-offset:1px}
+.empty{padding:40px 0;color:var(--ink-2);text-align:center}
+.more{display:flex;justify-content:center;margin-top:36px}
+.more .btn[hidden]{display:none}
+.fine{font-size:12.5px;color:var(--ink-2);margin-top:32px}
+
+.cta{background:var(--lime);border-block:1.5px solid var(--ink);padding-block:clamp(40px,6vw,72px)}
+.cta__in{display:grid;grid-template-columns:1.3fr .7fr;gap:24px;align-items:end}
+.cta p{margin-top:12px;max-width:32em}
+.cta .btn--main{box-shadow:4px 4px 0 var(--sheet)}
+
+/* Full-width bar pinned to the bottom. While it shows, the floating contact
+   buttons and the page end move up so nothing hides behind it; the English
+   suggestion bar (40px, i18n.ts adds body.has-en-banner) stays underneath. */
+.wishbar{position:fixed;left:0;right:0;bottom:0;z-index:45;height:var(--wishbar-h);background:var(--sheet);border-top:1.5px solid var(--ink);font-weight:800;font-size:14px}
+.gl-page{--wishbar-h:64px}
+.wishbar[hidden]{display:none}
+.wishbar__in{height:100%;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.wishbar b{color:#e0245e;font-family:var(--f-en)}
+.wishbar .btn{min-height:42px;padding:0 18px;font-size:14px;box-shadow:3px 3px 0 var(--lime)}
+:global(body.has-en-banner) .wishbar{bottom:40px}
+:global(body.has-wishbar) .gl-page{padding-bottom:var(--wishbar-h)}
+/* #floating-btns lives in another component, so the whole selector is global */
+:global(body.has-wishbar #floating-btns){bottom:calc(64px + 16px) !important}
+:global(body.has-wishbar.has-en-banner #floating-btns){bottom:calc(40px + 64px + 16px) !important}
+
+.viewer{border:1.5px solid var(--ink);padding:0;max-width:min(920px,calc(100% - 32px));width:100%;max-height:calc(100dvh - 32px);background:var(--sheet);color:var(--ink)}
+.viewer::backdrop{background:rgba(17,16,19,.6)}
+.viewer__close{all:unset;cursor:pointer;position:absolute;top:8px;right:10px;z-index:2;width:36px;height:36px;display:grid;place-items:center;font-size:18px;background:var(--sheet);border-radius:50%}
+.viewer__close:focus-visible{outline:3px solid var(--ink)}
+.viewer__body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr)}
+.viewer__pic{position:relative;background:var(--paper)}
+.viewer__pic img{width:100%;max-height:calc(100dvh - 34px);object-fit:contain}
+.viewer__toggle{position:absolute;left:12px;bottom:12px;display:flex;border:1.5px solid var(--ink);background:var(--sheet)}
+.viewer__toggle[hidden]{display:none}
+.viewer__toggle button{all:unset;cursor:pointer;padding:5px 12px;font-size:13px;font-weight:800}
+.viewer__toggle button[aria-pressed="true"]{background:var(--ink);color:var(--sheet)}
+.viewer__info{display:grid;align-content:center;gap:14px;padding:clamp(20px,4vw,40px)}
+.viewer__info p{color:var(--ink-2)}
+.heart-btn[aria-pressed="true"]{color:#e0245e;border-color:#e0245e}
+
+@media (max-width:1000px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:860px){
+  .cta__in{grid-template-columns:minmax(0,1fr)}
+  .viewer__body{grid-template-columns:minmax(0,1fr)}
+  .viewer__pic img{max-height:62dvh}
+}
+@media (max-width:600px){
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 12px}
+  .card__name{font-size:14px}
+  .btns .btn{flex:1 1 100%}
+  .wishbar .btn{padding:0 14px}
+}
+@media (prefers-reduced-motion:reduce){.btn,.card__open img,.heart{transition:none}}
+</style>
+
+<script>
+  import { AI_STYLE_WISHLIST_KEY as KEY, type AiStyleWish as Wish } from '../../data/aiStyles';
+
+  const PAGE = 24;
+  const root = document.querySelector<HTMLElement>('.gl-page');
+
+  // The fixed site header changes height with the breakpoint (and the mobile
+  // menu bar inside it), so the sticky filter row reads its real bottom edge.
+  const navbar = document.getElementById('navbar');
+  const syncHeaderOffset = () => {
+    if (navbar && root) root.style.setProperty('--hdr', `${Math.round(navbar.getBoundingClientRect().bottom)}px`);
+  };
+  syncHeaderOffset();
+  if (navbar) new ResizeObserver(syncHeaderOffset).observe(navbar);
+
+  const cards = Array.from(document.querySelectorAll<HTMLLIElement>('#styleGrid .card'));
+  const chips = Array.from(document.querySelectorAll<HTMLButtonElement>('.chip'));
+  const loadMore = document.getElementById('loadMore') as HTMLButtonElement | null;
+  const wishEmpty = document.getElementById('wishEmpty');
+  const wishBar = document.getElementById('wishBar');
+
+  // Site language: ko / en / jp (html lang is "ja" for Japanese)
+  const lang = () => {
+    const l = document.documentElement.lang;
+    return l === 'ja' ? 'jp' : l === 'en' ? 'en' : 'ko';
+  };
+  const pick = (el: HTMLElement, field: string) =>
+    el.dataset[`${field}${lang()[0].toUpperCase()}${lang().slice(1)}`] || el.dataset[`${field}Ko`] || '';
+
+  // ── Wishlist (this browser only) ──
+  const readWish = (): Wish[] => {
+    try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; }
+  };
+  let wish = readWish();
+  const isWished = (id: string) => wish.some((w) => w.id === id);
+  const saveWish = () => {
+    try { localStorage.setItem(KEY, JSON.stringify(wish)); } catch { /* storage blocked: keep in memory */ }
+    renderWish();
+  };
+  const toggleWish = (card: HTMLElement) => {
+    const id = card.dataset.id!;
+    wish = isWished(id) ? wish.filter((w) => w.id !== id) : [...wish, { id, name: card.dataset.nameKo || '' }];
+    saveWish();
+  };
+  function renderWish() {
+    document.querySelectorAll('.js-wish-count').forEach((el) => { el.textContent = String(wish.length); });
+    cards.forEach((c) => c.querySelector('.heart')?.setAttribute('aria-pressed', String(isWished(c.dataset.id!))));
+    if (wishBar) wishBar.hidden = wish.length === 0;
+    document.body.classList.toggle('has-wishbar', wish.length > 0);
+    if (current) viewerHeart?.setAttribute('aria-pressed', String(isWished(current.dataset.id!)));
+    if (activeCat === 'wish') applyFilter();
+  }
+
+  // ── Filter + paging ──
+  const params = new URLSearchParams(location.search);
+  let activeCat = params.get('cat') || 'all';
+  if (!chips.some((c) => c.dataset.cat === activeCat)) activeCat = 'all';
+  let limit = PAGE;
+
+  function applyFilter() {
+    const matches = cards.filter((c) =>
+      activeCat === 'all' ? true : activeCat === 'wish' ? isWished(c.dataset.id!) : c.dataset.cat === activeCat);
+    cards.forEach((c) => { c.hidden = true; });
+    matches.forEach((c, i) => { c.hidden = i >= limit; });
+    if (loadMore) loadMore.hidden = matches.length <= limit;
+    if (wishEmpty) wishEmpty.hidden = !(activeCat === 'wish' && matches.length === 0);
+    chips.forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.cat === activeCat)));
+  }
+  chips.forEach((chip) => chip.addEventListener('click', () => {
+    activeCat = chip.dataset.cat || 'all';
+    limit = PAGE;
+    const url = new URL(location.href);
+    if (activeCat === 'all') url.searchParams.delete('cat'); else url.searchParams.set('cat', activeCat);
+    history.replaceState(null, '', url);
+    applyFilter();
+  }));
+  loadMore?.addEventListener('click', () => { limit += PAGE; applyFilter(); });
+
+  // ── Viewer ──
+  const viewer = document.getElementById('viewer') as HTMLDialogElement | null;
+  const viewerImg = document.getElementById('viewerImg') as HTMLImageElement | null;
+  const viewerName = document.getElementById('viewerName');
+  const viewerDesc = document.getElementById('viewerDesc');
+  const viewerCat = document.getElementById('viewerCat');
+  const viewerToggle = document.getElementById('viewerToggle');
+  const viewerHeart = document.getElementById('viewerHeart');
+  const viewerInquire = document.getElementById('viewerInquire');
+  let current: HTMLElement | null = null;
+
+  function showSide(side: 'after' | 'before') {
+    if (!current || !viewerImg) return;
+    viewerImg.src = side === 'before' && current.dataset.before ? current.dataset.before : current.dataset.img!;
+    viewerToggle?.querySelectorAll<HTMLButtonElement>('button').forEach((b) =>
+      b.setAttribute('aria-pressed', String(b.dataset.show === side)));
+  }
+  function fillViewerText() {
+    if (!current) return;
+    const name = pick(current, 'name');
+    if (viewerName) viewerName.textContent = name;
+    if (viewerImg) viewerImg.alt = name;
+    if (viewerDesc) viewerDesc.textContent = pick(current, 'desc');
+    if (viewerCat) viewerCat.textContent = pick(current, 'cat');
+  }
+  function openViewer(card: HTMLElement) {
+    current = card;
+    fillViewerText();
+    if (viewerToggle) viewerToggle.hidden = !card.dataset.before;
+    showSide('after');
+    viewerHeart?.setAttribute('aria-pressed', String(isWished(card.dataset.id!)));
+    viewer?.showModal();
+  }
+  cards.forEach((card) => {
+    card.querySelector('.card__open')?.addEventListener('click', () => openViewer(card));
+    card.querySelector('.heart')?.addEventListener('click', () => toggleWish(card));
+  });
+  viewerToggle?.querySelectorAll<HTMLButtonElement>('button').forEach((b) =>
+    b.addEventListener('click', () => showSide(b.dataset.show === 'before' ? 'before' : 'after')));
+  viewerHeart?.addEventListener('click', () => { if (current) toggleWish(current); });
+  // "이 스타일로 문의하기" keeps the style in the wishlist so /rental picks it up
+  viewerInquire?.addEventListener('click', () => { if (current && !isWished(current.dataset.id!)) toggleWish(current); });
+  viewer?.querySelector('.viewer__close')?.addEventListener('click', () => viewer.close());
+  viewer?.addEventListener('click', (e) => { if (e.target === viewer) viewer.close(); });
+  viewer?.addEventListener('close', () => { current = null; });
+
+  // ── Names from Sanity aren't in translations.ts; swap them here ──
+  function applyNames() {
+    cards.forEach((c) => {
+      const name = pick(c, 'name');
+      const nameEl = c.querySelector('.js-name');
+      if (nameEl) nameEl.textContent = name;
+      c.querySelector('.card__open')?.setAttribute('aria-label', name);
+      const img = c.querySelector('img');
+      if (img) img.alt = name;
+    });
+    document.querySelectorAll<HTMLElement>('.js-i18n').forEach((el) => {
+      el.textContent = el.dataset[lang()] || el.dataset.ko || '';
+    });
+    fillViewerText();
+  }
+  document.addEventListener('langChanged', applyNames);
+
+  applyNames();
+  applyFilter();
+  renderWish();
+</script>
