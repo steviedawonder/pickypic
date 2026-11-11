@@ -38,6 +38,19 @@ node --env-file=.env generate.mjs pet-cat --force           # 마음에 안 드�
 - 실패한 스타일은 마지막에 다시 실행할 명령을 알려 줍니다.
 - 스타일을 늘릴 때는 `styles.json`에 항목을 추가합니다. 실존 인물·연예인·실제 브랜드 로고는 프롬프트에 넣지 않습니다.
 
+## 갤러리에 등록
+
+검수를 통과한 결과를 어드민(Sanity `aiStyle`)에 한 번에 올립니다. 사이트 루트에서 `npm install`이 되어 있어야 하고, `.env`에 `SANITY_API_TOKEN`(Vercel의 쓰기 토큰)이 필요합니다.
+
+```
+node --env-file=.env upload.mjs --dry-run                   # 무엇을 올릴지 확인
+node --env-file=.env upload.mjs --skip=cine-noir,pet-cat    # 검수에서 떨어진 것만 빼고 등록
+```
+
+- `out/`의 결과 전부와 사이트 기본 견본 12종(원본 사진 포함)을 올립니다. 견본을 빼려면 `--no-samples`.
+- 문서 id가 `aiStyle-<스타일 id>`로 고정이라 다시 실행하면 덮어씁니다. 어드민에서 바꾼 정렬 순서·노출·NEW는 유지됩니다.
+- 올린 뒤 사이트에 보이려면 재빌드가 필요합니다(어드민에서 아무 스타일이나 저장하거나 Vercel 재배포).
+
 ## 검수 기준
 
 - 얼굴이 기준 사진과 같은 사람인지(특히 COUPLE·FAM01은 모든 사람)
