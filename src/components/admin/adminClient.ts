@@ -10,12 +10,33 @@ export function getAuthHeaders(): Record<string, string> {
   return { 'x-admin-auth': token };
 }
 
+// The login token expires after 24h, but the admin tab only checks it on page
+// load. Re-login in place on a 401 so whatever is being edited isn't lost.
+async function relogin(): Promise<boolean> {
+  const password = window.prompt('로그인이 만료되었습니다. 관리자 비밀번호를 다시 입력해주세요.');
+  if (!password) return false;
+  const res = await fetch('/api/auth', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'login', password }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!data.success || !data.token) {
+    alert(data.error || '비밀번호가 올바르지 않습니다.');
+    return false;
+  }
+  localStorage.setItem(AUTH_STORAGE_KEY, data.token);
+  return true;
+}
+
 async function sanityAction(body: Record<string, unknown>) {
-  const res = await fetch('/api/sanity', {
+  const send = () => fetch('/api/sanity', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
     body: JSON.stringify(body),
   });
+  let res = await send();
+  if (res.status === 401 && (await relogin())) res = await send();
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: res.statusText }));
     throw new Error(err.error || `API error ${res.status}`);
